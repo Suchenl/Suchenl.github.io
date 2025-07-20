@@ -1,8 +1,8 @@
 @import "./styles.css";
 
 
-:root{
-    --h-title-color:#3948d2;
+:root {
+    --h-title-color: #3948d2;
 }
 
 .header {
@@ -41,14 +41,14 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
-section header h2{
+section header h2 {
     font-family: "Kanit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
     color: var(--h-title-color);
     font-size: 2.3rem;
     line-height: 4rem;
 }
 
-section .main-body{
+section .main-body {
     font-size: 1.3rem;
     font-weight: 200;
     line-height: 2.4rem;
@@ -61,6 +61,10 @@ section .main-body{
 
 .bg-gradient-primary-to-secondary-gray {
     background: linear-gradient(45deg, #f0f0f0, #f1f1f1) !important;
+}
+
+.bg-gradient-primary-to-secondary-dark {
+    background: linear-gradient(45deg, #e0e0e0, #d0d0d0) !important;
 }
 
 
@@ -91,7 +95,7 @@ section .main-body{
 #avatar {
     position: relative;
     height: 0;
-    top:min(-65px,max(-100px,calc(-1*100vw/12)));
+    top: min(-65px, max(-100px, calc(-1*100vw/12)));
     max-width: 55em;
     margin: 0 1.5rem 0 0;
     float: right;
@@ -99,7 +103,7 @@ section .main-body{
 }
 
 #avatar img {
-    height: max(130px,min(200px,calc(100vw/6)));
+    height: max(130px, min(200px, calc(100vw/6)));
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -108,5 +112,3 @@ section .main-body{
         margin: 0;
     }
 }
-
-
