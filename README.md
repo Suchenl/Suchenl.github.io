@@ -1,72 +1,78 @@
-![Github Forks](https://img.shields.io/github/forks/Yixin0313/personal-homepage-template?style=flat)
-![Github Stars](https://img.shields.io/github/stars/Yixin0313/personal-homepage-template?style=flat)
-![License](https://img.shields.io/github/license/Yixin0313/personal-homepage-template)
+# Yuzhuo Chen's Personal Homepage
 
-# 通用个人主页模板：适用于学术和求职场景 | A general-purpose template: suitable for both academic and professional use.
+[![Website](https://img.shields.io/badge/Website-Live-blue?style=flat&logo=github)](https://suchenl.github.io/)
+[![GitHub](https://img.shields.io/badge/GitHub-Suchenl-blue?style=flat&logo=github)](https://github.com/Suchenl)
+[![Google Scholar](https://img.shields.io/badge/Google_Scholar-4285F4?style=flat&logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?user=6O5fwIIAAAAJ&hl=en)
+[![ORCID](https://img.shields.io/badge/ORCID-A6CE39?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0009-0003-5119-9646)
 
-## 预览 | Preview
-[![Screenshot of the Website](https://raw.githubusercontent.com/Yixin0313/personal-homepage-template/main/screenshot_full.png)](https://yixin0313.github.io/personal-homepage-template/)
+## 关于我 | About Me
 
-## 介绍 | Introduction
+我是陈宇卓 (Yuzhuo Chen)，目前在中国科学技术大学网络空间安全学院攻读硕士学位。我的研究兴趣包括：
 
-这是一个**通用的个人主页模板**，基于 [Sen Li 的学术主页模板](https://github.com/senli1073/senli1073.github.io) 进行修改。  
+- **AIGC** (AI-Generated Content)
+- **Computer Vision** (计算机视觉)
+- **Multimodal-LLM** (多模态大语言模型)
+- **Information Hiding** (信息隐藏)
+- **AI4Medicine** (人工智能在医学中的应用)
 
-我新增了**工作经历板块**，使其更加适用于程序员和求职者。并且使用了中英文对照版本。
+I am Yuzhuo Chen, currently pursuing a Master's degree in Cyberspace Security at the School of Cyber Science and Technology, University of Science and Technology of China. My research interests include AIGC, Computer Vision, Multimodal-LLM, Information Hiding, and AI4Medicine.
 
-This is a **general-purpose personal website template**, modified from [Sen Li's academic template](https://github.com/senli1073/senli1073.github.io).  
+## 教育背景 | Education
 
-I have added a **work experience section**, making it more practical for programmers and job seekers.
+- **University of Science and Technology of China** | Master of Cyberspace Security (2025 - Present)
+- **Shandong University** | Bachelor of Biomedical Engineering (2021 - 2025) | GPA: 3.97/5.00 (top 11%)
 
-Bilibili教程视频：【【2025最新保姆级教程】手把手教你用github制作个人主页（申学找工作必备）】https://www.bilibili.com/video/BV16nNMeFEzm?vd_source=79b688b1a191b9f9e8204aa1c3d0adab
+## 研究经历 | Research Experience
 
-CSDN教程：https://blog.csdn.net/qq_45743991/article/details/145505150?spm=1001.2014.3001.5502
+### Research Assistant | USTC (September 2024 - May 2025)
+- Working on CV and AIGC research projects
+- Focus on information hiding and in-generation image watermarking algorithms
+- Published research findings in top-tier computer vision conferences (ICCV 2025)
 
-## 快速开始 | Getting Start
-### 1. Fork 该仓库 | Fork this repository
-仓库名称应命名为 `<用户名>.github.io`，这样你的个人网站地址将是 `https://<用户名>.github.io/`。
+## 主要成果 | Key Achievements
 
-The repository name should be `<username>.github.io`, which will also be your website's URL.
+### 学术论文 | Publications
+- **TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity** | ICCV 2025
+- **DAFFNet: A dual attention feature fusion network for classification of white blood cells** | Biomedical Signal Processing and Control, 2025
+- **Accurate classification of glomerular diseases by hyperspectral imaging and transformer** | Computer Methods and Programs in Biomedicine, 2024
 
-
-### 2.  编辑页面内容 | Edit page content
-(1) 进入你想存放项目的文件夹，并克隆新的仓库 | Go to the folder where you want to store your project, and clone the new repository:
-```
-git clone https://github.com/<username>/<username>.github.io.git
-```
-项目的目录结构如下 | The directory structure is as follows:
-
-```.
-.
-├── contents
-└── static
-    ├── assets
-    │   └── img
-    ├── css
-    └── js
-```
-
-(2) 修改各个板块的内容 | Modify the content of each section, which corresponds to `contents/*.md`.
-
-(3) 调整网站设置 | Adjust the title, copyright information, and other text of the website in `contents/config.yml`
-
-(4) 替换图片 | Replace background image and photo with new ones for your web pages in `static/assets/img/`
-
-(5) 提交更改 | Push it: 
-```
-git commit -am 'init'
-git push
-```
+### 获奖经历 | Awards
+- Excellent Graduate of Shandong University, 2025
+- Outstanding Student Leader of Shandong University, 2025 & 2024
+- 9th China International "Internet+" Innovation and Entrepreneurship Competition — Shandong Provincial Gold Award (Team Leader), 2023
+- 8th National Undergraduate Biomedical Engineering Innovation Design Competition — National Third Prize (Team Leader), 2023
+- 9th National Undergraduate Biomedical Engineering Innovation Design Competition — National Third Prize (Team Leader), 2024
 
 
-### 3. 访问你的网站 | Enjoy
 
-打开浏览器，访问 https://<用户名>.github.io，即可查看你的个人主页
+## 联系方式 | Contact
 
-Fire up a browser and go to `https://<username>.github.io`
+- **Email**: yz.chen@mail.ustc.edu.cn
+- **GitHub**: [Suchenl](https://github.com/Suchenl)
+- **Google Scholar**: [YOUR_GOOGLE_SCHOLAR_LINK](https://scholar.google.com/citations?user=6O5fwIIAAAAJ&hl=en)
+- **ORCID**: [YOUR_ORCID_LINK](https://orcid.org/0009-0003-5119-9646)
+- **Personal Website**: [suchenl.github.io](https://suchenl.github.io/)
 
+## 网站技术 | Website Technology
 
+这个个人主页基于以下技术构建：
+- HTML5 + CSS3 + JavaScript
+- Bootstrap 5
+- GitHub Pages
+- Markdown 内容管理
+
+This personal homepage is built with:
+- HTML5 + CSS3 + JavaScript
+- Bootstrap 5
+- GitHub Pages
+- Markdown content management
+
+---
+
+**Motto**: Stay Curious, Stay Patient
+
+---
 
 ## License
-本项目基于 MIT 许可协议，你可以自由使用和修改此模板。 Yixin Huang 2025年2月7号
 
-Copyright Yixin Huang, 2025. Licensed under an MIT license. You can copy and mess with this template.
+Copyright Yuzhuo Chen, 2025. Licensed under an MIT license.
