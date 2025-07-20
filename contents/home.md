@@ -8,11 +8,11 @@ I'm currently pursuing a Master's degree in Cyberspace Security at the School of
 <code>yz.chen@mail.ustc.edu.cn</code>  
 
 #### Education  
-**University of Science and Technology of China**, School of Cyber Science and Technology
+**University of Science and Technology of China**, School of Cyber Science and Technology  
 • Master of Cyberspace Security (2025 – today)  
 
-**Shandong University**, School of Control Science and Engineering
-Bachelor of Biomedical Engineering (2021 – 2025)  
+**Shandong University**, School of Control Science and Engineering  
+• Bachelor of Biomedical Engineering (2021 – 2025)  
 • GPA: 3.97/5.00 (top 11%)  
 
 #### Research Interests  
