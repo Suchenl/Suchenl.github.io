@@ -64,7 +64,7 @@ section .main-body {
 }
 
 .bg-gradient-primary-to-secondary-dark {
-    background: linear-gradient(45deg, #78bac5, #a55c5c) !important;
+    background: linear-gradient(45deg, #a9dfe9, #cf5e5e) !important;
 }
 
 .on-top {
