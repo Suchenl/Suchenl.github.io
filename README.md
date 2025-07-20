@@ -49,8 +49,8 @@ I am Yuzhuo Chen, currently pursuing a Master's degree in Cyberspace Security at
 
 - **Email**: yz.chen@mail.ustc.edu.cn
 - **GitHub**: [Suchenl](https://github.com/Suchenl)
-- **Google Scholar**: [YOUR_GOOGLE_SCHOLAR_LINK](https://scholar.google.com/citations?user=6O5fwIIAAAAJ&hl=en)
-- **ORCID**: [YOUR_ORCID_LINK](https://orcid.org/0009-0003-5119-9646)
+- **Google Scholar**: [Yuzhuo Chen](https://scholar.google.com/citations?user=6O5fwIIAAAAJ&hl=en)
+- **ORCID**: [Yuzhuo Chen](https://orcid.org/0009-0003-5119-9646)
 - **Personal Website**: [suchenl.github.io](https://suchenl.github.io/)
 
 ## 网站技术 | Website Technology
