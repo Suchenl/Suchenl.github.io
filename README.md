@@ -4,7 +4,6 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Suchenl-blue?style=flat&logo=github)](https://github.com/Suchenl)
 [![Google Scholar](https://img.shields.io/badge/Google_Scholar-4285F4?style=flat&logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?user=6O5fwIIAAAAJ&hl=en)
 [![ORCID](https://img.shields.io/badge/ORCID-A6CE39?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0009-0003-5119-9646)
-[![Visitors](https://api.countapi.xyz/badge/suchenl.github.io/visits)](https://suchenl.github.io/)
 
 ## 关于我 | About Me
 
