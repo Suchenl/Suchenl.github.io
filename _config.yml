@@ -7,7 +7,7 @@
 
 # Site Settings
 title                    : "Yuzhuo Chen"
-description              : "I am a master with research interests in AIGC, Computer Vision, Information Hiding, AI Safty and AI4Medicine. I am now from School of Cyber Science and Technology in University of Science and Technology of China (USTC), advised by professor Weiming Zhang and Nenghai Yu."
+description              : ""
 repository               : "Suchenl/Suchenl.github.io"
 google_scholar_stats_use_cdn : true
 
@@ -23,7 +23,7 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 author:
   name             : "Yuzhuo Chen"
   avatar           : "images/my_selfie.jpg"
-  bio              : "USTC (University of Science and Technology of China)"
+  bio              : "University of Science and Technology of China, School of Cyber Science and Technology\nMajor in Cyberspace Security\n"
   location         : "Hefei, China"
   employer         :
   pubmed           : 
