@@ -1,0 +1,10 @@
+This favicon was generated using the following font:
+
+- Text: CYZ
+- Background: Circle
+- Font Family (view all on Google Fonts) Mouse Memoirs
+- Font Variant: Regular 400 Normal
+- Font Size: 110
+- Font Author: undefined
+- Font Source: https://fonts.gstatic.com/s/mousememoirs/v18/t5tmIRoSNJ-PH0WNNgDYxdSb7TnFrpOHYh4.ttf
+- Font License: undefined
