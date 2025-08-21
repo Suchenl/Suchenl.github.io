@@ -23,7 +23,8 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 author:
   name             : "Yuzhuo Chen"
   avatar           : "images/my_selfie.jpg"
-  bio              : "University of Science and Technology of China <br> School of Cyber Science and Technology <br> Major in Cyberspace Security"
+  # bio              : "University of Science and Technology of China <br> School of Cyber Science and Technology <br> Major in Cyberspace Security"
+  bio              : "University of Science and Technology of China (USTC)"
   location         : "Hefei, China"
   employer         :
   pubmed           : 
