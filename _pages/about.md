@@ -66,7 +66,7 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 <!-- - *2021.10* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet.  -->
 
 # 📖 Educations
-- *2025.09 - now*, School of Cyber Science and Technology, University of Science and Technology of China.
+- *2025.09 - today*, School of Cyber Science and Technology, University of Science and Technology of China.
 - *2021.09 - 2025.06*, School of Control Science and Engineering, Shandong University.
 
 # 💬 Invited Reviewers
