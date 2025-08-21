@@ -27,7 +27,7 @@ I am a master with research interests in AIGC, Computer Vision, Information Hidi
 
 # 📝 Publications 
 
-* indicates equal contribution.
+\* indicates equal contribution.
 
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">preprint</div><img src='images/frameworks/LAMIC.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
