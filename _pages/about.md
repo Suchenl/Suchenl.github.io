@@ -50,11 +50,11 @@ I am a master with research interests in AIGC, Computer Vision, Information Hidi
 
 [BSPC] [DAFFNet: A dual attention feature fusion network for classification of white blood cells](https://www.sciencedirect.com/science/article/pii/S1746809425002101)
 
-**Yuzhuo Chen**\*, Zetong Chen\*, Yunuo An, Chenyang Lu, Xu Qiao
+***Yuzhuo Chen***\*, Zetong Chen\*, Yunuo An, Chenyang Lu, Xu Qiao
 
 [CMPB] [Accurate classification of glomerular diseases by hyperspectral imaging and transformer](https://pubmed.ncbi.nlm.nih.gov/38964248/)
 
-Chongxuan Tian, **Yuzhuo Chen**, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinlin Deng, Yifei Liu, Wei Li
+Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinlin Deng, Yifei Liu, Wei Li
 
 <!-- [**Project**](https://scholar.google.com/citations?view_op=view_citation&hl=zh-CN&user=DhtAFkwAAAAJ&citation_for_view=DhtAFkwAAAAJ:ALROH1vI_8AC) <strong><span class='show_paper_citations' data='DhtAFkwAAAAJ:ALROH1vI_8AC'></span></strong> -->
 <!-- </div>
@@ -74,5 +74,5 @@ Chongxuan Tian, **Yuzhuo Chen**, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinlin 
 - *2024*, Biomedical Signal Processing and Control (BSPC)
 
 # 💻 Internships
-- *2025.05 - 2025.08*, [Onestory Team](https://ad.yiban.io/operate/tool/1189).
-- *2024.10 - 2025.05*, [Weiming Group](http://staff.ustc.edu.cn/~zhangwm/index.html), USTC.
+- *2025.05 - 2025.08*, [Onestory Team](https://ad.yiban.io/operate/tool/1189)
+- *2024.10 - 2025.05*, [Weiming Group](http://staff.ustc.edu.cn/~zhangwm/index.html), USTC
