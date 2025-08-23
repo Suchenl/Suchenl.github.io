@@ -1,4 +1,18 @@
 # Icon Options by Section
+## Faces
+🧐 (Monocle Face) - A smart, analytical, and knowledgeable choice.
+😀 (Grinning Face) - The most standard, all-purpose toothy smile. Clean and friendly.
+😁 (Beaming Face with Smiling Eyes) - A warmer, more enthusiastic grin with smiling eyes. Radiates happiness and approachability.
+😃 (Smiling Face with Open Mouth) - A slightly more energetic version with wide-open eyes. Expresses strong positivity and excitement.
+😆 (Smiling Face with Open Mouth & Tightly-Closed Eyes) - Represents hearty laughter or immense joy. Perfect for big announcements in a "News" section.
+🤓 (Nerd Face) - Perfect for a researcher. Combines intelligence with a friendly, approachable humor.
+🤩 (Star-Struck) - Expresses amazement, excitement, or pride in an achievement. Great for "Publications" or "Honors."
+🤗 (Hugging Face) - A warm, welcoming smile offering a hug. Excellent for conveying openness to collaboration.
+😅 (Smiling Face with Cold Sweat) - A humorous take on relief or overcoming a challenge ("Phew!"). Shows humility and a down-to-earth personality.
+😜 (Winking Face with Tongue) - A playful, confident, and slightly cheeky choice. Shows a lot of personality.
+😋 (Face Savoring Food) - A satisfied, happy expression. Conveys enjoyment and a passion for one's work.
+😊 (Smiling Face with Smiling Eyes) - A gentle, warm smile without showing teeth. Conveys sincerity and kindness.
+🙂 (Slightly Smiling Face) - A calm, professional, and understated smile. The most neutral and minimalist friendly option.
 ## For About Me
 👤 (Bust in Silhouette) - Clean and generic.
 👨‍💻 (Man Technologist) - Specific to your field (or 👩‍💻 for Woman Technologist).
