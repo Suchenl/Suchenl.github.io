@@ -67,8 +67,8 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 
 <!-- - [Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet](https://github.com), A, B, C, **CVPR 2020**  -->
 
-# 🎖 Honors and Awards
-<!-- - *2021.10* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet.  -->
+<!-- # 🎖 Honors and Awards
+- *2021.10* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet.  -->
 
 # 📖 Educations
 - *2025.09 - Present*, School of Cyber Science and Technology, University of Science and Technology of China
@@ -81,8 +81,8 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 # 💻 Internships
 - *2025.05 - 2025.08*, Algorithm Intern, [Onestory Team](https://ad.yiban.io/operate/tool/1189)
 
-Developed the LAMIC algorithm for layout-aware image composition and fine-tuned T2I/I2I models, which have been deployed in Onestory's product and internal content creation tools.
+    Developed the LAMIC algorithm for layout-aware image composition and fine-tuned T2I/I2I models, which have been deployed in Onestory's product and internal content creation tools.
 
 - *2024.10 - 2025.05*, Research Assistant, [Weiming Group](http://staff.ustc.edu.cn/~zhangwm/index.html), USTC
 
-Focused on AIGC security by developing the TAG-WM algorithm for tamper localization and copyright protection in generative images, resulting in a paper accepted by the top conference in computer vision, ICCV 2025.
+    Focused on AIGC security by developing the TAG-WM algorithm for tamper localization and copyright protection in generative images, resulting in a paper accepted by the top conference in computer vision, ICCV 2025.
