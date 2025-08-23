@@ -19,10 +19,10 @@ redirect_from:
 
 I am a Master's student at the School of Cyber Science and Technology, University of Science and Technology of China (USTC), where I am advised by Professor [Weiming Zhang](https://scholar.google.com/citations?user=eTCfl6cAAAAJ&hl=en) and Professor [Nenghai Yu](https://scholar.google.com/citations?user=7620QAMAAAAJ&hl=en). Previously, I completed my Bachelor's degree at the School of Control Science and Engineering at Shandong University. My research is primarily focused on the intersection of artificial intelligence, computer vision, and security. My research interests include:
 
-- Computer Vision (CV)
-- AI-Generated Content (AIGC)
-- AI Safety
+- AIGC (AI-Generated Content)
+- CV (Computer Vision)
 - Information Hiding
+- AI Safety
 - AI for Medicine
 
 I am always enthusiastic about discussing novel ideas and am actively seeking collaborations. If you have access to large-scale computational resources and are looking for a passionate collaborator to tackle ambitious projects, please feel free to connect with me via email.
