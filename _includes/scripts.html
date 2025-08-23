@@ -3,5 +3,14 @@
 {% include analytics.html %}
 {% include fetch_google_scholar_stats.html %}
 
-<!-- busuanzi Statistics -->
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Google Analytics Stats -->
+<script>
+// Using Google Analytics API to get statistics
+function getGAStats() {
+  if (typeof gtag !== 'undefined') {
+    // Here we need to call Google Analytics API
+    // We need to set the GA4 API key
+    console.log('Google Analytics loaded');
+  }
+}
+</script>
