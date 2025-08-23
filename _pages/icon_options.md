@@ -1,5 +1,5 @@
 # Icon Options by Section
-## Faces
+## Smileys
 🧐 (Monocle Face) - A smart, analytical, and knowledgeable choice.
 😀 (Grinning Face) - The most standard, all-purpose toothy smile. Clean and friendly.
 😁 (Beaming Face with Smiling Eyes) - A warmer, more enthusiastic grin with smiling eyes. Radiates happiness and approachability.
