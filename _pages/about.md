@@ -25,7 +25,7 @@ I am a Master's student at the School of Cyber Science and Technology, Universit
 - AI Safety
 - AI for Medicine
 
-I am always enthusiastic about discussing novel ideas and am actively seeking collaborations. If you have access to large-scale computational resources and are looking for a passionate collaborator to tackle ambitious projects, please feel free to connect with me via email.
+I am enthusiastic about discussing novel ideas and collaborations. If you have access to large-scale computational resources and are looking for a passionate collaborator to research interesting problems, please feel free to email me!
 
 # 🔥 News
 - *2025.06.26*: &nbsp;🎉🎉 One paper accepted by ICCV 2025.
