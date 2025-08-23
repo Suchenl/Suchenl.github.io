@@ -56,6 +56,19 @@
 .page__footer-copyright {
   font-family: $global-font-family;
   font-size: $type-size-7;
+
+  // Adding Styles to Access Statistics
+  #busuanzi_container_site_pv,
+  #busuanzi_container_site_uv {
+    margin-left: 1em;
+    color: mix(#fff, $gray, 25%);
+    
+    &:before {
+    content: "|";
+    margin-right: 0.5em;
+    color: $light-gray;
+    }
+  }
 }
 
 .page__footer-follow {
