@@ -108,17 +108,3 @@ h1:before,
     background-color: #00369f;
     font-size: .8em;
 }
-
-h1,
-h2,
-h3 {
-    /* This makes the color change back smoothly */
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.flash-red {
-    color: #ff4d4d !important;
-    /* A bright, but not jarring, red */
-    text-shadow: 0 0 8px rgba(255, 77, 77, 0.7) !important;
-    /* The red glow */
-}

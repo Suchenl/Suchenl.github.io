@@ -34,25 +34,4 @@ layout: compress
 
 </body>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Select all the titles you want to be clickable
-        const clickableTitles = document.querySelectorAll('h1, h2, h3');
-
-        clickableTitles.forEach(title => {
-            title.addEventListener('click', (event) => {
-                const clickedTitle = event.currentTarget;
-
-                // 1. Add the class to trigger the red glow
-                clickedTitle.classList.add('flash-red');
-
-                // 2. Set a timer to remove the class after 1 second (1000 milliseconds)
-                setTimeout(() => {
-                    clickedTitle.classList.remove('flash-red');
-                }, 1000);
-            });
-        });
-    });
-</script>
-
 </html>
