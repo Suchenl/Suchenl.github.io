@@ -81,7 +81,7 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 # 💻 Internships
 - *2025.05 - 2025.08*, Algorithm Intern, [Onestory Team](https://ad.yiban.io/operate/tool/1189)
 
-    Developed the **LAMIC** algorithm for layout-aware image composition and fine-tuned T2I/I2I models, which have been deployed in Onestory's product and internal content creation tools.
+    Developed the **LAMIC** algorithm for layout-aware multi-image composition and fine-tuned T2I/I2I models, which have been deployed in Onestory's product and internal content creation tools.
 
 - *2024.10 - 2025.05*, Research Assistant, [Weiming Group](http://staff.ustc.edu.cn/~zhangwm/index.html), USTC
 
