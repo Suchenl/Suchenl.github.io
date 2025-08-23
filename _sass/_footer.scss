@@ -14,7 +14,7 @@
   bottom: 0em;
   height: auto;
   /* sticky footer fix end */
-  margin-top: 7em;
+  margin-top: 15em;
   color: mix(#fff, $gray, 25%);
   -webkit-animation: intro 0.3s both;
           animation: intro 0.3s both;
@@ -57,6 +57,8 @@
   font-family: $global-font-family;
   font-size: $type-size-7;
   text-align: center; // Adding Center Alignment
+  padding: 1em 0; // Adding Top and Bottom Padding
+  margin: 0 auto; // Ensuring Horizontal Centering
 
   // Adding Styles to Access Statistics
   #busuanzi_container_site_pv,
