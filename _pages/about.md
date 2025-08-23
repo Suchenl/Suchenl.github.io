@@ -17,10 +17,13 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am a master with research interests in AIGC, Computer Vision, Information Hiding, AI Safty and AI4Medicine. I am now from School of Cyber Science and Technology in University of Science and Technology of China (USTC), advised by professor Weiming Zhang and Nenghai Yu.
+I am a Master's student at the School of Cyber Science and Technology, University of Science and Technology of China (USTC), where I am advised by Professor [Weiming Zhang](https://scholar.google.com/citations?user=eTCfl6cAAAAJ&hl=en) and Professor [Nenghai Yu](https://scholar.google.com/citations?user=7620QAMAAAAJ&hl=en). My academic journey began with a Bachelor's degree from the School of Control Science and Engineering at Shandong University. My research is primarily focused on the intersection of artificial intelligence, computer vision, and security. My Research Interests:
 
-<!-- My research interest mainly includes AIGC and Computer Vision. I have published more than 100 papers at the top international AI conferences with total <a href='https://scholar.google.com/citations?user=DhtAFkwAAAAJ'>google scholar citations <strong><span id='total_cit'>260000+</span></strong></a> (You can also use google scholar badge <a href='https://scholar.google.com/citations?user=DhtAFkwAAAAJ'><img src="https://img.shields.io/endpoint?url={{ url | url_encode }}&logo=Google%20Scholar&labelColor=f6f6f6&color=9cf&style=flat&label=citations"></a>). -->
-
+- AIGC (AI-Generated Content)
+- Computer Vision
+- Information Hiding
+- AI Safety
+- AI for Medicine
 
 # 🔥 News
 - *2025.06.26*: &nbsp;🎉🎉 One paper accepted by ICCV 2025.
@@ -66,8 +69,8 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 <!-- - *2021.10* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet.  -->
 
 # 📖 Educations
-- *2025.09 - today*, School of Cyber Science and Technology, University of Science and Technology of China.
-- *2021.09 - 2025.06*, School of Control Science and Engineering, Shandong University.
+- *2025.09 - today*, School of Cyber Science and Technology, University of Science and Technology of China
+- *2021.09 - 2025.06*, School of Control Science and Engineering, Shandong University
 
 # 💬 Invited Reviewers
 - *2025.08*, The 40th Annual AAAI Conference on Artificial Intelligence (AAAI 2026)
