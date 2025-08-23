@@ -21,7 +21,7 @@
   -webkit-animation-delay: 0.45s;
           animation-delay: 0.45s;
   background-color: $lighter-gray;
-  border-top: 1px solid $light-gray;
+//   border-top: 1px solid $light-gray; # use it if you want to add a border to the footer
 
   footer {
     @include clearfix;
@@ -57,7 +57,10 @@
   font-family: $global-font-family;
   font-size: $type-size-7;
   text-align: center; // Adding Center Alignment
-
+  padding: 0.5em 0;
+  margin: 0;
+  color: mix(#fff, $gray, 25%);
+  
   // Adding Styles to Access Statistics
   #busuanzi_container_site_pv,
   #busuanzi_container_site_uv {
