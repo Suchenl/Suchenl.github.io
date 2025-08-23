@@ -17,6 +17,7 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
+# 🧐 About Me
 I am a first-year M.S. student at the School of Cyber Science and Technology, University of Science and Technology of China (USTC), where I am advised by Professor [Weiming Zhang](https://scholar.google.com/citations?user=eTCfl6cAAAAJ&hl=en) and Professor [Nenghai Yu](https://scholar.google.com/citations?user=7620QAMAAAAJ&hl=en). Previously, I completed my Bachelor's degree at the School of Control Science and Engineering at Shandong University. My research is primarily focused on the intersection of artificial intelligence, computer vision, and security. My research interests include:
 
 - AIGC (AI-Generated Content)
