@@ -39,7 +39,7 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">preprint</div><img src='images/frameworks/LAMIC.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[AAAI 2026] [LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer](https://arxiv.org/pdf/2508.00477)
+[*AAAI 2026*] [LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer](https://arxiv.org/pdf/2508.00477)
 
 ***Yuzhuo Chen***, Zehua Ma, Jianhua Wang, Kai Kang, Shunyu Yao, Weiming Zhang
 </div>
@@ -48,7 +48,7 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICCV 2025</div><img src='images/frameworks/TAG-WM.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[ICCV 2025] [TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity](https://openaccess.thecvf.com/content/ICCV2025/html/Chen_TAG-WM_Tamper-Aware_Generative_Image_Watermarking_via_Diffusion_Inversion_Sensitivity_ICCV_2025_paper.html)
+[*ICCV 2025*] [TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity](https://openaccess.thecvf.com/content/ICCV2025/html/Chen_TAG-WM_Tamper-Aware_Generative_Image_Watermarking_via_Diffusion_Inversion_Sensitivity_ICCV_2025_paper.html)
 
 ***Yuzhuo Chen***, Zehua Ma, Han Fang, Weiming Zhang, Nenghai Yu
 
