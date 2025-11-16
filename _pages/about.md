@@ -29,8 +29,8 @@ I am a first-year M.S. student at the School of Cyber Science and Technology, Un
 I am enthusiastic about discussing novel ideas and collaborations. If you have access to large-scale computational resources and are looking for a passionate collaborator to research interesting problems, please feel free to email me!
 
 # 🔥 News
-- *2025.11.08*: &nbsp;🎉🎉 One paper accepted by ***AAAI 2026***.
-- *2025.06.26*: &nbsp;🎉🎉 One paper accepted by ***ICCV 2025***.
+- *2025.11.08*: &nbsp;🎉🎉 One paper accepted by ***AAAI 2026***. 🎉🎉
+- *2025.06.26*: &nbsp;🎉🎉 One paper accepted by ***ICCV 2025***. 🎉🎉
 
 # 📝 Publications 
 
