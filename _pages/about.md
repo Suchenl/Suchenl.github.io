@@ -29,6 +29,7 @@ I am a first-year M.S. student at the School of Cyber Science and Technology, Un
 I am enthusiastic about discussing novel ideas and collaborations. If you have access to large-scale computational resources and are looking for a passionate collaborator to research interesting problems, please feel free to email me!
 
 # 🔥 News
+- *2025.11.08*: &nbsp;🎉🎉 One paper accepted by AAAI 2026.
 - *2025.06.26*: &nbsp;🎉🎉 One paper accepted by ICCV 2025.
 
 # 📝 Publications 
@@ -38,7 +39,7 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">preprint</div><img src='images/frameworks/LAMIC.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[Preprint] [LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer](https://arxiv.org/pdf/2508.00477)
+[AAAI 2026] [LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer](https://arxiv.org/pdf/2508.00477)
 
 ***Yuzhuo Chen***, Zehua Ma, Jianhua Wang, Kai Kang, Shunyu Yao, Weiming Zhang
 </div>
@@ -47,7 +48,7 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICCV 2025</div><img src='images/frameworks/TAG-WM.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[ICCV 2025] [TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity](https://arxiv.org/pdf/2506.23484)
+[ICCV 2025] [TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity](https://openaccess.thecvf.com/content/ICCV2025/html/Chen_TAG-WM_Tamper-Aware_Generative_Image_Watermarking_via_Diffusion_Inversion_Sensitivity_ICCV_2025_paper.html)
 
 ***Yuzhuo Chen***, Zehua Ma, Han Fang, Weiming Zhang, Nenghai Yu
 
@@ -82,8 +83,12 @@ Chongxuan Tian, ***Yuzhuo Chen***, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinli
 # 💻 Internships
 - *2025.05 - 2025.08*, Algorithm Intern, [Onestory Team](https://ad.yiban.io/operate/tool/1189)
 
-    Developed the **LAMIC** algorithm for layout-aware multi-image composition and fine-tuned T2I/I2I models, which have been deployed in Onestory's product and internal content creation tools.
+    - Pioneered the development and deployment of **LAMIC** (Layout-Aware Multi-Image Composition), an advanced algorithm for multi-image layout and composition.
+    
+    - The LAMIC algorithm was integrated into Onestory’s core product and internal content creation pipelines, significantly enhancing automated image generation capabilities. The associated research paper was accepted by **AAAI 2026**.
+
+    - Conducted fine-tuning and optimization of advanced Text-to-Image (T2I) and Image-to-Image (I2I) generative models (e.g., using LoRA/Flux-Kontext/EasyControl) to meet specific product requirements, with models currently in production within the team’s content tools.
 
 - *2024.10 - 2025.05*, Research Assistant, [Weiming Group](http://staff.ustc.edu.cn/~zhangwm/index.html), USTC
 
-    Focused on AIGC security by developing the **TAG-WM** algorithm for tamper localization and copyright protection in generative images, resulting in a paper accepted by the top conference in computer vision, ICCV 2025.
+    Focused on AIGC security by developing the **TAG-WM** algorithm for tamper localization and copyright protection in generative images, resulting in a paper accepted by the top conference in computer vision, **ICCV 2025**.
