@@ -36,7 +36,7 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 
 \* indicates equal contribution.
 
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge"><em>AAAI 2026</em></div><img src='images/frameworks/LAMIC.png' alt="sym" width="100%"></div></div>
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge"><b style="font-style: italic;">AAAI 2026</b></div><img src='images/frameworks/LAMIC.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
 [*AAAI 2026*] [LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer](https://arxiv.org/pdf/2508.00477)
@@ -45,7 +45,6 @@ I am enthusiastic about discussing novel ideas and collaborations. If you have a
 </div>
 </div>
 
-<!-- <div class='paper-box'><div class='paper-box-image'><div><div class="badge"><em>ICCV 2025</em></div><img src='images/frameworks/TAG-WM.png' alt="sym" width="100%"></div></div> -->
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge"><b style="font-style: italic;">ICCV 2025</b></div><img src='images/frameworks/TAG-WM.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
