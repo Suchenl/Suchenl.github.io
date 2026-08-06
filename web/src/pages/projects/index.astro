@@ -1,0 +1,79 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import { PROJECTS } from '../../data/projects';
+---
+
+<Base title="Projects">
+  <h1 class="page-title"><Bi zh="项目" en="Projects" /></h1>
+  <p class="page-intro">
+    <Bi
+      zh="一些我做过的开源小项目与工具，会持续更新。"
+      en="Open-source side projects and tools I've built — updated over time."
+    />
+  </p>
+
+  <div class="proj-grid">
+    {PROJECTS.map((p) => (
+      <div class="proj card">
+        <div class="proj-head">
+          <span class="proj-emoji">{p.emoji}</span>
+          <h3 class="proj-name">{p.name}</h3>
+          <a class="star-link" href={`https://github.com/${p.repo}`} target="_blank" rel="noopener" aria-label="GitHub stars">
+            <img
+              class="star-badge"
+              src={`https://img.shields.io/github/stars/${p.repo}?style=flat&logo=github&label=Stars&color=6366f1&labelColor=1f2430`}
+              alt="GitHub stars"
+              loading="lazy"
+              height="20"
+            />
+          </a>
+        </div>
+        <p class="proj-desc"><span data-l="zh">{p.descZh}</span><span data-l="en">{p.descEn}</span></p>
+        <div class="proj-tags">
+          {p.tags.map((t) => <span class="tag-chip">{t}</span>)}
+        </div>
+        <div class="proj-links">
+          <a class="repo-link" href={`https://github.com/${p.repo}`} target="_blank" rel="noopener">
+            <span data-l="zh">代码仓库</span><span data-l="en">Repository</span>
+          </a>
+          {p.url && (
+            <a class="demo-link" href={p.url} target="_blank" rel="noopener">
+              <span data-l="zh">在线体验 →</span><span data-l="en">Live demo →</span>
+            </a>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .proj { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; }
+  .proj-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+  .proj-emoji { font-size: 1.5rem; line-height: 1; }
+  .proj-name { margin: 0; font-size: 1.1rem; flex: 1; }
+  .star-link { display: inline-flex; line-height: 0; }
+  .star-badge { display: block; height: 20px; border-radius: 4px; }
+  .proj-desc { margin: 0 0 0.7rem; color: var(--fg-muted); font-size: 0.92rem; }
+  .proj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.9rem; }
+  .proj-links { margin-top: auto; display: flex; align-items: center; gap: 1rem; }
+  .repo-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 0.24em 0.85em;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .repo-link:hover { text-decoration: none; border-color: var(--accent); }
+  .demo-link { font-size: 0.82rem; font-weight: 700; }
+</style>
