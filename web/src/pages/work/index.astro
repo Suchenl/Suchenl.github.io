@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+
+const internships = [
+  {
+    date: '2026.01.19 - Present',
+    roleZh: '算法实习生',
+    roleEn: 'Algorithm Intern',
+    orgZh: '可灵 · 快手 (Kling, Kuaishou)',
+    orgEn: 'Kling, Kuaishou',
+    orgUrl: '',
+    pointsZh: [
+      '<strong>长视频生成的记忆管理系统</strong>：研究面向流式 / 长视频生成的分层、结构化记忆机制，以提升长程一致性与实体保持。',
+      '<strong>视频生成</strong>：微调 / 训练视频生成模型（如 Wan 系列 I2V/T2V），探索可控生成与流式长视频生成。',
+      '<strong>视觉表征与统一生成</strong>：训练视觉 tokenizer 与自回归视觉生成模型；研究视频 token 压缩与表征对齐（向视觉 / 生成特征对齐）。',
+      '近期<strong>转向具身智能（Embodied AI）</strong>：系统调研 VLA、世界模型、操作与规划、仿真环境等方向，并从阅读走向实践。',
+    ],
+    pointsEn: [
+      '<strong>Memory management for long-video generation</strong>: hierarchical, structured memory mechanisms for streaming & long-video generation to improve long-range consistency and entity persistence.',
+      '<strong>Video generation</strong>: fine-tuned / trained video generation models (e.g., Wan-series I2V/T2V); explored controllable generation and streaming long-video generation.',
+      '<strong>Visual representation & unified generation</strong>: trained visual tokenizers and autoregressive visual generation models; studied video-token compression and representation alignment (to visual / generative features).',
+      'Recently <strong>pivoting to embodied AI</strong>: systematically surveying VLA, world models, manipulation & planning, and simulation environments — moving from reading to practice.',
+    ],
+  },
+  {
+    date: '2025.05 - 2025.08',
+    roleZh: '算法实习生',
+    roleEn: 'Algorithm Intern',
+    orgZh: 'Onestory 团队',
+    orgEn: 'Onestory Team',
+    orgUrl: 'https://ad.yiban.io/operate/tool/1189',
+    pointsZh: [
+      '主导研发 <strong>LAMIC</strong>（布局感知多图合成），已集成进 Onestory 核心产品与内容创作流水线；相关论文被 <strong>AAAI 2026</strong> 接收。',
+      '对 T2I / I2I 生成模型（LoRA / Flux-Kontext / EasyControl）进行微调与优化，已用于团队内容工具的线上生产。',
+    ],
+    pointsEn: [
+      'Led <strong>LAMIC</strong> (Layout-Aware Multi-Image Composition), integrated into Onestory core products; the paper was accepted by <strong>AAAI 2026</strong>.',
+      'Fine-tuned and optimized T2I / I2I generative models (LoRA / Flux-Kontext / EasyControl) for production content tools.',
+    ],
+  },
+  {
+    date: '2024.10 - 2025.05',
+    roleZh: '研究助理',
+    roleEn: 'Research Assistant',
+    orgZh: '张卫明课题组，中国科学技术大学',
+    orgEn: 'Weiming Group, USTC',
+    orgUrl: 'http://staff.ustc.edu.cn/~zhangwm/index.html',
+    pointsZh: [
+      '研发 <strong>TAG-WM</strong>，用于生成图像的篡改定位与版权保护，成果被计算机视觉顶会 <strong>ICCV 2025</strong> 接收。',
+    ],
+    pointsEn: [
+      'Developed <strong>TAG-WM</strong> for tamper localization and copyright protection of generative images, accepted by <strong>ICCV 2025</strong>.',
+    ],
+  },
+];
+
+const education = [
+  {
+    date: '2025.09 - Present',
+    zh: '中国科学技术大学，网络空间安全学院（硕士）',
+    en: 'M.S., School of Cyber Science and Technology, USTC',
+  },
+  {
+    date: '2021.09 - 2025.06',
+    zh: '山东大学，控制科学与工程学院（学士）',
+    en: 'B.S., School of Control Science and Engineering, Shandong University',
+  },
+];
+
+const service = [
+  { date: '2026.08', zh: 'AAAI 2027 审稿人', en: 'Reviewer, AAAI 2027' },
+  { date: '2025.08', zh: 'AAAI 2026 审稿人', en: 'Reviewer, AAAI 2026' },
+];
+---
+
+<Base title="Experience">
+  <h1 class="page-title"><Bi zh="经历" en="Experience" /></h1>
+  <p class="page-intro">
+    <Bi zh="实习、研究与工作经历（未来的全职工作也会更新在此）。" en="Internships, research and work experience (future full-time roles will appear here too)." />
+  </p>
+
+  <section class="section prose">
+    <Bi tag="h2" zh="💼 实习" en="💼 Internships" />
+    <ul class="timeline">
+      {internships.map((it) => (
+        <li>
+          <div class="t-date">{it.date}</div>
+          <div class="t-title"><span data-l="zh">{it.roleZh}</span><span data-l="en">{it.roleEn}</span></div>
+          <div class="t-org">
+            {it.orgUrl ? (
+              <a href={it.orgUrl} target="_blank" rel="noopener"><span data-l="zh">{it.orgZh}</span><span data-l="en">{it.orgEn}</span></a>
+            ) : (
+              <span style="color: var(--accent-ink); font-weight: 700;"><span data-l="zh">{it.orgZh}</span><span data-l="en">{it.orgEn}</span></span>
+            )}
+          </div>
+          <ul>
+            <div data-l="zh">{it.pointsZh.map((p) => <li set:html={p} />)}</div>
+            <div data-l="en">{it.pointsEn.map((p) => <li set:html={p} />)}</div>
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section prose">
+    <Bi tag="h2" zh="🎓 教育" en="🎓 Education" />
+    <ul class="timeline">
+      {education.map((e) => (
+        <li>
+          <div class="t-date">{e.date}</div>
+          <div class="t-title"><span data-l="zh">{e.zh}</span><span data-l="en">{e.en}</span></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section prose">
+    <Bi tag="h2" zh="🔍 学术服务" en="🔍 Academic Service" />
+    <ul>
+      {service.map((s) => (
+        <li><em class="muted">{s.date}</em> · <span data-l="zh">{s.zh}</span><span data-l="en">{s.en}</span></li>
+      ))}
+    </ul>
+  </section>
+</Base>

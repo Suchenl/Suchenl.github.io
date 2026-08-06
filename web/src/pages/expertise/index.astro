@@ -1,0 +1,148 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import { TRACK_RECORD, INTERESTS, LEVELS, type Level } from '../../data/expertise';
+
+const levelOrder: Level[] = ['proficient', 'advanced', 'growing', 'familiar'];
+---
+
+<Base title="Expertise">
+  <h1 class="page-title"><Bi zh="能力" en="Expertise" /></h1>
+  <p class="page-intro">
+    <Bi
+      zh="分两条轴呈现：<strong>已验证的能力</strong>（有论文/落地产出，证明研究实力）与<strong>兴趣与探索方向</strong>（我想深耕、也在寻找合作与机会的方向）。等级依据文末的<a href='#rubric'>评定标准</a>给出，尽量有据可依。"
+      en="Two axes: <strong>track record</strong> (published/shipped output that proves capability) and <strong>interests I'm pursuing</strong> (where I want to go deep and find collaboration). Levels follow the <a href='#rubric'>rubric</a> below."
+    />
+  </p>
+
+  <section class="section">
+    <Bi tag="h2" zh="✅ 已验证的能力" en="✅ Track record" />
+    <div class="skills">
+      {TRACK_RECORD.map((s) => {
+        const lv = LEVELS[s.level];
+        return (
+          <div class="skill card">
+            <div class="skill-head">
+              <span class="skill-name"><span data-l="zh">{s.zh}</span><span data-l="en">{s.en}</span></span>
+              <span class={`skill-level lv-${s.level}`}><span data-l="zh">{lv.zh}</span><span data-l="en">{lv.en}</span></span>
+            </div>
+            <div class="skill-bar"><span style={`width:${lv.pct}%`}></span></div>
+            <p class="skill-did"><span data-l="zh">{s.didZh}</span><span data-l="en">{s.didEn}</span></p>
+            {s.evidence.length > 0 && (
+              <div class="skill-evidence">
+                <span class="ev-label"><Bi zh="证据" en="Evidence" />:</span>
+                {s.evidence.map((e) =>
+                  e.href ? (
+                    <a class="ev-chip" href={e.href} target={e.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+                      <span data-l="zh">{e.zh}</span><span data-l="en">{e.en}</span>
+                    </a>
+                  ) : (
+                    <span class="ev-chip"><span data-l="zh">{e.zh}</span><span data-l="en">{e.en}</span></span>
+                  )
+                )}
+              </div>
+            )}
+            <div class="skill-tags">
+              {s.tags.map((t) => <span class="tag-chip">{t}</span>)}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="section">
+    <Bi tag="h2" zh="🧭 兴趣与探索方向" en="🧭 Interests I'm pursuing" />
+    <p class="muted" style="margin-top:-0.5rem;">
+      <Bi zh="我最想深耕、也在寻找合作与机会的方向。" en="Where I want to go deep and am looking for collaboration & opportunities." />
+    </p>
+    <div class="interest-grid">
+      {INTERESTS.map((it) => (
+        <div class="interest card">
+          <h3 class="interest-name"><span data-l="zh">{it.zh}</span><span data-l="en">{it.en}</span></h3>
+          <p class="interest-note"><span data-l="zh">{it.noteZh}</span><span data-l="en">{it.noteEn}</span></p>
+          <div class="skill-tags">
+            {it.tags.map((t) => <span class="tag-chip">{t}</span>)}
+          </div>
+          {it.href && (
+            <a class="interest-link" href={it.href}><Bi zh="相关阅读 →" en="Related reading →" /></a>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="rubric">
+    <Bi tag="h2" zh="📏 评定标准" en="📏 How levels are decided" />
+    <p class="muted" style="margin-top:-0.4rem;">
+      <Bi
+        zh="「已验证的能力」等级并非凭感觉，而是综合：① 论文产出（是否一作/顶会） ② 工程落地（是否上线/产品化） ③ 复现与实践经验 ④ 文献阅读广度。"
+        en="Track-record levels are not vibes — they combine: (1) publications (first-author / top venue), (2) shipped/productionized work, (3) reproduction & hands-on practice, and (4) reading breadth."
+      />
+    </p>
+    <div class="rubric-grid">
+      {levelOrder.map((k) => (
+        <div class="rubric-item card">
+          <span class={`skill-level lv-${k}`}><span data-l="zh">{LEVELS[k].zh}</span><span data-l="en">{LEVELS[k].en}</span></span>
+          <p><span data-l="zh">{LEVELS[k].descZh}</span><span data-l="en">{LEVELS[k].descEn}</span></p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div class="callout">
+    <p style="margin:0 0 0.4rem; font-weight:700;">
+      <Bi zh="🤝 寻求合作与工作机会" en="🤝 Open to collaboration & opportunities" />
+    </p>
+    <p style="margin:0;">
+      <Bi
+        zh="我对多模态生成、机器人/具身、仿真与游戏、强化学习等方向的合作、实习与全职机会持开放态度。欢迎通过 <a href='mailto:yz.chen@mail.ustc.edu.cn'>邮件</a> 或 <a href='https://www.linkedin.com/in/suchenl/' target='_blank' rel='noopener'>LinkedIn</a> 联系我。"
+        en="I'm open to collaboration, internship and full-time opportunities in multimodal generation, robotics/embodied AI, simulation & games, and RL. Reach me via <a href='mailto:yz.chen@mail.ustc.edu.cn'>email</a> or <a href='https://www.linkedin.com/in/suchenl/' target='_blank' rel='noopener'>LinkedIn</a>."
+      />
+    </p>
+  </div>
+</Base>
+
+<style>
+  .skills { display: grid; gap: 1.1rem; }
+  .skill { padding: 1.2rem 1.4rem; }
+  .skill-did { margin: 0.7rem 0 0.6rem; color: var(--fg); }
+  .skill-evidence { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem; }
+  .ev-label { font-size: 0.78rem; font-weight: 700; color: var(--fg-muted); }
+  .ev-chip {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border: 1px solid transparent;
+    padding: 0.16em 0.7em;
+    border-radius: 999px;
+  }
+  a.ev-chip:hover { text-decoration: none; border-color: var(--accent); }
+
+  .lv-proficient { color: #fff; background: var(--grad); }
+  .lv-advanced { color: var(--accent-ink); background: var(--accent-soft); }
+  .lv-growing { color: #8a6d00; background: #fff4cc; }
+  .lv-familiar { color: var(--fg-muted); background: var(--surface-2); }
+  @media (prefers-color-scheme: dark) {
+    .lv-growing { color: #ffd874; background: #2a2410; }
+  }
+
+  .interest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .interest { padding: 1.1rem 1.3rem; display: flex; flex-direction: column; }
+  .interest-name { margin: 0 0 0.4rem; font-size: 1.05rem; }
+  .interest-note { margin: 0 0 0.6rem; color: var(--fg-muted); font-size: 0.92rem; }
+  .interest-link { margin-top: auto; font-size: 0.85rem; font-weight: 700; }
+
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.9rem;
+  }
+  .rubric-item { padding: 1rem 1.1rem; }
+  .rubric-item p { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--fg-muted); }
+</style>

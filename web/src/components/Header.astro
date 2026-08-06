@@ -1,0 +1,97 @@
+---
+import { SITE, NAV } from '../config';
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span data-l="zh">{SITE.titleZh}</span><span data-l="en">{SITE.title}</span>
+    </a>
+    <nav class="site-nav">
+      {NAV.map((item) => (
+        <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+          <span data-l="zh">{item.zh}</span><span data-l="en">{item.en}</span>
+        </a>
+      ))}
+      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language">
+        <span data-l="zh">EN</span><span data-l="en">中</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  document.getElementById('lang-toggle')?.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+    var next = cur === 'zh' ? 'en' : 'zh';
+    document.documentElement.setAttribute('data-lang', next);
+    document.documentElement.setAttribute('lang', next === 'zh' ? 'zh-CN' : 'en');
+    try { localStorage.setItem('lang', next); } catch (e) {}
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 62px;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 900;
+    font-size: 1.08rem;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+  .brand:hover { text-decoration: none; color: var(--fg); }
+  .brand-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 5px;
+    background: var(--grad);
+    box-shadow: var(--shadow-sm);
+  }
+  .site-nav { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+  .site-nav a {
+    color: var(--fg-muted);
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    transition: color 0.12s ease, background 0.12s ease;
+  }
+  .site-nav a:hover { color: var(--fg); text-decoration: none; background: var(--surface-2); }
+  .site-nav a.active { color: var(--accent-ink); background: var(--accent-soft); }
+  .lang-toggle {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--fg-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    min-width: 44px;
+    margin-left: 0.35rem;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+  .lang-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+</style>

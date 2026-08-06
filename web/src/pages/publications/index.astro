@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import { PUB_GROUPS } from '../../data';
+---
+
+<Base title="Publications">
+  <h1 class="page-title"><Bi zh="论文" en="Publications" /></h1>
+  <p class="page-intro">
+    <Bi zh="按研究领域分组。* 表示共同一作。" en="Grouped by research area. * indicates equal contribution." />
+  </p>
+
+  {PUB_GROUPS.map((group) => (
+    <div class="pub-group">
+      <h2><span data-l="zh">{group.zh}</span><span data-l="en">{group.en}</span></h2>
+      {group.papers.map((p) => (
+        p.image ? (
+          <div class="paper-box card">
+            <div class="paper-img">
+              <span class="badge">{p.venue}</span>
+              <img src={p.image} alt={p.titleEn} loading="lazy" />
+            </div>
+            <div class="paper-text">
+              <p>
+                <span class="muted">[{p.venue}]</span>
+                <a href={p.url} target="_blank" rel="noopener">
+                  <span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span>
+                </a>
+              </p>
+              <p class="authors" set:html={p.authorsHtml} />
+            </div>
+          </div>
+        ) : (
+          <p class="other-pub">
+            <span class="muted">[{p.venue}]</span>
+            <a href={p.url} target="_blank" rel="noopener">
+              <span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span>
+            </a><br />
+            <span class="authors" set:html={p.authorsHtml} />
+          </p>
+        )
+      ))}
+    </div>
+  ))}
+</Base>
+
+<style>
+  .paper-box {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.2rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+  }
+  .paper-img { position: relative; }
+  .paper-img .badge { position: absolute; top: 8px; left: 8px; }
+  .paper-img img { border-radius: 8px; display: block; width: 100%; }
+  .paper-text p { margin: 0.3rem 0; }
+  .authors { font-size: 0.92rem; }
+  .other-pub { margin: 0.9rem 0; }
+
+  @media (max-width: 720px) {
+    .paper-box { grid-template-columns: 1fr; }
+  }
+</style>
