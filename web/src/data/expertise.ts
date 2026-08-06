@@ -80,8 +80,8 @@ export const TRACK_RECORD: Skill[] = [
     zh: 'AI 安全 · 水印与篡改取证',
     en: 'AI Safety · Watermarking & Forensics',
     level: 'proficient',
-    didZh: '一作提出 TAG-WM（ICCV 2025）与 Flow of Truth（面向图像到视频的时序取证），研究生成图像/视频的水印、版权保护与篡改定位。担任 AAAI 2026 审稿人。（非我主要兴趣，但代表我的研究产出）',
-    didEn: 'First-authored TAG-WM (ICCV 2025) and Flow of Truth (temporal forensics for I2V). Reviewer for AAAI 2026. (Not my primary interest, but part of my research output.)',
+    didZh: '一作提出 TAG-WM（ICCV 2025）与 Flow of Truth（面向图像到视频的时序取证），研究生成图像/视频的水印、版权保护与篡改定位。',
+    didEn: 'First-authored TAG-WM (ICCV 2025) and Flow of Truth (temporal forensics for I2V).',
     evidence: [
       { zh: 'TAG-WM · ICCV 2025', en: 'TAG-WM · ICCV 2025', href: '/publications/' },
       { zh: 'Flow of Truth', en: 'Flow of Truth', href: 'https://arxiv.org/abs/2604.15003' },
