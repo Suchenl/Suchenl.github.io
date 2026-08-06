@@ -85,7 +85,7 @@ const service = [
     <ul class="timeline">
       {internships.map((it) => (
         <li>
-          <div class="t-date">{it.date}</div>
+          <div class="t-date"><span data-l="zh">{it.date.replace('Present', '至今')}</span><span data-l="en">{it.date}</span></div>
           <div class="t-title"><span data-l="zh">{it.roleZh}</span><span data-l="en">{it.roleEn}</span></div>
           <div class="t-org">
             {it.orgUrl ? (
@@ -108,7 +108,7 @@ const service = [
     <ul class="timeline">
       {education.map((e) => (
         <li>
-          <div class="t-date">{e.date}</div>
+          <div class="t-date"><span data-l="zh">{e.date.replace('Present', '至今')}</span><span data-l="en">{e.date}</span></div>
           <div class="t-title"><span data-l="zh">{e.zh}</span><span data-l="en">{e.en}</span></div>
         </li>
       ))}
