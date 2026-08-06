@@ -7,6 +7,7 @@
 export interface Project {
   name: string;
   emoji: string;
+  icon?: string; // path under /public; falls back to emoji when absent
   repo: string;
   url?: string;
   descZh: string;
@@ -18,6 +19,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'LivingSurvey',
     emoji: '📚',
+    icon: '/images/projects/livingsurvey.png',
     repo: 'Suchenl/LivingSurvey',
     descZh:
       '本地优先、确定性运行的科研文献追踪与综述写作工具：多源抓取元数据、去重打分、本地检索与笔记，帮助持续维护一份「活的」综述。',
@@ -28,6 +30,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'MarkView-Pro',
     emoji: '📝',
+    icon: '/images/projects/markview.svg',
     repo: 'Suchenl/MarkView-Pro',
     descZh: '免费的网页应用，支持 Markdown 实时编辑与编译预览，随写随看。',
     descEn: 'A free web app for real-time Markdown editing and compiled preview.',
@@ -36,6 +39,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'AI Beacon',
     emoji: '🧠',
+    icon: '/images/projects/ai-beacon.png',
     repo: 'Suchenl/AI-Beacon-Web',
     descZh:
       '本地优先、AI 驱动的个人知识库（PKB），用于追踪 AI 的演进：整理论文、抓取实时引用、绘制前沿脉络。',

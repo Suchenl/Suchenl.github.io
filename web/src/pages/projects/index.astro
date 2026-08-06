@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
+import Stars from '../../components/Stars.astro';
 import { PROJECTS } from '../../data/projects';
 ---
 
@@ -17,17 +18,13 @@ import { PROJECTS } from '../../data/projects';
     {PROJECTS.map((p) => (
       <div class="proj card">
         <div class="proj-head">
-          <span class="proj-emoji">{p.emoji}</span>
+          {p.icon ? (
+            <img class="proj-icon" src={p.icon} alt={`${p.name} logo`} loading="lazy" width="32" height="32" />
+          ) : (
+            <span class="proj-emoji">{p.emoji}</span>
+          )}
           <h3 class="proj-name">{p.name}</h3>
-          <a class="star-link" href={`https://github.com/${p.repo}`} target="_blank" rel="noopener" aria-label="GitHub stars">
-            <img
-              class="star-badge"
-              src={`https://img.shields.io/github/stars/${p.repo}?style=flat&logo=github&label=Stars&color=6366f1&labelColor=1f2430`}
-              alt="GitHub stars"
-              loading="lazy"
-              height="20"
-            />
-          </a>
+          <Stars repo={p.repo} />
         </div>
         <p class="proj-desc"><span data-l="zh">{p.descZh}</span><span data-l="en">{p.descEn}</span></p>
         <div class="proj-tags">
@@ -57,9 +54,14 @@ import { PROJECTS } from '../../data/projects';
   .proj { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; }
   .proj-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
   .proj-emoji { font-size: 1.5rem; line-height: 1; }
+  .proj-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
   .proj-name { margin: 0; font-size: 1.1rem; flex: 1; }
-  .star-link { display: inline-flex; line-height: 0; }
-  .star-badge { display: block; height: 20px; border-radius: 4px; }
   .proj-desc { margin: 0 0 0.7rem; color: var(--fg-muted); font-size: 0.92rem; }
   .proj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.9rem; }
   .proj-links { margin-top: auto; display: flex; align-items: center; gap: 1rem; }
