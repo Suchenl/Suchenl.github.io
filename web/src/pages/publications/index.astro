@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
+import Stars from '../../components/Stars.astro';
 import { PUB_GROUPS } from '../../data';
 ---
 
@@ -39,15 +40,7 @@ import { PUB_GROUPS } from '../../data';
                   <a class="repo-link" href={`https://github.com/${p.code}`} target="_blank" rel="noopener">
                     <span data-l="zh">代码</span><span data-l="en">Code</span>
                   </a>
-                  <a class="star-link" href={`https://github.com/${p.code}`} target="_blank" rel="noopener" aria-label="GitHub stars">
-                    <img
-                      class="star-badge"
-                      src={`https://img.shields.io/github/stars/${p.code}?style=flat&logo=github&label=Stars&color=6366f1&labelColor=1f2430`}
-                      alt="GitHub stars"
-                      loading="lazy"
-                      height="20"
-                    />
-                  </a>
+                  <Stars repo={p.code} />
                 </p>
               )}
             </div>
@@ -139,8 +132,6 @@ import { PUB_GROUPS } from '../../data';
     border: 1px solid transparent;
   }
   .repo-link:hover { text-decoration: none; border-color: var(--accent); }
-  .star-link { display: inline-flex; line-height: 0; }
-  .star-badge { display: block; height: 20px; border-radius: 4px; }
 
   @media (max-width: 720px) {
     .paper-box { grid-template-columns: 1fr; }

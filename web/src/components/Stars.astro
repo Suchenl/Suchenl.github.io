@@ -1,0 +1,49 @@
+---
+interface Props { repo: string }
+const { repo } = Astro.props;
+---
+<a class="stars" href={`https://github.com/${repo}`} data-star-repo={repo} target="_blank" rel="noopener" title="GitHub stars">
+  <span class="stars-star">★</span><span class="stars-count">–</span>
+</a>
+
+<style>
+  .stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--fg-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 0.16em 0.62em;
+    border-radius: 999px;
+    line-height: 1.4;
+  }
+  .stars:hover { text-decoration: none; border-color: #f5a623; color: var(--fg); }
+  .stars-star { color: #f5a623; font-size: 0.95em; }
+</style>
+
+<script>
+  const cache = new Map<string, Promise<number | null>>();
+  function getStars(repo: string): Promise<number | null> {
+    if (!cache.has(repo)) {
+      cache.set(
+        repo,
+        fetch(`https://api.github.com/repos/${repo}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => (d ? (d.stargazers_count as number) : null))
+          .catch(() => null),
+      );
+    }
+    return cache.get(repo)!;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-star-repo]').forEach(async (el) => {
+    const repo = el.getAttribute('data-star-repo');
+    if (!repo) return;
+    const n = await getStars(repo);
+    const c = el.querySelector('.stars-count');
+    if (c && n != null) c.textContent = String(n);
+  });
+</script>
