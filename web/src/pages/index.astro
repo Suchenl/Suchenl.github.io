@@ -20,10 +20,10 @@ const hub = [
 ];
 
 const socials = [
-  { label: 'Google Scholar', href: AUTHOR.links.googlescholar, ext: true },
-  { label: 'GitHub', href: AUTHOR.links.github, ext: true },
-  { label: 'LinkedIn', href: AUTHOR.links.linkedin, ext: true },
-  { label: 'ORCID', href: AUTHOR.links.orcid, ext: true },
+  { zh: '谷歌学术', en: 'Google Scholar', href: AUTHOR.links.googlescholar },
+  { zh: 'GitHub', en: 'GitHub', href: AUTHOR.links.github },
+  { zh: '领英', en: 'LinkedIn', href: AUTHOR.links.linkedin },
+  { zh: 'ORCID', en: 'ORCID', href: AUTHOR.links.orcid },
 ];
 ---
 
@@ -54,7 +54,7 @@ const socials = [
           <Bi zh="✉ 联系我" en="✉ Get in touch" />
         </a>
         {socials.map((s) => (
-          <a class="btn" href={s.href} target="_blank" rel="noopener">{s.label}</a>
+          <a class="btn" href={s.href} target="_blank" rel="noopener"><span data-l="zh">{s.zh}</span><span data-l="en">{s.en}</span></a>
         ))}
       </div>
     </div>
