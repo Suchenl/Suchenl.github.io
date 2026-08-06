@@ -1,0 +1,15 @@
+---
+// Bilingual inline snippet. Renders both languages; CSS shows only the active one
+// based on <html data-lang>. Pass `tag` to change the wrapper element.
+interface Props {
+  zh: string;
+  en: string;
+  tag?: keyof HTMLElementTagNameMap;
+  class?: string;
+}
+const { zh, en, tag = 'span', class: className } = Astro.props;
+const Tag = tag as any;
+---
+<Tag class:list={['bi', className]}>
+  <span data-l="zh" set:html={zh}></span><span data-l="en" set:html={en}></span>
+</Tag>
