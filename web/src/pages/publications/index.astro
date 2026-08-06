@@ -34,6 +34,22 @@ import { PUB_GROUPS } from '../../data';
                 </a>
               </p>
               <p class="authors" set:html={p.authorsHtml} />
+              {p.code && (
+                <p class="paper-links">
+                  <a class="repo-link" href={`https://github.com/${p.code}`} target="_blank" rel="noopener">
+                    <span data-l="zh">代码</span><span data-l="en">Code</span>
+                  </a>
+                  <a class="star-link" href={`https://github.com/${p.code}`} target="_blank" rel="noopener" aria-label="GitHub stars">
+                    <img
+                      class="star-badge"
+                      src={`https://img.shields.io/github/stars/${p.code}?style=flat&logo=github&label=Stars&color=6366f1&labelColor=1f2430`}
+                      alt="GitHub stars"
+                      loading="lazy"
+                      height="20"
+                    />
+                  </a>
+                </p>
+              )}
             </div>
           </div>
         ) : (
@@ -103,6 +119,28 @@ import { PUB_GROUPS } from '../../data';
   .paper-text p { margin: 0.3rem 0; }
   .authors { font-size: 0.92rem; }
   .other-pub { margin: 0.9rem 0; }
+
+  .paper-links {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem !important;
+  }
+  .repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 0.2em 0.75em;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .repo-link:hover { text-decoration: none; border-color: var(--accent); }
+  .star-link { display: inline-flex; line-height: 0; }
+  .star-badge { display: block; height: 20px; border-radius: 4px; }
 
   @media (max-width: 720px) {
     .paper-box { grid-template-columns: 1fr; }

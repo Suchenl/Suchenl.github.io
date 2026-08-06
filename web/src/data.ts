@@ -5,6 +5,7 @@ export interface Paper {
   titleEn: string;
   url: string;
   authorsHtml: string;
+  code?: string; // GitHub repo, e.g. "Suchenl/LAMIC"
 }
 
 export interface PubGroup {
@@ -28,6 +29,7 @@ export const PUB_GROUPS: PubGroup[] = [
           'LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer',
         url: 'https://arxiv.org/pdf/2508.00477',
         authorsHtml: `${ME}, Zehua Ma, Jianhua Wang, Kai Kang, Shunyu Yao, Weiming Zhang`,
+        code: 'Suchenl/LAMIC',
       },
     ],
   },
@@ -51,6 +53,7 @@ export const PUB_GROUPS: PubGroup[] = [
           'TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity',
         url: 'https://openaccess.thecvf.com/content/ICCV2025/html/Chen_TAG-WM_Tamper-Aware_Generative_Image_Watermarking_via_Diffusion_Inversion_Sensitivity_ICCV_2025_paper.html',
         authorsHtml: `${ME}, Zehua Ma, Han Fang, Weiming Zhang, Nenghai Yu`,
+        code: 'Suchenl/TAG-WM',
       },
     ],
   },

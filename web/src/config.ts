@@ -31,6 +31,7 @@ export const NAV: { zh: string; en: string; href: string }[] = [
   { zh: '首页', en: 'Home', href: '/' },
   { zh: '博客', en: 'Blog', href: '/blog/' },
   { zh: '论文', en: 'Publications', href: '/publications/' },
+  { zh: '项目', en: 'Projects', href: '/projects/' },
   { zh: '经历', en: 'Experience', href: '/work/' },
   { zh: '能力', en: 'Expertise', href: '/expertise/' },
 ];
