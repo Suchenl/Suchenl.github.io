@@ -17,8 +17,8 @@ import { PUB_GROUPS } from '../../data';
         p.image ? (
           <div class="paper-box card">
             <div class="paper-img">
-              <span class="badge">{p.venue}</span>
               <img src={p.image} alt={p.titleEn} loading="lazy" />
+              <span class="badge">{p.venue}</span>
             </div>
             <div class="paper-text">
               <p>
@@ -52,8 +52,7 @@ import { PUB_GROUPS } from '../../data';
     align-items: center;
     margin-bottom: 1.2rem;
   }
-  .paper-img { position: relative; }
-  .paper-img .badge { position: absolute; top: 8px; left: 8px; }
+  .paper-img { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
   .paper-img img { border-radius: 8px; display: block; width: 100%; }
   .paper-text p { margin: 0.3rem 0; }
   .authors { font-size: 0.92rem; }
