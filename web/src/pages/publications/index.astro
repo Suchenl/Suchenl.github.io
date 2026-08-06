@@ -17,8 +17,14 @@ import { PUB_GROUPS } from '../../data';
         p.image ? (
           <div class="paper-box card">
             <div class="paper-img">
-              <img src={p.image} alt={p.titleEn} loading="lazy" />
               <span class="badge">{p.venue}</span>
+              <img
+                src={p.image.replace(/\.png$/, '-thumb.jpg')}
+                data-full={p.image}
+                alt={p.titleEn}
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div class="paper-text">
               <p>
@@ -42,6 +48,10 @@ import { PUB_GROUPS } from '../../data';
       ))}
     </div>
   ))}
+
+  <div id="lightbox" class="lightbox" hidden>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
 </Base>
 
 <style>
@@ -52,8 +62,44 @@ import { PUB_GROUPS } from '../../data';
     align-items: center;
     margin-bottom: 1.2rem;
   }
-  .paper-img { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-  .paper-img img { border-radius: 8px; display: block; width: 100%; }
+  .paper-img { position: relative; }
+  .paper-img .badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 0.62rem;
+    padding: 0.16em 0.55em;
+    opacity: 0.94;
+    z-index: 1;
+  }
+  .paper-img img {
+    border-radius: 8px;
+    display: block;
+    width: 100%;
+    cursor: zoom-in;
+    transition: filter 0.15s ease;
+  }
+  .paper-img img:hover { filter: brightness(1.04); }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    background: rgba(0, 0, 0, 0.82);
+    cursor: zoom-out;
+    backdrop-filter: blur(3px);
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox img {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 8px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  }
   .paper-text p { margin: 0.3rem 0; }
   .authors { font-size: 0.92rem; }
   .other-pub { margin: 0.9rem 0; }
@@ -62,3 +108,30 @@ import { PUB_GROUPS } from '../../data';
     .paper-box { grid-template-columns: 1fr; }
   }
 </style>
+
+<script>
+  const box = document.getElementById('lightbox') as HTMLElement | null;
+  const boxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+
+  function open(full: string, alt: string) {
+    if (!box || !boxImg) return;
+    boxImg.src = full;
+    boxImg.alt = alt;
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    if (!box || !boxImg) return;
+    box.hidden = true;
+    boxImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll<HTMLImageElement>('.paper-img img').forEach((img) => {
+    img.addEventListener('click', () => open(img.dataset.full || img.src, img.alt));
+  });
+  box?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box && !box.hidden) close();
+  });
+</script>
