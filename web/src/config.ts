@@ -31,7 +31,7 @@ export const AUTHOR = {
 export const FEATURES = {
   // Privacy-friendly analytics (GoatCounter). Put your site code here, e.g.
   // 'suchenl' → https://suchenl.goatcounter.com/count. Empty = disabled.
-  goatcounter: '',
+  goatcounter: 'suchenl',
 
   // Comments + reactions via giscus (GitHub Discussions). Fully configured;
   // only requires installing the giscus GitHub App on the repo once:

@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Comments from '../../components/Comments.astro';
 import { getCollection, render } from 'astro:content';
+import { gitDates, fmtCN, isUpdated } from '../../lib/dates';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -11,7 +12,10 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const fmt = (d: Date) => d.toLocaleDateString('en-CA');
+const g = gitDates(`src/content/blog/${post.id}.md`);
+const created = g.created ?? post.data.date;
+const updated = g.updated ?? post.data.updated;
+const showUpdated = isUpdated(created, updated);
 ---
 
 <Base title={post.data.title} description={post.data.description} ogType="article">
@@ -19,13 +23,24 @@ const fmt = (d: Date) => d.toLocaleDateString('en-CA');
     <header class="post-head">
       <h1 class="post-h1">{post.data.title}</h1>
       <div class="post-meta">
-        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+        <time datetime={created.toISOString()}>
+          <span data-l="zh">发布于 {fmtCN(created)}</span>
+          <span data-l="en">Published {fmtCN(created)}</span>
+        </time>
         {post.data.tags.length > 0 && (
           <span class="post-tags">
             {post.data.tags.map((t) => <span class="tag-chip">{t}</span>)}
           </span>
         )}
       </div>
+      {showUpdated && (
+        <div class="post-updated">
+          <time datetime={updated!.toISOString()}>
+            <span data-l="zh">更新于 {fmtCN(updated!)}</span>
+            <span data-l="en">Updated {fmtCN(updated!)}</span>
+          </time>
+        </div>
+      )}
     </header>
 
     <div class="post-body">
@@ -45,7 +60,8 @@ const fmt = (d: Date) => d.toLocaleDateString('en-CA');
   .post-head { margin-bottom: 2rem; }
   .post-h1 { font-size: 2rem; margin: 0 0 0.6rem; }
   .post-meta { display: flex; align-items: center; gap: 0.7rem; color: var(--fg-muted); font-size: 0.9rem; }
-  .post-meta time { font-variant-numeric: tabular-nums; }
+  .post-meta time, .post-updated time { font-variant-numeric: tabular-nums; }
+  .post-updated { margin-top: 0.3rem; color: var(--fg-muted); font-size: 0.85rem; }
   .post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; }
 
   .post-body :global(h2) { font-size: 1.4rem; margin: 2rem 0 0.8rem; }
