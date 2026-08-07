@@ -1,0 +1,33 @@
+---
+import { FEATURES } from '../config';
+const g = FEATURES.giscus;
+const enabled = g.enabled && g.repoId && g.categoryId;
+---
+{enabled && (
+  <section class="comments">
+    <h2 class="comments-title">
+      <span data-l="zh">评论 · 点赞</span><span data-l="en">Comments & reactions</span>
+    </h2>
+    <script
+      src="https://giscus.app/client.js"
+      data-repo={g.repo}
+      data-repo-id={g.repoId}
+      data-category={g.category}
+      data-category-id={g.categoryId}
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="bottom"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      crossorigin="anonymous"
+      async
+    ></script>
+  </section>
+)}
+
+<style>
+  .comments { margin-top: 2.5rem; padding-top: 1.6rem; border-top: 1px solid var(--border); }
+  .comments-title { font-size: 1.15rem; margin: 0 0 1rem; }
+</style>

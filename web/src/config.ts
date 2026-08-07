@@ -27,6 +27,24 @@ export const AUTHOR = {
   },
 };
 
+// Optional integrations. Leave blank to disable.
+export const FEATURES = {
+  // Privacy-friendly analytics (GoatCounter). Put your site code here, e.g.
+  // 'suchenl' → https://suchenl.goatcounter.com/count. Empty = disabled.
+  goatcounter: '',
+
+  // Comments + reactions via giscus (GitHub Discussions). Fully configured;
+  // only requires installing the giscus GitHub App on the repo once:
+  //   https://github.com/apps/giscus  →  Only select repositories → Suchenl.github.io
+  giscus: {
+    enabled: true,
+    repo: 'Suchenl/Suchenl.github.io',
+    repoId: 'R_kgDOPh2dtA',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOPh2dtM4DC2NT',
+  },
+};
+
 export const NAV: { zh: string; en: string; href: string }[] = [
   { zh: '首页', en: 'Home', href: '/' },
   { zh: '博客', en: 'Blog', href: '/blog/' },
