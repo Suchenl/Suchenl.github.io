@@ -24,7 +24,7 @@ const showUpdated = isUpdated(created, updated);
       <h1 class="post-h1">{post.data.title}</h1>
       <div class="post-meta">
         <time datetime={created.toISOString()}>
-          <span data-l="zh">发布于 {fmtCN(created)}</span>
+          <span data-l="zh">发布于 {fmtCN(created)}（北京时间）</span>
           <span data-l="en">Published {fmtCN(created)}</span>
         </time>
         {post.data.tags.length > 0 && (
@@ -36,7 +36,7 @@ const showUpdated = isUpdated(created, updated);
       {showUpdated && (
         <div class="post-updated">
           <time datetime={updated!.toISOString()}>
-            <span data-l="zh">更新于 {fmtCN(updated!)}</span>
+            <span data-l="zh">更新于 {fmtCN(updated!)}（北京时间）</span>
             <span data-l="en">Updated {fmtCN(updated!)}</span>
           </time>
         </div>
