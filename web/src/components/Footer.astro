@@ -9,13 +9,13 @@ const year = new Date().getFullYear();
       &copy; {year} {AUTHOR.nameZh} ({AUTHOR.name})
       <span data-l="zh"> · 使用 </span><span data-l="en"> · Built with </span>
       <a href="https://astro.build" rel="noopener">Astro</a>
+      {FEATURES.goatcounter && (
+        <span class="site-stats" data-gc={FEATURES.goatcounter} hidden>
+          <span data-l="zh"> · 访问 <b class="gc-views">–</b> 次 · 访客 <b class="gc-visitors">–</b> 人</span>
+          <span data-l="en"> · <b class="gc-views">–</b> views · <b class="gc-visitors">–</b> visitors</span>
+        </span>
+      )}
     </p>
-    {FEATURES.goatcounter && (
-      <p class="muted site-stats" data-gc={FEATURES.goatcounter} hidden>
-        <span data-l="zh">访问 <b class="gc-views">–</b> 次 · 访客 <b class="gc-visitors">–</b> 人</span>
-        <span data-l="en"><b class="gc-views">–</b> views · <b class="gc-visitors">–</b> visitors</span>
-      </p>
-    )}
   </div>
 </footer>
 
@@ -27,7 +27,8 @@ const year = new Date().getFullYear();
     font-size: 0.9rem;
   }
   .site-footer p { margin: 0; }
-  .site-stats { margin-top: 0.3rem !important; font-variant-numeric: tabular-nums; }
+  .site-stats { font-variant-numeric: tabular-nums; }
+  .site-stats[hidden] { display: none; }
   .site-stats b { font-weight: 700; color: var(--fg-muted); }
 </style>
 

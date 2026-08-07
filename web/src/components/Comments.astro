@@ -22,7 +22,7 @@ const enabled = g.enabled && g.repoId && g.categoryId;
       data-mapping="pathname"
       data-strict="1"
       data-reactions-enabled="1"
-      data-emit-metadata="0"
+      data-emit-metadata="1"
       data-input-position="bottom"
       data-theme="preferred_color_scheme"
       data-lang="zh-CN"
@@ -45,7 +45,17 @@ const enabled = g.enabled && g.repoId && g.categoryId;
   const link = document.querySelector<HTMLAnchorElement>('.comments-manage');
   const repo = link?.dataset.ghRepo;
   if (link && repo) {
+    // Fallback: search this repo's discussions by the current page's path.
     const q = encodeURIComponent(`in:title ${location.pathname}`);
     link.href = `https://github.com/${repo}/discussions?discussions_q=${q}`;
+
+    // Precise: giscus emits metadata with the exact discussion URL for THIS
+    // page once its discussion exists — point the link straight at it.
+    window.addEventListener('message', (e: MessageEvent) => {
+      if (e.origin !== 'https://giscus.app') return;
+      const data = e.data as { giscus?: { discussion?: { url?: string } } };
+      const url = data?.giscus?.discussion?.url;
+      if (url) link.href = url;
+    });
   }
 </script>
