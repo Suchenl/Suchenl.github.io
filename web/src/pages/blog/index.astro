@@ -1,14 +1,59 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-CA'); // YYYY-MM-DD, locale-stable
 ---
 
 <Base title="Blog">
   <h1 class="page-title"><Bi zh="博客" en="Blog" /></h1>
   <p class="page-intro">
-    <Bi
-      zh="技术笔记、论文解读与思考。即将上线。"
-      en="Technical notes, paper reviews and thoughts. Coming soon."
-    />
+    <Bi zh="技术笔记、论文解读与一些思考。" en="Technical notes, paper reviews and thoughts." />
   </p>
+
+  {posts.length === 0 ? (
+    <p class="muted"><Bi zh="还没有文章，敬请期待。" en="No posts yet — stay tuned." /></p>
+  ) : (
+    <ul class="post-list">
+      {posts.map((p) => (
+        <li class="post-item">
+          <a class="post-link" href={`/blog/${p.id}/`}>
+            <span class="post-title">{p.data.title}</span>
+            <time class="post-date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+          </a>
+          {p.data.description && <p class="post-desc">{p.data.description}</p>}
+          {p.data.tags.length > 0 && (
+            <div class="post-tags">
+              {p.data.tags.map((t) => <span class="tag-chip">{t}</span>)}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
 </Base>
+
+<style>
+  .post-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.6rem; }
+  .post-item { border-bottom: 1px solid var(--border); padding-bottom: 1.4rem; }
+  .post-item:last-child { border-bottom: none; }
+  .post-link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .post-link:hover { text-decoration: none; }
+  .post-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; }
+  .post-link:hover .post-title { color: var(--accent); }
+  .post-date { color: var(--fg-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  .post-desc { margin: 0.5rem 0 0.6rem; color: var(--fg-muted); }
+  .post-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+</style>
