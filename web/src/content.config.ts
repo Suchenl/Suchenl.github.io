@@ -36,4 +36,18 @@ const papers = defineCollection({
   }),
 });
 
-export const collections = { papers };
+// Blog — one Markdown file per post in src/content/blog/.
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    lang: z.enum(['zh', 'en']).default('zh'),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { papers, blog };

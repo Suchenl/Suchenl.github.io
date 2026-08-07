@@ -8,10 +8,14 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  ogImage?: string;
+  ogType?: string;
 }
 
-const { title, description = SITE.description, noindex = false } = Astro.props;
+const { title, description = SITE.description, noindex = false, ogImage = '/images/avatar.jpg', ogType = 'website' } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE.titleZh} ${SITE.title}` : `${SITE.titleZh} ${SITE.title}`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
+const ogImageURL = new URL(ogImage, Astro.site ?? SITE.url);
 ---
 
 <!doctype html>
@@ -23,6 +27,20 @@ const pageTitle = title ? `${title} · ${SITE.titleZh} ${SITE.title}` : `${SITE.
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonicalURL.href} />
+    <meta name="theme-color" content="#5b5bd6" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={`${SITE.titleZh} ${SITE.title}`} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:image" content={ogImageURL.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL.href} />
+
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
