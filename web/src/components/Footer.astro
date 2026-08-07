@@ -35,18 +35,18 @@ const year = new Date().getFullYear();
   const el = document.querySelector<HTMLElement>('.site-stats');
   const code = el?.dataset.gc;
   if (el && code) {
-    const base = `https://${code}.goatcounter.com/counter/TOTAL.json`;
     const num = (s: unknown) => (typeof s === 'string' || typeof s === 'number' ? String(s) : null);
-    Promise.all([
-      fetch(base).then((r) => (r.ok ? r.json() : null)).catch(() => null),
-      fetch(`${base}?unique=true`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
-    ]).then(([total, uniq]) => {
-      const views = total && num(total.count);
-      const visitors = uniq && num(uniq.count);
-      if (!views && !visitors) return; // setting not enabled yet / no data
-      el.querySelectorAll<HTMLElement>('.gc-views').forEach((n) => { if (views) n.textContent = views; });
-      el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => { if (visitors) n.textContent = visitors; });
-      el.hidden = false;
-    });
+    fetch(`https://${code}.goatcounter.com/counter/TOTAL.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((d) => {
+        if (!d) return; // "allow visitor counter" setting off, or request blocked
+        const views = num(d.count);
+        const visitors = num(d.count_unique);
+        if (views == null && visitors == null) return;
+        el.querySelectorAll<HTMLElement>('.gc-views').forEach((n) => { if (views != null) n.textContent = views; });
+        el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => { if (visitors != null) n.textContent = visitors; });
+        el.hidden = false;
+      });
   }
 </script>
