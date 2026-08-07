@@ -1,5 +1,5 @@
 ---
-import { AUTHOR } from '../config';
+import { AUTHOR, FEATURES } from '../config';
 const year = new Date().getFullYear();
 ---
 
@@ -10,6 +10,12 @@ const year = new Date().getFullYear();
       <span data-l="zh"> · 使用 </span><span data-l="en"> · Built with </span>
       <a href="https://astro.build" rel="noopener">Astro</a>
     </p>
+    {FEATURES.goatcounter && (
+      <p class="muted site-stats" data-gc={FEATURES.goatcounter} hidden>
+        <span data-l="zh">访问 <b class="gc-views">–</b> 次 · 访客 <b class="gc-visitors">–</b> 人</span>
+        <span data-l="en"><b class="gc-views">–</b> views · <b class="gc-visitors">–</b> visitors</span>
+      </p>
+    )}
   </div>
 </footer>
 
@@ -21,4 +27,26 @@ const year = new Date().getFullYear();
     font-size: 0.9rem;
   }
   .site-footer p { margin: 0; }
+  .site-stats { margin-top: 0.3rem !important; font-variant-numeric: tabular-nums; }
+  .site-stats b { font-weight: 700; color: var(--fg-muted); }
 </style>
+
+<script>
+  const el = document.querySelector<HTMLElement>('.site-stats');
+  const code = el?.dataset.gc;
+  if (el && code) {
+    const base = `https://${code}.goatcounter.com/counter/TOTAL.json`;
+    const num = (s: unknown) => (typeof s === 'string' || typeof s === 'number' ? String(s) : null);
+    Promise.all([
+      fetch(base).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`${base}?unique=true`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([total, uniq]) => {
+      const views = total && num(total.count);
+      const visitors = uniq && num(uniq.count);
+      if (!views && !visitors) return; // setting not enabled yet / no data
+      el.querySelectorAll<HTMLElement>('.gc-views').forEach((n) => { if (views) n.textContent = views; });
+      el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => { if (visitors) n.textContent = visitors; });
+      el.hidden = false;
+    });
+  }
+</script>

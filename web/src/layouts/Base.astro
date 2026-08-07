@@ -12,7 +12,7 @@ interface Props {
   ogType?: string;
 }
 
-const { title, description = SITE.description, noindex = false, ogImage = '/images/og-cover.png', ogType = 'website' } = Astro.props;
+const { title, description = SITE.description, noindex = false, ogImage = '/images/og-cover.jpg', ogType = 'website' } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE.titleZh} ${SITE.title}` : `${SITE.titleZh} ${SITE.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
 const ogImageURL = new URL(ogImage, Astro.site ?? SITE.url);
