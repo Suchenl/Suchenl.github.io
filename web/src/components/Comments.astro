@@ -5,9 +5,14 @@ const enabled = g.enabled && g.repoId && g.categoryId;
 ---
 {enabled && (
   <section class="comments">
-    <h2 class="comments-title">
-      <span data-l="zh">评论 · 点赞</span><span data-l="en">Comments & reactions</span>
-    </h2>
+    <div class="comments-head">
+      <h2 class="comments-title">
+        <span data-l="zh">评论 · 点赞</span><span data-l="en">Comments & reactions</span>
+      </h2>
+      <a class="comments-manage muted" data-gh-repo={g.repo} href={`https://github.com/${g.repo}/discussions`} target="_blank" rel="noopener">
+        <span data-l="zh">在 GitHub 查看 / 管理 ↗</span><span data-l="en">View / manage on GitHub ↗</span>
+      </a>
+    </div>
     <script
       src="https://giscus.app/client.js"
       data-repo={g.repo}
@@ -29,5 +34,18 @@ const enabled = g.enabled && g.repoId && g.categoryId;
 
 <style>
   .comments { margin-top: 2.5rem; padding-top: 1.6rem; border-top: 1px solid var(--border); }
-  .comments-title { font-size: 1.15rem; margin: 0 0 1rem; }
+  .comments-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .comments-title { font-size: 1.15rem; margin: 0; }
+  .comments-manage { font-size: 0.82rem; font-weight: 600; }
 </style>
+
+<script>
+  // Deep-link the "manage" link to the discussion for THIS page
+  // (giscus uses discussion title = pathname when data-mapping="pathname").
+  const link = document.querySelector<HTMLAnchorElement>('.comments-manage');
+  const repo = link?.dataset.ghRepo;
+  if (link && repo) {
+    const q = encodeURIComponent(`in:title ${location.pathname}`);
+    link.href = `https://github.com/${repo}/discussions?discussions_q=${q}`;
+  }
+</script>
