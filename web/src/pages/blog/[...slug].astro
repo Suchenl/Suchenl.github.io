@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Comments from '../../components/Comments.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -34,6 +35,8 @@ const fmt = (d: Date) => d.toLocaleDateString('en-CA');
     <footer class="post-foot">
       <a href="/blog/">← <span data-l="zh">返回博客</span><span data-l="en">Back to blog</span></a>
     </footer>
+
+    <Comments />
   </article>
 </Base>
 
