@@ -1,60 +1,101 @@
 ---
 /**
- * Per-page unique visitors via GoatCounter public counter JSON.
- * Note: that API does NOT expose raw pageviews — only visitors (count === count_unique).
+ * Per-page stats.
+ * Prefer Cloudflare Web Analytics JSON (build-time GraphQL → /analytics/cloudflare.json):
+ *   pageviews = every load/refresh; visits = CF visit sessions.
+ * Fall back to GoatCounter public counter (visitors only — not raw pageviews).
  */
 import { FEATURES } from '../config';
-const code = FEATURES.goatcounter;
+const gc = FEATURES.goatcounter;
 ---
-{code && (
-  <span class="page-views" data-gc={code} hidden>
-    <span data-l="zh"> · 访客约 <b class="pv-count">–</b></span>
-    <span data-l="en"> · ~<b class="pv-count">–</b> visitors</span>
-  </span>
-)}
+<span class="page-views" data-gc={gc || ''} hidden>
+  <span data-l="zh" class="pv-cf" hidden> · 访问 <b class="pv-pageviews">–</b> · 访客约 <b class="pv-visits">–</b></span>
+  <span data-l="en" class="pv-cf" hidden> · <b class="pv-pageviews">–</b> views · ~<b class="pv-visits">–</b> visits</span>
+  <span data-l="zh" class="pv-gc" hidden> · 访客约 <b class="pv-gc-count">–</b></span>
+  <span data-l="en" class="pv-gc" hidden> · ~<b class="pv-gc-count">–</b> visitors</span>
+</span>
 
 <style>
   .page-views { font-variant-numeric: tabular-nums; }
   .page-views[hidden] { display: none; }
   .page-views b { font-weight: inherit; color: inherit; }
+  .page-views .pv-cf[hidden],
+  .page-views .pv-gc[hidden] { display: none; }
 </style>
 
 <script is:inline>
   (function () {
     var el = document.querySelector('.page-views');
-    var code = el && el.getAttribute('data-gc');
-    if (!el || !code) return;
+    if (!el) return;
+    var code = el.getAttribute('data-gc');
 
-    function paths() {
+    function showCf(pageviews, visits) {
+      el.querySelectorAll('.pv-pageviews').forEach(function (n) {
+        n.textContent = String(pageviews);
+      });
+      el.querySelectorAll('.pv-visits').forEach(function (n) {
+        n.textContent = String(visits);
+      });
+      el.querySelectorAll('.pv-cf').forEach(function (n) {
+        n.hidden = false;
+      });
+      el.querySelectorAll('.pv-gc').forEach(function (n) {
+        n.hidden = true;
+      });
+      el.hidden = false;
+    }
+
+    function showGc(n) {
+      el.querySelectorAll('.pv-gc-count').forEach(function (node) {
+        node.textContent = String(n);
+      });
+      el.querySelectorAll('.pv-gc').forEach(function (n) {
+        n.hidden = false;
+      });
+      el.querySelectorAll('.pv-cf').forEach(function (n) {
+        n.hidden = true;
+      });
+      el.hidden = false;
+    }
+
+    function pathKeys() {
       var p = location.pathname;
-      var list = [p, p.replace(/\/$/, '') || '/'];
-      if (!p.endsWith('/')) list.push(p + '/');
+      var list = [p];
+      if (p.length > 1 && p.endsWith('/')) list.push(p.slice(0, -1));
+      else if (p !== '/') list.push(p + '/');
       try {
         if (window.goatcounter && typeof window.goatcounter.get_data === 'function') {
           var gp = window.goatcounter.get_data().p;
           if (gp) list.unshift(gp);
         }
       } catch (e) {}
-      return list.filter(function (x, i, a) { return a.indexOf(x) === i; });
-    }
-
-    function apply(n) {
-      el.querySelectorAll('.pv-count').forEach(function (node) {
-        node.textContent = String(n);
+      return list.filter(function (x, i, a) {
+        return a.indexOf(x) === i;
       });
-      el.hidden = false;
     }
 
-    function load() {
-      var tries = paths();
+    function lookupPath(paths) {
+      var keys = pathKeys();
+      for (var i = 0; i < keys.length; i++) {
+        var hit = paths && paths[keys[i]];
+        if (hit && (hit.pageviews != null || hit.visits != null)) return hit;
+      }
+      return null;
+    }
+
+    function loadGc() {
+      if (!code) return;
+      var tries = pathKeys();
       var i = 0;
       function next() {
         if (i >= tries.length) return;
         var path = tries[i++];
         fetch('https://' + code + '.goatcounter.com/counter/' + encodeURIComponent(path) + '.json')
-          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
           .then(function (d) {
-            if (d && d.count != null) apply(d.count);
+            if (d && d.count != null) showGc(d.count);
             else next();
           })
           .catch(next);
@@ -62,7 +103,25 @@ const code = FEATURES.goatcounter;
       next();
     }
 
-    load();
-    setTimeout(load, 900);
+    fetch('/analytics/cloudflare.json')
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (d) {
+        if (d && d.ok && d.paths) {
+          var hit = lookupPath(d.paths);
+          if (hit) {
+            showCf(hit.pageviews || 0, hit.visits || 0);
+            return;
+          }
+        }
+        loadGc();
+      })
+      .catch(loadGc);
+
+    // GoatCounter can lag right after a hit; keep a delayed retry as before.
+    setTimeout(function () {
+      if (el.hidden || el.querySelector('.pv-gc:not([hidden])')) loadGc();
+    }, 900);
   })();
 </script>

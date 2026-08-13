@@ -78,5 +78,12 @@ const ogImageURL = new URL(ogImage, Astro.site ?? SITE.url);
         src="//gc.zgo.at/count.js"
       ></script>
     )}
+    {FEATURES.cloudflareAnalytics?.beaconToken && !noindex && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: FEATURES.cloudflareAnalytics.beaconToken })}
+      ></script>
+    )}
   </body>
 </html>

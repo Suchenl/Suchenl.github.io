@@ -1,6 +1,7 @@
 ---
 import { AUTHOR, FEATURES } from '../config';
 const year = new Date().getFullYear();
+const gc = FEATURES.goatcounter;
 ---
 
 <footer class="site-footer">
@@ -9,13 +10,13 @@ const year = new Date().getFullYear();
       &copy; {year} {AUTHOR.nameZh} ({AUTHOR.name})
       <span data-l="zh"> · 使用 </span><span data-l="en"> · Built with </span>
       <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
-      {FEATURES.goatcounter && (
-        <span class="site-stats" data-gc={FEATURES.goatcounter} hidden>
-          {/* GoatCounter public counter JSON only exposes unique visitors; count === count_unique. */}
-          <span data-l="zh"> · 访客约 <b class="gc-visitors">–</b> 人</span>
-          <span data-l="en"> · ~<b class="gc-visitors">–</b> visitors</span>
-        </span>
-      )}
+      <span class="site-stats" data-gc={gc || ''} hidden>
+        {/* Prefer CF: pageviews (访问) + visits (访客). GC fallback: visitors only. */}
+        <span data-l="zh" class="ss-cf" hidden> · 访问 <b class="ss-pageviews">–</b> · 访客约 <b class="ss-visits">–</b></span>
+        <span data-l="en" class="ss-cf" hidden> · <b class="ss-pageviews">–</b> views · ~<b class="ss-visits">–</b> visits</span>
+        <span data-l="zh" class="ss-gc" hidden> · 访客约 <b class="gc-visitors">–</b> 人</span>
+        <span data-l="en" class="ss-gc" hidden> · ~<b class="gc-visitors">–</b> visitors</span>
+      </span>
     </p>
   </div>
 </footer>
@@ -31,24 +32,74 @@ const year = new Date().getFullYear();
   .site-stats { font-variant-numeric: tabular-nums; }
   .site-stats[hidden] { display: none; }
   .site-stats b { font-weight: inherit; color: inherit; }
+  .site-stats .ss-cf[hidden],
+  .site-stats .ss-gc[hidden] { display: none; }
 </style>
 
 <script>
   const el = document.querySelector<HTMLElement>('.site-stats');
-  const code = el?.dataset.gc;
-  if (el && code) {
+  if (!el) {
+    // no-op
+  } else {
+    const code = el.dataset.gc || '';
     const num = (s: unknown) => (typeof s === 'string' || typeof s === 'number' ? String(s) : null);
-    fetch(`https://${code}.goatcounter.com/counter/TOTAL.json`)
+
+    const showCf = (pageviews: string, visits: string) => {
+      el.querySelectorAll<HTMLElement>('.ss-pageviews').forEach((n) => {
+        n.textContent = pageviews;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-visits').forEach((n) => {
+        n.textContent = visits;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-cf').forEach((n) => {
+        n.hidden = false;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-gc').forEach((n) => {
+        n.hidden = true;
+      });
+      el.hidden = false;
+    };
+
+    const showGc = (visitors: string) => {
+      el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => {
+        n.textContent = visitors;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-gc').forEach((n) => {
+        n.hidden = false;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-cf').forEach((n) => {
+        n.hidden = true;
+      });
+      el.hidden = false;
+    };
+
+    const loadGc = () => {
+      if (!code) return;
+      fetch(`https://${code}.goatcounter.com/counter/TOTAL.json`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+        .then((d) => {
+          if (!d) return;
+          const visitors = num(d.count);
+          if (visitors == null) return;
+          showGc(visitors);
+        });
+    };
+
+    fetch('/analytics/cloudflare.json')
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null)
       .then((d) => {
-        if (!d) return; // "allow visitor counter" setting off, or request blocked
-        const visitors = num(d.count);
-        if (visitors == null) return;
-        el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => {
-          n.textContent = visitors;
-        });
-        el.hidden = false;
+        if (d?.ok && d.site) {
+          const pageviews = num(d.site.pageviews);
+          const visits = num(d.site.visits);
+          // Warm-up: CF site just created → 0/0. Prefer GoatCounter until real CF traffic exists.
+          if (pageviews != null && visits != null && !(pageviews === '0' && visits === '0')) {
+            showCf(pageviews, visits);
+            return;
+          }
+        }
+        loadGc();
       });
   }
 </script>
