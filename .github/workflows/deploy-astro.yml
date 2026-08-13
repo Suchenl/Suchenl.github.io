@@ -11,7 +11,7 @@ on:
       - '.github/workflows/deploy-astro.yml'
   # Refresh Cloudflare stats JSON even without content pushes.
   schedule:
-    - cron: '17 */12 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
