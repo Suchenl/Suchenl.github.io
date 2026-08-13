@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Comments from '../../components/Comments.astro';
+import PageViews from '../../components/PageViews.astro';
 import { getCollection, render } from 'astro:content';
 import { gitDates, fmtCN, isUpdated } from '../../lib/dates';
 import { estimateReadingStats, formatChars } from '../../lib/reading-stats';
@@ -90,6 +91,7 @@ const showUpdated = isUpdated(created, updated);
         <span data-l="en">
           ~{charsLabel} chars · {stats.images} figures · {stats.tables} tables · {stats.formulas} formulas · ~{stats.minutes} min read
         </span>
+        <PageViews />
       </p>
     </header>
 

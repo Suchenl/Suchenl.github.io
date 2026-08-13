@@ -7,12 +7,20 @@ const enabled = g.enabled && g.repoId && g.categoryId;
   <section class="comments">
     <div class="comments-head">
       <h2 class="comments-title">
-        <span data-l="zh">评论 · 点赞</span><span data-l="en">Comments & reactions</span>
+        <span data-l="zh">评论 · 点赞</span><span data-l="en">Comments & likes</span>
       </h2>
       <a class="comments-manage muted" data-gh-repo={g.repo} href={`https://github.com/${g.repo}/discussions`} target="_blank" rel="noopener">
         <span data-l="zh">在 GitHub 查看 / 管理 ↗</span><span data-l="en">View / manage on GitHub ↗</span>
       </a>
     </div>
+    <p class="comments-hint muted">
+      <span data-l="zh">点赞请点表情里的 👍（需登录 GitHub）。收藏跨设备目前没有，浏览器书签最稳。</span>
+      <span data-l="en">Like = 👍 in reactions (GitHub login). Cross-device favorites aren’t available; use browser bookmarks.</span>
+    </p>
+    <p class="comments-likes muted" data-giscus-likes hidden>
+      <span data-l="zh">👍 点赞 <b class="like-count">0</b></span>
+      <span data-l="en">👍 <b class="like-count">0</b> likes</span>
+    </p>
     <script
       src="https://giscus.app/client.js"
       data-repo={g.repo}
@@ -34,15 +42,20 @@ const enabled = g.enabled && g.repoId && g.categoryId;
 
 <style>
   .comments { margin-top: 2.5rem; padding-top: 1.6rem; border-top: 1px solid var(--border); }
-  .comments-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .comments-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
   .comments-title { font-size: 1.15rem; margin: 0; }
   .comments-manage { font-size: 0.82rem; font-weight: 600; }
+  .comments-hint { margin: 0 0 0.6rem; font-size: 0.82rem; line-height: 1.5; }
+  .comments-likes { margin: 0 0 0.8rem; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  .comments-likes[hidden] { display: none; }
+  .comments-likes b { font-weight: 700; color: var(--fg); }
 </style>
 
 <script>
   // Deep-link the "manage" link to the discussion for THIS page
   // (giscus uses discussion title = pathname when data-mapping="pathname").
   const link = document.querySelector<HTMLAnchorElement>('.comments-manage');
+  const likesEl = document.querySelector<HTMLElement>('[data-giscus-likes]');
   const repo = link?.dataset.ghRepo;
   if (link && repo) {
     // Fallback: search this repo's discussions by the current page's path.
@@ -53,9 +66,28 @@ const enabled = g.enabled && g.repoId && g.categoryId;
     // page once its discussion exists — point the link straight at it.
     window.addEventListener('message', (e: MessageEvent) => {
       if (e.origin !== 'https://giscus.app') return;
-      const data = e.data as { giscus?: { discussion?: { url?: string } } };
-      const url = data?.giscus?.discussion?.url;
-      if (url) link.href = url;
+      const payload = e.data as {
+        giscus?: {
+          discussion?: {
+            url?: string;
+            reactions?: Record<string, { count?: number }>;
+          };
+        };
+      };
+      const discussion = payload?.giscus?.discussion;
+      if (!discussion) return;
+      if (discussion.url) link.href = discussion.url;
+
+      const thumbs =
+        discussion.reactions?.THUMBS_UP?.count ??
+        discussion.reactions?.['THUMBS_UP']?.count ??
+        discussion.reactions?.['+1']?.count;
+      if (likesEl && typeof thumbs === 'number') {
+        likesEl.querySelectorAll<HTMLElement>('.like-count').forEach((n) => {
+          n.textContent = String(thumbs);
+        });
+        likesEl.hidden = false;
+      }
     });
   }
 </script>

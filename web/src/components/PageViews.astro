@@ -1,0 +1,68 @@
+---
+/**
+ * Per-page view count via GoatCounter visitor-counter JSON API.
+ * Site-wide totals stay in Footer; this is for individual blog posts.
+ */
+import { FEATURES } from '../config';
+const code = FEATURES.goatcounter;
+---
+{code && (
+  <span class="page-views" data-gc={code} hidden>
+    <span data-l="zh"> · 阅读 <b class="pv-count">–</b></span>
+    <span data-l="en"> · <b class="pv-count">–</b> views</span>
+  </span>
+)}
+
+<style>
+  .page-views { font-variant-numeric: tabular-nums; }
+  .page-views[hidden] { display: none; }
+  .page-views b { font-weight: inherit; color: inherit; }
+</style>
+
+<script is:inline>
+  (function () {
+    var el = document.querySelector('.page-views');
+    var code = el && el.getAttribute('data-gc');
+    if (!el || !code) return;
+
+    function paths() {
+      var p = location.pathname;
+      var list = [p, p.replace(/\/$/, '') || '/'];
+      if (!p.endsWith('/')) list.push(p + '/');
+      try {
+        if (window.goatcounter && typeof window.goatcounter.get_data === 'function') {
+          var gp = window.goatcounter.get_data().p;
+          if (gp) list.unshift(gp);
+        }
+      } catch (e) {}
+      return list.filter(function (x, i, a) { return a.indexOf(x) === i; });
+    }
+
+    function apply(n) {
+      el.querySelectorAll('.pv-count').forEach(function (node) {
+        node.textContent = String(n);
+      });
+      el.hidden = false;
+    }
+
+    function load() {
+      var tries = paths();
+      var i = 0;
+      function next() {
+        if (i >= tries.length) return;
+        var path = tries[i++];
+        fetch('https://' + code + '.goatcounter.com/counter/' + encodeURIComponent(path) + '.json')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (d && d.count != null) apply(d.count);
+            else next();
+          })
+          .catch(next);
+      }
+      next();
+    }
+
+    load();
+    setTimeout(load, 900);
+  })();
+</script>
