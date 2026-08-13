@@ -3,16 +3,51 @@ import Base from '../../layouts/Base.astro';
 import Comments from '../../components/Comments.astro';
 import { getCollection, render } from 'astro:content';
 import { gitDates, fmtCN, isUpdated } from '../../lib/dates';
+import { estimateReadingStats, formatChars } from '../../lib/reading-stats';
+import { BLOG_CATEGORY_META } from '../../lib/blog-categories';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  // Drafts are routable in local `astro dev` for preview, but excluded from the
+  // production build (and thus never published).
+  const posts = await getCollection('blog', ({ data }) => (import.meta.env.PROD ? !data.draft : true));
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const stats = estimateReadingStats(post.body ?? '');
+const charsLabel = formatChars(stats.chars);
+const catMeta = BLOG_CATEGORY_META[post.data.category];
 
-const g = gitDates(`src/content/blog/${post.id}.md`);
+// Build a numbered table of contents from H2/H3 headings (1, 1.1, 1.2, 2, …).
+// Numbers mirror the CSS heading counters below, so TOC and headings stay in sync.
+let n2 = 0;
+let n3 = 0;
+const toc = headings
+  .filter((h) => h.depth === 2 || h.depth === 3)
+  .map((h) => {
+    if (h.depth === 2) {
+      n2 += 1;
+      n3 = 0;
+      return { ...h, num: `${n2}` };
+    }
+    n3 += 1;
+    return { ...h, num: `${n2}.${n3}` };
+  });
+
+// Nest H3s under their parent H2 for the floating tree UI.
+type TocItem = (typeof toc)[number];
+type TocNode = TocItem & { children: TocItem[] };
+const tocTree: TocNode[] = [];
+for (const item of toc) {
+  if (item.depth === 2) {
+    tocTree.push({ ...item, children: [] });
+  } else if (tocTree.length > 0) {
+    tocTree[tocTree.length - 1].children.push(item);
+  }
+}
+
+const g = gitDates(post.filePath ?? `src/content/blog/${post.id}/index.md`);
 const created = g.created ?? post.data.date;
 const updated = g.updated ?? post.data.updated;
 const showUpdated = isUpdated(created, updated);
@@ -21,8 +56,15 @@ const showUpdated = isUpdated(created, updated);
 <Base title={post.data.title} description={post.data.description} ogType="article">
   <article class="post">
     <header class="post-head">
+      {import.meta.env.DEV && post.data.draft && (
+        <p class="draft-flag">草稿预览 · 仅本地可见，不会发布</p>
+      )}
       <h1 class="post-h1">{post.data.title}</h1>
       <div class="post-meta">
+        <span class="cat-badge" title={catMeta.hintZh}>
+          <span data-l="zh">{catMeta.zh}</span>
+          <span data-l="en">{catMeta.en}</span>
+        </span>
         <time datetime={created.toISOString()}>
           <span data-l="zh">发布于 {fmtCN(created)}（北京时间）</span>
           <span data-l="en">Published {fmtCN(created)}</span>
@@ -41,7 +83,103 @@ const showUpdated = isUpdated(created, updated);
           </time>
         </div>
       )}
+      <p class="post-stats" aria-label="Reading stats">
+        <span data-l="zh">
+          本文约 {charsLabel} 字 · {stats.images} 图 · {stats.tables} 表 · {stats.formulas} 公式 · 预计阅读 {stats.minutes} 分钟
+        </span>
+        <span data-l="en">
+          ~{charsLabel} chars · {stats.images} figures · {stats.tables} tables · {stats.formulas} formulas · ~{stats.minutes} min read
+        </span>
+      </p>
     </header>
+
+    {toc.length >= 2 && (
+      <nav class="post-toc" id="post-toc-inline" aria-label="Table of contents">
+        <p class="post-toc-title"><span data-l="zh">目录</span><span data-l="en">Contents</span></p>
+        <ol class="post-toc-list">
+          {toc.map((h) => (
+            <li class={`toc-d${h.depth}`}>
+              <a href={`#${h.slug}`} data-toc-link={h.slug}><span class="toc-num">{h.num}</span><span class="toc-text">{h.text}</span></a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+
+    {toc.length >= 2 && (
+      <aside class="toc-float" data-toc-float hidden aria-label="Floating table of contents">
+        <button
+          class="toc-float-trigger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="toc-float-panel"
+        >
+          <span class="visually-hidden"><span data-l="zh">目录</span><span data-l="en">Contents</span></span>
+          <svg class="toc-float-trigger-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <circle cx="5" cy="6" r="1.5" fill="currentColor"></circle>
+            <rect x="9" y="5" width="11" height="2" rx="1" fill="currentColor"></rect>
+            <circle cx="5" cy="12" r="1.5" fill="currentColor"></circle>
+            <rect x="9" y="11" width="11" height="2" rx="1" fill="currentColor"></rect>
+            <circle cx="5" cy="18" r="1.5" fill="currentColor"></circle>
+            <rect x="9" y="17" width="11" height="2" rx="1" fill="currentColor"></rect>
+          </svg>
+        </button>
+
+        <div class="toc-float-panel" id="toc-float-panel">
+          <div class="toc-float-head">
+            <button class="toc-float-pin" type="button" aria-pressed="false">
+              <span class="toc-float-pin-icon" aria-hidden="true">📌</span>
+              <span class="toc-float-collapse-icon" aria-hidden="true">«</span>
+              <span class="visually-hidden">
+                <span data-l="zh">固定 / 收起目录</span><span data-l="en">Pin / collapse contents</span>
+              </span>
+            </button>
+            <span class="toc-float-title">
+              <span data-l="zh">目录</span><span data-l="en">Contents</span>
+            </span>
+          </div>
+
+          <nav class="toc-float-nav" aria-label="Table of contents">
+            <ul class="toc-float-tree">
+              {tocTree.map((h2) => (
+                <li class="toc-float-group" data-toc-group>
+                  <div class="toc-float-row toc-d2" data-toc-item={h2.slug}>
+                    {h2.children.length > 0 ? (
+                      <button
+                        class="toc-float-twist"
+                        type="button"
+                        aria-expanded="true"
+                      >
+                        <span class="visually-hidden"><span data-l="zh">展开/折叠小节</span><span data-l="en">Expand/collapse section</span></span>
+                        <span class="toc-float-twist-icon" aria-hidden="true">▼</span>
+                      </button>
+                    ) : (
+                      <span class="toc-float-twist-spacer" aria-hidden="true"></span>
+                    )}
+                    <a href={`#${h2.slug}`} data-toc-link={h2.slug}>
+                      <span class="toc-num">{h2.num}</span>
+                      <span class="toc-text">{h2.text}</span>
+                    </a>
+                  </div>
+                  {h2.children.length > 0 && (
+                    <ul class="toc-float-children">
+                      {h2.children.map((h3) => (
+                        <li class="toc-float-row toc-d3" data-toc-item={h3.slug}>
+                          <a href={`#${h3.slug}`} data-toc-link={h3.slug}>
+                            <span class="toc-num">{h3.num}</span>
+                            <span class="toc-text">{h3.text}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </aside>
+    )}
 
     <div class="post-body">
       <Content />
@@ -58,11 +196,361 @@ const showUpdated = isUpdated(created, updated);
 <style>
   .post { max-width: var(--content-width); }
   .post-head { margin: 2.4rem 0 2.4rem; }
+  .draft-flag {
+    display: inline-block;
+    margin: 0 0 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px dashed var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
   .post-h1 { font-size: 2.1rem; line-height: 1.3; margin: 0 0 1rem; }
   .post-meta { display: flex; align-items: center; gap: 0.5rem 0.7rem; flex-wrap: wrap; color: var(--fg-muted); font-size: 0.9rem; }
   .post-meta time, .post-updated time { font-variant-numeric: tabular-nums; }
   .post-updated { margin-top: 0.4rem; color: var(--fg-muted); font-size: 0.85rem; }
+  .cat-badge {
+    display: inline-block;
+    padding: 0.08rem 0.5rem;
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--fg-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .post-stats {
+    margin: 0.75rem 0 0;
+    color: var(--fg-muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+  }
   .post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  :global(html) { scroll-behavior: smooth; }
+
+  .post-toc {
+    margin: 0 0 2.4rem;
+    padding: 1rem 1.2rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+  }
+  .post-toc-title { margin: 0 0 0.6rem; font-weight: 800; font-size: 0.95rem; }
+  .post-toc-list { list-style: none; margin: 0; padding: 0; }
+  .post-toc-list li { margin: 0.28rem 0; line-height: 1.5; }
+  .post-toc-list .toc-d3 { padding-left: 1.5rem; }
+  .post-toc-list a { color: var(--fg); text-decoration: none; display: inline-flex; gap: 0.5em; }
+  .post-toc-list a:hover { color: var(--accent); text-decoration: underline; }
+  .post-toc-list .toc-num { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+  .post-toc-list .toc-d3 { font-size: 0.95em; }
+
+  /* ---------- Floating / pinned TOC ---------- */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .toc-float {
+    --toc-w: 280px;
+    position: fixed;
+    left: 0;
+    top: 5.25rem;
+    z-index: 40;
+    /* Collapsed width follows the trigger only; panel is position:absolute. */
+    width: max-content;
+    max-width: min(var(--toc-w), calc((100vw - var(--content-width)) / 2 - 12px));
+  }
+  .toc-float[hidden] { display: none !important; }
+
+  /* Collapsed: only the ☰ trigger card on the left edge */
+  .toc-float-trigger {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .toc-float-trigger:hover {
+    box-shadow: var(--shadow);
+    color: var(--accent);
+  }
+  .toc-float-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .toc-float-trigger-icon { display: block; }
+
+  /* Expanded floating panel */
+  .toc-float-panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: min(var(--toc-w), calc((100vw - var(--content-width)) / 2 - 12px));
+    max-height: min(72vh, calc(100vh - 6rem));
+    display: flex;
+    flex-direction: column;
+    padding: 0.55rem 0.55rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px) scale(0.98);
+    transform-origin: left top;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.22s ease,
+      visibility 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .toc-float:hover .toc-float-panel,
+  .toc-float:focus-within .toc-float-panel,
+  .toc-float.is-open .toc-float-panel,
+  .toc-float.is-pinned .toc-float-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .toc-float:hover .toc-float-trigger,
+  .toc-float:focus-within .toc-float-trigger,
+  .toc-float.is-open .toc-float-trigger,
+  .toc-float.is-pinned .toc-float-trigger {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.92);
+  }
+
+  .toc-float-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    padding: 0.15rem 0.35rem 0.55rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.35rem;
+  }
+  .toc-float-title {
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: var(--fg);
+    line-height: 1.2;
+  }
+  .toc-float-pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .toc-float-pin:hover {
+    background: var(--surface-2);
+    color: var(--accent);
+  }
+  .toc-float-pin:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .toc-float-pin-icon,
+  .toc-float-collapse-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .toc-float-pin-icon { font-size: 0.82rem; }
+  .toc-float-collapse-icon {
+    display: none;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .toc-float.is-pinned .toc-float-pin-icon { display: none; }
+  .toc-float.is-pinned .toc-float-collapse-icon { display: inline-flex; }
+
+  .toc-float-nav {
+    overflow: hidden auto;
+    flex: 1 1 auto;
+    padding-right: 0.15rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .toc-float-nav::-webkit-scrollbar { width: 5px; }
+  .toc-float-nav::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+  }
+
+  .toc-float-tree,
+  .toc-float-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .toc-float-group { margin: 0; }
+  .toc-float-children {
+    padding-left: 1.35rem;
+    margin: 0.05rem 0 0.2rem;
+    border-left: 1px solid var(--border);
+    margin-left: 0.72rem;
+  }
+  .toc-float-group.is-collapsed > .toc-float-children {
+    display: none;
+  }
+
+  .toc-float-row {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    min-width: 0;
+    border-radius: 7px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .toc-float-row.toc-d2 { margin: 0.08rem 0; }
+  .toc-float-row.toc-d3 { margin: 0.04rem 0; padding-left: 0.15rem; }
+
+  .toc-float-twist,
+  .toc-float-twist-spacer {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toc-float-twist {
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-size: 0.55rem;
+    line-height: 1;
+  }
+  .toc-float-twist:hover { background: var(--surface-2); color: var(--fg); }
+  .toc-float-twist:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .toc-float-twist-icon {
+    display: inline-block;
+    transition: transform 0.18s ease;
+  }
+  .toc-float-twist[aria-expanded="false"] .toc-float-twist-icon {
+    transform: rotate(-90deg);
+  }
+
+  .toc-float-row > a {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+    padding: 0.32rem 0.45rem 0.32rem 0.2rem;
+    color: var(--fg);
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 0.86rem;
+    line-height: 1.35;
+  }
+  .toc-float-row.toc-d3 > a { font-size: 0.82rem; color: var(--fg); }
+  .toc-float-row > a:hover { color: var(--accent); }
+  .toc-float-row .toc-num {
+    flex: 0 0 auto;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.92em;
+  }
+  .toc-float-row .toc-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toc-float-row.toc-active {
+    background: var(--accent-soft);
+  }
+  .toc-float-row.toc-active > a,
+  .toc-float-row.toc-active .toc-num {
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+
+  /* Pinned sidebar: stay open, flush left, under sticky header */
+  .toc-float.is-pinned {
+    top: 4.75rem;
+    width: var(--toc-w);
+  }
+  .toc-float.is-pinned .toc-float-panel {
+    position: relative;
+    width: 100%;
+    max-height: calc(100vh - 5.5rem);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .toc-float.is-pinned .toc-float-trigger { display: none; }
+
+  /* When pinned on wide screens, push the whole page right so the sidebar
+     never covers the article. Header is position:sticky (in flow), so padding
+     on <body> shifts header + content together. */
+  @media (min-width: 1025px) {
+    :global(html.toc-pinned body) {
+      padding-left: calc(280px + 2rem);
+      transition: padding-left 0.24s ease;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .toc-float { display: none !important; }
+  }
+
+  /* Auto-number headings: 1, 1.1, 1.1.1 … (mirrors the TOC numbers above). */
+  .post-body { counter-reset: sec2; }
+  .post-body :global(h2) { counter-increment: sec2; counter-reset: sec3; }
+  .post-body :global(h3) { counter-increment: sec3; counter-reset: sec4; }
+  .post-body :global(h4) { counter-increment: sec4; }
+  .post-body :global(h2)::before { content: counter(sec2); margin-right: 0.5em; color: var(--accent); }
+  .post-body :global(h3)::before { content: counter(sec2) "." counter(sec3); margin-right: 0.5em; color: var(--accent); }
+  .post-body :global(h4)::before { content: counter(sec2) "." counter(sec3) "." counter(sec4); margin-right: 0.5em; color: var(--accent); }
+  .post-body :global(h2), .post-body :global(h3), .post-body :global(h4) { scroll-margin-top: 1.5rem; }
 
   .post-body :global(h2) { font-size: 1.4rem; margin: 2rem 0 0.8rem; }
   .post-body :global(h3) { font-size: 1.15rem; margin: 1.6rem 0 0.6rem; }
@@ -70,6 +558,8 @@ const showUpdated = isUpdated(created, updated);
   .post-body :global(ul), .post-body :global(ol) { margin: 0.9rem 0; padding-left: 1.4rem; line-height: 1.8; }
   .post-body :global(li) { margin: 0.3rem 0; }
   .post-body :global(img) { max-width: 100%; border-radius: 8px; }
+  /* Long display equations scroll horizontally instead of overflowing the page. */
+  .post-body :global(.katex-display) { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
   .post-body :global(table) {
     width: 100%;
     border-collapse: collapse;
@@ -109,3 +599,110 @@ const showUpdated = isUpdated(created, updated);
 
   .post-foot { margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-weight: 700; }
 </style>
+
+<script>
+  const float = document.querySelector<HTMLElement>('[data-toc-float]');
+  const inline = document.getElementById('post-toc-inline');
+  if (float && inline) {
+    const trigger = float.querySelector<HTMLButtonElement>('.toc-float-trigger');
+    const pin = float.querySelector<HTMLButtonElement>('.toc-float-pin');
+    const KEY = 'blogTocPinned';
+    let inlineVisible = true;
+
+    const syncVisibility = () => {
+      // Pinned sidebar stays available while reading; otherwise wait until the
+      // inline TOC scrolls away.
+      float.hidden = float.classList.contains('is-pinned') ? false : inlineVisible;
+    };
+
+    const setOpen = (open: boolean) => {
+      float.classList.toggle('is-open', open);
+      trigger?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    const setPinned = (on: boolean) => {
+      float.classList.toggle('is-pinned', on);
+      // Reserve page space for the sidebar (CSS gates this to wide screens).
+      document.documentElement.classList.toggle('toc-pinned', on);
+      pin?.setAttribute('aria-pressed', on ? 'true' : 'false');
+      localStorage.setItem(KEY, on ? '1' : '0');
+      setOpen(false);
+      syncVisibility();
+    };
+
+    // Show the floating TOC only once the inline one has scrolled out of view
+    // (unless pinned — then keep the sidebar available).
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e) return;
+        inlineVisible = e.isIntersecting;
+        syncVisibility();
+      },
+      { rootMargin: '0px' },
+    );
+    io.observe(inline);
+
+    // Click the trigger to toggle (touch / keyboard; hover covers mouse).
+    trigger?.addEventListener('click', () => {
+      if (float.classList.contains('is-pinned')) return;
+      setOpen(!float.classList.contains('is-open'));
+    });
+
+    // Collapse when pointer leaves the whole float (floating mode only).
+    float.addEventListener('mouseleave', () => {
+      if (!float.classList.contains('is-pinned')) setOpen(false);
+    });
+
+    // Restore pin preference across posts.
+    if (localStorage.getItem(KEY) === '1') setPinned(true);
+
+    pin?.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const on = !float.classList.contains('is-pinned');
+      setPinned(on);
+      // Unpin → return to collapsed floating icon (and re-check inline visibility).
+    });
+
+    // Disclosure triangles: collapse / expand that H2's children only.
+    float.querySelectorAll<HTMLButtonElement>('.toc-float-twist').forEach((btn) => {
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const group = btn.closest<HTMLElement>('[data-toc-group]');
+        if (!group) return;
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        group.classList.toggle('is-collapsed', expanded);
+      });
+    });
+
+    // Jump → collapse panel in floating mode (pinned stays open).
+    float.querySelectorAll<HTMLAnchorElement>('a[data-toc-link]').forEach((a) =>
+      a.addEventListener('click', () => {
+        if (!float.classList.contains('is-pinned')) setOpen(false);
+      }),
+    );
+
+    // Highlight the section currently in view.
+    const items = new Map<string, HTMLElement>();
+    float.querySelectorAll<HTMLElement>('[data-toc-item]').forEach((el) => {
+      const id = el.dataset.tocItem;
+      if (id) items.set(id, el);
+    });
+    const heads = Array.from(document.querySelectorAll<HTMLElement>('.post-body h2, .post-body h3'));
+    if (heads.length) {
+      const spy = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting && e.target.id) {
+              items.forEach((el) => el.classList.remove('toc-active'));
+              items.get(e.target.id)?.classList.add('toc-active');
+            }
+          }
+        },
+        { rootMargin: '-12% 0px -80% 0px' },
+      );
+      heads.forEach((h) => spy.observe(h));
+    }
+  }
+</script>

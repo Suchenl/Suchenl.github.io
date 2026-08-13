@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { BLOG_CATEGORIES } from './lib/blog-categories';
 
 // Literature base — deliberately simple, Finder-like.
 // One Markdown file per paper, placed in a folder. Reorganize = move the file
@@ -36,14 +37,23 @@ const papers = defineCollection({
   }),
 });
 
-// Blog — one Markdown file per post in src/content/blog/.
+// Blog — one folder per post: src/content/blog/<slug>/index.md, with that
+// post's images colocated in the same folder (referenced as ./image.svg).
+// generateId maps <slug>/index.md → <slug> (a flat <slug>.md still works too).
 const blog = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  loader: glob({
+    // Only post folders: <slug>/index.md. Root helpers like _template.md are excluded.
+    pattern: '**/index.md',
+    base: './src/content/blog',
+    generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
+    // Reading experience (exactly one). Research topics go in tags.
+    category: z.enum(BLOG_CATEGORIES),
     tags: z.array(z.string()).default([]),
     lang: z.enum(['zh', 'en']).default('zh'),
     draft: z.boolean().default(false),

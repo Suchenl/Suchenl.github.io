@@ -3,13 +3,19 @@ import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
 import { getCollection } from 'astro:content';
 import { gitDates } from '../../lib/dates';
+import { BLOG_CATEGORIES, BLOG_CATEGORY_META, type BlogCategory } from '../../lib/blog-categories';
 
-const raw = await getCollection('blog', ({ data }) => !data.draft);
+// Drafts are visible in local `astro dev` for preview, but excluded from the
+// production build (and thus never published).
+const raw = await getCollection('blog', ({ data }) => (import.meta.env.PROD ? !data.draft : true));
 const posts = raw
-  .map((p) => ({ post: p, created: gitDates(`src/content/blog/${p.id}.md`).created ?? p.data.date }))
+  .map((p) => ({ post: p, created: gitDates(p.filePath ?? `src/content/blog/${p.id}/index.md`).created ?? p.data.date }))
   .sort((a, b) => b.created.valueOf() - a.created.valueOf());
 
 const fmt = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
+
+const counts = Object.fromEntries(BLOG_CATEGORIES.map((c) => [c, 0])) as Record<BlogCategory, number>;
+for (const { post } of posts) counts[post.data.category] += 1;
 ---
 
 <Base title="Blog">
@@ -21,26 +27,109 @@ const fmt = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Shangha
   {posts.length === 0 ? (
     <p class="muted"><Bi zh="还没有文章，敬请期待。" en="No posts yet — stay tuned." /></p>
   ) : (
-    <ul class="post-list">
-      {posts.map(({ post: p, created }) => (
-        <li class="post-item">
-          <a class="post-link" href={`/blog/${p.id}/`}>
-            <span class="post-title">{p.data.title}</span>
-            <time class="post-date" datetime={created.toISOString()}>{fmt(created)}</time>
-          </a>
-          {p.data.description && <p class="post-desc">{p.data.description}</p>}
-          {p.data.tags.length > 0 && (
-            <div class="post-tags">
-              {p.data.tags.map((t) => <span class="tag-chip">{t}</span>)}
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
+    <>
+      <div class="cat-filter" role="tablist" aria-label="Filter by category">
+        <button type="button" class="cat-chip is-active" data-cat="all" aria-pressed="true">
+          <span data-l="zh">全部</span><span data-l="en">All</span>
+          <span class="cat-count">{posts.length}</span>
+        </button>
+        {BLOG_CATEGORIES.map((c) => (
+          <button
+            type="button"
+            class="cat-chip"
+            data-cat={c}
+            aria-pressed="false"
+            title={BLOG_CATEGORY_META[c].hintZh}
+            disabled={counts[c] === 0}
+          >
+            <span data-l="zh">{BLOG_CATEGORY_META[c].zh}</span>
+            <span data-l="en">{BLOG_CATEGORY_META[c].en}</span>
+            <span class="cat-count">{counts[c]}</span>
+          </button>
+        ))}
+      </div>
+
+      <ul class="post-list">
+        {posts.map(({ post: p, created }) => (
+          <li class="post-item" data-category={p.data.category}>
+            <a class="post-link" href={`/blog/${p.id}/`}>
+              <span class="post-title">
+                <span class="cat-badge">{p.data.category}</span>
+                {p.data.title}
+                {import.meta.env.DEV && p.data.draft && <span class="draft-chip">草稿</span>}
+              </span>
+              <time class="post-date" datetime={created.toISOString()}>{fmt(created)}</time>
+            </a>
+            {p.data.description && <p class="post-desc">{p.data.description}</p>}
+            {p.data.tags.length > 0 && (
+              <div class="post-tags">
+                {p.data.tags.map((t) => <span class="tag-chip">{t}</span>)}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </>
   )}
 </Base>
 
+<script>
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.cat-chip'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.post-item'));
+
+  function apply(cat: string) {
+    for (const chip of chips) {
+      const on = chip.dataset.cat === cat;
+      chip.classList.toggle('is-active', on);
+      chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    for (const item of items) {
+      const show = cat === 'all' || item.dataset.category === cat;
+      item.hidden = !show;
+    }
+  }
+
+  for (const chip of chips) {
+    chip.addEventListener('click', () => {
+      if (chip.disabled) return;
+      apply(chip.dataset.cat || 'all');
+    });
+  }
+</script>
+
 <style>
+  .cat-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0 0 1.6rem;
+  }
+  .cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .cat-chip:hover:not(:disabled) { border-color: var(--accent); color: var(--fg); }
+  .cat-chip.is-active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  }
+  .cat-chip:disabled { opacity: 0.4; cursor: not-allowed; }
+  .cat-count {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.78em;
+    opacity: 0.75;
+  }
+
   .post-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.6rem; }
   .post-item { border-bottom: 1px solid var(--border); padding-bottom: 1.4rem; }
   .post-item:last-child { border-bottom: none; }
@@ -53,6 +142,27 @@ const fmt = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Shangha
   }
   .post-link:hover { text-decoration: none; }
   .post-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; }
+  .cat-badge {
+    display: inline-block;
+    margin-right: 0.45rem;
+    padding: 0.05rem 0.45rem;
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--fg-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .draft-chip {
+    margin-left: 0.5rem;
+    padding: 0.05rem 0.45rem;
+    border: 1px dashed var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
   .post-link:hover .post-title { color: var(--accent); }
   .post-date { color: var(--fg-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
   .post-desc { margin: 0.5rem 0 0.6rem; color: var(--fg-muted); }
