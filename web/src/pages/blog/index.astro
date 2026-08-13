@@ -9,7 +9,7 @@ import { BLOG_CATEGORIES, BLOG_CATEGORY_META, type BlogCategory } from '../../li
 // production build (and thus never published).
 const raw = await getCollection('blog', ({ data }) => (import.meta.env.PROD ? !data.draft : true));
 const posts = raw
-  .map((p) => ({ post: p, created: gitDates(p.filePath ?? `src/content/blog/${p.id}/index.md`).created ?? p.data.date }))
+  .map((p) => ({ post: p, created: gitDates(p.filePath ?? `src/content/blog/${p.id}/source.md`).created ?? p.data.date }))
   .sort((a, b) => b.created.valueOf() - a.created.valueOf());
 
 const fmt = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });

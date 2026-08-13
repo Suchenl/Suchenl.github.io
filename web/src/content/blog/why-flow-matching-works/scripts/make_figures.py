@@ -5,7 +5,7 @@ No third-party dependencies (pure Python stdlib). Regenerate the SVGs with:
 
     python3 make_figures.py
 
-It writes two files next to this script:
+It writes two files under ../images/:
   - sd3-rank-vs-steps.svg      slope chart of SD3 Table 1 rankings (5 vs 50 steps)
   - logitnormal-sampling.svg   SD3 logit-normal timestep sampling densities
 
@@ -17,6 +17,7 @@ import math
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+IMAGES = os.path.join(os.path.dirname(HERE), "images")
 
 # ---------------------------------------------------------------------------
 # DATA 1 — SD3 Table 1 global ranking (lower = better).
@@ -190,8 +191,9 @@ def main():
     for label, m, sd, *_ in LOGNORM:
         print(f"{label:32s} m={m}  s={sd}")
 
-    out1 = os.path.join(HERE, "sd3-rank-vs-steps.svg")
-    out2 = os.path.join(HERE, "logitnormal-sampling.svg")
+    os.makedirs(IMAGES, exist_ok=True)
+    out1 = os.path.join(IMAGES, "sd3-rank-vs-steps.svg")
+    out2 = os.path.join(IMAGES, "logitnormal-sampling.svg")
     with open(out1, "w", encoding="utf-8") as f:
         f.write(make_rank_chart())
     with open(out2, "w", encoding="utf-8") as f:

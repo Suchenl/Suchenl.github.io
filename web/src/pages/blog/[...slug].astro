@@ -48,7 +48,7 @@ for (const item of toc) {
   }
 }
 
-const g = gitDates(post.filePath ?? `src/content/blog/${post.id}/index.md`);
+const g = gitDates(post.filePath ?? `src/content/blog/${post.id}/source.md`);
 const created = g.created ?? post.data.date;
 const updated = g.updated ?? post.data.updated;
 const showUpdated = isUpdated(created, updated);

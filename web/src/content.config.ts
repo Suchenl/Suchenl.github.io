@@ -37,15 +37,17 @@ const papers = defineCollection({
   }),
 });
 
-// Blog — one folder per post: src/content/blog/<slug>/index.md, with that
-// post's images colocated in the same folder (referenced as ./image.svg).
-// generateId maps <slug>/index.md → <slug> (a flat <slug>.md still works too).
+// Blog — one folder per post:
+//   src/content/blog/<slug>/source.md
+//   src/content/blog/<slug>/images/   figures
+//   src/content/blog/<slug>/scripts/  figure generators
+//   src/content/blog/<slug>/tables/   optional table data
+// Folder name = URL slug. `_template/` is the starter kit; never published.
 const blog = defineCollection({
   loader: glob({
-    // Only post folders: <slug>/index.md. Root helpers like _template.md are excluded.
-    pattern: '**/index.md',
+    pattern: ['*/source.md', '!_template/source.md'],
     base: './src/content/blog',
-    generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
+    generateId: ({ entry }) => entry.replace(/\/source\.md$/, ''),
   }),
   schema: z.object({
     title: z.string(),

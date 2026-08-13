@@ -1,12 +1,12 @@
 ---
-# ── 新文章模板 ─────────────────────────────────────────────
-# 用法：为每篇文章新建一个文件夹（英文/短横线，如 my-first-post/），
-#       把本文件复制进去并改名为 index.md，图片等资源也放进这个文件夹里。
-#         src/content/blog/my-first-post/index.md   ← 正文
-#         src/content/blog/my-first-post/cover.png  ← 该文用到的图片
-#       文件夹名就是网址：my-first-post/ → /blog/my-first-post/
-#       写完把下面的 draft 改成 false（或删掉那行）即可发布。
-# ───────────────────────────────────────────────────────────
+# ── 新文章模板（复制整个 _template/ 文件夹后改名）────────────────
+# 每次写新博客：
+#   1. 复制 web/src/content/blog/_template/ → web/src/content/blog/<slug>/
+#   2. 文件夹名 <slug> 就是网址：/blog/<slug>/
+#   3. 正文永远叫 source.md；图放 images/；画图脚本放 scripts/；表数据放 tables/
+#   4. 写完把 draft 改成 false（或删掉那行）再提交发布
+# 详见同级 ../README.md
+# ────────────────────────────────────────────────────────────────
 
 title: "文章标题（必填）"
 
@@ -45,6 +45,7 @@ draft: true
   直接写 `##` / `###` / `####` 即可，标题里不要自己敲数字。
 - 文章顶部会自动生成「目录」，读者可点击跳转到对应章节（至少 2 个标题才显示）。
 - 数学公式支持 LaTeX：行内用 $...$，独立成行用 $$...$$。
+- 标题里禁止写 $...$（目录会重复渲染）；写成纯文本如 t\*。
 -->
 
 ## 一级小标题（H2）
@@ -63,21 +64,36 @@ draft: true
 
 ```python
 # 代码块（会自动语法高亮）
-print("hello world")
+print("hello")
 ```
 
-图片：把图片放进**本文自己的文件夹**（和这个 index.md 同级），用相对路径引用。
-这样每篇文章的资源都在一起，方便管理，Astro 也会自动处理并加上缓存哈希。
-引用写法如下（把 your-image.png 换成你实际放进来的文件名）：
+## 资源放哪、怎么引用
+
+本文件夹约定结构（不要改名字）：
+
+```text
+<slug>/
+  source.md      ← 正文（本文件）
+  images/        ← 图（png / svg / webp …）
+  scripts/       ← 画图 / 造表脚本
+  tables/        ← 表格源数据（csv 等，可选）
+```
+
+图放进 `images/`，在正文里用相对路径引用：
 
 ```md
-![图片说明](./your-image.png)
+![图片说明](./images/your-figure.svg)
+```
+
+画图脚本放进 `scripts/`。优先纯 Python 无第三方依赖，运行时打印内嵌数据与出处，输出写到 `../images/`。复杂示意图若必须用 matplotlib，在脚本注释里写清依赖即可。
+
+```bash
+cd web/src/content/blog/<slug>/scripts
+python3 make_figures.py
 ```
 
 <!--
-自包含图表约定：凡是「画出来的图」（排名图、曲线、示意图等），把绘制脚本和数据
-也放进本文件夹，纯 Python 无第三方依赖，一条命令即可重生成，例如同目录放一个
-make_figures.py，里面内嵌数据并在运行时打印、注明出处，输出 svg。这样每篇文章
-连图带数据带代码都自成一体，日后好维护、可复现。
+风格硬规则（交稿前跑）：
+  python3 sus_utils/writing_utils/blog_skills/blog-writing/scripts/check_style.py path/to/source.md
+破折号「——」≈ 0；加粗极省；标题里不要 $...$。
 -->
-

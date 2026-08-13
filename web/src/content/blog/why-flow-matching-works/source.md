@@ -83,7 +83,7 @@ $$
 \pi_{\mathrm{ln}}(t; m, s) = \frac{1}{s\sqrt{2\pi}}\,\frac{1}{t(1-t)}\,\exp\!\Big(-\frac{(\mathrm{logit}(t)-m)^2}{2s^2}\Big).
 $$
 
-![SD3 logit-normal 时间步采样密度：m 决定峰的位置、s 决定宽窄](./logitnormal-sampling.svg)
+![SD3 logit-normal 时间步采样密度：m 决定峰的位置、s 决定宽窄](./images/logitnormal-sampling.svg)
 
 *横轴是 $t$（0 干净、1 纯噪声），纵轴是采样密度。默认 $m{=}0,\ s{=}1$（紫）把重心压在中间；把 $m$ 调大（橙、青）会把峰推向高噪声端；相较之下，均匀采样（灰虚线）会把更多预算留给这个探针里较容易的两端。*
 
@@ -149,7 +149,7 @@ $$
 
 正文只需要一句：非均匀采样很重要。下图是我按 SD3 Table 1 的平均名次画的斜率图（5 步 vs 50 步，越小越好）；完整表与实验设定见原文。
 
-![SD3 各配置在 5 步与 50 步下的平均名次（斜率图，数据取自 SD3 论文 Table 1）](./sd3-rank-vs-steps.svg)
+![SD3 各配置在 5 步与 50 步下的平均名次（斜率图，数据取自 SD3 论文 Table 1）](./images/sd3-rank-vs-steps.svg)
 
 *看点是斜率：`rf/lognorm(0.00,1.00)`（紫）几乎水平且始终在顶端；均匀 `rf`（灰）一直平庸；部分配置少步很差、多步才追上。*
 

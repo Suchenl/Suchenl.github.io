@@ -1,33 +1,38 @@
 ---
-description: Conventions for authoring blog posts in this Astro site (folder-per-post, self-contained assets, figures with code+data)
+description: Conventions for authoring blog posts in this Astro site (folder-per-post, source.md, images/scripts/tables)
 globs: web/src/content/blog/**
 alwaysApply: false
 ---
 
 # Blog Authoring Conventions
 
-## One folder per post, fully self-contained
-- Each post is a folder: `web/src/content/blog/<slug>/index.md`. The **folder name is the slug/URL** (`/blog/<slug>/`); the file is always `index.md`.
-- Put **everything that post needs in its own folder**: images, and the code + data that generated any figure.
-- Reference images with **relative paths** (`![](./fig.svg)`), never `/images/...`. Astro processes colocated assets (adds width/height, cache hashes).
-- Do NOT dump per-post images into `web/public/images/` — reserve `public/` for site-wide assets (favicons, OG image).
+## One folder per post
+- Each post is a folder: `web/src/content/blog/<slug>/`. The **folder name is the slug/URL** (`/blog/<slug>/`).
+- Fixed layout (do not rename):
+  - `source.md` — body + frontmatter
+  - `images/` — figures
+  - `scripts/` — figure / table generators
+  - `tables/` — optional table source data
+- New posts: **copy `_template/`** and rename the folder. See `web/src/content/blog/README.md`.
+- Reference images as `./images/fig.svg` (never `/images/...` in `public/` for per-post art).
+- Loader only picks `*/source.md` and excludes `_template/`.
 
 ## Figures must be reproducible
-- Any generated chart ships its generator **in the post folder** (e.g. `make_figures.py`), **pure Python, no third-party deps** (hand-write SVG; matplotlib is not installed), runnable as `python3 make_figures.py`.
-- **Embed the underlying data in the script and print it** on run; cite the source. The post should be regenerable from scratch.
-- Keep figure text ASCII (font/encoding safety); put Chinese explanation in the markdown caption. Writing non-UTF-8 breaks the build.
+- Generators live in `scripts/` (e.g. `make_figures.py`), prefer pure Python stdlib; write outputs into `../images/`.
+- Embed underlying data in the script and print it on run; cite the source.
+- Keep figure text ASCII when needed for font safety; put Chinese in the markdown caption.
 
 ## Formatting is automatic — don't hand-do it
 - Headings auto-number (H2→1, H3→1.1). Write `##`/`###` with **no manual numbers**.
-- A TOC is auto-generated; LaTeX renders via `$...$` and `$$...$$` (long equations: use `\begin{aligned}` to wrap).
-- **Do NOT put `$...$` math in headings** — the TOC extracts heading text after KaTeX renders and duplicates it (e.g. `$t^*$` → `t*t^*t*`). Use plain text like `t\*` instead.
+- A TOC is auto-generated; LaTeX via `$...$` / `$$...$$` (long equations: `\begin{aligned}`).
+- **Do NOT put `$...$` math in headings** — TOC duplicates rendered math. Use plain text like `t\*`.
 - Published/updated dates come from git history; frontmatter `date` is only a local-preview fallback.
 
 ## Drafts & style
-- `draft: true` = local-preview only (visible in `astro dev`, excluded from build/RSS). Set `false` to publish.
-- Chinese-primary, first person「我」. **Use em-dashes (——) sparingly**; avoid AI-ish or instruction-like sentences (e.g. don't write "结论得说准、别夸大" as prose).
+- `draft: true` = local-preview only (visible in `astro dev`, excluded from production build/RSS).
+- Chinese-primary, first person「我」. Avoid em-dashes「——」; avoid AI-ish instruction sentences.
 
 ## Category vs tags
-- `category`（必填，恰好 1 个）= **阅读体验**，不是研究方向：`深挖` | `速记` | `动手` | `杂谈`。定义见 `web/src/lib/blog-categories.ts`。
-- `tags`（可选，多个）= 细方向 / 方法名（如 `Flow Matching`、`生成模型`）。
-- 新文从 `_template.md` 复制；勿把 `_template.md` 当正文发布（loader 只收 `**/index.md`）。
+- `category`（必填，恰好 1 个）= **阅读体验**：`深挖` | `速记` | `动手` | `杂谈`。见 `web/src/lib/blog-categories.ts`。
+- `tags`（可选，多个）= 细方向 / 方法名。
+- Never publish `_template/` as a post.
