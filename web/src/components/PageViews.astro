@@ -1,30 +1,39 @@
 ---
 /**
- * Per-page stats.
- * Prefer Cloudflare Web Analytics JSON (build-time GraphQL → /analytics/cloudflare.json):
- *   pageviews = every load/refresh; visits = CF visit sessions.
- * Fall back to GoatCounter public counter (visitors only — not raw pageviews).
+ * Per-page stats — Cloudflare first (访问=pageviews, 访客=visits).
+ * GoatCounter kept as fallback only when CF JSON is missing/failed.
  */
 import { FEATURES } from '../config';
 const gc = FEATURES.goatcounter;
+const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
+const cfHelp = 'https://developers.cloudflare.com/web-analytics/data-metrics/high-level-metrics/';
 const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 ---
-<span class="page-views" data-gc={gc || ''} hidden>
+<span
+  class="page-views"
+  data-gc={gc || ''}
+  data-cf={cfOn ? '1' : ''}
+  hidden
+>
   <span data-l="zh" class="pv-cf" hidden>
-    · Cloudflare 访问 <b class="pv-pageviews">–</b> · 访客约 <b class="pv-visits">–</b>
+    · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
+    访问 <b class="pv-pageviews">–</b> · 访客 <b class="pv-visits">–</b>
+    <span class="stats-note">（访问=每次打开/刷新；访客=站外或直接进入的 Visit，站内连看多页通常只计 1 次 Visit）</span>
   </span>
   <span data-l="en" class="pv-cf" hidden>
-    · Cloudflare <b class="pv-pageviews">–</b> views · ~<b class="pv-visits">–</b> visits
+    · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
+    <b class="pv-pageviews">–</b> views · <b class="pv-visits">–</b> visits
+    <span class="stats-note"> (views=each load/refresh; visits=entry from off-site/direct)</span>
   </span>
   <span data-l="zh" class="pv-gc" hidden>
     · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
     访客约 <b class="pv-gc-count">–</b>
-    <span class="stats-note">（站点+IP+UA，约 8h 内同路径刷新不计）</span>
+    <span class="stats-note">（兜底；站点+IP+UA，约 8h 内同路径刷新不计）</span>
   </span>
   <span data-l="en" class="pv-gc" hidden>
     · ~<b class="pv-gc-count">–</b> via
     <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
-    <span class="stats-note"> (site+IP+UA, ~8h, same path not re-counted)</span>
+    <span class="stats-note"> (fallback; site+IP+UA, ~8h, same path)</span>
   </span>
 </span>
 
@@ -50,6 +59,7 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     var el = document.querySelector('.page-views');
     if (!el) return;
     var code = el.getAttribute('data-gc');
+    var cfOn = el.getAttribute('data-cf') === '1';
 
     function showCf(pageviews, visits) {
       el.querySelectorAll('.pv-pageviews').forEach(function (n) {
@@ -130,20 +140,23 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
         return r.ok ? r.json() : null;
       })
       .then(function (d) {
-        if (d && d.ok && d.paths) {
-          var hit = lookupPath(d.paths);
-          if (hit) {
-            showCf(hit.pageviews || 0, hit.visits || 0);
-            return;
-          }
+        // Primary: Cloudflare whenever the build-time pull succeeded.
+        if (d && d.ok) {
+          var hit = lookupPath(d.paths || {});
+          if (hit) showCf(hit.pageviews || 0, hit.visits || 0);
+          else showCf(0, 0); // path not seen yet — still CF, not GoatCounter
+          return;
         }
-        loadGc();
+        if (!cfOn) loadGc();
       })
-      .catch(loadGc);
+      .catch(function () {
+        if (!cfOn) loadGc();
+        else showCf(0, 0);
+      });
 
-    // GoatCounter can lag right after a hit; keep a delayed retry as before.
+    // GoatCounter lag retry — only when we are still on the GC fallback UI.
     setTimeout(function () {
-      if (el.hidden || el.querySelector('.pv-gc:not([hidden])')) loadGc();
+      if (el.querySelector('.pv-gc:not([hidden])')) loadGc();
     }, 900);
   })();
 </script>

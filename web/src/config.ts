@@ -29,17 +29,13 @@ export const AUTHOR = {
 
 // Optional integrations. Leave blank to disable.
 export const FEATURES = {
-  // Privacy-friendly analytics (GoatCounter). Put your site code here, e.g.
+  // GoatCounter: still loads for collection; UI only if Cloudflare JSON fails.
   // 'suchenl' → https://suchenl.goatcounter.com/count. Empty = disabled.
-  // Kept as fallback while Cloudflare Web Analytics is wired up.
   goatcounter: 'suchenl',
 
-  // Cloudflare Web Analytics (JS beacon). Free; no cookies.
-  // 1) Dashboard → Web Analytics → Add site → copy beacon token below.
-  // 2) Create API token (Account Analytics: Read) + note account id + site tag.
-  // 3) Set GitHub Actions secrets: CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG.
-  // Build fetches GraphQL → public/analytics/cloudflare.json (token never ships to browser).
-  // Empty beaconToken = beacon off; UI still falls back to GoatCounter.
+  // Cloudflare Web Analytics is the primary on-page stats source (pageviews + visits).
+  // GoatCounter above stays enabled as collector + UI fallback if CF JSON fails.
+  // Secrets: CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG (build-time GraphQL → public JSON).
   cloudflareAnalytics: {
     // Public site token from Web Analytics snippet (safe in HTML).
     beaconToken: '1165cf5a2f8c4e37a4574725fd8fc925',
