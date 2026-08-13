@@ -13,10 +13,6 @@ const enabled = g.enabled && g.repoId && g.categoryId;
         <span data-l="zh">在 GitHub 查看 / 管理 ↗</span><span data-l="en">View / manage on GitHub ↗</span>
       </a>
     </div>
-    <p class="comments-hint muted">
-      <span data-l="zh">点赞请点表情里的 👍（需登录 GitHub）。收藏跨设备目前没有，浏览器书签最稳。</span>
-      <span data-l="en">Like = 👍 in reactions (GitHub login). Cross-device favorites aren’t available; use browser bookmarks.</span>
-    </p>
     <p class="comments-likes muted" data-giscus-likes hidden>
       <span data-l="zh">👍 点赞 <b class="like-count">0</b></span>
       <span data-l="en">👍 <b class="like-count">0</b> likes</span>
@@ -45,7 +41,6 @@ const enabled = g.enabled && g.repoId && g.categoryId;
   .comments-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
   .comments-title { font-size: 1.15rem; margin: 0; }
   .comments-manage { font-size: 0.82rem; font-weight: 600; }
-  .comments-hint { margin: 0 0 0.6rem; font-size: 0.82rem; line-height: 1.5; }
   .comments-likes { margin: 0 0 0.8rem; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
   .comments-likes[hidden] { display: none; }
   .comments-likes b { font-weight: 700; color: var(--fg); }

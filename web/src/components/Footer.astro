@@ -11,8 +11,9 @@ const year = new Date().getFullYear();
       <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
       {FEATURES.goatcounter && (
         <span class="site-stats" data-gc={FEATURES.goatcounter} hidden>
-          <span data-l="zh"> · 访问 <b class="gc-views">–</b> 次 · 访客 <b class="gc-visitors">–</b> 人</span>
-          <span data-l="en"> · <b class="gc-views">–</b> views · <b class="gc-visitors">–</b> visitors</span>
+          {/* GoatCounter public counter JSON only exposes unique visitors; count === count_unique. */}
+          <span data-l="zh"> · 访客约 <b class="gc-visitors">–</b> 人</span>
+          <span data-l="en"> · ~<b class="gc-visitors">–</b> visitors</span>
         </span>
       )}
     </p>
@@ -42,11 +43,11 @@ const year = new Date().getFullYear();
       .catch(() => null)
       .then((d) => {
         if (!d) return; // "allow visitor counter" setting off, or request blocked
-        const views = num(d.count);
-        const visitors = num(d.count_unique);
-        if (views == null && visitors == null) return;
-        el.querySelectorAll<HTMLElement>('.gc-views').forEach((n) => { if (views != null) n.textContent = views; });
-        el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => { if (visitors != null) n.textContent = visitors; });
+        const visitors = num(d.count);
+        if (visitors == null) return;
+        el.querySelectorAll<HTMLElement>('.gc-visitors').forEach((n) => {
+          n.textContent = visitors;
+        });
         el.hidden = false;
       });
   }

@@ -3,7 +3,7 @@ title: "为什么预测干净数据能奏效：从一对多到目标几何"
 description: "JiT 把功劳归给流形假设，我总觉得玄乎。把它和一对多、v-预测、JLT 放在一起看，更值得盯的是：预测目标如何重分配局部多义性，以及目标协方差长什么样。"
 date: 2026-08-13
 category: 深挖
-tags: ["生成模型", "Flow Matching", "扩散模型", "一对多", "v-预测", "JiT", "JLT", "SD3", "目标几何"]
+tags: ["生成模型", "Flow Matching", "扩散模型", "一对多", "v-预测", "JiT", "JLT", "SD3", "目标几何", "Explorative Modeling"]
 lang: zh
 draft: false
 ---

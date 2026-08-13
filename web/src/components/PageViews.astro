@@ -1,15 +1,15 @@
 ---
 /**
- * Per-page view count via GoatCounter visitor-counter JSON API.
- * Site-wide totals stay in Footer; this is for individual blog posts.
+ * Per-page unique visitors via GoatCounter public counter JSON.
+ * Note: that API does NOT expose raw pageviews — only visitors (count === count_unique).
  */
 import { FEATURES } from '../config';
 const code = FEATURES.goatcounter;
 ---
 {code && (
   <span class="page-views" data-gc={code} hidden>
-    <span data-l="zh"> · 阅读 <b class="pv-count">–</b></span>
-    <span data-l="en"> · <b class="pv-count">–</b> views</span>
+    <span data-l="zh"> · 访客约 <b class="pv-count">–</b></span>
+    <span data-l="en"> · ~<b class="pv-count">–</b> visitors</span>
   </span>
 )}
 
