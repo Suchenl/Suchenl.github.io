@@ -7,12 +7,25 @@
  */
 import { FEATURES } from '../config';
 const gc = FEATURES.goatcounter;
+const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 ---
 <span class="page-views" data-gc={gc || ''} hidden>
-  <span data-l="zh" class="pv-cf" hidden> · 访问 <b class="pv-pageviews">–</b> · 访客约 <b class="pv-visits">–</b></span>
-  <span data-l="en" class="pv-cf" hidden> · <b class="pv-pageviews">–</b> views · ~<b class="pv-visits">–</b> visits</span>
-  <span data-l="zh" class="pv-gc" hidden> · 访客约 <b class="pv-gc-count">–</b></span>
-  <span data-l="en" class="pv-gc" hidden> · ~<b class="pv-gc-count">–</b> visitors</span>
+  <span data-l="zh" class="pv-cf" hidden>
+    · Cloudflare 访问 <b class="pv-pageviews">–</b> · 访客约 <b class="pv-visits">–</b>
+  </span>
+  <span data-l="en" class="pv-cf" hidden>
+    · Cloudflare <b class="pv-pageviews">–</b> views · ~<b class="pv-visits">–</b> visits
+  </span>
+  <span data-l="zh" class="pv-gc" hidden>
+    · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
+    访客约 <b class="pv-gc-count">–</b>
+    <span class="stats-note">（站点+IP+UA，约 8h 内同路径刷新不计）</span>
+  </span>
+  <span data-l="en" class="pv-gc" hidden>
+    · ~<b class="pv-gc-count">–</b> via
+    <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
+    <span class="stats-note"> (site+IP+UA, ~8h, same path not re-counted)</span>
+  </span>
 </span>
 
 <style>
@@ -21,6 +34,15 @@ const gc = FEATURES.goatcounter;
   .page-views b { font-weight: inherit; color: inherit; }
   .page-views .pv-cf[hidden],
   .page-views .pv-gc[hidden] { display: none; }
+  .stats-src {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .stats-note {
+    color: var(--fg-muted);
+    font-size: 0.9em;
+  }
 </style>
 
 <script is:inline>

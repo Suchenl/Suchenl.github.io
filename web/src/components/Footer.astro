@@ -2,6 +2,7 @@
 import { AUTHOR, FEATURES } from '../config';
 const year = new Date().getFullYear();
 const gc = FEATURES.goatcounter;
+const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 ---
 
 <footer class="site-footer">
@@ -11,11 +12,22 @@ const gc = FEATURES.goatcounter;
       <span data-l="zh"> · 使用 </span><span data-l="en"> · Built with </span>
       <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
       <span class="site-stats" data-gc={gc || ''} hidden>
-        {/* Prefer CF: pageviews (访问) + visits (访客). GC fallback: visitors only. */}
-        <span data-l="zh" class="ss-cf" hidden> · 访问 <b class="ss-pageviews">–</b> · 访客约 <b class="ss-visits">–</b></span>
-        <span data-l="en" class="ss-cf" hidden> · <b class="ss-pageviews">–</b> views · ~<b class="ss-visits">–</b> visits</span>
-        <span data-l="zh" class="ss-gc" hidden> · 访客约 <b class="gc-visitors">–</b> 人</span>
-        <span data-l="en" class="ss-gc" hidden> · ~<b class="gc-visitors">–</b> visitors</span>
+        <span data-l="zh" class="ss-cf" hidden>
+          · Cloudflare 访问 <b class="ss-pageviews">–</b> · 访客约 <b class="ss-visits">–</b>
+        </span>
+        <span data-l="en" class="ss-cf" hidden>
+          · Cloudflare <b class="ss-pageviews">–</b> views · ~<b class="ss-visits">–</b> visits
+        </span>
+        <span data-l="zh" class="ss-gc" hidden>
+          · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
+          访客约 <b class="gc-visitors">–</b>
+          <span class="stats-note">（站点+IP+UA 识别会话，约 8 小时内同一路径刷新不计；不写 cookie，IP/UA 不入库）</span>
+        </span>
+        <span data-l="en" class="ss-gc" hidden>
+          · ~<b class="gc-visitors">–</b> visitors via
+          <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
+          <span class="stats-note"> (session = site+IP+UA, ~8h; same path not re-counted; no cookies; IP/UA not stored)</span>
+        </span>
       </span>
     </p>
   </div>
@@ -34,6 +46,15 @@ const gc = FEATURES.goatcounter;
   .site-stats b { font-weight: inherit; color: inherit; }
   .site-stats .ss-cf[hidden],
   .site-stats .ss-gc[hidden] { display: none; }
+  .stats-src {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .stats-note {
+    color: var(--fg-muted);
+    font-size: 0.85em;
+  }
 </style>
 
 <script>
