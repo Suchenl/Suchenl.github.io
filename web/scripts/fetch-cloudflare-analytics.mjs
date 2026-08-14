@@ -4,7 +4,7 @@
  * the static site can read. Requires env:
  *   CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG
  * Optional:
- *   CF_LOOKBACK_DAYS (default 90)
+ *   CF_LOOKBACK_DAYS (default 7 — CF RUM adaptive often returns empty for long windows like 90d)
  *
  * Metrics (honest labels for UI):
  *   count / pageviews  = every pageload (refresh counts)
@@ -22,7 +22,7 @@ const outPath = join(__dirname, '../public/analytics/cloudflare.json');
 const accountTag = process.env.CF_ACCOUNT_ID?.trim();
 const apiToken = process.env.CF_API_TOKEN?.trim();
 const siteTag = process.env.CF_SITE_TAG?.trim();
-const lookbackDays = Math.max(1, Number(process.env.CF_LOOKBACK_DAYS || 90) || 90);
+const lookbackDays = Math.max(1, Number(process.env.CF_LOOKBACK_DAYS || 7) || 7);
 
 async function writeJson(obj) {
   await mkdir(dirname(outPath), { recursive: true });
@@ -70,30 +70,20 @@ const since = new Date(until.getTime() - lookbackDays * 24 * 60 * 60 * 1000);
 const sinceIso = since.toISOString().replace(/\.\d{3}Z$/, 'Z');
 const untilIso = until.toISOString().replace(/\.\d{3}Z$/, 'Z');
 
-// Keep filter inline (typed InputObject names vary across CF schema versions).
+// Flat filter (no AND): long lookbacks (e.g. 90d) often return empty on RUM adaptive.
 const query = `
 query RumStats($accountTag: String!, $since: Time!, $until: Time!, $siteTag: String!) {
   viewer {
     accounts(filter: { accountTag: $accountTag }) {
       totals: rumPageloadEventsAdaptiveGroups(
-        filter: {
-          AND: [
-            { datetime_geq: $since, datetime_lt: $until }
-            { siteTag: $siteTag }
-          ]
-        }
+        filter: { datetime_geq: $since, datetime_lt: $until, siteTag: $siteTag }
         limit: 1
       ) {
         count
         sum { visits }
       }
       byPath: rumPageloadEventsAdaptiveGroups(
-        filter: {
-          AND: [
-            { datetime_geq: $since, datetime_lt: $until }
-            { siteTag: $siteTag }
-          ]
-        }
+        filter: { datetime_geq: $since, datetime_lt: $until, siteTag: $siteTag }
         limit: 5000
         orderBy: [count_DESC]
       ) {
