@@ -1,6 +1,4 @@
 # Builds the Astro site in web/ and deploys it to GitHub Pages.
-# NOTE: This only takes effect once repo Settings > Pages > Source is set to
-# "GitHub Actions". Until then, the existing Jekyll deploy stays live.
 name: Deploy Astro site
 
 on:
@@ -9,13 +7,13 @@ on:
     paths:
       - 'web/**'
       - '.github/workflows/deploy-astro.yml'
-  # Refresh Cloudflare stats JSON even without content pushes.
+  # Monday 00:00 Asia/Shanghai = Sunday 16:00 UTC — pull previous Beijing week into history.
   schedule:
-    - cron: '17 * * * *'
+    - cron: '0 16 * * 0'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,7 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Full history so the blog can derive published/updated dates from git.
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -40,14 +37,37 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
-      # Pull CF Web Analytics into public/analytics/cloudflare.json (no-op stub if secrets missing).
-      - name: Fetch Cloudflare Web Analytics
+
+      # Content push: only rebuild display JSON from committed history (no CF API).
+      - name: Refresh analytics display from history
+        if: github.event_name == 'push'
+        run: node scripts/fetch-cloudflare-analytics.mjs
+
+      # Monday cron / manual: fetch the completed Beijing week and upsert history.
+      - name: Weekly Cloudflare analytics update
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_SITE_TAG: ${{ secrets.CF_SITE_TAG }}
-          CF_LOOKBACK_DAYS: '7'
+          CF_WEEKLY_UPDATE: '1'
+          CF_BOOTSTRAP: '1'
         run: node scripts/fetch-cloudflare-analytics.mjs
+
+      - name: Commit analytics history
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/public/analytics/cloudflare-history.json web/public/analytics/cloudflare.json
+          if git diff --staged --quiet; then
+            echo "No analytics changes to commit"
+          else
+            git commit -m "chore: weekly Cloudflare analytics snapshot [skip ci]"
+            git push
+          fi
+
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

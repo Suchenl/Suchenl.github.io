@@ -1,5 +1,77 @@
 {
-  "ok": false,
-  "reason": "not-configured",
-  "fetchedAt": null
+  "ok": true,
+  "source": "cloudflare-web-analytics-cumulative",
+  "mode": "cumulative",
+  "accumulateSince": "2026-08-13T00:00:00+08:00",
+  "accumulateSinceLabel": "2026-08-13",
+  "timezone": "Asia/Shanghai",
+  "updatedAt": "2026-08-15T02:45:31.958Z",
+  "weekCount": 1,
+  "site": {
+    "pageviews": 40,
+    "visits": 11
+  },
+  "paths": {
+    "/": {
+      "pageviews": 25,
+      "visits": 11
+    },
+    "/work": {
+      "pageviews": 3,
+      "visits": 0
+    },
+    "/work/": {
+      "pageviews": 3,
+      "visits": 0
+    },
+    "/blog": {
+      "pageviews": 3,
+      "visits": 0
+    },
+    "/blog/": {
+      "pageviews": 3,
+      "visits": 0
+    },
+    "/projects": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/projects/": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/expertise": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/expertise/": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/publications": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/publications/": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/blog/memory-centric-robot-system": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/blog/memory-centric-robot-system/": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/blog/why-flow-matching-works": {
+      "pageviews": 1,
+      "visits": 0
+    },
+    "/blog/why-flow-matching-works/": {
+      "pageviews": 1,
+      "visits": 0
+    }
+  },
+  "historyUrl": "/analytics/cloudflare-history.json"
 }

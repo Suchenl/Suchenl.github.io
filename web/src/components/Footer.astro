@@ -16,13 +16,13 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
       <span class="site-stats" data-gc={gc || ''} data-cf={cfOn ? '1' : ''} hidden>
         <span data-l="zh" class="ss-cf" hidden>
           · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-          访问 <b class="ss-pageviews">–</b> · 访客 <b class="ss-visits">–</b>
-          <span class="stats-note">（近 7 天；访问=每次打开/刷新；访客=站外或直接进入的 Visit；约每 1h 随构建更新）</span>
+          累计访问 <b class="ss-pageviews">–</b> · 累计访客 <b class="ss-visits">–</b>
+          <span class="stats-note">（自建累加，自 <b class="ss-since">–</b> 起；每周一 0:00 北京时间拉取上周并入档；访问=每次打开/刷新，访客=CF Visit）</span>
         </span>
         <span data-l="en" class="ss-cf" hidden>
           · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-          <b class="ss-pageviews">–</b> views · <b class="ss-visits">–</b> visits
-          <span class="stats-note"> (last 7d; views=each load; visits=off-site/direct entry; refreshed ~1h on build)</span>
+          <b class="ss-pageviews">–</b> views · <b class="ss-visits">–</b> visits cumulative
+          <span class="stats-note"> (self-summed since <b class="ss-since">–</b>; weekly Mon 00:00 Asia/Shanghai; views=loads, visits=CF Visit)</span>
         </span>
         <span data-l="zh" class="ss-gc" hidden>
           · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
@@ -72,12 +72,15 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     const cfOn = el.dataset.cf === '1';
     const num = (s: unknown) => (typeof s === 'string' || typeof s === 'number' ? String(s) : null);
 
-    const showCf = (pageviews: string, visits: string) => {
+    const showCf = (pageviews: string, visits: string, sinceLabel: string) => {
       el.querySelectorAll<HTMLElement>('.ss-pageviews').forEach((n) => {
         n.textContent = pageviews;
       });
       el.querySelectorAll<HTMLElement>('.ss-visits').forEach((n) => {
         n.textContent = visits;
+      });
+      el.querySelectorAll<HTMLElement>('.ss-since').forEach((n) => {
+        n.textContent = sinceLabel || '–';
       });
       el.querySelectorAll<HTMLElement>('.ss-cf').forEach((n) => {
         n.hidden = false;
@@ -121,11 +124,12 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
         if (d?.ok && d.site) {
           const pageviews = num(d.site.pageviews) ?? '0';
           const visits = num(d.site.visits) ?? '0';
-          showCf(pageviews, visits);
+          const since = typeof d.accumulateSinceLabel === 'string' ? d.accumulateSinceLabel : '–';
+          showCf(pageviews, visits, since);
           return;
         }
         if (!cfOn) loadGc();
-        else showCf('0', '0');
+        else showCf('0', '0', '–');
       });
   }
 </script>

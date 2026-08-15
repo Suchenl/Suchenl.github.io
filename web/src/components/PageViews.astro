@@ -17,13 +17,13 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 >
   <span data-l="zh" class="pv-cf" hidden>
     · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-    访问 <b class="pv-pageviews">–</b> · 访客 <b class="pv-visits">–</b>
-    <span class="stats-note">（近 7 天；访问=每次打开/刷新；访客=站外或直接进入的 Visit，站内连看多页通常只计 1 次 Visit）</span>
+    累计访问 <b class="pv-pageviews">–</b> · 累计访客 <b class="pv-visits">–</b>
+    <span class="stats-note">（自 <b class="pv-since">–</b> 起累加；每周一更新）</span>
   </span>
   <span data-l="en" class="pv-cf" hidden>
     · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
     <b class="pv-pageviews">–</b> views · <b class="pv-visits">–</b> visits
-    <span class="stats-note"> (last 7d; views=each load/refresh; visits=entry from off-site/direct)</span>
+    <span class="stats-note"> (cumulative since <b class="pv-since">–</b>; weekly)</span>
   </span>
   <span data-l="zh" class="pv-gc" hidden>
     · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
@@ -61,12 +61,15 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     var code = el.getAttribute('data-gc');
     var cfOn = el.getAttribute('data-cf') === '1';
 
-    function showCf(pageviews, visits) {
+    function showCf(pageviews, visits, sinceLabel) {
       el.querySelectorAll('.pv-pageviews').forEach(function (n) {
         n.textContent = String(pageviews);
       });
       el.querySelectorAll('.pv-visits').forEach(function (n) {
         n.textContent = String(visits);
+      });
+      el.querySelectorAll('.pv-since').forEach(function (n) {
+        n.textContent = sinceLabel || '–';
       });
       el.querySelectorAll('.pv-cf').forEach(function (n) {
         n.hidden = false;
@@ -140,18 +143,19 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
         return r.ok ? r.json() : null;
       })
       .then(function (d) {
-        // Primary: Cloudflare whenever the build-time pull succeeded.
+        // Primary: Cloudflare cumulative JSON whenever present.
         if (d && d.ok) {
+          var since = d.accumulateSinceLabel || '–';
           var hit = lookupPath(d.paths || {});
-          if (hit) showCf(hit.pageviews || 0, hit.visits || 0);
-          else showCf(0, 0); // path not seen yet — still CF, not GoatCounter
+          if (hit) showCf(hit.pageviews || 0, hit.visits || 0, since);
+          else showCf(0, 0, since);
           return;
         }
         if (!cfOn) loadGc();
       })
       .catch(function () {
         if (!cfOn) loadGc();
-        else showCf(0, 0);
+        else showCf(0, 0, '–');
       });
 
     // GoatCounter lag retry — only when we are still on the GC fallback UI.
