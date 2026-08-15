@@ -4,7 +4,7 @@
  *
  * Env:
  *   CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG  (required to fetch)
- *   CF_WEEKLY_UPDATE=1   fetch the just-completed Beijing week and upsert history
+ *   CF_WEEKLY_UPDATE=1   fetch the current Beijing week (Mon 00:00 → next Mon 00:00) and upsert
  *   CF_BOOTSTRAP=1      if history empty, seed from accumulateSince → now (partial week OK)
  *
  * Without secrets / without UPDATE: rebuilds display JSON from existing history (if any).
@@ -13,7 +13,8 @@
  *   public/analytics/cloudflare-history.json  — weeks[] for trends + cumulative totals
  *   public/analytics/cloudflare.json          — display mirror for the site footer/posts
  *
- * Week boundary: Monday 00:00 Asia/Shanghai. Cron should run then and pull [Mon, next Mon).
+ * Week = Monday 00:00 → next Monday 00:00 Asia/Shanghai.
+ * Cron should run Sunday 23:59 Asia/Shanghai and pull that almost-finished week.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -246,23 +247,20 @@ async function main() {
       let weekId;
       let partial = false;
 
-      if (doWeekly) {
-        // Cron at Monday 00:00 Beijing: record the week that just ended.
-        const thisMonday = beijingWeekStart(new Date());
-        until = thisMonday;
-        since = addDaysUtc(thisMonday, -7);
-        weekId = beijingYmd(since);
-      } else {
-        // Bootstrap: from accumulateSince to now, tagged with current Beijing week's Monday.
+      if (history.weeks.length === 0) {
+        // First seed: accumulateSince → now (partial week until Sunday night finalize).
         since = new Date(ACCUMULATE_SINCE);
         until = new Date();
         weekId = beijingYmd(beijingWeekStart(until));
         partial = true;
+      } else {
+        // Sunday 23:59 Beijing: upsert this Mon→next-Mon week (through end of Sunday).
+        const thisMonday = beijingWeekStart(new Date());
+        since = thisMonday;
+        until = addDaysUtc(thisMonday, 7); // next Monday 00:00 CST ≡ end of Sunday
+        weekId = beijingYmd(since);
+        if (since < new Date(ACCUMULATE_SINCE)) since = new Date(ACCUMULATE_SINCE);
       }
-
-      // Don't start before accumulateSince
-      const accStart = new Date(ACCUMULATE_SINCE);
-      if (since < accStart) since = accStart;
 
       console.log(`[cf-analytics] fetching weekId=${weekId} ${toIsoZ(since)} → ${toIsoZ(until)} partial=${partial}`);
       const snap = await fetchWindow(since, until);

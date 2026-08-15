@@ -7,9 +7,9 @@ on:
     paths:
       - 'web/**'
       - '.github/workflows/deploy-astro.yml'
-  # Monday 00:00 Asia/Shanghai = Sunday 16:00 UTC — pull previous Beijing week into history.
+  # Sunday 23:59 Asia/Shanghai = Sunday 15:59 UTC — pull Mon→Sun week into history.
   schedule:
-    - cron: '0 16 * * 0'
+    - cron: '59 15 * * 0'
   workflow_dispatch:
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
         if: github.event_name == 'push'
         run: node scripts/fetch-cloudflare-analytics.mjs
 
-      # Monday cron / manual: fetch the completed Beijing week and upsert history.
+      # Sunday night cron / manual: fetch the Beijing Mon–Sun week and upsert history.
       - name: Weekly Cloudflare analytics update
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
