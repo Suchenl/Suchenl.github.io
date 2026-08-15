@@ -1,0 +1,256 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+---
+
+<Base
+  title="访问趋势"
+  description="本站公开的访问趋势与统计说明：自建累加、按周入库，数据来自 Cloudflare Web Analytics。"
+>
+  <h1 class="page-title"><Bi zh="访问趋势" en="Traffic trends" /></h1>
+  <p class="page-intro muted">
+    <Bi
+      zh="公开透明的站内流量。数字是本站自建累计，不是商业热度榜。"
+      en="Public, lightweight traffic for this site. Self-summed totals — not a rankings dashboard."
+    />
+  </p>
+
+  <section class="stats-summary" aria-live="polite">
+    <div class="stat">
+      <div class="stat-label"><span data-l="zh">累计访问</span><span data-l="en">Pageviews</span></div>
+      <div class="stat-value" id="sum-pv">–</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><span data-l="zh">累计访客</span><span data-l="en">Visits</span></div>
+      <div class="stat-value" id="sum-visits">–</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><span data-l="zh">累计自</span><span data-l="en">Since</span></div>
+      <div class="stat-value stat-since" id="sum-since">–</div>
+    </div>
+  </section>
+
+  <section class="chart-block">
+    <h2 class="section-title"><Bi zh="按周趋势" en="Weekly trend" /></h2>
+    <p class="muted chart-hint" id="chart-hint">
+      <span data-l="zh">加载中…</span><span data-l="en">Loading…</span>
+    </p>
+    <div class="chart-wrap" id="chart-wrap" hidden>
+      <svg id="trend-chart" viewBox="0 0 720 280" role="img" aria-label="Weekly pageviews and visits">
+        <g class="grid"></g>
+        <g class="series-pv"></g>
+        <g class="series-visits"></g>
+        <g class="axis"></g>
+      </svg>
+      <div class="legend">
+        <span class="leg pv"><span data-l="zh">访问</span><span data-l="en">Views</span></span>
+        <span class="leg visits"><span data-l="zh">访客</span><span data-l="en">Visits</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="method">
+    <h2 class="section-title"><Bi zh="统计方案" en="How counting works" /></h2>
+    <ul>
+      <li>
+        <span data-l="zh">采集：页面加载 Cloudflare Web Analytics beacon（无 cookie）。</span>
+        <span data-l="en">Collection: Cloudflare Web Analytics beacon (no cookies).</span>
+      </li>
+      <li>
+        <span data-l="zh">访问 = pageviews（每次打开/刷新都计）。访客 = Cloudflare Visit（站外或直接进入；站内连看多页通常计 1 次 Visit）。</span>
+        <span data-l="en">Views = pageviews (each load/refresh). Visits = Cloudflare Visit (off-site/direct entry).</span>
+      </li>
+      <li>
+        <span data-l="zh">展示数字为本站自建累计：自 2026-08-13 起，把每周快照相加。累计「访客」是各周 Visit 之和，不是终身不重复人数。</span>
+        <span data-l="en">Displayed totals are self-summed weekly snapshots since 2026-08-13. Cumulative visits sum weekly Visits — not lifetime unique people.</span>
+      </li>
+      <li>
+        <span data-l="zh">入库：北京时间每周日 23:59 拉取当周（周一 0:00 至下周一 0:00）并写入历史；同一周重跑会覆盖，避免双计。</span>
+        <span data-l="en">Ingest: each Sunday 23:59 Asia/Shanghai pulls that Mon–Sun week; re-runs upsert by week id (no double count).</span>
+      </li>
+      <li>
+        <span data-l="zh">Cloudflare 官方仪表盘是滚动窗口，和本页累计是两套账，不必强行对齐。</span>
+        <span data-l="en">Cloudflare’s dashboard is a rolling window; this page is a separate running total.</span>
+      </li>
+    </ul>
+    <p class="muted raw-links">
+      <span data-l="zh">原始数据：</span><span data-l="en">Raw data:</span>
+      <a href="/analytics/cloudflare-history.json">cloudflare-history.json</a>
+      ·
+      <a href="/analytics/cloudflare.json">cloudflare.json</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .stats-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1.25rem 0 2rem;
+  }
+  .stat {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+  }
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-bottom: 0.25rem;
+  }
+  .stat-value {
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .stat-since { font-size: 1.15rem; }
+  .section-title {
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem;
+  }
+  .chart-hint { margin: 0 0 0.75rem; }
+  .chart-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 0.5rem 0.5rem;
+    background: var(--surface);
+  }
+  #trend-chart { width: 100%; height: auto; display: block; }
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-top: 0.35rem;
+  }
+  .leg::before {
+    content: '';
+    display: inline-block;
+    width: 1rem;
+    height: 3px;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    border-radius: 2px;
+  }
+  .leg.pv::before { background: var(--accent); }
+  .leg.visits::before { background: #12a794; }
+  .method ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.65;
+  }
+  .method li { margin: 0.4rem 0; }
+  .raw-links { margin-top: 1rem; }
+  .raw-links a { color: inherit; }
+  @media (max-width: 640px) {
+    .stats-summary { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  type Week = {
+    weekId: string;
+    label?: string;
+    partial?: boolean;
+    site?: { pageviews?: number; visits?: number };
+  };
+
+  type History = {
+    ok?: boolean;
+    accumulateSinceLabel?: string;
+    site?: { pageviews?: number; visits?: number };
+    weeks?: Week[];
+  };
+
+  function drawChart(weeks: Week[]) {
+    const svg = document.getElementById('trend-chart');
+    const wrap = document.getElementById('chart-wrap');
+    const hint = document.getElementById('chart-hint');
+    if (!svg || !wrap || !hint) return;
+
+    const pts = weeks.map((w) => ({
+      id: w.weekId,
+      label: w.weekId.slice(5), // MM-DD
+      pv: Number(w.site?.pageviews) || 0,
+      visits: Number(w.site?.visits) || 0,
+      partial: Boolean(w.partial),
+    }));
+
+    if (!pts.length) {
+      hint.hidden = false;
+      hint.innerHTML =
+        '<span data-l="zh">还没有周数据。周日 23:59 入库后会出现折线。</span><span data-l="en">No weekly points yet.</span>';
+      return;
+    }
+
+    hint.hidden = true;
+    wrap.hidden = false;
+
+    const W = 720;
+    const H = 280;
+    const pad = { t: 24, r: 24, b: 40, l: 48 };
+    const iw = W - pad.l - pad.r;
+    const ih = H - pad.t - pad.b;
+    const maxY = Math.max(1, ...pts.map((p) => Math.max(p.pv, p.visits)));
+    const n = pts.length;
+    const xAt = (i: number) => pad.l + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
+    const yAt = (v: number) => pad.t + ih - (v / maxY) * ih;
+
+    const grid = svg.querySelector('.grid');
+    const axis = svg.querySelector('.axis');
+    const gPv = svg.querySelector('.series-pv');
+    const gV = svg.querySelector('.series-visits');
+    if (!grid || !axis || !gPv || !gV) return;
+    grid.innerHTML = '';
+    axis.innerHTML = '';
+    gPv.innerHTML = '';
+    gV.innerHTML = '';
+
+    const ticks = 4;
+    for (let i = 0; i <= ticks; i++) {
+      const v = Math.round((maxY * i) / ticks);
+      const y = yAt(v);
+      grid.innerHTML += `<line x1="${pad.l}" y1="${y}" x2="${W - pad.r}" y2="${y}" stroke="var(--border)" stroke-width="1" />`;
+      axis.innerHTML += `<text x="${pad.l - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="var(--fg-muted)">${v}</text>`;
+    }
+
+    const line = (key: 'pv' | 'visits', color: string, target: Element) => {
+      const d = pts
+        .map((p, i) => `${i === 0 ? 'M' : 'L'} ${xAt(i).toFixed(1)} ${yAt(p[key]).toFixed(1)}`)
+        .join(' ');
+      target.innerHTML += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />`;
+      pts.forEach((p, i) => {
+        target.innerHTML += `<circle cx="${xAt(i)}" cy="${yAt(p[key])}" r="3.5" fill="${color}" />`;
+      });
+    };
+    line('pv', 'var(--accent)', gPv);
+    line('visits', '#12a794', gV);
+
+    pts.forEach((p, i) => {
+      const suffix = p.partial ? '*' : '';
+      axis.innerHTML += `<text x="${xAt(i)}" y="${H - 14}" text-anchor="middle" font-size="11" fill="var(--fg-muted)">${p.label}${suffix}</text>`;
+    });
+  }
+
+  fetch('/analytics/cloudflare-history.json')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d: History | null) => {
+      const pv = document.getElementById('sum-pv');
+      const vis = document.getElementById('sum-visits');
+      const since = document.getElementById('sum-since');
+      if (pv) pv.textContent = d?.site?.pageviews != null ? String(d.site.pageviews) : '–';
+      if (vis) vis.textContent = d?.site?.visits != null ? String(d.site.visits) : '–';
+      if (since) since.textContent = d?.accumulateSinceLabel || '–';
+      drawChart(Array.isArray(d?.weeks) ? d!.weeks! : []);
+    })
+    .catch(() => {
+      const hint = document.getElementById('chart-hint');
+      if (hint) {
+        hint.hidden = false;
+        hint.textContent = 'Failed to load analytics history.';
+      }
+    });
+</script>

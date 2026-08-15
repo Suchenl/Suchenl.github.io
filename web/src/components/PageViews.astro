@@ -1,13 +1,11 @@
 ---
 /**
- * Per-page stats — Cloudflare first (访问=pageviews, 访客=visits).
- * GoatCounter kept as fallback only when CF JSON is missing/failed.
+ * Per-page stats — Cloudflare cumulative first; GoatCounter fallback.
+ * Long methodology lives on /analytics/.
  */
 import { FEATURES } from '../config';
 const gc = FEATURES.goatcounter;
 const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
-const cfHelp = 'https://developers.cloudflare.com/web-analytics/data-metrics/high-level-metrics/';
-const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 ---
 <span
   class="page-views"
@@ -16,24 +14,16 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
   hidden
 >
   <span data-l="zh" class="pv-cf" hidden>
-    · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-    累计访问 <b class="pv-pageviews">–</b> · 累计访客 <b class="pv-visits">–</b>
-    <span class="stats-note">（自 <b class="pv-since">–</b> 起累加；每周日 23:59 更新）</span>
+    · 访问 <b class="pv-pageviews">–</b> · 访客 <b class="pv-visits">–</b>
   </span>
   <span data-l="en" class="pv-cf" hidden>
-    · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-    <b class="pv-pageviews">–</b> views · <b class="pv-visits">–</b> visits
-    <span class="stats-note"> (cumulative since <b class="pv-since">–</b>; weekly Sun 23:59)</span>
+    · <b class="pv-pageviews">–</b> views · <b class="pv-visits">–</b> visits
   </span>
   <span data-l="zh" class="pv-gc" hidden>
-    · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
-    访客约 <b class="pv-gc-count">–</b>
-    <span class="stats-note">（兜底；站点+IP+UA，约 8h 内同路径刷新不计）</span>
+    · 访客约 <b class="pv-gc-count">–</b>
   </span>
   <span data-l="en" class="pv-gc" hidden>
-    · ~<b class="pv-gc-count">–</b> via
-    <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
-    <span class="stats-note"> (fallback; site+IP+UA, ~8h, same path)</span>
+    · ~<b class="pv-gc-count">–</b> visitors
   </span>
 </span>
 
@@ -43,15 +33,6 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
   .page-views b { font-weight: inherit; color: inherit; }
   .page-views .pv-cf[hidden],
   .page-views .pv-gc[hidden] { display: none; }
-  .stats-src {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-  }
-  .stats-note {
-    color: var(--fg-muted);
-    font-size: 0.9em;
-  }
 </style>
 
 <script is:inline>
@@ -61,15 +42,12 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     var code = el.getAttribute('data-gc');
     var cfOn = el.getAttribute('data-cf') === '1';
 
-    function showCf(pageviews, visits, sinceLabel) {
+    function showCf(pageviews, visits) {
       el.querySelectorAll('.pv-pageviews').forEach(function (n) {
         n.textContent = String(pageviews);
       });
       el.querySelectorAll('.pv-visits').forEach(function (n) {
         n.textContent = String(visits);
-      });
-      el.querySelectorAll('.pv-since').forEach(function (n) {
-        n.textContent = sinceLabel || '–';
       });
       el.querySelectorAll('.pv-cf').forEach(function (n) {
         n.hidden = false;
@@ -143,22 +121,19 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
         return r.ok ? r.json() : null;
       })
       .then(function (d) {
-        // Primary: Cloudflare cumulative JSON whenever present.
         if (d && d.ok) {
-          var since = d.accumulateSinceLabel || '–';
           var hit = lookupPath(d.paths || {});
-          if (hit) showCf(hit.pageviews || 0, hit.visits || 0, since);
-          else showCf(0, 0, since);
+          if (hit) showCf(hit.pageviews || 0, hit.visits || 0);
+          else showCf(0, 0);
           return;
         }
         if (!cfOn) loadGc();
       })
       .catch(function () {
         if (!cfOn) loadGc();
-        else showCf(0, 0, '–');
+        else showCf(0, 0);
       });
 
-    // GoatCounter lag retry — only when we are still on the GC fallback UI.
     setTimeout(function () {
       if (el.querySelector('.pv-gc:not([hidden])')) loadGc();
     }, 900);

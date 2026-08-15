@@ -3,8 +3,6 @@ import { AUTHOR, FEATURES } from '../config';
 const year = new Date().getFullYear();
 const gc = FEATURES.goatcounter;
 const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
-const cfHelp = 'https://developers.cloudflare.com/web-analytics/data-metrics/high-level-metrics/';
-const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
 ---
 
 <footer class="site-footer">
@@ -15,24 +13,20 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
       <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
       <span class="site-stats" data-gc={gc || ''} data-cf={cfOn ? '1' : ''} hidden>
         <span data-l="zh" class="ss-cf" hidden>
-          · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-          累计访问 <b class="ss-pageviews">–</b> · 累计访客 <b class="ss-visits">–</b>
-          <span class="stats-note">（自建累加，自 <b class="ss-since">–</b> 起；每周日 23:59 北京时间收集本周并入档；访问=每次打开/刷新，访客=CF Visit）</span>
+          · 访问 <b class="ss-pageviews">–</b> · 访客 <b class="ss-visits">–</b>
+          · <a class="stats-src" href="/analytics/">趋势</a>
         </span>
         <span data-l="en" class="ss-cf" hidden>
-          · <a class="stats-src" href={cfHelp} target="_blank" rel="noopener noreferrer">Cloudflare</a>
-          <b class="ss-pageviews">–</b> views · <b class="ss-visits">–</b> visits cumulative
-          <span class="stats-note"> (self-summed since <b class="ss-since">–</b>; weekly Sun 23:59 Asia/Shanghai; views=loads, visits=CF Visit)</span>
+          · <b class="ss-pageviews">–</b> views · <b class="ss-visits">–</b> visits
+          · <a class="stats-src" href="/analytics/">trends</a>
         </span>
         <span data-l="zh" class="ss-gc" hidden>
-          · <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
-          访客约 <b class="gc-visitors">–</b>
-          <span class="stats-note">（兜底；站点+IP+UA，约 8h 内同路径刷新不计）</span>
+          · 访客约 <b class="gc-visitors">–</b>
+          · <a class="stats-src" href="/analytics/">趋势</a>
         </span>
         <span data-l="en" class="ss-gc" hidden>
-          · ~<b class="gc-visitors">–</b> via
-          <a class="stats-src" href={gcSessionsHelp} target="_blank" rel="noopener noreferrer">GoatCounter</a>
-          <span class="stats-note"> (fallback; site+IP+UA ~8h same path)</span>
+          · ~<b class="gc-visitors">–</b> visitors
+          · <a class="stats-src" href="/analytics/">trends</a>
         </span>
       </span>
     </p>
@@ -57,10 +51,6 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     text-decoration: underline;
     text-underline-offset: 0.15em;
   }
-  .stats-note {
-    color: var(--fg-muted);
-    font-size: 0.85em;
-  }
 </style>
 
 <script>
@@ -72,15 +62,12 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
     const cfOn = el.dataset.cf === '1';
     const num = (s: unknown) => (typeof s === 'string' || typeof s === 'number' ? String(s) : null);
 
-    const showCf = (pageviews: string, visits: string, sinceLabel: string) => {
+    const showCf = (pageviews: string, visits: string) => {
       el.querySelectorAll<HTMLElement>('.ss-pageviews').forEach((n) => {
         n.textContent = pageviews;
       });
       el.querySelectorAll<HTMLElement>('.ss-visits').forEach((n) => {
         n.textContent = visits;
-      });
-      el.querySelectorAll<HTMLElement>('.ss-since').forEach((n) => {
-        n.textContent = sinceLabel || '–';
       });
       el.querySelectorAll<HTMLElement>('.ss-cf').forEach((n) => {
         n.hidden = false;
@@ -122,14 +109,11 @@ const gcSessionsHelp = 'https://www.goatcounter.com/help/sessions';
       .catch(() => null)
       .then((d) => {
         if (d?.ok && d.site) {
-          const pageviews = num(d.site.pageviews) ?? '0';
-          const visits = num(d.site.visits) ?? '0';
-          const since = typeof d.accumulateSinceLabel === 'string' ? d.accumulateSinceLabel : '–';
-          showCf(pageviews, visits, since);
+          showCf(num(d.site.pageviews) ?? '0', num(d.site.visits) ?? '0');
           return;
         }
         if (!cfOn) loadGc();
-        else showCf('0', '0', '–');
+        else showCf('0', '0');
       });
   }
 </script>
