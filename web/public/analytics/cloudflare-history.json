@@ -4,7 +4,7 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-08-15T02:45:31.958Z",
+  "updatedAt": "2026-08-16T16:22:38.028Z",
   "site": {
     "pageviews": 40,
     "visits": 11
@@ -145,6 +145,19 @@
           "visits": 0
         }
       }
+    },
+    {
+      "weekId": "2026-08-17",
+      "label": "2026-08-17 ~ 2026-08-24",
+      "since": "2026-08-16T16:00:00Z",
+      "until": "2026-08-23T16:00:00Z",
+      "fetchedAt": "2026-08-16T16:22:38.027Z",
+      "partial": false,
+      "site": {
+        "pageviews": 0,
+        "visits": 0
+      },
+      "paths": {}
     }
   ]
 }
