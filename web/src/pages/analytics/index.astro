@@ -65,8 +65,8 @@ import Bi from '../../components/Bi.astro';
         <span data-l="en">Displayed totals are self-summed weekly snapshots since 2026-08-13. Cumulative visits sum weekly Visits — not lifetime unique people.</span>
       </li>
       <li>
-        <span data-l="zh">入库：北京时间每周日 23:59 拉取当周（周一 0:00 至下周一 0:00）并写入历史；同一周重跑会覆盖，避免双计。</span>
-        <span data-l="en">Ingest: each Sunday 23:59 Asia/Shanghai pulls that Mon–Sun week; re-runs upsert by week id (no double count).</span>
+        <span data-l="zh">入库：北京时间每周日 23:59 拉取当周（周一 0:00～下周一 0:00）的访问/访客，记为一个时间点，日期形如 20260816；同一天重跑会覆盖。若任务延迟到周一凌晨，仍记到刚过去的那个周日。</span>
+        <span data-l="en">Ingest: each Sunday 23:59 Asia/Shanghai stores that Mon–Sun week as one point labeled YYYYMMDD (e.g. 20260816). Late Monday runs still use the previous Sunday.</span>
       </li>
       <li>
         <span data-l="zh">Cloudflare 官方仪表盘是滚动窗口，和本页累计是两套账，不必强行对齐。</span>
@@ -154,10 +154,8 @@ import Bi from '../../components/Bi.astro';
 </style>
 
 <script>
-  type Week = {
-    weekId: string;
-    label?: string;
-    partial?: boolean;
+  type Snapshot = {
+    id: string;
     site?: { pageviews?: number; visits?: number };
   };
 
@@ -165,21 +163,21 @@ import Bi from '../../components/Bi.astro';
     ok?: boolean;
     accumulateSinceLabel?: string;
     site?: { pageviews?: number; visits?: number };
-    weeks?: Week[];
+    snapshots?: Snapshot[];
+    weeks?: { weekId: string; site?: { pageviews?: number; visits?: number } }[];
   };
 
-  function drawChart(weeks: Week[]) {
+  function drawChart(snapshots: Snapshot[]) {
     const svg = document.getElementById('trend-chart');
     const wrap = document.getElementById('chart-wrap');
     const hint = document.getElementById('chart-hint');
     if (!svg || !wrap || !hint) return;
 
-    const pts = weeks.map((w) => ({
-      id: w.weekId,
-      label: w.weekId.slice(5), // MM-DD
-      pv: Number(w.site?.pageviews) || 0,
-      visits: Number(w.site?.visits) || 0,
-      partial: Boolean(w.partial),
+    const pts = snapshots.map((s) => ({
+      id: s.id,
+      label: s.id, // YYYYMMDD
+      pv: Number(s.site?.pageviews) || 0,
+      visits: Number(s.site?.visits) || 0,
     }));
 
     if (!pts.length) {
@@ -194,7 +192,7 @@ import Bi from '../../components/Bi.astro';
 
     const W = 720;
     const H = 280;
-    const pad = { t: 24, r: 24, b: 40, l: 48 };
+    const pad = { t: 24, r: 24, b: 48, l: 48 };
     const iw = W - pad.l - pad.r;
     const ih = H - pad.t - pad.b;
     const maxY = Math.max(1, ...pts.map((p) => Math.max(p.pv, p.visits)));
@@ -233,8 +231,7 @@ import Bi from '../../components/Bi.astro';
     line('visits', '#12a794', gV);
 
     pts.forEach((p, i) => {
-      const suffix = p.partial ? '*' : '';
-      axis.innerHTML += `<text x="${xAt(i)}" y="${H - 14}" text-anchor="middle" font-size="11" fill="var(--fg-muted)">${p.label}${suffix}</text>`;
+      axis.innerHTML += `<text x="${xAt(i)}" y="${H - 16}" text-anchor="middle" font-size="11" fill="var(--fg-muted)">${p.label}</text>`;
     });
   }
 
@@ -247,7 +244,12 @@ import Bi from '../../components/Bi.astro';
       if (pv) pv.textContent = d?.site?.pageviews != null ? String(d.site.pageviews) : '–';
       if (vis) vis.textContent = d?.site?.visits != null ? String(d.site.visits) : '–';
       if (since) since.textContent = d?.accumulateSinceLabel || '–';
-      drawChart(Array.isArray(d?.weeks) ? d!.weeks! : []);
+
+      let snaps: Snapshot[] = Array.isArray(d?.snapshots) ? d!.snapshots! : [];
+      if (!snaps.length && Array.isArray(d?.weeks)) {
+        snaps = d!.weeks!.map((w) => ({ id: (w.weekId || '').replace(/-/g, ''), site: w.site }));
+      }
+      drawChart(snaps);
     })
     .catch(() => {
       const hint = document.getElementById('chart-hint');

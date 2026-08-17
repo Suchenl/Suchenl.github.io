@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 /**
- * Cloudflare Web Analytics → cumulative site stats + weekly history.
+ * Cloudflare Web Analytics → cumulative totals + weekly snapshots.
  *
  * Env:
- *   CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG  (required to fetch)
- *   CF_WEEKLY_UPDATE=1   fetch the current Beijing week (Mon 00:00 → next Mon 00:00) and upsert
- *   CF_BOOTSTRAP=1      if history empty, seed from accumulateSince → now (partial week OK)
+ *   CF_ACCOUNT_ID, CF_API_TOKEN, CF_SITE_TAG
+ *   CF_WEEKLY_UPDATE=1  append/upsert one Sunday snapshot (last 7 days)
+ *   CF_BOOTSTRAP=1     if history empty, seed one snapshot now
  *
- * Without secrets / without UPDATE: rebuilds display JSON from existing history (if any).
+ * Without UPDATE: rebuild display JSON from existing history only.
+ *
+ * Snapshot id = Beijing Sunday date as YYYYMMDD (e.g. 20260816).
+ * Cron: Sunday ~23:59 Asia/Shanghai. If Actions runs late into Monday,
+ * we still attribute the snapshot to the most recent Sunday.
  *
  * Writes:
- *   public/analytics/cloudflare-history.json  — weeks[] for trends + cumulative totals
- *   public/analytics/cloudflare.json          — display mirror for the site footer/posts
- *
- * Week = Monday 00:00 → next Monday 00:00 Asia/Shanghai.
- * Cron should run Sunday 23:59 Asia/Shanghai and pull that almost-finished week.
+ *   public/analytics/cloudflare-history.json
+ *   public/analytics/cloudflare.json
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -31,7 +32,6 @@ const siteTag = process.env.CF_SITE_TAG?.trim();
 const doWeekly = process.env.CF_WEEKLY_UPDATE === '1';
 const doBootstrap = process.env.CF_BOOTSTRAP === '1';
 
-/** Beacon / accumulation start (Beijing calendar day). */
 const ACCUMULATE_SINCE_LABEL = '2026-08-13';
 const ACCUMULATE_SINCE = '2026-08-13T00:00:00+08:00';
 
@@ -64,32 +64,52 @@ function toIsoZ(d) {
   return d.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-/** Format a Date as YYYY-MM-DD in Asia/Shanghai. */
-function beijingYmd(d) {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Shanghai',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(d);
+function beijingParts(d = new Date()) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      weekday: 'short',
+    })
+      .formatToParts(d)
+      .filter((p) => p.type !== 'literal')
+      .map((p) => [p.type, p.value]),
+  );
+  const y = Number(parts.year);
+  const m = Number(parts.month);
+  const day = Number(parts.day);
+  const weekday = parts.weekday; // Mon Tue ...
+  return { y, m, day, weekday, ymd: `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}` };
 }
 
-/** Monday 00:00 Asia/Shanghai as a UTC Date, for the Beijing week containing `d`. */
-function beijingWeekStart(d = new Date()) {
-  const ymd = beijingYmd(d);
-  const [y, m, day] = ymd.split('-').map(Number);
-  // Noon UTC on that Beijing calendar day → stable weekday in Shanghai
-  const probe = new Date(Date.UTC(y, m - 1, day, 4, 0, 0)); // 12:00 CST
-  const wd = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Shanghai', weekday: 'short' }).format(probe);
-  const map = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
-  const offset = map[wd] ?? 0;
-  const mondayDay = day - offset;
-  // Monday 00:00 CST = Sunday 16:00 UTC
-  return new Date(Date.UTC(y, m - 1, mondayDay, -8, 0, 0));
+/** Most recent Sunday in Asia/Shanghai (today if Sunday). */
+function mostRecentBeijingSunday(d = new Date()) {
+  const { y, m, day, weekday } = beijingParts(d);
+  const back = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[weekday] ?? 0;
+  // Noon CST probe day, then subtract `back` days → Sunday calendar date
+  const noonUtc = Date.UTC(y, m - 1, day, 4, 0, 0); // 12:00 CST
+  const sundayNoon = new Date(noonUtc - back * 86400000);
+  const sp = beijingParts(sundayNoon);
+  // Sunday 00:00 CST = Sat 16:00 UTC
+  const start = new Date(Date.UTC(sp.y, sp.m - 1, sp.day, -8, 0, 0));
+  return {
+    start, // Sunday 00:00 CST
+    end: new Date(start.getTime() + 7 * 86400000), // next Sunday 00:00 CST
+    // Collection label: that Sunday as YYYYMMDD
+    id: `${sp.y}${String(sp.m).padStart(2, '0')}${String(sp.day).padStart(2, '0')}`,
+    ymd: sp.ymd,
+  };
 }
 
-function addDaysUtc(d, n) {
-  return new Date(d.getTime() + n * 24 * 60 * 60 * 1000);
+/** Week window for a Sunday collection: Mon 00:00 → next Mon 00:00 (contains that Sunday). */
+function weekWindowForSunday(sundayStart) {
+  // sundayStart is Sunday 00:00 CST; Monday of that week is -6 days? 
+  // Calendar week Mon–Sun: Monday = Sunday - 6 days.
+  const monday = new Date(sundayStart.getTime() - 6 * 86400000);
+  const nextMonday = new Date(monday.getTime() + 7 * 86400000);
+  return { since: monday, until: nextMonday };
 }
 
 function normPath(p) {
@@ -100,10 +120,6 @@ function normPath(p) {
   return s || '/';
 }
 
-function emptyPaths() {
-  return {};
-}
-
 function addPath(map, raw, pageviews, visits) {
   const key = normPath(raw);
   const cur = map[key] || { pageviews: 0, visits: 0 };
@@ -111,14 +127,13 @@ function addPath(map, raw, pageviews, visits) {
   cur.visits += visits;
   map[key] = cur;
   if (key !== '/') {
-    const withSlash = `${key}/`;
-    map[withSlash] = { pageviews: cur.pageviews, visits: cur.visits };
+    map[`${key}/`] = { pageviews: cur.pageviews, visits: cur.visits };
   }
 }
 
 function mergePaths(into, from) {
   for (const [k, v] of Object.entries(from || {})) {
-    if (k.endsWith('/') && k !== '/') continue; // rebuild slash aliases from canonical
+    if (k.endsWith('/') && k !== '/') continue;
     addPath(into, k, Number(v.pageviews) || 0, Number(v.visits) || 0);
   }
 }
@@ -155,14 +170,11 @@ async function fetchWindow(since, until) {
   });
   const body = await res.json().catch(() => null);
   if (!res.ok || !body || body.errors?.length) {
-    const err = new Error(`GraphQL failed: ${res.status} ${JSON.stringify(body?.errors || body)}`);
-    err.body = body;
-    err.status = res.status;
-    throw err;
+    throw new Error(`GraphQL failed: ${res.status} ${JSON.stringify(body?.errors || body)}`);
   }
   const account = body.data?.viewer?.accounts?.[0];
   const totalsRow = account?.totals?.[0];
-  const paths = emptyPaths();
+  const paths = {};
   for (const row of account?.byPath || []) {
     addPath(paths, row.dimensions?.requestPath, Number(row.count) || 0, Number(row.sum?.visits) || 0);
   }
@@ -175,27 +187,28 @@ async function fetchWindow(since, until) {
   };
 }
 
-function sumWeeks(weeks) {
+function sumSnapshots(snapshots) {
   const site = { pageviews: 0, visits: 0 };
-  const paths = emptyPaths();
-  for (const w of weeks) {
-    site.pageviews += Number(w.site?.pageviews) || 0;
-    site.visits += Number(w.site?.visits) || 0;
-    mergePaths(paths, w.paths);
+  const paths = {};
+  for (const s of snapshots) {
+    site.pageviews += Number(s.site?.pageviews) || 0;
+    site.visits += Number(s.site?.visits) || 0;
+    mergePaths(paths, s.paths);
   }
   return { site, paths };
 }
 
-function upsertWeek(weeks, week) {
-  const i = weeks.findIndex((w) => w.weekId === week.weekId);
-  if (i >= 0) weeks[i] = week;
-  else weeks.push(week);
-  weeks.sort((a, b) => a.weekId.localeCompare(b.weekId));
-  return weeks;
+function upsertSnapshot(snapshots, snap) {
+  const i = snapshots.findIndex((s) => s.id === snap.id);
+  if (i >= 0) snapshots[i] = snap;
+  else snapshots.push(snap);
+  snapshots.sort((a, b) => a.id.localeCompare(b.id));
+  return snapshots;
 }
 
-function emptyHistory() {
-  return {
+/** Migrate old weeks[] shape → snapshots[]. */
+function normalizeHistory(raw) {
+  const base = {
     ok: true,
     source: 'cloudflare-web-analytics-cumulative',
     timezone: 'Asia/Shanghai',
@@ -204,23 +217,59 @@ function emptyHistory() {
     updatedAt: null,
     site: { pageviews: 0, visits: 0 },
     paths: {},
-    weeks: [],
+    snapshots: [],
+  };
+  if (!raw || typeof raw !== 'object') return base;
+
+  let snapshots = Array.isArray(raw.snapshots) ? [...raw.snapshots] : [];
+  if (!snapshots.length && Array.isArray(raw.weeks)) {
+    // Drop bogus Monday-keyed empty points; keep real data as best-effort.
+    for (const w of raw.weeks) {
+      const pv = Number(w.site?.pageviews) || 0;
+      const visits = Number(w.site?.visits) || 0;
+      if (pv === 0 && visits === 0) continue;
+      // Old weekId was Monday YYYY-MM-DD → map to that week's Sunday YYYYMMDD
+      let id = w.weekId;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(id)) {
+        const [y, m, d] = id.split('-').map(Number);
+        const monday = new Date(Date.UTC(y, m - 1, d, -8, 0, 0));
+        const sunday = new Date(monday.getTime() + 6 * 86400000);
+        const sp = beijingParts(sunday);
+        id = `${sp.y}${String(sp.m).padStart(2, '0')}${String(sp.day).padStart(2, '0')}`;
+      }
+      snapshots.push({
+        id,
+        fetchedAt: w.fetchedAt || null,
+        since: w.since,
+        until: w.until,
+        site: w.site,
+        paths: w.paths || {},
+      });
+    }
+  }
+
+  return {
+    ...base,
+    ...raw,
+    accumulateSince: raw.accumulateSince || ACCUMULATE_SINCE,
+    accumulateSinceLabel: raw.accumulateSinceLabel || ACCUMULATE_SINCE_LABEL,
+    snapshots,
+    weeks: undefined,
   };
 }
 
 function toDisplay(history) {
   return {
-    ok: Boolean(history?.ok) && Array.isArray(history.weeks),
+    ok: Boolean(history?.ok) && Array.isArray(history.snapshots),
     source: 'cloudflare-web-analytics-cumulative',
     mode: 'cumulative',
     accumulateSince: history.accumulateSince,
     accumulateSinceLabel: history.accumulateSinceLabel,
     timezone: history.timezone || 'Asia/Shanghai',
     updatedAt: history.updatedAt,
-    weekCount: history.weeks?.length || 0,
+    snapshotCount: history.snapshots?.length || 0,
     site: history.site || { pageviews: 0, visits: 0 },
     paths: history.paths || {},
-    // Pointer for charts / debugging
     historyUrl: '/analytics/cloudflare-history.json',
   };
 }
@@ -230,55 +279,48 @@ function canFetch() {
 }
 
 async function main() {
-  let history = (await readJson(historyPath)) || emptyHistory();
-  if (!history.weeks) history.weeks = [];
-  history.accumulateSince = history.accumulateSince || ACCUMULATE_SINCE;
-  history.accumulateSinceLabel = history.accumulateSinceLabel || ACCUMULATE_SINCE_LABEL;
+  let history = normalizeHistory(await readJson(historyPath));
   history.timezone = 'Asia/Shanghai';
 
-  const wantFetch = doWeekly || (doBootstrap && history.weeks.length === 0);
+  const wantFetch = doWeekly || (doBootstrap && history.snapshots.length === 0);
 
   if (wantFetch && !canFetch()) {
     console.warn('[cf-analytics] secrets missing — cannot fetch; rewriting display from history only');
   } else if (wantFetch && canFetch()) {
     try {
+      const sunday = mostRecentBeijingSunday(new Date());
       let since;
       let until;
-      let weekId;
-      let partial = false;
+      let id = sunday.id;
 
-      if (history.weeks.length === 0) {
-        // First seed: accumulateSince → now (partial week until Sunday night finalize).
+      if (history.snapshots.length === 0 && doBootstrap && !doWeekly) {
         since = new Date(ACCUMULATE_SINCE);
         until = new Date();
-        weekId = beijingYmd(beijingWeekStart(until));
-        partial = true;
+        const sp = beijingParts(until);
+        id = `${sp.y}${String(sp.m).padStart(2, '0')}${String(sp.day).padStart(2, '0')}`;
       } else {
-        // Sunday 23:59 Beijing: upsert this Mon→next-Mon week (through end of Sunday).
-        const thisMonday = beijingWeekStart(new Date());
-        since = thisMonday;
-        until = addDaysUtc(thisMonday, 7); // next Monday 00:00 CST ≡ end of Sunday
-        weekId = beijingYmd(since);
+        const win = weekWindowForSunday(sunday.start);
+        since = win.since;
+        until = win.until;
+        id = sunday.id;
         if (since < new Date(ACCUMULATE_SINCE)) since = new Date(ACCUMULATE_SINCE);
       }
 
-      console.log(`[cf-analytics] fetching weekId=${weekId} ${toIsoZ(since)} → ${toIsoZ(until)} partial=${partial}`);
-      const snap = await fetchWindow(since, until);
-      const week = {
-        weekId,
-        label: `${weekId} ~ ${beijingYmd(until)}`,
+      console.log(`[cf-analytics] snapshot id=${id} ${toIsoZ(since)} → ${toIsoZ(until)}`);
+      const snapData = await fetchWindow(since, until);
+      const snap = {
+        id,
+        fetchedAt: new Date().toISOString(),
         since: toIsoZ(since),
         until: toIsoZ(until),
-        fetchedAt: new Date().toISOString(),
-        partial,
-        site: snap.site,
-        paths: snap.paths,
+        site: snapData.site,
+        paths: snapData.paths,
       };
-      history.weeks = upsertWeek(history.weeks, week);
-      console.log(`[cf-analytics] week ${weekId}: pageviews=${snap.site.pageviews} visits=${snap.site.visits}`);
+      history.snapshots = upsertSnapshot(history.snapshots, snap);
+      console.log(`[cf-analytics] ${id}: pageviews=${snap.site.pageviews} visits=${snap.site.visits}`);
     } catch (e) {
       console.error('[cf-analytics] fetch failed:', e.message || e);
-      if (!history.weeks.length) {
+      if (!history.snapshots.length) {
         await writeJson(displayPath, {
           ok: false,
           reason: 'graphql-error',
@@ -286,23 +328,23 @@ async function main() {
         });
         process.exit(0);
       }
-      // Keep prior history on transient failure
     }
   } else {
-    console.log('[cf-analytics] skip fetch (set CF_WEEKLY_UPDATE=1 or CF_BOOTSTRAP=1 to pull)');
+    console.log('[cf-analytics] skip fetch (set CF_WEEKLY_UPDATE=1 to pull)');
   }
 
-  const summed = sumWeeks(history.weeks);
+  const summed = sumSnapshots(history.snapshots);
   history.ok = true;
   history.source = 'cloudflare-web-analytics-cumulative';
   history.site = summed.site;
   history.paths = summed.paths;
   history.updatedAt = new Date().toISOString();
+  delete history.weeks;
 
   await writeJson(historyPath, history);
   await writeJson(displayPath, toDisplay(history));
   console.log(
-    `[cf-analytics] cumulative since ${history.accumulateSinceLabel}: pageviews=${history.site.pageviews} visits=${history.site.visits} weeks=${history.weeks.length}`,
+    `[cf-analytics] cumulative since ${history.accumulateSinceLabel}: pageviews=${history.site.pageviews} visits=${history.site.visits} snapshots=${history.snapshots.length}`,
   );
 }
 

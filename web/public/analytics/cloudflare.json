@@ -5,22 +5,62 @@
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
   "timezone": "Asia/Shanghai",
-  "updatedAt": "2026-08-16T16:22:38.028Z",
-  "weekCount": 2,
+  "updatedAt": "2026-08-17T08:28:49.268Z",
+  "snapshotCount": 1,
   "site": {
-    "pageviews": 40,
-    "visits": 11
+    "pageviews": 77,
+    "visits": 15
   },
   "paths": {
     "/": {
-      "pageviews": 25,
-      "visits": 11
+      "pageviews": 31,
+      "visits": 12
+    },
+    "/publications": {
+      "pageviews": 13,
+      "visits": 2
+    },
+    "/publications/": {
+      "pageviews": 13,
+      "visits": 2
+    },
+    "/analytics": {
+      "pageviews": 9,
+      "visits": 1
+    },
+    "/analytics/": {
+      "pageviews": 9,
+      "visits": 1
     },
     "/work": {
-      "pageviews": 3,
+      "pageviews": 6,
       "visits": 0
     },
     "/work/": {
+      "pageviews": 6,
+      "visits": 0
+    },
+    "/projects": {
+      "pageviews": 5,
+      "visits": 0
+    },
+    "/projects/": {
+      "pageviews": 5,
+      "visits": 0
+    },
+    "/expertise": {
+      "pageviews": 5,
+      "visits": 0
+    },
+    "/expertise/": {
+      "pageviews": 5,
+      "visits": 0
+    },
+    "/blog/why-flow-matching-works": {
+      "pageviews": 3,
+      "visits": 0
+    },
+    "/blog/why-flow-matching-works/": {
       "pageviews": 3,
       "visits": 0
     },
@@ -32,44 +72,12 @@
       "pageviews": 3,
       "visits": 0
     },
-    "/projects": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/projects/": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/expertise": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/expertise/": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/publications": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/publications/": {
-      "pageviews": 2,
-      "visits": 0
-    },
     "/blog/memory-centric-robot-system": {
       "pageviews": 2,
       "visits": 0
     },
     "/blog/memory-centric-robot-system/": {
       "pageviews": 2,
-      "visits": 0
-    },
-    "/blog/why-flow-matching-works": {
-      "pageviews": 1,
-      "visits": 0
-    },
-    "/blog/why-flow-matching-works/": {
-      "pageviews": 1,
       "visits": 0
     }
   },
