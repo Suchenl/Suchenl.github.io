@@ -4,70 +4,70 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-08-30T19:03:11.301Z",
+  "updatedAt": "2026-08-31T11:51:33.223Z",
   "site": {
-    "pageviews": 137,
-    "visits": 41
+    "pageviews": 131,
+    "visits": 53
   },
   "paths": {
     "/": {
-      "pageviews": 60,
-      "visits": 36
+      "pageviews": 70,
+      "visits": 49
     },
     "/publications": {
-      "pageviews": 19,
-      "visits": 3
+      "pageviews": 24,
+      "visits": 2
     },
     "/publications/": {
-      "pageviews": 19,
-      "visits": 3
+      "pageviews": 24,
+      "visits": 2
     },
     "/analytics": {
-      "pageviews": 13,
+      "pageviews": 11,
       "visits": 2
     },
     "/analytics/": {
-      "pageviews": 13,
+      "pageviews": 11,
       "visits": 2
     },
     "/work": {
-      "pageviews": 11,
+      "pageviews": 7,
       "visits": 0
     },
     "/work/": {
-      "pageviews": 11,
+      "pageviews": 7,
       "visits": 0
     },
     "/projects": {
-      "pageviews": 12,
+      "pageviews": 6,
       "visits": 0
     },
     "/projects/": {
-      "pageviews": 12,
+      "pageviews": 6,
       "visits": 0
     },
     "/expertise": {
-      "pageviews": 7,
+      "pageviews": 5,
       "visits": 0
     },
     "/expertise/": {
-      "pageviews": 7,
+      "pageviews": 5,
       "visits": 0
     },
     "/blog/why-flow-matching-works": {
-      "pageviews": 5,
+      "pageviews": 3,
       "visits": 0
     },
     "/blog/why-flow-matching-works/": {
-      "pageviews": 5,
+      "pageviews": 3,
       "visits": 0
     },
     "/blog": {
-      "pageviews": 6,
+      "pageviews": 3,
       "visits": 0
     },
     "/blog/": {
-      "pageviews": 6,
+      "pageviews": 3,
       "visits": 0
     },
     "/blog/memory-centric-robot-system": {
@@ -75,14 +75,6 @@
       "visits": 0
     },
     "/blog/memory-centric-robot-system/": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/blog/hello-world": {
-      "pageviews": 2,
-      "visits": 0
-    },
-    "/blog/hello-world/": {
       "pageviews": 2,
       "visits": 0
     }
@@ -218,80 +210,24 @@
     },
     {
       "id": "20260830",
-      "fetchedAt": "2026-08-30T19:03:11.300Z",
+      "fetchedAt": "2026-08-31T11:51:33.222Z",
       "since": "2026-08-23T16:00:00Z",
       "until": "2026-08-30T16:00:00Z",
       "site": {
-        "pageviews": 46,
-        "visits": 18
+        "pageviews": 40,
+        "visits": 30
       },
       "paths": {
         "/": {
-          "pageviews": 20,
-          "visits": 17
-        },
-        "/projects": {
-          "pageviews": 6,
-          "visits": 0
-        },
-        "/projects/": {
-          "pageviews": 6,
-          "visits": 0
+          "pageviews": 30,
+          "visits": 30
         },
         "/publications": {
-          "pageviews": 5,
-          "visits": 1
+          "pageviews": 10,
+          "visits": 0
         },
         "/publications/": {
-          "pageviews": 5,
-          "visits": 1
-        },
-        "/work": {
-          "pageviews": 4,
-          "visits": 0
-        },
-        "/work/": {
-          "pageviews": 4,
-          "visits": 0
-        },
-        "/blog": {
-          "pageviews": 3,
-          "visits": 0
-        },
-        "/blog/": {
-          "pageviews": 3,
-          "visits": 0
-        },
-        "/blog/why-flow-matching-works": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/blog/why-flow-matching-works/": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/expertise": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/expertise/": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/blog/hello-world": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/blog/hello-world/": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/analytics": {
-          "pageviews": 2,
-          "visits": 0
-        },
-        "/analytics/": {
-          "pageviews": 2,
+          "pageviews": 10,
           "visits": 0
         }
       }
