@@ -4,38 +4,38 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-08-31T11:51:33.223Z",
+  "updatedAt": "2026-09-06T17:51:45.767Z",
   "site": {
-    "pageviews": 131,
-    "visits": 53
+    "pageviews": 176,
+    "visits": 86
   },
   "paths": {
     "/": {
-      "pageviews": 70,
-      "visits": 49
+      "pageviews": 105,
+      "visits": 82
     },
     "/publications": {
-      "pageviews": 24,
+      "pageviews": 29,
       "visits": 2
     },
     "/publications/": {
-      "pageviews": 24,
+      "pageviews": 29,
       "visits": 2
     },
     "/analytics": {
-      "pageviews": 11,
+      "pageviews": 12,
       "visits": 2
     },
     "/analytics/": {
-      "pageviews": 11,
+      "pageviews": 12,
       "visits": 2
     },
     "/work": {
-      "pageviews": 7,
+      "pageviews": 8,
       "visits": 0
     },
     "/work/": {
-      "pageviews": 7,
+      "pageviews": 8,
       "visits": 0
     },
     "/projects": {
@@ -47,11 +47,11 @@
       "visits": 0
     },
     "/expertise": {
-      "pageviews": 5,
+      "pageviews": 7,
       "visits": 0
     },
     "/expertise/": {
-      "pageviews": 5,
+      "pageviews": 7,
       "visits": 0
     },
     "/blog/why-flow-matching-works": {
@@ -63,11 +63,11 @@
       "visits": 0
     },
     "/blog": {
-      "pageviews": 3,
+      "pageviews": 4,
       "visits": 0
     },
     "/blog/": {
-      "pageviews": 3,
+      "pageviews": 4,
       "visits": 0
     },
     "/blog/memory-centric-robot-system": {
@@ -228,6 +228,62 @@
         },
         "/publications/": {
           "pageviews": 10,
+          "visits": 0
+        }
+      }
+    },
+    {
+      "id": "20260906",
+      "fetchedAt": "2026-09-06T17:51:45.766Z",
+      "since": "2026-08-30T16:00:00Z",
+      "until": "2026-09-06T16:00:00Z",
+      "site": {
+        "pageviews": 45,
+        "visits": 33
+      },
+      "paths": {
+        "/": {
+          "pageviews": 35,
+          "visits": 33
+        },
+        "/publications": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/publications/": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/expertise": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/expertise/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/work": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/work/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/blog": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/blog/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/analytics": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/analytics/": {
+          "pageviews": 1,
           "visits": 0
         }
       }
