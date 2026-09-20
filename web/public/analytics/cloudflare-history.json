@@ -4,70 +4,70 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-09-13T18:24:30.953Z",
+  "updatedAt": "2026-09-20T18:22:12.275Z",
   "site": {
-    "pageviews": 204,
-    "visits": 99
+    "pageviews": 236,
+    "visits": 119
   },
   "paths": {
     "/": {
-      "pageviews": 119,
-      "visits": 94
+      "pageviews": 135,
+      "visits": 110
     },
     "/publications": {
-      "pageviews": 31,
-      "visits": 2
+      "pageviews": 34,
+      "visits": 3
     },
     "/publications/": {
-      "pageviews": 31,
-      "visits": 2
+      "pageviews": 34,
+      "visits": 3
     },
     "/analytics": {
-      "pageviews": 13,
-      "visits": 2
+      "pageviews": 15,
+      "visits": 3
     },
     "/analytics/": {
-      "pageviews": 13,
-      "visits": 2
+      "pageviews": 15,
+      "visits": 3
     },
     "/work": {
-      "pageviews": 10,
+      "pageviews": 11,
       "visits": 1
     },
     "/work/": {
-      "pageviews": 10,
+      "pageviews": 11,
       "visits": 1
     },
     "/projects": {
-      "pageviews": 8,
+      "pageviews": 10,
       "visits": 0
     },
     "/projects/": {
-      "pageviews": 8,
+      "pageviews": 10,
       "visits": 0
     },
     "/expertise": {
-      "pageviews": 8,
-      "visits": 0
+      "pageviews": 10,
+      "visits": 1
     },
     "/expertise/": {
-      "pageviews": 8,
-      "visits": 0
+      "pageviews": 10,
+      "visits": 1
     },
     "/blog/why-flow-matching-works": {
-      "pageviews": 5,
-      "visits": 0
+      "pageviews": 7,
+      "visits": 1
     },
     "/blog/why-flow-matching-works/": {
-      "pageviews": 5,
-      "visits": 0
+      "pageviews": 7,
+      "visits": 1
     },
     "/blog": {
-      "pageviews": 8,
+      "pageviews": 12,
       "visits": 0
     },
     "/blog/": {
-      "pageviews": 8,
+      "pageviews": 12,
       "visits": 0
     },
     "/blog/memory-centric-robot-system": {
@@ -355,6 +355,78 @@
           "visits": 0
         },
         "/analytics/": {
+          "pageviews": 1,
+          "visits": 0
+        }
+      }
+    },
+    {
+      "id": "20260920",
+      "fetchedAt": "2026-09-20T18:22:12.274Z",
+      "since": "2026-09-13T16:00:00Z",
+      "until": "2026-09-20T16:00:00Z",
+      "site": {
+        "pageviews": 32,
+        "visits": 20
+      },
+      "paths": {
+        "/": {
+          "pageviews": 16,
+          "visits": 16
+        },
+        "/blog": {
+          "pageviews": 4,
+          "visits": 0
+        },
+        "/blog/": {
+          "pageviews": 4,
+          "visits": 0
+        },
+        "/publications": {
+          "pageviews": 3,
+          "visits": 1
+        },
+        "/publications/": {
+          "pageviews": 3,
+          "visits": 1
+        },
+        "/projects": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/projects/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/blog/why-flow-matching-works": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/blog/why-flow-matching-works/": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/expertise": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/expertise/": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/analytics": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/analytics/": {
+          "pageviews": 2,
+          "visits": 1
+        },
+        "/work": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/work/": {
           "pageviews": 1,
           "visits": 0
         }
