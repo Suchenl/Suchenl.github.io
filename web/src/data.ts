@@ -87,6 +87,11 @@ export interface NewsItem {
 
 export const NEWS: NewsItem[] = [
   {
+    date: '2026.10.01',
+    zh: '🛠️ 开源 <a href="https://github.com/Suchenl/cursor-remote-lite" target="_blank" rel="noopener noreferrer">Cursor Remote Lite</a>：在手机上接着用电脑里的 Cursor。',
+    en: '🛠️ Open-sourced <a href="https://github.com/Suchenl/cursor-remote-lite" target="_blank" rel="noopener noreferrer">Cursor Remote Lite</a>: use the Cursor on your computer from your phone.',
+  },
+  {
     date: '2025.11.08',
     zh: '🎉 一篇论文被 <strong><em>AAAI 2026</em></strong> 接收。',
     en: '🎉 One paper accepted by <strong><em>AAAI 2026</em></strong>.',

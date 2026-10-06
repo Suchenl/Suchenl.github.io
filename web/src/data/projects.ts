@@ -17,6 +17,17 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    name: 'Cursor Remote Lite',
+    emoji: '📱',
+    repo: 'Suchenl/cursor-remote-lite',
+    url: 'https://www.bilibili.com/video/BV1HFaz6bEj3',
+    descZh:
+      '在手机上接着用电脑里真实的 Cursor：回答 Agent 提问、批准命令、布置下一个任务、逐个保留 / 撤销改动；本地与 SSH 远程窗口都能用。免费、MIT 开源、自托管。',
+    descEn:
+      'Use the real Cursor on your computer from your phone: answer the Agent, approve runs, queue the next task, keep or undo changes. Works with local and SSH remote windows. Free, MIT, self-hosted.',
+    tags: ['Node.js', 'Android', 'AI Coding'],
+  },
+  {
     name: 'LivingSurvey',
     emoji: '📚',
     icon: '/images/projects/livingsurvey.png',
