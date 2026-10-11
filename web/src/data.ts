@@ -58,6 +58,20 @@ export const PUB_GROUPS: PubGroup[] = [
     ],
   },
   {
+    zh: '科研生态与同行评审',
+    en: 'Meta-Science & Peer Review',
+    papers: [
+      {
+        venue: 'Preprint',
+        image: '/images/frameworks/ICLR2027-Analysis.png',
+        titleZh: '我们将走向何方？对 43,013 篇 ICLR 2027 投稿的系统分析',
+        titleEn: 'Where Are We Going? A Systematic Analysis of 43,013 ICLR 2027 Submissions',
+        url: '/iclr2027/',
+        authorsHtml: `${ME}`,
+      },
+    ],
+  },
+  {
     zh: 'AI + 医疗',
     en: 'AI for Medicine',
     papers: [
@@ -86,6 +100,11 @@ export interface NewsItem {
 }
 
 export const NEWS: NewsItem[] = [
+  {
+    date: '2026.10.11',
+    zh: '📊 发布 <a href="/iclr2027/">ICLR 2027 投稿分析</a>：43,013 篇投稿翻倍之后，同行评审的把关机制还跟得上吗？',
+    en: '📊 Released <a href="/iclr2027/">an analysis of 43,013 ICLR 2027 submissions</a>: can peer review keep up with a doubling of submissions?',
+  },
   {
     date: '2026.10.01',
     zh: '🛠️ 开源 <a href="https://github.com/Suchenl/cursor-remote-lite" target="_blank" rel="noopener noreferrer">Cursor Remote Lite</a>：在手机上接着用电脑里的 Cursor。',

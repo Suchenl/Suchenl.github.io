@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Are We Going? A Systematic Analysis of ICLR 2027 Submissions</title>
+<meta name="description" content="When submissions to ICLR double in a year, do the safeguards of peer review keep pace? An analysis of the full ICLR 2027 submission pool using only public data.">
+<style>.nostyle-warning{display:block;padding:8px 12px;background:#fff7ed;color:#9a3412;font:14px sans-serif}</style>
+<style>
+/* ICLR 2027 analysis project page. Static, system fonts, no external dependencies. */
+:root {
+  --bg: #f7f8fb;
+  --paper: #ffffff;
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --ink-3: #5b6b82;
+  --line: #e2e8f0;
+  --line-2: #cbd5e1;
+  --brand: #1f4e8c;
+  --brand-2: #2563eb;
+  --c27: #1f4e8c;
+  --c26: #9db4d6;
+  --c24: #a3a9b3;
+  --ok: #047857;     --ok-bg: #d1fae5;
+  --warn: #b45309;   --warn-bg: #fef3c7;
+  --info: #1d4ed8;   --info-bg: #dbeafe;
+  --bad: #b91c1c;    --bad-bg: #fee2e2;
+  --soon: #c2410c;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body { margin: 0; font-family: var(--sans); color: var(--ink); background: var(--bg); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
+a { color: var(--brand-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, .mono { font-family: var(--mono); font-size: .88em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.nostyle-warning { display: none; }
+[data-n] { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ph { font-family: var(--mono); color: var(--soon); font-weight: 650; }
+.ph-missing { color: var(--soon); font-family: var(--mono); }
+
+/* ---------- nav ---------- */
+.nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.9); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 20px; height: 56px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--ink); letter-spacing: -.01em; white-space: nowrap; }
+.brand:hover { text-decoration: none; }
+.logo { width: 24px; height: 24px; border-radius: 7px; flex: none; background: linear-gradient(180deg, var(--c26) 0 33%, #5b82b8 33% 66%, var(--c27) 66%); clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%); }
+.nav-links { display: flex; gap: 18px; font-size: 14px; margin-left: 6px; overflow-x: auto; scrollbar-width: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a { color: var(--ink-2); white-space: nowrap; }
+.nav-links a:hover { color: var(--ink); text-decoration: none; }
+.nav .spacer { flex: 1; }
+.langbtn { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 12px; cursor: pointer; flex: none; }
+.langbtn:hover { background: #f1f5f9; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; color: #e2e8f0; background: radial-gradient(1100px 480px at 85% -10%, rgba(37,99,235,.38), transparent 60%), radial-gradient(900px 480px at 0% 0%, rgba(157,180,214,.22), transparent 60%), #0b1324; }
+.hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: linear-gradient(#000, transparent 85%); mask-image: linear-gradient(#000, transparent 85%); }
+.hero .wrap { position: relative; padding-top: 64px; padding-bottom: 56px; text-align: center; }
+.eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 12.5px; color: #cbd5e1; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); padding: 5px 12px 5px 6px; border-radius: 999px; max-width: 100%; }
+.eyebrow b { color: #0b1324; background: #e2e8f0; padding: 2px 8px; border-radius: 999px; font-size: 11px; letter-spacing: .06em; flex: none; }
+.hero h1 { font-size: clamp(38px, 6vw, 68px); line-height: 1.05; margin: 22px 0 6px; letter-spacing: -.03em; color: #fff; font-weight: 850; }
+.hero .subtitle { font-size: clamp(18px, 2.4vw, 26px); color: #bfd0ea; margin: 6px 0 0; font-weight: 600; letter-spacing: -.01em; }
+.hero .pitch { max-width: 800px; margin: 22px auto 0; font-size: clamp(16px, 1.8vw, 18.5px); color: #cbd5e1; }
+.hero .pitch b { color: #fff; }
+.authors { margin-top: 18px; font-size: 15px; }
+.authors .ph { color: #fdba74; }
+.btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: 14px; padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); color: #e2e8f0; background: rgba(255,255,255,.06); }
+.btn:hover { text-decoration: none; background: rgba(255,255,255,.12); }
+.btn.primary { background: #fff; color: #0b1324; border-color: #fff; }
+.btn.disabled { opacity: .6; cursor: not-allowed; }
+.btn small { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; color: #fdba74; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.keynums { margin: 40px auto 0; max-width: 1040px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: left; }
+.kn { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px 16px; }
+.kn .v { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -.02em; line-height: 1.15; }
+.kn .k { margin-top: 4px; font-size: 13.5px; color: #b8c4d6; line-height: 1.45; }
+
+/* ---------- sections ---------- */
+section.s { padding: 72px 0; border-bottom: 1px solid var(--line); }
+section.s.alt { background: var(--paper); }
+.kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-2); }
+h2 { font-size: clamp(26px, 3.2vw, 38px); letter-spacing: -.02em; line-height: 1.15; margin: 8px 0 12px; }
+h3 { font-size: 18px; letter-spacing: -.01em; margin: 0 0 4px; line-height: 1.3; }
+.lead { font-size: 17.5px; color: var(--ink-2); max-width: 860px; margin: 0 0 26px; }
+.muted { color: var(--ink-3); }
+.grid { display: grid; gap: 18px; }
+.g2 { grid-template-columns: repeat(2, 1fr); } .g3 { grid-template-columns: repeat(3, 1fr); }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); min-width: 0; }
+.alt .card { background: var(--bg); box-shadow: none; }
+.card p { margin: 6px 0 0; color: var(--ink-2); }
+.card + .card, .grid + .card, .card + .grid, .grid + #recall, .card + #recall { margin-top: 20px; }
+.grid > .card, .grid > div { margin-top: 0; }
+.num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; font-weight: 800; color: #fff; background: var(--brand); margin-bottom: 10px; }
+a.card.rq { color: inherit; transition: transform .15s, box-shadow .15s; }
+a.card.rq:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 2px 4px rgba(15,23,42,.08), 0 14px 30px rgba(15,23,42,.1); }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; margin-bottom: 10px; }
+.t-ok { color: var(--ok); background: var(--ok-bg); } .t-warn { color: var(--warn); background: var(--warn-bg); }
+.t-info { color: var(--info); background: var(--info-bg); } .t-bad { color: var(--bad); background: var(--bad-bg); }
+.big { font-size: 40px; font-weight: 850; letter-spacing: -.03em; line-height: 1.1; color: var(--ink); }
+.big small { font-size: 18px; font-weight: 650; color: var(--ink-3); letter-spacing: 0; }
+.note { font-size: 15px; color: var(--ink-2); margin: 14px 0 0; }
+.note:empty { display: none; }
+.example { font-size: 14.5px; color: var(--ink-2); margin: 6px 0 4px; }
+.bullets { margin: 14px 0 0; padding-left: 20px; color: var(--ink-2); font-size: 15px; }
+.bullets li + li { margin-top: 6px; }
+
+/* ---------- charts ---------- */
+.chart-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.chart-head p { margin: 2px 0 0; font-size: 14px; }
+.chart { margin-top: 12px; width: 100%; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--sans); }
+.chart text { fill: var(--ink-2); font-size: 12px; }
+.chart .axis line, .chart .grid-l { stroke: var(--line); }
+.chart .axis text { fill: var(--ink-3); font-size: 11.5px; }
+.chart .lbl { fill: var(--ink); font-size: 12.5px; }
+.chart .val { fill: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.chart .row:hover .hl, .chart .row.on .hl { fill: #eef2f9; }
+.chart .hl { fill: transparent; }
+.chart .series path { fill: none; stroke-width: 2; transition: opacity .15s; }
+.chart .series.bold path { stroke-width: 3.4; }
+.chart .series.down path { stroke-dasharray: 5 4; }
+.chart .series circle { stroke: #fff; stroke-width: 1.5; }
+.chart.dim .series { opacity: .18; }
+.chart.dim .series.on { opacity: 1; }
+.chart .endlbl { font-size: 11.5px; font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-top: 10px; align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.sw.c27 { background: var(--c27); } .sw.c26 { background: var(--c26); } .sw.c24 { background: var(--c24); }
+.sw.tick { height: 3px; width: 14px; background: var(--ink); border-radius: 0; }
+.seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 999px; overflow: hidden; flex: none; }
+.seg button { font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border: 0; background: #fff; color: var(--ink-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-2); }
+.seg button.on { background: var(--brand); color: #fff; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip { font: inherit; font-size: 12.5px; padding: 3px 10px 3px 8px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; color: var(--ink-3); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); }
+.chip.on { color: var(--ink); border-color: currentColor; font-weight: 600; }
+.chip.more { border-style: dashed; }
+.tip { position: fixed; z-index: 80; pointer-events: none; background: #0b1324; color: #e2e8f0; font-size: 13px; line-height: 1.45; padding: 8px 11px; border-radius: 9px; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: 300px; opacity: 0; transition: opacity .1s; }
+.tip.show { opacity: 1; }
+.tip b { color: #fff; }
+.alt-table { margin-top: 12px; font-size: 13.5px; }
+.alt-table summary { cursor: pointer; color: var(--brand-2); font-weight: 600; width: max-content; }
+.alt-table .tw { overflow-x: auto; margin-top: 8px; }
+.alt-table table, .dl table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.alt-table th, .alt-table td, .dl th, .dl td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.alt-table td.r, .alt-table th.r, .dl td.r, .dl th.r { text-align: right; }
+.alt-table th, .dl th { color: var(--ink-3); font-weight: 650; font-size: 12.5px; }
+.mini { margin-top: 16px; }
+.stat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.alt .stat { background: #fff; }
+.stat .v { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.stat .k { font-size: 13.5px; color: var(--ink-3); margin-top: 2px; }
+.caveat { margin-top: 16px; background: #f1f5f9; border-left: 4px solid var(--ink-3); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; color: var(--ink-2); }
+.caveat b { color: var(--ink); margin-right: 6px; }
+
+/* funnel */
+.funnel-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 8px; }
+.funnel-wrap .chart { margin-top: 0; }
+.chart .fstage { cursor: pointer; }
+.chart .fstage rect { transition: transform .9s cubic-bezier(.2,.8,.2,1), fill .15s; transform-box: fill-box; transform-origin: center; }
+.chart.pre .fstage rect { transform: scaleX(0.02); }
+.chart .fstage text { transition: opacity .5s .5s; }
+.chart.pre .fstage text { opacity: 0; }
+.chart .fstage.on rect.bar { stroke: #0b1324; stroke-width: 2; }
+.chart .fn { fill: #fff; font-weight: 800; font-size: 15px; }
+.chart .fn.dark { fill: var(--ink); }
+.chart .conn { fill: #e6ecf5; }
+.stages { list-style: none; margin: 0; padding: 0; counter-reset: st; }
+.stages li { counter-increment: st; padding: 9px 12px 9px 44px; border-radius: 10px; position: relative; cursor: pointer; font-size: 14px; color: var(--ink-2); border: 1px solid transparent; }
+.stages li::before { content: counter(st); position: absolute; left: 12px; top: 10px; width: 22px; height: 22px; border-radius: 6px; background: var(--c26); color: #0b1324; font-weight: 800; font-size: 12px; display: grid; place-items: center; }
+.stages li.last::before { background: var(--bad); color: #fff; }
+.stages li.ft::before { background: var(--c27); color: #fff; }
+.stages li b { color: var(--ink); }
+.stages li.on { background: #eef2f9; border-color: var(--line-2); }
+
+/* placeholder (as in the reference page) */
+.banner { display: flex; gap: 10px; align-items: flex-start; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 12px; padding: 10px 14px; font-size: 14px; margin-top: 12px; }
+.banner b { color: #7c2d12; white-space: nowrap; }
+.placeholder { margin-top: 20px; border: 2px dashed #fdba74; background: #fffaf3; border-radius: var(--radius); padding: 22px; }
+.placeholder .phtag { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 700; color: #fff; background: var(--soon); padding: 2px 8px; border-radius: 6px; letter-spacing: .06em; }
+.placeholder h3 { margin-top: 10px; color: #7c2d12; }
+.placeholder p { color: #9a3412; margin: 6px 0 0; font-size: 15px; }
+.placeholder ol { color: #9a3412; font-size: 14.5px; margin: 8px 0 0; padding-left: 20px; }
+.recall-done { margin-top: 20px; }
+
+/* recommendations, ethics, data */
+.recs { counter-reset: r; list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.recs li { counter-increment: r; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 14px 52px; position: relative; color: var(--ink-2); font-size: 15px; }
+.recs li::before { content: counter(r); position: absolute; left: 16px; top: 14px; width: 24px; height: 24px; border-radius: 7px; background: var(--brand); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+.recs li b { color: var(--ink); display: block; }
+.ethics .card h3 { font-size: 16.5px; }
+#data { margin-top: 20px; }
+.dl { margin-top: 12px; overflow-x: auto; font-size: 14px; }
+.dl td.desc { white-space: normal; min-width: 240px; color: var(--ink-2); }
+.dl a { font-family: var(--mono); font-size: 13px; }
+
+/* bibtex, footer */
+.bib { position: relative; font-family: var(--mono); font-size: 13.5px; background: #0b1324; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; white-space: pre; overflow-x: auto; }
+.copy { position: absolute; top: 10px; right: 10px; font: inherit; font-family: var(--sans); font-size: 12px; font-weight: 650; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #e2e8f0; cursor: pointer; }
+.foot { padding: 34px 0 44px; font-size: 14px; }
+.foot .wrap > div + div { margin-top: 6px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px) {
+  .g3 { grid-template-columns: 1fr 1fr; }
+  .funnel-wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px; }
+  .nav .wrap { gap: 12px; }
+  .brand span:last-child { display: none; }
+  .nav-links { gap: 14px; margin-left: 0; }
+  .hero .wrap { padding-top: 40px; padding-bottom: 40px; }
+  .keynums { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kn { padding: 12px; }
+  .kn .v { font-size: 22px; }
+  .kn .k { font-size: 12.5px; }
+  .g2, .g3, .recs { grid-template-columns: 1fr; }
+  section.s { padding: 52px 0; }
+  .card { padding: 16px; }
+  .lead { font-size: 16px; }
+  .big { font-size: 34px; }
+  .eyebrow { font-size: 11.5px; }
+}
+
+</style>
+</head>
+<body>
+<div class="nostyle-warning" hidden>Styles did not load. Open <code>dist/index.html</code> (single-file build) or serve this folder over HTTP.</div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo"></span><span>ICLR 2027 Analysis</span></a>
+    <div class="nav-links">
+      <a href="#growth">Growth</a>
+      <a href="#integrity">Integrity</a>
+      <a href="#safeguards">Safeguards</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#ethics">Ethics &amp; data</a>
+      <a href="#cite">Cite</a>
+    </div>
+    <div class="spacer"></div>
+    <button class="langbtn" id="langbtn" type="button" title="切换到中文">中文</button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow"><b>PREPRINT</b><span>Data snapshot <span data-n="dSnapshot"></span> · public data only</span></span>
+    <h1>Where Are We Going?</h1>
+    <p class="subtitle">A Systematic Analysis of <span data-n="nSub"></span> ICLR 2027 Submissions</p>
+    <p class="pitch">When submissions double in a year, do the safeguards of peer review keep pace? <b>Only partly.</b> The growth is mostly new work rather than recycled ICLR rejects, and verbatim copying is essentially absent among the pairs our retrieval can surface. But anonymity is nominal for the <span data-n="pArxiv"></span>% of submissions with a same-title arXiv preprint, and the submissions that full-text comparison confirms as duplicates of published or concurrently reviewed work were still under review at our snapshot.</p>
+    <div class="authors"><a href="https://suchenl.github.io/">Yuzhuo Chen</a></div>
+    <div class="btns">
+      <a class="btn disabled" href="#" aria-disabled="true" title="The arXiv version will be linked here once it is posted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Paper <small>arXiv · coming soon</small></a>
+      <a class="btn" href="#data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>Data</a>
+      <a class="btn" href="#cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8h10M7 12h10M7 16h6"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>BibTeX</a>
+    </div>
+    <div class="keynums">
+      <div class="kn"><div class="v"><span data-n="nSub"></span></div><div class="k">submissions to ICLR 2027, ×<span data-n="xGrowth"></span> the <span data-n="nSubPrev"></span> of ICLR 2026</div></div>
+      <div class="kn"><div class="v"><span data-n="nResubStrict"></span></div><div class="k">ICLR 2026 rejects resubmitted, against <span data-n="nGrowthAbs"></span> additional submissions</div></div>
+      <div class="kn"><div class="v"><span data-n="pStyleD"></span>%</div><div class="k">of titles in an "automated-research" style, up from <span data-n="pStyleC"></span>% in 2026</div></div>
+      <div class="kn"><div class="v"><span data-n="nFtSame"></span></div><div class="k">same-paper verdicts in full text, from <span data-n="nAbsCandidates"></span> retrieved abstract pairs</div></div>
+      <div class="kn"><div class="v"><span data-n="pArxiv"></span>%</div><div class="k">of submissions have a same-title arXiv preprint</div></div>
+      <div class="kn"><div class="v"><span data-n="pLotteryTopStrict"></span>–<span data-n="pLotteryTopLoose"></span>%</div><div class="k">of ICLR 2026 rejects rated 4.5–5.5 were accepted at ICML or NeurIPS 2026</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="s" id="questions">
+  <div class="wrap">
+    <div class="kicker">The question</div>
+    <h2>When submissions double in a year, do the safeguards keep pace?</h2>
+    <p class="lead">ICLR 2027 received <span data-n="nSub"></span> submissions, <span data-n="xGrowth"></span> times the <span data-n="nSubPrev"></span> of ICLR 2026. We took a snapshot of the complete pool on <span data-n="dSnapshot"></span>, during the review period, and use only information that is public at that time. Author identities, reviews and decisions are not yet public, so every analysis is designed to be re-run when they are.</p>
+    <div class="grid g3 rq-cards">
+      <a class="card rq" href="#growth"><span class="num">1</span><h3>Where does the growth come from?</h3><p>Primary areas and topics, recycled rejects, and an "automated-research" title style.</p></a>
+      <a class="card rq" href="#integrity"><span class="num">2</span><h3>Does it bring integrity problems?</h3><p>A calibrated audit funnel: abstract retrieval, LLM adjudication, full-text comparison.</p></a>
+      <a class="card rq" href="#safeguards"><span class="num">3</span><h3>Do the safeguards hold?</h3><p>Double-blind exposure, PDF-level leakage, the organisers' response, and where rejected papers go.</p></a>
+    </div>
+  </div>
+</section>
+
+<section class="s alt" id="growth">
+  <div class="wrap">
+    <div class="kicker">RQ1 · Where does the growth come from?</div>
+    <h2>New directions, not recycled rejects</h2>
+    <p class="lead">About <span data-n="nResubStrict"></span> ICLR 2026 rejects reappear at ICLR 2027, against <span data-n="nGrowthAbs"></span> additional submissions, so ICLR's own rejects explain little of the growth. Papers rejected elsewhere, notably at NeurIPS 2026 shortly before the ICLR deadline, are invisible to us and may contribute more. The topical mix, however, shifted sharply.</p>
+
+    <div class="card chart-card" id="areas-card">
+      <div class="chart-head">
+        <div><h3>Submissions per primary area</h3><p class="muted">ICLR 2026 vs. 2027. Hover a row for details.</p></div>
+        <div class="seg" id="area-sort" role="group" aria-label="Sort areas"><button type="button" data-sort="n" class="on">By size</button><button type="button" data-sort="g">By growth</button></div>
+      </div>
+      <div class="legend"><span class="notr"><i class="sw c26"></i>ICLR 2026</span><span class="notr"><i class="sw c27"></i>ICLR 2027</span><span class="muted">×: growth factor</span></div>
+      <div class="chart" id="chart-areas"></div>
+      <details class="alt-table" id="tbl-areas"><summary>Data table</summary></details>
+      <p class="note">Foundation models and LLMs remain the largest area (<span data-n="nAreaLLM"></span> submissions, ×<span data-n="xAreaLLM"></span>). Infrastructure and systems (×<span data-n="xAreaInfra"></span>) and robotics and planning (×<span data-n="xAreaRobotics"></span>) grow fastest; generative models (×<span data-n="xAreaGenerative"></span>) and graphs (×<span data-n="xAreaGraphs"></span>) grow more slowly than the conference.</p>
+    </div>
+
+    <div class="card chart-card" id="topics-card">
+      <div class="chart-head">
+        <div><h3>Topic shares, ICLR 2024–2027</h3><p class="muted">Share of titles matching each topic. Pick topics below; dashed lines fell in 2027.</p></div>
+        <div class="seg" id="topic-scale" role="group" aria-label="Scale"><button type="button" data-scale="lin" class="on">Linear</button><button type="button" data-scale="log">Log</button></div>
+      </div>
+      <div class="chips" id="topic-chips"></div>
+      <div class="chart" id="chart-topics"></div>
+      <details class="alt-table" id="tbl-topics"><summary>Data table</summary></details>
+      <p class="note">Agent-related titles doubled their share, from <span data-n="pTopicAgentPrev"></span>% to <span data-n="pTopicAgent"></span>% (<span data-n="nTopicAgent"></span> submissions). Memory, world models, vision-language-action and self-evolving systems grew even faster in relative terms. Some keywords appear almost from nothing: <i>on-policy distillation</i> went from <span data-n="nKwOPDPrev"></span> to <span data-n="nKwOPD"></span> submissions, <i>LLM agents</i> from <span data-n="nKwLLMAgentsPrev"></span> to <span data-n="nKwLLMAgents"></span>. Multimodal LLMs, parameter-efficient fine-tuning, state-space models and quantisation lost share.</p>
+    </div>
+
+    <div class="card chart-card" id="style-card">
+      <div class="chart-head">
+        <div><h3>The "automated-research" title style</h3><p class="muted">Share of titles containing each marker, ICLR 2024–2027. Thick lines: any strong marker, two or more markers.</p></div>
+      </div>
+      <p class="example">Template: a negated claim followed by a methodological noun phrase, as in "<i>X Is Not Y: A Pre-registered Audit of …</i>"</p>
+      <div class="chart" id="chart-style"></div>
+      <details class="alt-table" id="tbl-style"><summary>Data table</summary></details>
+      <div class="grid g3 mini">
+        <div class="stat"><div class="v"><span data-n="pStyleA"></span> / <span data-n="pStyleB"></span> / <span data-n="pStyleC"></span> → <span data-n="pStyleD"></span>%</div><div class="k">titles with a strong marker, 2024 / 2025 / 2026 → 2027 (<span data-n="nStyle"></span> submissions)</div></div>
+        <div class="stat"><div class="v"><span data-n="pStyleFirstQ"></span>% → <span data-n="pStyleLastQ"></span>%</div><div class="k">first vs. last quartile of submission numbers: the style concentrates near the deadline</div></div>
+        <div class="stat"><div class="v"><span data-n="pStyleWithdrawn"></span>% · <span data-n="pStyleDesk"></span>% · <span data-n="pStyleActive"></span>%</div><div class="k">share among withdrawn · desk-rejected · active submissions</div></div>
+      </div>
+      <div class="caveat"><b>Caveat</b> A title says nothing about how an individual paper was produced. The style is a population-level signal and a stratum for comparison, not evidence about any single paper.</div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="integrity">
+  <div class="wrap">
+    <div class="kicker">RQ2 · Does the growth bring integrity problems?</div>
+    <h2>Copying is rare; paraphrase is the open problem</h2>
+    <p class="lead">We audit every submission against <span data-n="nRefConf"></span> conference and <span data-n="nRefArxiv"></span> arXiv abstracts with a funnel that runs from cheap, high-recall signals to expensive, high-precision ones, and calibrate each stage against positive and negative controls.</p>
+
+    <div class="card chart-card" id="funnel-card">
+      <div class="chart-head"><div><h3>The audit funnel</h3><p class="muted">Each stage is cheaper per item than the next and removes most of the remaining candidates. Hover or tap a stage.</p></div></div>
+      <div class="funnel-wrap">
+        <div class="chart" id="chart-funnel"></div>
+        <ol class="stages" id="funnel-stages"></ol>
+      </div>
+      <p class="note">The full-text stage covers grade A/B leads from all sources (titles, arXiv metadata and abstracts), not only the grey zone, so it is not a strict subset of the stage above it. Counts are pairs until the full-text stage and submissions from there on.</p>
+    </div>
+
+    <div class="grid g3 findings">
+      <div class="card"><div class="tag t-ok">Verbatim reuse</div><h3>Essentially absent</h3><p>No submission reproduces the abstract of a published paper under a new title, even with a relaxed threshold. Re-titled matches are mostly benign: <span data-n="nRetitledArxiv"></span> re-titled versions of the authors' own arXiv preprints, <span data-n="nRetitledRejected"></span> resubmissions of papers rejected elsewhere, and <span data-n="nRetitledInternal"></span> pairs of ICLR 2027 submissions with identical abstracts.</p></div>
+      <div class="card"><div class="tag t-warn">Grey zone</div><h3>Large, and mostly legitimate</h3><p><span data-n="nGray"></span> pairs have similar meaning but different words (<span data-n="nGrayPub"></span> against published work, <span data-n="nGrayInt"></span> within ICLR 2027, <span data-n="nGrayArxiv"></span> against arXiv). The second LLM pass keeps only <span data-n="nVerifyPubThree"></span> pairs scored as "substantially the same work" against published papers, plus <span data-n="nVerifyPubTwo"></span> scored as extensions.</p></div>
+      <div class="card"><div class="tag t-info">Full text</div><h3>Separates true duplicates</h3><p>Reference lists, figures and runs of result numbers are hard to disguise by rewriting. All <span data-n="nFtControl"></span> random same-area control pairs are near zero on every signal (maximum reference overlap <span data-n="pFtControlRefMax"></span>%), and all submissions compared with their own arXiv versions are classified as the same paper.</p></div>
+    </div>
+
+    <div class="card chart-card" id="verdict-card">
+      <div class="chart-head"><div><h3>Full-text verdicts for integrity leads</h3><p class="muted">One verdict per submission, strongest pair kept: <span data-n="nFtSubs"></span> submissions (<span data-n="nFtOk"></span> of <span data-n="nFtPairs"></span> pairs with both PDFs).</p></div></div>
+      <div class="chart" id="chart-verdicts"></div>
+      <details class="alt-table" id="tbl-verdicts"><summary>Data table</summary></details>
+      <ul class="bullets">
+        <li><b>Abstract similarity overstates duplication.</b> Of the <span data-n="nFtExt"></span> submissions the LLM judged to extend a published paper, <span data-n="nFtExtDifferent"></span> are different papers in full text and <span data-n="nFtExtNumbers"></span> share only result numbers, typical of follow-up work that reuses baseline tables. None reuses body text.</li>
+        <li><b>Identical abstracts are mostly clerical errors.</b> All <span data-n="nFtIdentAbs"></span> within-ICLR pairs with verbatim identical abstracts are different papers (body overlap ≤ <span data-n="pFtIdentAbsMax"></span>%); in each pair only one PDF matches the shared abstract.</li>
+        <li><b>Republication exists but is rare.</b> Same-paper verdicts are dominated by submissions whose arXiv version declares acceptance at, or concurrent review by, another venue.</li>
+      </ul>
+    </div>
+
+    <div id="recall"></div>
+  </div>
+</section>
+
+<section class="s alt" id="safeguards">
+  <div class="wrap">
+    <div class="kicker">RQ3 · Do the safeguards hold?</div>
+    <h2>Anonymity, PDF checks, and what happens after rejection</h2>
+    <p class="lead">Double-blind review, submission-time checks and the decision itself are the safeguards of a conference. We measure each with public data.</p>
+
+    <div class="grid g2 sg">
+      <div class="card">
+        <div class="tag t-warn">Double-blind exposure</div>
+        <div class="big"><span data-n="pArxiv"></span>%</div>
+        <p><span data-n="nArxiv"></span> submissions have an arXiv preprint with an identical title; <span data-n="nArxivLate"></span> of these were posted on or after 2026-09-15, around the submission deadline. ICLR permits preprints, so this is not a violation, but it bounds the anonymity that double-blind review can deliver for a large part of the pool.</p>
+      </div>
+      <div class="card">
+        <div class="tag t-warn">Organisers' response</div>
+        <div class="big"><span data-n="nTierADesk"></span> <small>of <span data-n="nTierA"></span></small></div>
+        <p>grade-A (objectively verifiable) submissions had been desk-rejected as of <span data-n="dStatusChecked"></span>, both of them blank placeholders. All <span data-n="nFtSameA"></span> grade-A submissions that full text confirms as the same paper as a published paper, or as a paper declared under review elsewhere, were still under review. Across the pool, <span data-n="nNewDeskRej"></span> submissions were newly desk-rejected and <span data-n="nNewWithdrawn"></span> newly withdrawn since the snapshot.</p>
+      </div>
+    </div>
+
+    <div class="card chart-card" id="pdf-card">
+      <div class="chart-head"><div><h3>PDF-level leakage and hidden text</h3><p class="muted">Estimated share of submissions, stratified sample weighted by inverse inclusion probability, with 95% bootstrap intervals.</p></div></div>
+      <div id="p1-banner"></div>
+      <div class="chart" id="chart-pdf"></div>
+      <details class="alt-table" id="tbl-pdf"><summary>Data table</summary></details>
+      <p class="note">The submitted PDFs themselves leak little. Simple rules for hidden text (invisible render mode, white fill, sub-1 pt fonts, off-page text) and injection phrases fire on several percent of PDFs, but on inspection almost all hits are benign: white labels on coloured figures, embedded formula data, and papers <i>about</i> prompt injection. The strict rules, which require that nothing is drawn beneath the hidden text or that off-page text addresses reviewers or LLMs, find no case in the sample. <span data-n="pOneLlmStatement"></span>% of submissions include a statement on LLM usage.</p>
+    </div>
+
+    <div class="card chart-card" id="refs-card">
+      <div class="chart-head"><div><h3>Unresolvable references</h3><p class="muted">Every reference resolved against arXiv, accepted-paper lists, DBLP, printed arXiv identifiers, Crossref and arXiv search. ICLR 2027 sample vs. a control sample of <span data-n="pOneNControl"></span> ICLR 2024 submissions processed identically.</p></div></div>
+      <div class="legend"><span><i class="sw c27"></i>ICLR 2027 sample</span><span><i class="sw c24"></i>ICLR 2024 control</span></div>
+      <div class="chart" id="chart-refs"></div>
+      <details class="alt-table" id="tbl-refs"><summary>Data table</summary></details>
+      <p class="note">The share of submissions with at least one unresolved, non-trivial reference is <i>lower</i> than in the 2024 control. The top unresolved cases in both years are real but hard-to-index items (datasets, software, workshop papers), so the control rate is the false-alarm floor of the method. We find no evidence of an excess of fabricated references in ICLR 2027 submissions.</p>
+      <p class="note" id="refs-style"></p>
+    </div>
+
+    <div class="card chart-card" id="fate-card">
+      <div class="chart-head">
+        <div><h3>Where did ICLR 2026 rejects go?</h3><p class="muted">Share later accepted at ICML or NeurIPS 2026, by mean ICLR 2026 rating.</p></div>
+        <div class="seg" id="fate-status" role="group" aria-label="ICLR 2026 outcome"><button type="button" data-st="Reject" class="on">Rejected</button><button type="button" data-st="Withdraw">Withdrawn</button></div>
+      </div>
+      <div class="legend"><span><i class="sw c27"></i>abstract match (strict)</span><span><i class="sw c26"></i>abstract match (loose)</span><span><i class="sw tick"></i>identical title only</span></div>
+      <div class="chart" id="chart-fate"></div>
+      <details class="alt-table" id="tbl-fate"><summary>Data table</summary></details>
+      <p class="note">Of the <span data-n="nRejects"></span> papers ICLR 2026 rejected, identical titles alone find <span data-n="pLotteryTitle"></span>% later accepted; abstract matching raises this to <span data-n="pLotteryStrict"></span>–<span data-n="pLotteryLoose"></span>%, because many papers are re-titled after rejection. The rate rises from <span data-n="pLotteryLowStrict"></span>–<span data-n="pLotteryLowLoose"></span>% for mean ratings ≤ 2.5 to <span data-n="pLotteryTopStrict"></span>–<span data-n="pLotteryTopLoose"></span>% for 4.5–5.5. Withdrawn papers fare much worse (<span data-n="pLotteryWithdrawStrict"></span>–<span data-n="pLotteryWithdrawLoose"></span>%), and only <span data-n="pResubStrict"></span>–<span data-n="pResubLoose"></span>% of rejected papers reappear at ICLR 2027. NeurIPS 2026 abstracts are not yet public, so these are lower bounds.</p>
+      <div class="caveat"><b>Caveat</b> This is not a measure of review randomness. Consistency experiments measure how often two committees disagree on the same version of a paper; our measure also includes revision between venues and counts only papers whose authors chose to resubmit. It cannot separate reviewer disagreement from improvement prompted by the first round of reviews. It shows only that, for borderline papers, an ICLR rejection is often not the paper's final outcome.</div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="recommendations">
+  <div class="wrap">
+    <div class="kicker">Recommendations for organisers</div>
+    <h2>Checks that can run at submission time</h2>
+    <p class="lead">Organisers, who unlike outside researchers have access to author identities and the full PDFs, can run such a pipeline at negligible cost. Everything in this study ran on a single node with open-weight models.</p>
+    <ol class="recs">
+      <li><b>Machines rank, humans decide.</b> Limit automatic desk rejection to objectively verifiable cases, such as full-text identity with a published paper.</li>
+      <li><b>Use signals that paraphrase cannot hide.</b> Reference-list overlap, image hashes and result-number fingerprints separate true duplicates from same-topic work far better than abstract similarity.</li>
+      <li><b>Author overlap is the key triage variable.</b> With overlap, a duplicate is a policy violation; without it, a duplicate is suspected plagiarism.</li>
+      <li><b>Free signals are unused.</b> arXiv comments that declare concurrent review or prior acceptance are zero-cost leads that no venue checks systematically.</li>
+      <li><b>Exchange fingerprints across venues.</b> Venues with overlapping review periods can exchange MinHash signatures or quantised embeddings through a trusted third party, without exchanging confidential text.</li>
+      <li><b>Check PDFs at submission.</b> Hidden text, injection phrases and identifying metadata, and reference resolution against DBLP, arXiv and Crossref.</li>
+    </ol>
+    <p class="note">With a two-round LLM funnel, the number of pairs that need human review at ICLR scale is on the order of one hundred.</p>
+  </div>
+</section>
+
+<section class="s alt" id="ethics">
+  <div class="wrap">
+    <div class="kicker">Ethics &amp; data</div>
+    <h2>Public data, aggregate results</h2>
+    <div class="grid g2 ethics">
+      <div class="card"><h3>Public data only</h3><p>Every analysis uses only information that any logged-in OpenReview user, or any visitor to arXiv, DBLP and the conference websites, could see during the review period. Submission PDFs were downloaded through the public OpenReview API at its published rate limits.</p></div>
+      <div class="card"><h3>Nothing restricted to a role</h3><p>The author serves as an ICLR 2027 reviewer. We used no information visible only to reviewers, area chairs or program chairs: not the identities or size of the reviewer pool, assignments, bids, reviews, discussions or author identities.</p></div>
+      <div class="card"><h3>Aggregates only</h3><p>This page and the paper report aggregate statistics only. No submission is identified, and no title, number or excerpt of any flagged submission is shown.</p></div>
+      <div class="card"><h3>Leads are not findings</h3><p>Integrity leads come from automated signals with known error rates and have not been adjudicated. We report aggregates only and do not identify any submission, here or in the downloadable data.</p></div>
+    </div>
+    <div class="card" id="data">
+      <h3>Aggregate data</h3>
+      <p class="muted">The tables behind the charts on this page. Every number on the page is read from <code>paper/numbers.tex</code>, the macro file generated by <code>src/paper_numbers.py</code> that the paper itself uses, so page and paper cannot disagree.</p>
+      <div class="dl" id="downloads"></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="cite">
+  <div class="wrap">
+    <div class="kicker">Citation</div>
+    <h2>BibTeX</h2>
+    <div class="bib" id="bib"><button class="copy" type="button" data-copy="bib">Copy</button>@misc{chen2026iclr2027,
+  title        = {Where Are We Going? A Systematic Analysis of ICLR 2027 Submissions},
+  author       = {Chen, Yuzhuo},
+  year         = {2026},
+  howpublished = {\url{https://suchenl.github.io/iclr2027/}}
+}</div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><b>Where Are We Going? A Systematic Analysis of ICLR 2027 Submissions</b> · Yuzhuo Chen</div>
+    <div class="muted">Data snapshot <span data-n="dSnapshot"></span> · submission status refreshed <span data-n="dStatusChecked"></span> · numbers from <code>paper/numbers.tex</code></div>
+    <div class="muted" id="built"></div>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<script type="application/json" id="page-data">{"numbers":{"_note":"Generated by tools/build_data.py from paper/numbers.tex (src/paper_numbers.py) and paper/main.tex. Do not edit.","source":"paper/numbers.tex","macros":{"nSub":"43,013","nSubPrev":"19,814","xGrowth":"2.17","nMaxId":"62,286","nActive":"42,372","nDeskRej":"417","nWithdrawn":"224","nAreas":"21","nAreaLLM":"6,766","xAreaLLM":"2.56","xAreaInfra":"3.97","xAreaRobotics":"3.81","xAreaGenerative":"1.73","xAreaGraphs":"1.79","pTopicAgentPrev":"6.2","pTopicAgent":"12.2","nTopicAgent":"5,244","pTopicMemoryPrev":"1.4","pTopicMemory":"3.5","nTopicMemory":"1,509","pTopicWorldModelPrev":"0.7","pTopicWorldModel":"2.1","nTopicWorldModel":"913","pTopicVLAPrev":"0.9","pTopicVLA":"1.8","nTopicVLA":"784","pTopicSelfEvolvePrev":"0.5","pTopicSelfEvolve":"1.3","nTopicSelfEvolve":"546","nKwOPDPrev":"0","nKwOPD":"488","nKwLLMAgentsPrev":"89","nKwLLMAgents":"1,565","nKwMechInterpPrev":"143","nKwMechInterp":"840","nKwWorldModelsPrev":"50","nKwWorldModels":"628","pStyleA":"0.26","pStyleB":"0.22","pStyleC":"0.44","pStyleD":"2.69","pStyleTwoPrev":"0.03","pStyleTwo":"0.55","pEvidencePrev":"0.30","pEvidence":"2.94","nStyle":"1,158","pStyleActive":"2.7","pStyleDesk":"3.8","pStyleWithdrawn":"4.9","pStyleFirstQ":"2.3","pStyleLastQ":"3.7","pColonPrev":"59.4","pColon":"66.0","pQuestionPrev":"2.9","pQuestion":"5.4","nArxiv":"8,798","pArxiv":"20.5","nArxivLate":"5,255","nTierA":"28","nTierB":"116","nTierC":"280","pTierA":"0.07","nTierADesk":"2","nFtSameA":"6","nFtSameActive":"11","nGray":"14,102","nGrayPub":"1,618","nGrayInt":"3,086","nGrayArxiv":"9,398","nGrayFirstPass":"1,265","nVerifyPubThree":"2","nVerifyPubTwo":"64","nVerifyIntThree":"11","nVerifyArxivThree":"205","nVerifyTwoThree":"743","nFtPairs":"136","nFtOk":"132","nFtSubs":"126","nFtSame":"11","nFtPartial":"6","nFtSharedNumbers":"14","nFtDifferent":"91","nFtStub":"1","nFtTemplate":"3","nFtControl":"12","pFtControlRefMax":"0.7","nFtExt":"64","nFtExtDifferent":"54","nFtExtNumbers":"9","pFtSevenSixTwoFour":"89","nFtIdentAbs":"7","pFtIdentAbsMax":"2","nRejects":"8,453","pLotteryTitle":"9.9","pLotteryStrict":"12.8","pLotteryLoose":"13.5","pLotteryTopStrict":"20.7","pLotteryTopLoose":"21.2","pLotteryLowStrict":"1.6","pLotteryLowLoose":"2.2","pResubStrict":"2.9","pResubLoose":"3.1","nResubStrict":"245","nGrowthAbs":"23,199","pLotteryWithdrawStrict":"3.1","pLotteryWithdrawLoose":"3.3","nNewWithdrawn":"14","nNewDeskRej":"0","dStatusChecked":"2026-10-10","nRetitledArxiv":"308","nRetitledRejected":"63","nRetitledInternal":"7","nRefConf":"70,782","nRefArxiv":"355,675","nAbsCandidates":"308,685","nPOne":"1,501","nPOneGeneral":"1,201","nPOneStyle":"300","pOneNPdfs":"319","pOneNSampled":"1,501","pOneNStylePdfs":"0","pOneNNonStylePdfs":"307","pOneNUsedPdfs":"307","pOneCovPop":"26.1","pOneNControl":"150","pOneNRefEntries":"14,042","pOneNRefEntriesControl":"7,318","pOneOwnRepo":"0.4","pOneOwnRepoLo":"0.0","pOneOwnRepoHi":"1.1","pOneOwnRepoStyle":"n/a","pOneOwnRepoStyleLo":"n/a","pOneOwnRepoStyleHi":"n/a","pOneOwnRepoNonStyle":"0.4","pOneOwnRepoNonStyleLo":"0.0","pOneOwnRepoNonStyleHi":"1.1","pOneOwnRepoControl":"n/a","pOneOwnRepoControlLo":"n/a","pOneOwnRepoControlHi":"n/a","pOneMetaAuthor":"0.0","pOneMetaAuthorLo":"0.0","pOneMetaAuthorHi":"1.2","pOneMetaAuthorStyle":"n/a","pOneMetaAuthorStyleLo":"n/a","pOneMetaAuthorStyleHi":"n/a","pOneMetaAuthorNonStyle":"0.0","pOneMetaAuthorNonStyleLo":"0.0","pOneMetaAuthorNonStyleHi":"1.2","pOneMetaAuthorControl":"n/a","pOneMetaAuthorControlLo":"n/a","pOneMetaAuthorControlHi":"n/a","pOneAck":"1.7","pOneAckLo":"0.4","pOneAckHi":"3.4","pOneAckStyle":"n/a","pOneAckStyleLo":"n/a","pOneAckStyleHi":"n/a","pOneAckNonStyle":"1.7","pOneAckNonStyleLo":"0.4","pOneAckNonStyleHi":"3.4","pOneAckControl":"n/a","pOneAckControlLo":"n/a","pOneAckControlHi":"n/a","pOneSelfRef":"0.3","pOneSelfRefLo":"0.0","pOneSelfRefHi":"1.0","pOneSelfRefStyle":"n/a","pOneSelfRefStyleLo":"n/a","pOneSelfRefStyleHi":"n/a","pOneSelfRefNonStyle":"0.3","pOneSelfRefNonStyleLo":"0.0","pOneSelfRefNonStyleHi":"1.0","pOneSelfRefControl":"n/a","pOneSelfRefControlLo":"n/a","pOneSelfRefControlHi":"n/a","pOnePubHeader":"0.0","pOnePubHeaderLo":"0.0","pOnePubHeaderHi":"1.2","pOnePubHeaderStyle":"n/a","pOnePubHeaderStyleLo":"n/a","pOnePubHeaderStyleHi":"n/a","pOnePubHeaderNonStyle":"0.0","pOnePubHeaderNonStyleLo":"0.0","pOnePubHeaderNonStyleHi":"1.2","pOnePubHeaderControl":"n/a","pOnePubHeaderControlLo":"n/a","pOnePubHeaderControlHi":"n/a","pOneEmail":"1.0","pOneEmailLo":"0.0","pOneEmailHi":"2.2","pOneEmailStyle":"n/a","pOneEmailStyleLo":"n/a","pOneEmailStyleHi":"n/a","pOneEmailNonStyle":"1.0","pOneEmailNonStyleLo":"0.0","pOneEmailNonStyleHi":"2.2","pOneEmailControl":"n/a","pOneEmailControlLo":"n/a","pOneEmailControlHi":"n/a","pOneHidden":"4.9","pOneHiddenLo":"2.6","pOneHiddenHi":"7.4","pOneHiddenStyle":"n/a","pOneHiddenStyleLo":"n/a","pOneHiddenStyleHi":"n/a","pOneHiddenNonStyle":"4.9","pOneHiddenNonStyleLo":"2.6","pOneHiddenNonStyleHi":"7.5","pOneHiddenControl":"n/a","pOneHiddenControlLo":"n/a","pOneHiddenControlHi":"n/a","pOneHiddenStrict":"0.0","pOneHiddenStrictLo":"0.0","pOneHiddenStrictHi":"1.2","pOneHiddenStrictStyle":"n/a","pOneHiddenStrictStyleLo":"n/a","pOneHiddenStrictStyleHi":"n/a","pOneHiddenStrictNonStyle":"0.0","pOneHiddenStrictNonStyleLo":"0.0","pOneHiddenStrictNonStyleHi":"1.2","pOneHiddenStrictControl":"n/a","pOneHiddenStrictControlLo":"n/a","pOneHiddenStrictControlHi":"n/a","pOneHiddenPrompt":"0.0","pOneHiddenPromptLo":"0.0","pOneHiddenPromptHi":"1.2","pOneHiddenPromptStyle":"n/a","pOneHiddenPromptStyleLo":"n/a","pOneHiddenPromptStyleHi":"n/a","pOneHiddenPromptNonStyle":"0.0","pOneHiddenPromptNonStyleLo":"0.0","pOneHiddenPromptNonStyleHi":"1.2","pOneHiddenPromptControl":"n/a","pOneHiddenPromptControlLo":"n/a","pOneHiddenPromptControlHi":"n/a","pOneHiddenInvisible":"0.7","pOneHiddenInvisibleLo":"0.0","pOneHiddenInvisibleHi":"1.7","pOneHiddenInvisibleStyle":"n/a","pOneHiddenInvisibleStyleLo":"n/a","pOneHiddenInvisibleStyleHi":"n/a","pOneHiddenInvisibleNonStyle":"0.7","pOneHiddenInvisibleNonStyleLo":"0.0","pOneHiddenInvisibleNonStyleHi":"1.7","pOneHiddenInvisibleControl":"n/a","pOneHiddenInvisibleControlLo":"n/a","pOneHiddenInvisibleControlHi":"n/a","pOneHiddenWhite":"2.9","pOneHiddenWhiteLo":"1.3","pOneHiddenWhiteHi":"4.8","pOneHiddenWhiteStyle":"n/a","pOneHiddenWhiteStyleLo":"n/a","pOneHiddenWhiteStyleHi":"n/a","pOneHiddenWhiteNonStyle":"2.9","pOneHiddenWhiteNonStyleLo":"1.3","pOneHiddenWhiteNonStyleHi":"4.8","pOneHiddenWhiteControl":"n/a","pOneHiddenWhiteControlLo":"n/a","pOneHiddenWhiteControlHi":"n/a","pOneHiddenTiny":"0.4","pOneHiddenTinyLo":"0.0","pOneHiddenTinyHi":"1.1","pOneHiddenTinyStyle":"n/a","pOneHiddenTinyStyleLo":"n/a","pOneHiddenTinyStyleHi":"n/a","pOneHiddenTinyNonStyle":"0.4","pOneHiddenTinyNonStyleLo":"0.0","pOneHiddenTinyNonStyleHi":"1.1","pOneHiddenTinyControl":"n/a","pOneHiddenTinyControlLo":"n/a","pOneHiddenTinyControlHi":"n/a","pOneHiddenOffPage":"1.6","pOneHiddenOffPageLo":"0.3","pOneHiddenOffPageHi":"3.0","pOneHiddenOffPageStyle":"n/a","pOneHiddenOffPageStyleLo":"n/a","pOneHiddenOffPageStyleHi":"n/a","pOneHiddenOffPageNonStyle":"1.6","pOneHiddenOffPageNonStyleLo":"0.3","pOneHiddenOffPageNonStyleHi":"3.3","pOneHiddenOffPageControl":"n/a","pOneHiddenOffPageControlLo":"n/a","pOneHiddenOffPageControlHi":"n/a","pOneInjection":"1.6","pOneInjectionLo":"0.3","pOneInjectionHi":"3.2","pOneInjectionStyle":"n/a","pOneInjectionStyleLo":"n/a","pOneInjectionStyleHi":"n/a","pOneInjectionNonStyle":"1.6","pOneInjectionNonStyleLo":"0.3","pOneInjectionNonStyleHi":"2.9","pOneInjectionControl":"n/a","pOneInjectionControlLo":"n/a","pOneInjectionControlHi":"n/a","pOneInjectionStrict":"0.0","pOneInjectionStrictLo":"0.0","pOneInjectionStrictHi":"1.2","pOneInjectionStrictStyle":"n/a","pOneInjectionStrictStyleLo":"n/a","pOneInjectionStrictStyleHi":"n/a","pOneInjectionStrictNonStyle":"0.0","pOneInjectionStrictNonStyleLo":"0.0","pOneInjectionStrictNonStyleHi":"1.2","pOneInjectionStrictControl":"n/a","pOneInjectionStrictControlLo":"n/a","pOneInjectionStrictControlHi":"n/a","pOneInjectionTopic":"11.7","pOneInjectionTopicLo":"8.6","pOneInjectionTopicHi":"14.9","pOneInjectionTopicStyle":"n/a","pOneInjectionTopicStyleLo":"n/a","pOneInjectionTopicStyleHi":"n/a","pOneInjectionTopicNonStyle":"11.7","pOneInjectionTopicNonStyleLo":"8.6","pOneInjectionTopicNonStyleHi":"14.9","pOneInjectionTopicControl":"n/a","pOneInjectionTopicControlLo":"n/a","pOneInjectionTopicControlHi":"n/a","pOneAnyRepo":"22.7","pOneAnyRepoLo":"18.1","pOneAnyRepoHi":"27.1","pOneAnyRepoStyle":"n/a","pOneAnyRepoStyleLo":"n/a","pOneAnyRepoStyleHi":"n/a","pOneAnyRepoNonStyle":"22.7","pOneAnyRepoNonStyleLo":"18.4","pOneAnyRepoNonStyleHi":"27.6","pOneAnyRepoControl":"n/a","pOneAnyRepoControlLo":"n/a","pOneAnyRepoControlHi":"n/a","pOneAnonLink":"16.7","pOneAnonLinkLo":"12.6","pOneAnonLinkHi":"21.1","pOneAnonLinkStyle":"n/a","pOneAnonLinkStyleLo":"n/a","pOneAnonLinkStyleHi":"n/a","pOneAnonLinkNonStyle":"16.7","pOneAnonLinkNonStyleLo":"12.8","pOneAnonLinkNonStyleHi":"20.9","pOneAnonLinkControl":"n/a","pOneAnonLinkControlLo":"n/a","pOneAnonLinkControlHi":"n/a","pOneLlmStatement":"95.9","pOneLlmStatementLo":"93.6","pOneLlmStatementHi":"98.0","pOneLlmStatementStyle":"n/a","pOneLlmStatementStyleLo":"n/a","pOneLlmStatementStyleHi":"n/a","pOneLlmStatementNonStyle":"95.9","pOneLlmStatementNonStyleLo":"93.6","pOneLlmStatementNonStyleHi":"98.0","pOneLlmStatementControl":"n/a","pOneLlmStatementControlLo":"n/a","pOneLlmStatementControlHi":"n/a","pOneResolved":"95.5","pOneResolvedLo":"94.7","pOneResolvedHi":"96.3","pOneResolvedStyle":"n/a","pOneResolvedStyleLo":"n/a","pOneResolvedStyleHi":"n/a","pOneResolvedNonStyle":"95.5","pOneResolvedNonStyleLo":"94.7","pOneResolvedNonStyleHi":"96.2","pOneResolvedControl":"94.5","pOneResolvedControlLo":"93.6","pOneResolvedControlHi":"95.3","pOneSuspectRate":"0.65","pOneSuspectRateLo":"0.45","pOneSuspectRateHi":"0.93","pOneSuspectRateStyle":"n/a","pOneSuspectRateStyleLo":"n/a","pOneSuspectRateStyleHi":"n/a","pOneSuspectRateNonStyle":"0.65","pOneSuspectRateNonStyleLo":"0.44","pOneSuspectRateNonStyleHi":"0.94","pOneSuspectRateControl":"1.43","pOneSuspectRateControlLo":"1.07","pOneSuspectRateControlHi":"1.85","pOneSuspectShare":"0.67","pOneSuspectShareLo":"0.51","pOneSuspectShareHi":"0.84","pOneSuspectShareStyle":"n/a","pOneSuspectShareStyleLo":"n/a","pOneSuspectShareStyleHi":"n/a","pOneSuspectShareNonStyle":"0.67","pOneSuspectShareNonStyleLo":"0.51","pOneSuspectShareNonStyleHi":"0.84","pOneSuspectShareControl":"1.29","pOneSuspectShareControlLo":"0.97","pOneSuspectShareControlHi":"1.67","pOneSuspectOne":"20.6","pOneSuspectOneLo":"16.2","pOneSuspectOneHi":"25.0","pOneSuspectOneStyle":"n/a","pOneSuspectOneStyleLo":"n/a","pOneSuspectOneStyleHi":"n/a","pOneSuspectOneNonStyle":"20.6","pOneSuspectOneNonStyleLo":"16.1","pOneSuspectOneNonStyleHi":"25.4","pOneSuspectOneControl":"41.8","pOneSuspectOneControlLo":"33.0","pOneSuspectOneControlHi":"50.2","pOneSuspectThree":"2.0","pOneSuspectThreeLo":"0.6","pOneSuspectThreeHi":"3.8","pOneSuspectThreeStyle":"n/a","pOneSuspectThreeStyleLo":"n/a","pOneSuspectThreeStyleHi":"n/a","pOneSuspectThreeNonStyle":"2.0","pOneSuspectThreeNonStyleLo":"0.6","pOneSuspectThreeNonStyleHi":"3.7","pOneSuspectThreeControl":"3.4","pOneSuspectThreeControlLo":"0.8","pOneSuspectThreeControlHi":"6.7","pOneStyleWords":"0.11","pOneStyleWordsLo":"0.08","pOneStyleWordsHi":"0.15","pOneStyleWordsStyle":"n/a","pOneStyleWordsStyleLo":"n/a","pOneStyleWordsStyleHi":"n/a","pOneStyleWordsNonStyle":"0.11","pOneStyleWordsNonStyleLo":"0.08","pOneStyleWordsNonStyleHi":"0.15","pOneStyleWordsControl":"0.63","pOneStyleWordsControlLo":"0.51","pOneStyleWordsControlHi":"0.74","pOneEmDash":"0.34","pOneEmDashLo":"0.25","pOneEmDashHi":"0.45","pOneEmDashStyle":"n/a","pOneEmDashStyleLo":"n/a","pOneEmDashStyleHi":"n/a","pOneEmDashNonStyle":"0.34","pOneEmDashNonStyleLo":"0.25","pOneEmDashNonStyleHi":"0.44","pOneEmDashControl":"0.27","pOneEmDashControlLo":"0.18","pOneEmDashControlHi":"0.38","pOnePages":"26.8","pOnePagesLo":"25.3","pOnePagesHi":"28.6","pOnePagesStyle":"n/a","pOnePagesStyleLo":"n/a","pOnePagesStyleHi":"n/a","pOnePagesNonStyle":"26.8","pOnePagesNonStyleLo":"25.3","pOnePagesNonStyleHi":"28.5","pOnePagesControl":"21.8","pOnePagesControlLo":"20.0","pOnePagesControlHi":"24.0","pOneMainPages":"9.0","pOneMainPagesLo":"9.0","pOneMainPagesHi":"9.1","pOneMainPagesStyle":"n/a","pOneMainPagesStyleLo":"n/a","pOneMainPagesStyleHi":"n/a","pOneMainPagesNonStyle":"9.0","pOneMainPagesNonStyleLo":"9.0","pOneMainPagesNonStyleHi":"9.1","pOneMainPagesControl":"10.2","pOneMainPagesControlLo":"9.3","pOneMainPagesControlHi":"11.4","pOneRefs":"44.2","pOneRefsLo":"42.2","pOneRefsHi":"46.2","pOneRefsStyle":"n/a","pOneRefsStyleLo":"n/a","pOneRefsStyleHi":"n/a","pOneRefsNonStyle":"44.2","pOneRefsNonStyleLo":"42.2","pOneRefsNonStyleHi":"46.1","pOneRefsControl":"48.5","pOneRefsControlLo":"45.5","pOneRefsControlHi":"51.4","pOneOwnRepoN":"1","pOneMetaAuthorN":"0","pOneAckN":"5","pOneSelfRefN":"1","pOnePubHeaderN":"0","pOneEmailN":"3","pOneHiddenN":"15","pOneHiddenStrictN":"0","pOneHiddenPromptN":"0","pOneHiddenInvisibleN":"2","pOneHiddenWhiteN":"9","pOneHiddenTinyN":"1","pOneHiddenOffPageN":"5","pOneInjectionN":"5","pOneInjectionStrictN":"0","pOneInjectionTopicN":"37","pOneAnyRepoN":"70","pOneAnonLinkN":"51","pOneLlmStatementN":"295","pOneSuspectShareN":"90","pOneSuspectOneN":"63","pOneSuspectThreeN":"6","pOneOwnRepoNonStyleN":"1","pOneMetaAuthorNonStyleN":"0","pOneAckNonStyleN":"5","pOneSelfRefNonStyleN":"1","pOnePubHeaderNonStyleN":"0","pOneEmailNonStyleN":"3","pOneHiddenNonStyleN":"15","pOneHiddenStrictNonStyleN":"0","pOneHiddenPromptNonStyleN":"0","pOneHiddenInvisibleNonStyleN":"2","pOneHiddenWhiteNonStyleN":"9","pOneHiddenTinyNonStyleN":"1","pOneHiddenOffPageNonStyleN":"5","pOneInjectionNonStyleN":"5","pOneInjectionStrictNonStyleN":"0","pOneInjectionTopicNonStyleN":"37","pOneAnyRepoNonStyleN":"70","pOneAnonLinkNonStyleN":"51","pOneLlmStatementNonStyleN":"295","pOneSuspectShareNonStyleN":"90","pOneSuspectOneNonStyleN":"63","pOneSuspectThreeNonStyleN":"6","pOneSuspectShareControlN":"92","pOneSuspectOneControlN":"62","pOneSuspectThreeControlN":"5","dSnapshot":"2026-10-08"},"derived":{"dSnapshot":"data-snapshot date parsed from \\date{...} in paper/main.tex"},"recall":{},"p1_preliminary":true},"charts":{"_note":"Generated by tools/build_data.py from outputs/*.csv aggregates and paper/numbers.tex. Do not edit.","years":[2024,2025,2026,2027],"areas":[{"area":"foundation or frontier models, including LLMs","en":"Foundation models / LLMs","zh":"基础模型 / LLM","zh_full":"基础模型或前沿模型（含 LLM）","n2026":2646,"n2027":6766,"growth":2.56,"share2026":13.4,"share2027":15.7,"desk":0.92,"withdrawn":0.37},{"area":"applications to computer vision, audio, language, and other modalities","en":"Apps: vision, audio, language","zh":"应用：视觉、音频、语言","zh_full":"计算机视觉、音频、语言及其他模态的应用","n2026":2711,"n2027":5530,"growth":2.04,"share2026":13.7,"share2027":12.9,"desk":0.71,"withdrawn":0.56},{"area":"alignment, fairness, safety, privacy, and societal considerations","en":"Alignment / safety","zh":"对齐 / 安全","zh_full":"对齐、公平、安全、隐私与社会影响","n2026":1696,"n2027":3271,"growth":1.93,"share2026":8.6,"share2027":7.6,"desk":0.73,"withdrawn":0.49},{"area":"datasets and benchmarks","en":"Datasets & benchmarks","zh":"数据集与基准","zh_full":"数据集与基准","n2026":1593,"n2027":3192,"growth":2.0,"share2026":8.0,"share2027":7.4,"desk":1.32,"withdrawn":0.53},{"area":"generative models","en":"Generative models","zh":"生成模型","zh_full":"生成模型","n2026":1680,"n2027":2909,"growth":1.73,"share2026":8.5,"share2027":6.8,"desk":0.62,"withdrawn":0.52},{"area":"reinforcement learning","en":"Reinforcement learning","zh":"强化学习","zh_full":"强化学习","n2026":1065,"n2027":2399,"growth":2.25,"share2026":5.4,"share2027":5.6,"desk":0.71,"withdrawn":0.54},{"area":"applications to robotics, autonomy, planning","en":"Robotics / planning","zh":"机器人 / 规划","zh_full":"机器人、自主系统与规划的应用","n2026":598,"n2027":2279,"growth":3.81,"share2026":3.0,"share2027":5.3,"desk":1.4,"withdrawn":0.44},{"area":"unsupervised, self-supervised, semi-supervised, and supervised representation learning","en":"Representation learning","zh":"表示学习","zh_full":"无监督、自监督、半监督与监督表示学习","n2026":1163,"n2027":2175,"growth":1.87,"share2026":5.9,"share2027":5.1,"desk":1.47,"withdrawn":0.55},{"area":"applications to physical sciences (physics, chemistry, biology, etc.)","en":"Physical sciences","zh":"物理科学应用","zh_full":"物理科学应用（物理、化学、生物等）","n2026":861,"n2027":1994,"growth":2.32,"share2026":4.3,"share2027":4.6,"desk":1.25,"withdrawn":0.5},{"area":"interpretability and explainable AI","en":"Interpretability","zh":"可解释性","zh_full":"可解释性与可解释 AI","n2026":788,"n2027":1807,"growth":2.29,"share2026":4.0,"share2027":4.2,"desk":1.22,"withdrawn":0.5},{"area":"optimization","en":"Optimization","zh":"优化","zh_full":"优化","n2026":739,"n2027":1610,"growth":2.18,"share2026":3.7,"share2027":3.7,"desk":0.81,"withdrawn":0.31},{"area":"learning theory","en":"Learning theory","zh":"学习理论","zh_full":"学习理论","n2026":516,"n2027":1384,"growth":2.68,"share2026":2.6,"share2027":3.2,"desk":0.29,"withdrawn":0.79},{"area":"transfer learning, meta learning, and lifelong learning","en":"Transfer / meta / lifelong","zh":"迁移 / 元 / 终身学习","zh_full":"迁移学习、元学习与终身学习","n2026":570,"n2027":1179,"growth":2.07,"share2026":2.9,"share2027":2.7,"desk":0.68,"withdrawn":0.51},{"area":"other topics in machine learning (i.e., none of the above)","en":"Other topics","zh":"其他主题","zh_full":"机器学习其他主题（以上都不是）","n2026":825,"n2027":1157,"growth":1.4,"share2026":4.2,"share2027":2.7,"desk":1.21,"withdrawn":0.35},{"area":"learning on time series and dynamical systems","en":"Time series","zh":"时间序列","zh_full":"时间序列与动力系统上的学习","n2026":467,"n2027":1154,"growth":2.47,"share2026":2.4,"share2027":2.7,"desk":0.87,"withdrawn":0.52},{"area":"learning on graphs and other geometries & topologies","en":"Graphs / geometry","zh":"图与几何","zh_full":"图及其他几何与拓扑结构上的学习","n2026":534,"n2027":958,"growth":1.79,"share2026":2.7,"share2027":2.2,"desk":0.73,"withdrawn":0.63},{"area":"probabilistic methods (Bayesian methods, variational inference, sampling, UQ, etc.)","en":"Probabilistic methods","zh":"概率方法","zh_full":"概率方法（贝叶斯、变分推断、采样、不确定性量化等）","n2026":380,"n2027":885,"growth":2.33,"share2026":1.9,"share2027":2.1,"desk":0.79,"withdrawn":0.56},{"area":"applications to neuroscience & cognitive science","en":"Neuro / cognitive science","zh":"神经 / 认知科学","zh_full":"神经科学与认知科学应用","n2026":383,"n2027":725,"growth":1.89,"share2026":1.9,"share2027":1.7,"desk":1.38,"withdrawn":0.97},{"area":"infrastructure, software libraries, hardware, systems, etc.","en":"Infrastructure / systems","zh":"基础设施 / 系统","zh_full":"基础设施、软件库、硬件与系统","n2026":178,"n2027":706,"growth":3.97,"share2026":0.9,"share2027":1.6,"desk":1.84,"withdrawn":0.42},{"area":"neurosymbolic & hybrid AI systems (physics-informed, logic & formal reasoning, etc.)","en":"Neurosymbolic / hybrid","zh":"神经符号 / 混合系统","zh_full":"神经符号与混合 AI 系统（物理信息、逻辑与形式推理等）","n2026":226,"n2027":577,"growth":2.55,"share2026":1.1,"share2027":1.3,"desk":2.43,"withdrawn":1.04},{"area":"causal reasoning","en":"Causal reasoning","zh":"因果推理","zh_full":"因果推理","n2026":195,"n2027":356,"growth":1.83,"share2026":1.0,"share2027":0.8,"desk":1.12,"withdrawn":1.97}],"topics":[{"key":"World model","en":"World models","zh":"世界模型","share":[0.3,0.59,0.68,2.12],"n":[22,69,135,913],"default":true},{"key":"Memory (agent/LLM)","en":"Memory (agents / LLMs)","zh":"记忆（智能体 / LLM）","share":[0.78,0.98,1.39,3.51],"n":[58,115,276,1509],"default":true},{"key":"Self-evolving/Self-improve","en":"Self-evolving / self-improving","zh":"自我演化 / 自我改进","share":[0.12,0.38,0.53,1.27],"n":[9,44,105,546],"default":true},{"key":"Agent/智能体","en":"Agents","zh":"智能体","share":[1.96,3.31,6.19,12.19],"n":[145,387,1226,5244],"default":true},{"key":"VLA/具身","en":"VLA / embodied","zh":"VLA / 具身智能","share":[0.27,0.45,0.92,1.82],"n":[20,53,183,784],"default":true},{"key":"Speculative decoding","en":"Speculative decoding","zh":"投机解码","share":[0.03,0.26,0.33,0.49],"n":[2,30,66,210],"default":false},{"key":"Diffusion LM / dLLM","en":"Diffusion LMs","zh":"扩散语言模型","share":[0.07,0.08,0.52,0.72],"n":[5,9,104,308],"default":true},{"key":"KV cache/长上下文","en":"KV cache / long context","zh":"KV 缓存 / 长上下文","share":[0.22,0.94,0.82,1.09],"n":[16,110,162,470],"default":false},{"key":"Deep research/Search agent","en":"Deep research / search agents","zh":"深度研究 / 搜索智能体","share":[0.01,0.0,0.29,0.37],"n":[1,0,58,160],"default":false},{"key":"Flow matching","en":"Flow matching","zh":"流匹配","share":[0.12,0.56,0.81,0.9],"n":[9,65,160,385],"default":false},{"key":"Continual learning","en":"Continual learning","zh":"持续学习","share":[1.55,1.15,1.14,1.24],"n":[115,134,225,535],"default":false},{"key":"SAE/Mech interp","en":"SAEs / mechanistic interpretability","zh":"SAE / 机制可解释性","share":[0.26,0.75,0.75,0.83],"n":[19,88,148,355],"default":false},{"key":"Time series","en":"Time series","zh":"时间序列","share":[1.93,2.44,2.5,2.72],"n":[143,285,495,1169],"default":false},{"key":"GUI/Web agent","en":"GUI / web agents","zh":"GUI / 网页智能体","share":[0.0,0.19,0.6,0.64],"n":[0,22,118,277],"default":false},{"key":"Physics-informed/PDE","en":"Physics-informed / PDEs","zh":"物理信息 / PDE","share":[0.74,0.75,0.68,0.73],"n":[55,87,134,314],"default":false},{"key":"Video generation","en":"Video generation","zh":"视频生成","share":[0.32,0.85,1.09,1.16],"n":[24,99,215,500],"default":false},{"key":"RL for LLM (GRPO/RLVR/RLHF)","en":"RL for LLMs","zh":"面向 LLM 的强化学习","share":[0.38,0.59,1.36,1.35],"n":[28,69,270,579],"default":true},{"key":"Tool use/Code agent","en":"Tool use / code agents","zh":"工具调用 / 代码智能体","share":[0.22,0.39,0.61,0.56],"n":[16,46,120,240],"default":false},{"key":"Safety/Jailbreak","en":"Safety / jailbreaks","zh":"安全 / 越狱","share":[0.3,1.24,1.49,1.38],"n":[22,145,296,593],"default":false},{"key":"AI4Science/分子蛋白","en":"AI for science (molecules, proteins)","zh":"AI for Science（分子、蛋白）","share":[2.0,2.06,1.78,1.59],"n":[148,241,353,682],"default":false},{"key":"MoE","en":"Mixture of experts","zh":"混合专家（MoE）","share":[0.23,0.56,0.86,0.77],"n":[17,65,171,331],"default":false},{"key":"Benchmark","en":"Benchmarks","zh":"基准","share":[1.73,3.55,4.56,4.03],"n":[128,415,903,1733],"default":true},{"key":"Test-time scaling/compute","en":"Test-time scaling","zh":"测试时扩展","share":[0.32,0.35,0.84,0.74],"n":[24,41,167,318],"default":false},{"key":"Optimal transport","en":"Optimal transport","zh":"最优传输","share":[0.81,0.72,0.57,0.49],"n":[60,84,112,210],"default":false},{"key":"Watermark","en":"Watermarking","zh":"水印","share":[0.32,0.42,0.48,0.4],"n":[24,49,96,174],"default":false},{"key":"Hallucination","en":"Hallucination","zh":"幻觉","share":[0.24,0.54,0.76,0.62],"n":[18,63,150,268],"default":false},{"key":"3DGS/NeRF","en":"3DGS / NeRF","zh":"3DGS / NeRF","share":[0.46,0.65,0.59,0.47],"n":[34,76,116,201],"default":false},{"key":"Quantization/Pruning","en":"Quantization / pruning","zh":"量化 / 剪枝","share":[1.7,1.94,2.36,1.88],"n":[126,227,467,810],"default":true},{"key":"Math/Theorem proving","en":"Math / theorem proving","zh":"数学 / 定理证明","share":[0.41,0.45,0.52,0.41],"n":[30,52,103,178],"default":false},{"key":"Mamba/SSM/Linear attn","en":"Mamba / SSM / linear attention","zh":"Mamba / SSM / 线性注意力","share":[0.24,1.03,0.63,0.47],"n":[18,120,124,204],"default":true},{"key":"MLLM/VLM 多模态","en":"MLLM / VLM","zh":"多模态大模型（MLLM / VLM）","share":[0.96,2.57,3.53,2.66],"n":[71,300,700,1144],"default":true},{"key":"Spiking","en":"Spiking networks","zh":"脉冲神经网络","share":[0.62,0.34,0.42,0.31],"n":[46,40,83,133],"default":false},{"key":"LoRA/PEFT","en":"LoRA / PEFT","zh":"LoRA / 参数高效微调","share":[0.62,0.89,0.81,0.59],"n":[46,104,160,255],"default":true},{"key":"Privacy/DP","en":"Privacy / DP","zh":"隐私 / 差分隐私","share":[0.7,0.62,0.61,0.44],"n":[52,72,120,189],"default":false},{"key":"Diffusion (all)","en":"Diffusion (all)","zh":"扩散模型（全部）","share":[6.02,6.47,5.77,4.13],"n":[446,755,1143,1777],"default":false},{"key":"LLM/语言模型","en":"LLMs / language models","zh":"大语言模型","share":[11.3,18.61,19.95,14.23],"n":[837,2173,3952,6122],"default":false},{"key":"Federated","en":"Federated learning","zh":"联邦学习","share":[3.06,1.7,1.51,1.07],"n":[227,199,300,461],"default":false},{"key":"GNN/Graph","en":"GNNs / graphs","zh":"图神经网络 / 图","share":[6.26,4.8,4.22,2.94],"n":[464,561,837,1265],"default":false},{"key":"Unlearning","en":"Unlearning","zh":"机器遗忘","share":[0.26,0.76,1.01,0.69],"n":[19,89,201,296],"default":false},{"key":"Reasoning/推理","en":"Reasoning","zh":"推理","share":[2.01,2.96,8.6,5.63],"n":[149,346,1704,2421],"default":false},{"key":"LLM-as-judge/Reward model","en":"LLM-as-judge / reward models","zh":"LLM 评审 / 奖励模型","share":[0.12,0.37,0.65,0.41],"n":[9,43,129,177],"default":false}],"style":[{"key":"STRONG_any","en":"any strong marker","zh":"任一强标记","bold":true,"default":true,"share":[0.26,0.22,0.44,2.69]},{"key":">=2 markers","en":"two or more markers","zh":"两个及以上标记","bold":true,"default":true,"share":[0.0,0.0,0.03,0.55]},{"key":"evidence-","en":"“evidence”","zh":"“evidence”","bold":false,"default":true,"share":[0.05,0.06,0.3,2.94]},{"key":"when/what/where does","en":"when / what / where does …","zh":"when / what / where does …","bold":false,"default":true,"share":[0.3,0.27,0.29,1.39]},{"key":"audit","en":"audit","zh":"audit（审计）","bold":false,"default":true,"share":[0.03,0.12,0.18,1.26]},{"key":"X is/are not Y","en":"X is not Y","zh":"X is not Y（X 不是 Y）","bold":false,"default":true,"share":[0.18,0.07,0.17,1.14]},{"key":"harness","en":"harness","zh":"harness","bold":false,"default":true,"share":[0.0,0.01,0.02,0.75]},{"key":"does not / cannot","en":"does not / cannot","zh":"does not / cannot","bold":false,"default":false,"share":[0.09,0.1,0.19,0.56]},{"key":"pre-registered/seeded/paired","en":"pre-registered / seeded / paired","zh":"pre-registered / seeded / paired（预注册 / 固定种子 / 配对）","bold":false,"default":false,"share":[0.03,0.03,0.06,0.22]},{"key":"counterfactual/controlled test","en":"counterfactual / controlled test","zh":"counterfactual / controlled test（反事实 / 受控测试）","bold":false,"default":false,"share":[0.0,0.01,0.01,0.13]},{"key":"same/matched-X control","en":"same / matched-X control","zh":"same / matched-X control（同池 / 匹配对照）","bold":false,"default":false,"share":[0.03,0.0,0.03,0.09]},{"key":"protocol for telling","en":"protocol for telling","zh":"protocol for telling","bold":false,"default":false,"share":[0.01,0.01,0.02,0.11]}],"style_n_titles":[7407,11677,19814,43013],"title_style":[{"year":2024,"n":7407,"colon":41.64,"question":2.36,"words":8.78},{"year":2025,"n":11677,"colon":49.49,"question":2.79,"words":9.12},{"year":2026,"n":19814,"colon":59.43,"question":2.85,"words":9.34},{"year":2027,"n":43013,"colon":66.02,"question":5.37,"words":9.5}],"fate":{"Reject":[{"bin":"≤2.5","n":741,"title":1.1,"strict":1.6,"loose":2.2},{"bin":"2.5–3.5","n":2191,"title":4.9,"strict":6.9,"loose":7.5},{"bin":"3.5–4.5","n":3686,"title":11.5,"strict":14.9,"loose":15.7},{"bin":"4.5–5.5","n":1732,"title":16.3,"strict":20.7,"loose":21.2},{"bin":">5.5","n":95,"title":15.8,"strict":16.8,"loose":17.9}],"Withdraw":[{"bin":"≤2.5","n":970,"title":1.0,"strict":1.8,"loose":1.9},{"bin":"2.5–3.5","n":2315,"title":1.7,"strict":2.7,"loose":2.8},{"bin":"3.5–4.5","n":1474,"title":1.7,"strict":2.9,"loose":3.2},{"bin":"4.5–5.5","n":193,"title":8.3,"strict":15.0,"loose":15.5},{"bin":">5.5","n":10,"title":10.0,"strict":20.0,"loose":20.0}]},"funnel":[{"key":"nAbsCandidates","n":"308,685","v":308685.0,"en":"abstract pairs retrieved","zh":"检索到的摘要配对","x_en":"Every submission against 70,782 conference and 355,675 arXiv abstracts (embedding top-k, similarity ≥ 0.85).","x_zh":"每篇投稿与 70,782 篇会议论文、355,675 篇 arXiv 论文的摘要比对（embedding 近邻检索，相似度 ≥ 0.85）。"},{"key":"nGray","n":"14,102","v":14102.0,"en":"grey-zone pairs","zh":"灰区配对","x_en":"Similar meaning, different words and titles: what an LLM paraphrase would produce, but mostly legitimate same-topic work.","x_zh":"意思相近、措辞和标题不同：LLM 改写会产生这样的配对，但其中绝大多数是正常的同主题工作。"},{"key":"nGrayFirstPass","n":"1,265","v":1265.0,"en":"kept by the first LLM pass","zh":"第一轮 LLM 保留","x_en":"A fast screen (Qwen3-30B-A3B). Manual inspection shows most survivors are competing methods for the same problem.","x_zh":"快速初筛（Qwen3-30B-A3B）。人工抽查发现，留下的大多是解决同一问题的不同方法。"},{"key":"nVerifyTwoThree","n":"743","v":743.0,"en":"scored 2–3 by the second LLM pass","zh":"第二轮 LLM 评 2–3 分","x_en":"A reasoning model scores each pair 0–3 and must name the distinguishing components the two papers share.","x_zh":"推理模型给每对打 0–3 分，并且必须指出两篇共有的、有区分度的具体组成部分。"},{"key":"nFtSubs","n":"126","v":126.0,"en":"grade A/B leads compared in full text","zh":"全文比对的 A/B 级线索","x_en":"Submissions with a lead from any source (titles, arXiv metadata, abstracts), compared on body text, paragraphs, references, images and number runs.","x_zh":"来自任一来源（标题、arXiv 元数据、摘要）的线索投稿，比较正文、段落、参考文献、图片和数字序列。"},{"key":"nFtSame","n":"11","v":11.0,"en":"same paper in full text","zh":"全文判定为同一篇","x_en":"Mostly submissions whose arXiv version declares acceptance at, or concurrent review by, another venue.","x_zh":"主要是 arXiv 版本自述已被其他会议接收、或正在其他会议审稿的投稿。"}],"ft_verdicts":[{"key":"nFtSame","n":"11","v":11.0,"en":"Same paper","zh":"同一篇论文","cls":"same"},{"key":"nFtPartial","n":"6","v":6.0,"en":"Partial overlap (text, paragraphs or figures)","zh":"部分重合（文字、段落或图片）","cls":"partial"},{"key":"nFtSharedNumbers","n":"14","v":14.0,"en":"Shared result numbers only","zh":"仅共享结果数字","cls":"numbers"},{"key":"nFtDifferent","n":"91","v":91.0,"en":"Different papers","zh":"不同的论文","cls":"different"},{"key":"nFtTemplate","n":"3","v":3.0,"en":"Blank template uploaded","zh":"上传的是空白模板","cls":"other"},{"key":"nFtStub","n":"1","v":1.0,"en":"Abstract-only stub","zh":"只有摘要的占位稿","cls":"other"}],"pdf":[{"key":"pOneOwnRepo","en":"non-anonymous link to the authors' own code","zh":"指向作者自己代码的非匿名链接","group":"leak","est":"0.4","lo":"0.0","hi":"1.1","count":"1"},{"key":"pOneAck","en":"acknowledgement section","zh":"致谢段落","group":"leak","est":"1.7","lo":"0.4","hi":"3.4","count":"5"},{"key":"pOneSelfRef","en":"self-identifying reference","zh":"暴露身份的自引","group":"leak","est":"0.3","lo":"0.0","hi":"1.0","count":"1"},{"key":"pOneMetaAuthor","en":"author names in PDF metadata","zh":"PDF 元数据里的作者名","group":"leak","est":"0.0","lo":"0.0","hi":"1.2","count":"0"},{"key":"pOnePubHeader","en":"running head of a previous venue","zh":"其他会议的页眉","group":"leak","est":"0.0","lo":"0.0","hi":"1.2","count":"0"},{"key":"pOneHiddenStrict","en":"hidden text (strict rule)","zh":"隐藏文字（严格规则）","group":"hidden","est":"0.0","lo":"0.0","hi":"1.2","count":"0"},{"key":"pOneInjectionStrict","en":"prompt injection (strict rule)","zh":"提示注入（严格规则）","group":"hidden","est":"0.0","lo":"0.0","hi":"1.2","count":"0"},{"key":"pOneHidden","en":"hidden text (simple rules, mostly benign)","zh":"隐藏文字（简单规则，几乎都是无害的）","group":"loose","est":"4.9","lo":"2.6","hi":"7.4","count":"15"},{"key":"pOneInjection","en":"injection phrase (simple rule, mostly benign)","zh":"注入短语（简单规则，几乎都是无害的）","group":"loose","est":"1.6","lo":"0.3","hi":"3.2","count":"5"},{"key":"pOneAnonLink","en":"anonymised code link","zh":"匿名化代码链接","group":"context","est":"16.7","lo":"12.6","hi":"21.1","count":"51"},{"key":"pOneAnyRepo","en":"any link to a code-hosting site","zh":"任意代码托管网站链接","group":"context","est":"22.7","lo":"18.1","hi":"27.1","count":"70"}],"refs":[{"key":"pOneResolved","en":"references resolved (mean per submission)","zh":"参考文献可解析比例（每篇平均）","y2027":["95.5","94.7","96.2"],"y2024":["94.5","93.6","95.3"],"style":["n/a","n/a","n/a"]},{"key":"pOneSuspectOne","en":"submissions with ≥ 1 unresolved, non-trivial reference","zh":"至少 1 条无法解析且非平凡引用的投稿","y2027":["20.6","16.1","25.4"],"y2024":["41.8","33.0","50.2"],"style":["n/a","n/a","n/a"]},{"key":"pOneSuspectThree","en":"submissions with ≥ 3 such references","zh":"至少 3 条此类引用的投稿","y2027":["2.0","0.6","3.7"],"y2024":["3.4","0.8","6.7"],"style":["n/a","n/a","n/a"]}]},"downloads":{"_note":"Generated by tools/build_data.py. Aggregate tables only.","files":[{"file":"data/csv/area_yoy.csv","name":"area_yoy.csv","rows":21,"kb":1.9,"en":"Submissions per primary area, ICLR 2026 vs 2027, with growth, share and desk-reject / withdrawal rates","zh":"各 primary area 的投稿数（ICLR 2026 与 2027）、增长倍数、占比，以及桌拒率、撤稿率"},{"file":"data/csv/topic_trends.csv","name":"topic_trends.csv","rows":41,"kb":2.7,"en":"Share of titles matching each topic, ICLR 2024-2027","zh":"各主题在标题中的占比，ICLR 2024–2027"},{"file":"data/csv/keyword_trends.csv","name":"keyword_trends.csv","rows":731,"kb":31.3,"en":"Author keywords: counts 2025-2027 and rate per 10,000 submissions","zh":"作者关键词：2025–2027 年的出现次数与每万篇投稿出现率"},{"file":"data/csv/aistyle_by_year.csv","name":"aistyle_by_year.csv","rows":13,"kb":0.5,"en":"Share of titles with each automated-research style marker, 2024-2027","zh":"各“自动化科研”风格标记在标题中的占比，2024–2027"},{"file":"data/csv/title_style.csv","name":"title_style.csv","rows":4,"kb":0.5,"en":"Title style statistics per year (length, colon, question, ...)","zh":"逐年标题风格统计（长度、冒号、问句等）"},{"file":"data/csv/gray_zone_llm_summary.csv","name":"gray_zone_llm_summary.csv","rows":4,"kb":0.2,"en":"Grey-zone pairs by first-pass LLM label and reference group","zh":"灰区配对按第一轮 LLM 判定类别与参考集分组的计数"},{"file":"data/csv/iclr26_reject_fate_emb.csv","name":"iclr26_reject_fate_emb.csv","rows":12,"kb":0.9,"en":"ICLR 2026 rejected / withdrawn papers later accepted at ICML or NeurIPS 2026, by rating bin","zh":"ICLR 2026 被拒 / 撤稿论文后来被 ICML 或 NeurIPS 2026 接收的比例，按评分分档"},{"file":"data/csv/p1_estimates.csv","name":"p1_estimates.csv","rows":81,"kb":8.0,"en":"PDF-level estimates from the stratified sample (weighted shares with 95% bootstrap intervals; preliminary while the download runs)","zh":"分层抽样 PDF 的加权估计（比例与 95% bootstrap 区间；下载未完成时为初步结果）"}]},"i18n":{"_note":"Chinese for the static text of index.html, keyed by the English innerHTML (whitespace-normalised). Numbers are \u003cspan data-n=\"macro\">\u003c/span> slots filled from paper/numbers.tex at runtime, so they never appear here. Dynamic text lives in assets/js/main.js as L(en, zh); chart labels in tools/build_data.py. tools/screenshots.py prints keys that matched nothing and English text that no key covers.","html":[["Styles did not load. Open \u003ccode>dist/index.html\u003c/code> (single-file build) or serve this folder over HTTP.","样式没有加载。请打开 \u003ccode>dist/index.html\u003c/code>（单文件版），或用 HTTP 服务打开本目录。"],["ICLR 2027 Analysis","ICLR 2027 投稿分析"],["Growth","增长"],["Integrity","诚信"],["Safeguards","把关"],["Recommendations","建议"],["Ethics &amp; data","伦理与数据"],["Cite","引用"],["PREPRINT","预印本"],["Data snapshot \u003cspan data-n=\"dSnapshot\">\u003c/span> · public data only","数据快照 \u003cspan data-n=\"dSnapshot\">\u003c/span> · 仅用公开数据"],["Where Are We Going?","我们将走向何方？"],["A Systematic Analysis of \u003cspan data-n=\"nSub\">\u003c/span> ICLR 2027 Submissions","对 \u003cspan data-n=\"nSub\">\u003c/span> 篇 ICLR 2027 投稿的系统分析"],["When submissions double in a year, do the safeguards of peer review keep pace? \u003cb>Only partly.\u003c/b> The growth is mostly new work rather than recycled ICLR rejects, and verbatim copying is essentially absent among the pairs our retrieval can surface. But anonymity is nominal for the \u003cspan data-n=\"pArxiv\">\u003c/span>% of submissions with a same-title arXiv preprint, and the submissions that full-text comparison confirms as duplicates of published or concurrently reviewed work were still under review at our snapshot.","投稿量一年翻倍，同行评审的把关机制跟上了吗？\u003cb>只跟上了一部分。\u003c/b>增长主要来自新工作，而不是 ICLR 往届拒稿的重投；在我们的检索能覆盖到的配对里，逐字照搬几乎不存在。但 \u003cspan data-n=\"pArxiv\">\u003c/span>% 的投稿在 arXiv 上有同标题预印本，对它们来说匿名只是名义上的；而经全文比对确认与已发表论文、或与正在别处审稿的论文重复的投稿，在我们的快照时点全部仍在审。"],["arXiv · coming soon","arXiv · 即将发布"],["submissions to ICLR 2027, ×\u003cspan data-n=\"xGrowth\">\u003c/span> the \u003cspan data-n=\"nSubPrev\">\u003c/span> of ICLR 2026","篇 ICLR 2027 投稿，是 ICLR 2026（\u003cspan data-n=\"nSubPrev\">\u003c/span> 篇）的 \u003cspan data-n=\"xGrowth\">\u003c/span> 倍"],["ICLR 2026 rejects resubmitted, against \u003cspan data-n=\"nGrowthAbs\">\u003c/span> additional submissions","篇 ICLR 2026 拒稿重投，而投稿净增 \u003cspan data-n=\"nGrowthAbs\">\u003c/span> 篇"],["of titles in an \"automated-research\" style, up from \u003cspan data-n=\"pStyleC\">\u003c/span>% in 2026","的标题呈“自动化科研”风格，2026 年为 \u003cspan data-n=\"pStyleC\">\u003c/span>%"],["same-paper verdicts in full text, from \u003cspan data-n=\"nAbsCandidates\">\u003c/span> retrieved abstract pairs","篇经全文比对判定为同一篇，起点是检索到的 \u003cspan data-n=\"nAbsCandidates\">\u003c/span> 对摘要配对"],["of submissions have a same-title arXiv preprint","的投稿在 arXiv 上有同标题预印本"],["of ICLR 2026 rejects rated 4.5–5.5 were accepted at ICML or NeurIPS 2026","的 ICLR 2026 拒稿（平均分 4.5–5.5）后来被 ICML 或 NeurIPS 2026 接收"],["The question","研究问题"],["When submissions double in a year, do the safeguards keep pace?","投稿一年翻倍，把关机制跟得上吗？"],["ICLR 2027 received \u003cspan data-n=\"nSub\">\u003c/span> submissions, \u003cspan data-n=\"xGrowth\">\u003c/span> times the \u003cspan data-n=\"nSubPrev\">\u003c/span> of ICLR 2026. We took a snapshot of the complete pool on \u003cspan data-n=\"dSnapshot\">\u003c/span>, during the review period, and use only information that is public at that time. Author identities, reviews and decisions are not yet public, so every analysis is designed to be re-run when they are.","ICLR 2027 共收到 \u003cspan data-n=\"nSub\">\u003c/span> 篇投稿，是 ICLR 2026（\u003cspan data-n=\"nSubPrev\">\u003c/span> 篇）的 \u003cspan data-n=\"xGrowth\">\u003c/span> 倍。我们在评审期间的 \u003cspan data-n=\"dSnapshot\">\u003c/span> 对完整投稿池做了快照，只使用当时公开的信息。作者身份、评审意见和录用结果都还没有公开，所以每项分析都设计成可以在它们公开后重跑。"],["Where does the growth come from?","增长来自哪里？"],["Primary areas and topics, recycled rejects, and an \"automated-research\" title style.","领域与主题、往届拒稿的重投，以及一种“自动化科研”式的标题风格。"],["Does it bring integrity problems?","增长是否带来诚信问题？"],["A calibrated audit funnel: abstract retrieval, LLM adjudication, full-text comparison.","一个经过校准的审计漏斗：摘要检索、LLM 判定、全文比对。"],["Do the safeguards hold?","把关机制是否有效？"],["Double-blind exposure, PDF-level leakage, the organisers' response, and where rejected papers go.","双盲的暴露程度、PDF 层面的泄露、会议方的处理，以及被拒论文的去向。"],["RQ1 · Where does the growth come from?","RQ1 · 增长来自哪里？"],["New directions, not recycled rejects","是新方向，不是旧稿重投"],["About \u003cspan data-n=\"nResubStrict\">\u003c/span> ICLR 2026 rejects reappear at ICLR 2027, against \u003cspan data-n=\"nGrowthAbs\">\u003c/span> additional submissions, so ICLR's own rejects explain little of the growth. Papers rejected elsewhere, notably at NeurIPS 2026 shortly before the ICLR deadline, are invisible to us and may contribute more. The topical mix, however, shifted sharply.","约 \u003cspan data-n=\"nResubStrict\">\u003c/span> 篇 ICLR 2026 拒稿出现在 ICLR 2027，而投稿净增 \u003cspan data-n=\"nGrowthAbs\">\u003c/span> 篇，所以 ICLR 自己的拒稿只能解释很小一部分增长。在其他会议被拒的论文（尤其是 ICLR 截稿前不久出结果的 NeurIPS 2026）我们看不到，它们的贡献可能更大。不过，主题构成发生了明显变化。"],["Submissions per primary area","各 primary area 的投稿数"],["ICLR 2026 vs. 2027. Hover a row for details.","ICLR 2026 与 2027 对比。鼠标悬停某一行查看详情。"],["By size","按规模"],["By growth","按增长"],["×: growth factor","×：增长倍数"],["Data table","数据表"],["Foundation models and LLMs remain the largest area (\u003cspan data-n=\"nAreaLLM\">\u003c/span> submissions, ×\u003cspan data-n=\"xAreaLLM\">\u003c/span>). Infrastructure and systems (×\u003cspan data-n=\"xAreaInfra\">\u003c/span>) and robotics and planning (×\u003cspan data-n=\"xAreaRobotics\">\u003c/span>) grow fastest; generative models (×\u003cspan data-n=\"xAreaGenerative\">\u003c/span>) and graphs (×\u003cspan data-n=\"xAreaGraphs\">\u003c/span>) grow more slowly than the conference.","基础模型与 LLM 仍是最大的领域（\u003cspan data-n=\"nAreaLLM\">\u003c/span> 篇，×\u003cspan data-n=\"xAreaLLM\">\u003c/span>）。增长最快的是基础设施与系统（×\u003cspan data-n=\"xAreaInfra\">\u003c/span>）和机器人与规划（×\u003cspan data-n=\"xAreaRobotics\">\u003c/span>）；生成模型（×\u003cspan data-n=\"xAreaGenerative\">\u003c/span>）和图学习（×\u003cspan data-n=\"xAreaGraphs\">\u003c/span>）的增速低于会议整体。"],["Topic shares, ICLR 2024–2027","主题占比，ICLR 2024–2027"],["Share of titles matching each topic. Pick topics below; dashed lines fell in 2027.","标题命中各主题的比例。可在下方选择主题；虚线表示 2027 年占比下降。"],["Linear","线性"],["Log","对数"],["Agent-related titles doubled their share, from \u003cspan data-n=\"pTopicAgentPrev\">\u003c/span>% to \u003cspan data-n=\"pTopicAgent\">\u003c/span>% (\u003cspan data-n=\"nTopicAgent\">\u003c/span> submissions). Memory, world models, vision-language-action and self-evolving systems grew even faster in relative terms. Some keywords appear almost from nothing: \u003ci>on-policy distillation\u003c/i> went from \u003cspan data-n=\"nKwOPDPrev\">\u003c/span> to \u003cspan data-n=\"nKwOPD\">\u003c/span> submissions, \u003ci>LLM agents\u003c/i> from \u003cspan data-n=\"nKwLLMAgentsPrev\">\u003c/span> to \u003cspan data-n=\"nKwLLMAgents\">\u003c/span>. Multimodal LLMs, parameter-efficient fine-tuning, state-space models and quantisation lost share.","与智能体相关的标题占比翻了一番，从 \u003cspan data-n=\"pTopicAgentPrev\">\u003c/span>% 升到 \u003cspan data-n=\"pTopicAgent\">\u003c/span>%（\u003cspan data-n=\"nTopicAgent\">\u003c/span> 篇）。记忆、世界模型、视觉-语言-动作和自我演化系统的相对增幅更大。有些关键词几乎是从零开始：\u003ci>on-policy distillation\u003c/i> 从 \u003cspan data-n=\"nKwOPDPrev\">\u003c/span> 篇增至 \u003cspan data-n=\"nKwOPD\">\u003c/span> 篇，\u003ci>LLM agents\u003c/i> 从 \u003cspan data-n=\"nKwLLMAgentsPrev\">\u003c/span> 篇增至 \u003cspan data-n=\"nKwLLMAgents\">\u003c/span> 篇。多模态大模型、参数高效微调、状态空间模型和量化的占比则有所下降。"],["The \"automated-research\" title style","“自动化科研”式标题"],["Share of titles containing each marker, ICLR 2024–2027. Thick lines: any strong marker, two or more markers.","含各风格标记的标题占比，ICLR 2024–2027。粗线：任一强标记、两个及以上标记。"],["Template: a negated claim followed by a methodological noun phrase, as in \"\u003ci>X Is Not Y: A Pre-registered Audit of …\u003c/i>\"","模板：一个否定式论断，后接方法论名词短语，例如“\u003ci>X Is Not Y: A Pre-registered Audit of …\u003c/i>”"],["titles with a strong marker, 2024 / 2025 / 2026 → 2027 (\u003cspan data-n=\"nStyle\">\u003c/span> submissions)","含强标记的标题占比，2024 / 2025 / 2026 → 2027（\u003cspan data-n=\"nStyle\">\u003c/span> 篇）"],["first vs. last quartile of submission numbers: the style concentrates near the deadline","投稿编号最前与最后四分之一的对比：这种风格集中在截稿前"],["share among withdrawn · desk-rejected · active submissions","在撤稿 · 桌拒 · 在审投稿中的占比"],["\u003cb>Caveat\u003c/b> A title says nothing about how an individual paper was produced. The style is a population-level signal and a stratum for comparison, not evidence about any single paper.","\u003cb>注意\u003c/b>标题并不能说明某一篇论文是怎么写出来的。这种风格只是群体层面的信号和用于对比的分层，不是针对任何单篇论文的证据。"],["RQ2 · Does the growth bring integrity problems?","RQ2 · 增长是否带来诚信问题？"],["Copying is rare; paraphrase is the open problem","照搬很少，改写才是难题"],["We audit every submission against \u003cspan data-n=\"nRefConf\">\u003c/span> conference and \u003cspan data-n=\"nRefArxiv\">\u003c/span> arXiv abstracts with a funnel that runs from cheap, high-recall signals to expensive, high-precision ones, and calibrate each stage against positive and negative controls.","我们把每篇投稿与 \u003cspan data-n=\"nRefConf\">\u003c/span> 篇会议论文和 \u003cspan data-n=\"nRefArxiv\">\u003c/span> 篇 arXiv 论文的摘要比对。审计是一个漏斗：从便宜、高召回的信号逐级过渡到昂贵、高精度的信号，每一层都用正、负对照校准。"],["The audit funnel","审计漏斗"],["Each stage is cheaper per item than the next and removes most of the remaining candidates. Hover or tap a stage.","每一层的单条成本都低于下一层，并去掉剩余候选中的大部分。悬停或点按某一层查看说明。"],["The full-text stage covers grade A/B leads from all sources (titles, arXiv metadata and abstracts), not only the grey zone, so it is not a strict subset of the stage above it. Counts are pairs until the full-text stage and submissions from there on.","全文比对这一层覆盖来自所有来源（标题、arXiv 元数据和摘要）的 A/B 级线索，不只是灰区，所以它不是上一层的严格子集。全文比对之前的计数单位是配对，从这一层起是投稿。"],["Verbatim reuse","逐字照搬"],["Essentially absent","几乎不存在"],["No submission reproduces the abstract of a published paper under a new title, even with a relaxed threshold. Re-titled matches are mostly benign: \u003cspan data-n=\"nRetitledArxiv\">\u003c/span> re-titled versions of the authors' own arXiv preprints, \u003cspan data-n=\"nRetitledRejected\">\u003c/span> resubmissions of papers rejected elsewhere, and \u003cspan data-n=\"nRetitledInternal\">\u003c/span> pairs of ICLR 2027 submissions with identical abstracts.","即使放宽阈值，也没有一篇投稿换个标题照抄已发表论文的摘要。改了标题的匹配大多无害：\u003cspan data-n=\"nRetitledArxiv\">\u003c/span> 篇是作者自己 arXiv 预印本的改名版本，\u003cspan data-n=\"nRetitledRejected\">\u003c/span> 篇是在别处被拒后的重投，另有 \u003cspan data-n=\"nRetitledInternal\">\u003c/span> 对 ICLR 2027 投稿的摘要完全相同。"],["Grey zone","灰区"],["Large, and mostly legitimate","规模大，且大多正常"],["\u003cspan data-n=\"nGray\">\u003c/span> pairs have similar meaning but different words (\u003cspan data-n=\"nGrayPub\">\u003c/span> against published work, \u003cspan data-n=\"nGrayInt\">\u003c/span> within ICLR 2027, \u003cspan data-n=\"nGrayArxiv\">\u003c/span> against arXiv). The second LLM pass keeps only \u003cspan data-n=\"nVerifyPubThree\">\u003c/span> pairs scored as \"substantially the same work\" against published papers, plus \u003cspan data-n=\"nVerifyPubTwo\">\u003c/span> scored as extensions.","\u003cspan data-n=\"nGray\">\u003c/span> 对配对意思相近、措辞不同（\u003cspan data-n=\"nGrayPub\">\u003c/span> 对涉及已发表论文，\u003cspan data-n=\"nGrayInt\">\u003c/span> 对在 ICLR 2027 内部，\u003cspan data-n=\"nGrayArxiv\">\u003c/span> 对涉及 arXiv）。第二轮 LLM 判定后，与已发表论文“实质上是同一工作”的只剩 \u003cspan data-n=\"nVerifyPubThree\">\u003c/span> 对，另有 \u003cspan data-n=\"nVerifyPubTwo\">\u003c/span> 对被判为扩展。"],["Full text","全文"],["Separates true duplicates","能区分真正的重复"],["Reference lists, figures and runs of result numbers are hard to disguise by rewriting. All \u003cspan data-n=\"nFtControl\">\u003c/span> random same-area control pairs are near zero on every signal (maximum reference overlap \u003cspan data-n=\"pFtControlRefMax\">\u003c/span>%), and all submissions compared with their own arXiv versions are classified as the same paper.","参考文献列表、图片和成串的结果数字很难靠改写掩盖。\u003cspan data-n=\"nFtControl\">\u003c/span> 对随机同领域对照在所有信号上都接近零（参考文献重合最高 \u003cspan data-n=\"pFtControlRefMax\">\u003c/span>%），而所有投稿与其自己 arXiv 版本的比对都被判为同一篇。"],["Full-text verdicts for integrity leads","诚信线索的全文判定"],["One verdict per submission, strongest pair kept: \u003cspan data-n=\"nFtSubs\">\u003c/span> submissions (\u003cspan data-n=\"nFtOk\">\u003c/span> of \u003cspan data-n=\"nFtPairs\">\u003c/span> pairs with both PDFs).","每篇投稿一个判定，保留最强的一对：共 \u003cspan data-n=\"nFtSubs\">\u003c/span> 篇投稿（\u003cspan data-n=\"nFtPairs\">\u003c/span> 对中有 \u003cspan data-n=\"nFtOk\">\u003c/span> 对两份 PDF 都拿到）。"],["\u003cb>Abstract similarity overstates duplication.\u003c/b> Of the \u003cspan data-n=\"nFtExt\">\u003c/span> submissions the LLM judged to extend a published paper, \u003cspan data-n=\"nFtExtDifferent\">\u003c/span> are different papers in full text and \u003cspan data-n=\"nFtExtNumbers\">\u003c/span> share only result numbers, typical of follow-up work that reuses baseline tables. None reuses body text.","\u003cb>摘要相似度高估了重复。\u003c/b>LLM 判为“扩展已发表论文”的 \u003cspan data-n=\"nFtExt\">\u003c/span> 篇投稿中，\u003cspan data-n=\"nFtExtDifferent\">\u003c/span> 篇在全文层面是不同的论文，\u003cspan data-n=\"nFtExtNumbers\">\u003c/span> 篇只共享结果数字，这是复用基线表格的后续工作的常见情况。没有一篇复用正文。"],["\u003cb>Identical abstracts are mostly clerical errors.\u003c/b> All \u003cspan data-n=\"nFtIdentAbs\">\u003c/span> within-ICLR pairs with verbatim identical abstracts are different papers (body overlap ≤ \u003cspan data-n=\"pFtIdentAbsMax\">\u003c/span>%); in each pair only one PDF matches the shared abstract.","\u003cb>摘要完全相同多半是填表失误。\u003c/b>ICLR 内部 \u003cspan data-n=\"nFtIdentAbs\">\u003c/span> 对摘要逐字相同的投稿全部是不同的论文（正文重合 ≤ \u003cspan data-n=\"pFtIdentAbsMax\">\u003c/span>%）；每一对里只有一份 PDF 与共用的摘要一致。"],["\u003cb>Republication exists but is rare.\u003c/b> Same-paper verdicts are dominated by submissions whose arXiv version declares acceptance at, or concurrent review by, another venue.","\u003cb>重复发表存在，但很少。\u003c/b>判为同一篇的，主要是 arXiv 版本自述已被其他会议接收、或正在其他会议审稿的投稿。"],["RQ3 · Do the safeguards hold?","RQ3 · 把关机制是否有效？"],["Anonymity, PDF checks, and what happens after rejection","匿名性、PDF 检查，以及被拒之后"],["Double-blind review, submission-time checks and the decision itself are the safeguards of a conference. We measure each with public data.","双盲评审、投稿时的检查和录用决定本身，是会议的几道把关。我们用公开数据逐一测量。"],["Double-blind exposure","双盲暴露"],["\u003cspan data-n=\"nArxiv\">\u003c/span> submissions have an arXiv preprint with an identical title; \u003cspan data-n=\"nArxivLate\">\u003c/span> of these were posted on or after 2026-09-15, around the submission deadline. ICLR permits preprints, so this is not a violation, but it bounds the anonymity that double-blind review can deliver for a large part of the pool.","\u003cspan data-n=\"nArxiv\">\u003c/span> 篇投稿在 arXiv 上有标题完全相同的预印本，其中 \u003cspan data-n=\"nArxivLate\">\u003c/span> 篇发布于 2026-09-15 当天或之后，即截稿前后。ICLR 允许预印本，所以这不算违规，但它限制了双盲评审对相当大一部分投稿能提供的匿名程度。"],["Organisers' response","会议方的处理"],["of \u003cspan data-n=\"nTierA\">\u003c/span>","/ \u003cspan data-n=\"nTierA\">\u003c/span>"],["grade-A (objectively verifiable) submissions had been desk-rejected as of \u003cspan data-n=\"dStatusChecked\">\u003c/span>, both of them blank placeholders. All \u003cspan data-n=\"nFtSameA\">\u003c/span> grade-A submissions that full text confirms as the same paper as a published paper, or as a paper declared under review elsewhere, were still under review. Across the pool, \u003cspan data-n=\"nNewDeskRej\">\u003c/span> submissions were newly desk-rejected and \u003cspan data-n=\"nNewWithdrawn\">\u003c/span> newly withdrawn since the snapshot.","篇 A 级（可客观核实）线索投稿截至 \u003cspan data-n=\"dStatusChecked\">\u003c/span> 已被桌拒，两篇都是空白占位稿。经全文确认与已发表论文、或与自述正在别处审稿的论文为同一篇的 \u003cspan data-n=\"nFtSameA\">\u003c/span> 篇 A 级投稿，全部仍在审。整个投稿池自快照以来新增桌拒 \u003cspan data-n=\"nNewDeskRej\">\u003c/span> 篇、新增撤稿 \u003cspan data-n=\"nNewWithdrawn\">\u003c/span> 篇。"],["PDF-level leakage and hidden text","PDF 层面的泄露与隐藏文字"],["Estimated share of submissions, stratified sample weighted by inverse inclusion probability, with 95% bootstrap intervals.","投稿占比的估计：分层抽样，按入样概率的倒数加权，附 95% bootstrap 区间。"],["The submitted PDFs themselves leak little. Simple rules for hidden text (invisible render mode, white fill, sub-1 pt fonts, off-page text) and injection phrases fire on several percent of PDFs, but on inspection almost all hits are benign: white labels on coloured figures, embedded formula data, and papers \u003ci>about\u003c/i> prompt injection. The strict rules, which require that nothing is drawn beneath the hidden text or that off-page text addresses reviewers or LLMs, find no case in the sample. \u003cspan data-n=\"pOneLlmStatement\">\u003c/span>% of submissions include a statement on LLM usage.","投稿 PDF 本身泄露的信息很少。针对隐藏文字（不可见渲染模式、白色填充、小于 1 pt 的字号、页面外文字）和注入短语的简单规则会在百分之几的 PDF 上命中，但逐一查看后几乎都是无害的：彩色图上的白色标签、嵌入的公式数据，以及\u003ci>研究\u003c/i>提示注入的论文。严格规则要求隐藏文字下方没有任何绘制内容，或页面外文字是在对审稿人或 LLM 说话，在样本中没有发现一例。\u003cspan data-n=\"pOneLlmStatement\">\u003c/span>% 的投稿附有 LLM 使用声明。"],["Unresolvable references","无法解析的参考文献"],["Every reference resolved against arXiv, accepted-paper lists, DBLP, printed arXiv identifiers, Crossref and arXiv search. ICLR 2027 sample vs. a control sample of \u003cspan data-n=\"pOneNControl\">\u003c/span> ICLR 2024 submissions processed identically.","每条参考文献都依次对照 arXiv、各会议录用列表、DBLP、文中印出的 arXiv 编号、Crossref 和 arXiv 检索来解析。ICLR 2027 样本与按同样流程处理的 \u003cspan data-n=\"pOneNControl\">\u003c/span> 篇 ICLR 2024 投稿对照组比较。"],["\u003ci class=\"sw c27\">\u003c/i>ICLR 2027 sample","\u003ci class=\"sw c27\">\u003c/i>ICLR 2027 样本"],["\u003ci class=\"sw c24\">\u003c/i>ICLR 2024 control","\u003ci class=\"sw c24\">\u003c/i>ICLR 2024 对照组"],["The share of submissions with at least one unresolved, non-trivial reference is \u003ci>lower\u003c/i> than in the 2024 control. The top unresolved cases in both years are real but hard-to-index items (datasets, software, workshop papers), so the control rate is the false-alarm floor of the method. We find no evidence of an excess of fabricated references in ICLR 2027 submissions.","至少含 1 条无法解析且非平凡引用的投稿比例，\u003ci>低于\u003c/i> 2024 年对照组。两年中最主要的未解析条目都是真实存在但难以检索的条目（数据集、软件、workshop 论文），所以对照组的比例就是这个方法的误报下限。我们没有发现 ICLR 2027 投稿中伪造引用增多的证据。"],["Where did ICLR 2026 rejects go?","ICLR 2026 的拒稿去了哪里？"],["Share later accepted at ICML or NeurIPS 2026, by mean ICLR 2026 rating.","后来被 ICML 或 NeurIPS 2026 接收的比例，按 ICLR 2026 平均分分档。"],["Rejected","被拒"],["Withdrawn","撤稿"],["\u003ci class=\"sw c27\">\u003c/i>abstract match (strict)","\u003ci class=\"sw c27\">\u003c/i>摘要匹配（严格）"],["\u003ci class=\"sw c26\">\u003c/i>abstract match (loose)","\u003ci class=\"sw c26\">\u003c/i>摘要匹配（宽松）"],["\u003ci class=\"sw tick\">\u003c/i>identical title only","\u003ci class=\"sw tick\">\u003c/i>仅标题完全相同"],["Of the \u003cspan data-n=\"nRejects\">\u003c/span> papers ICLR 2026 rejected, identical titles alone find \u003cspan data-n=\"pLotteryTitle\">\u003c/span>% later accepted; abstract matching raises this to \u003cspan data-n=\"pLotteryStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryLoose\">\u003c/span>%, because many papers are re-titled after rejection. The rate rises from \u003cspan data-n=\"pLotteryLowStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryLowLoose\">\u003c/span>% for mean ratings ≤ 2.5 to \u003cspan data-n=\"pLotteryTopStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryTopLoose\">\u003c/span>% for 4.5–5.5. Withdrawn papers fare much worse (\u003cspan data-n=\"pLotteryWithdrawStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryWithdrawLoose\">\u003c/span>%), and only \u003cspan data-n=\"pResubStrict\">\u003c/span>–\u003cspan data-n=\"pResubLoose\">\u003c/span>% of rejected papers reappear at ICLR 2027. NeurIPS 2026 abstracts are not yet public, so these are lower bounds.","在 ICLR 2026 拒掉的 \u003cspan data-n=\"nRejects\">\u003c/span> 篇论文中，仅按标题完全相同就能找到 \u003cspan data-n=\"pLotteryTitle\">\u003c/span>% 后来被接收；加上摘要匹配后升至 \u003cspan data-n=\"pLotteryStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryLoose\">\u003c/span>%，因为很多论文被拒后改了标题。这一比例随评分急剧上升：平均分 ≤ 2.5 的为 \u003cspan data-n=\"pLotteryLowStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryLowLoose\">\u003c/span>%，4.5–5.5 的为 \u003cspan data-n=\"pLotteryTopStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryTopLoose\">\u003c/span>%。作者主动撤稿的论文结局差得多（\u003cspan data-n=\"pLotteryWithdrawStrict\">\u003c/span>–\u003cspan data-n=\"pLotteryWithdrawLoose\">\u003c/span>%），被拒论文中也只有 \u003cspan data-n=\"pResubStrict\">\u003c/span>–\u003cspan data-n=\"pResubLoose\">\u003c/span>% 重投了 ICLR 2027。NeurIPS 2026 的摘要尚未公开，所以这些数字是下界。"],["\u003cb>Caveat\u003c/b> This is not a measure of review randomness. Consistency experiments measure how often two committees disagree on the same version of a paper; our measure also includes revision between venues and counts only papers whose authors chose to resubmit. It cannot separate reviewer disagreement from improvement prompted by the first round of reviews. It shows only that, for borderline papers, an ICLR rejection is often not the paper's final outcome.","\u003cb>注意\u003c/b>这不是对评审随机性的度量。一致性实验测的是两个评审委员会对同一版本论文意见不一的频率；我们的度量还包含了两次投稿之间的修改，而且只统计作者选择重投的论文。它无法区分评审分歧与第一轮评审促成的改进，只能说明：对处在边界上的论文，被 ICLR 拒绝往往不是最终结局。"],["Recommendations for organisers","给会议组织方的建议"],["Checks that can run at submission time","可以在投稿时就做的检查"],["Organisers, who unlike outside researchers have access to author identities and the full PDFs, can run such a pipeline at negligible cost. Everything in this study ran on a single node with open-weight models.","与外部研究者不同，会议组织方能看到作者身份和全部 PDF，可以几乎零成本地运行这样一套流程。本研究的全部计算只用了一台机器和开放权重模型。"],["\u003cb>Machines rank, humans decide.\u003c/b> Limit automatic desk rejection to objectively verifiable cases, such as full-text identity with a published paper.","\u003cb>机器排序，人来决定。\u003c/b>自动桌拒只限于可客观核实的情形，例如与已发表论文全文相同。"],["\u003cb>Use signals that paraphrase cannot hide.\u003c/b> Reference-list overlap, image hashes and result-number fingerprints separate true duplicates from same-topic work far better than abstract similarity.","\u003cb>用改写藏不住的信号。\u003c/b>参考文献重合、图片哈希和结果数字指纹，比摘要相似度更能把真正的重复与同主题工作区分开。"],["\u003cb>Author overlap is the key triage variable.\u003c/b> With overlap, a duplicate is a policy violation; without it, a duplicate is suspected plagiarism.","\u003cb>作者是否重合是分诊的关键。\u003c/b>作者重合时，重复属于违反投稿政策；不重合时，重复就是疑似抄袭。"],["\u003cb>Free signals are unused.\u003c/b> arXiv comments that declare concurrent review or prior acceptance are zero-cost leads that no venue checks systematically.","\u003cb>免费的信号没人用。\u003c/b>arXiv comments 里自述“正在别处审稿”或“已被接收”的说明是零成本线索，但没有哪个会议系统地检查。"],["\u003cb>Exchange fingerprints across venues.\u003c/b> Venues with overlapping review periods can exchange MinHash signatures or quantised embeddings through a trusted third party, without exchanging confidential text.","\u003cb>跨会议交换指纹。\u003c/b>评审期重叠的会议可以通过可信第三方交换 MinHash 签名或量化后的 embedding，而不必交换保密文本。"],["\u003cb>Check PDFs at submission.\u003c/b> Hidden text, injection phrases and identifying metadata, and reference resolution against DBLP, arXiv and Crossref.","\u003cb>投稿时检查 PDF。\u003c/b>检查隐藏文字、注入短语和暴露身份的元数据，并对照 DBLP、arXiv 和 Crossref 解析参考文献。"],["With a two-round LLM funnel, the number of pairs that need human review at ICLR scale is on the order of one hundred.","使用两轮 LLM 漏斗，在 ICLR 的规模上需要人工复核的配对大约是一百对的量级。"],["Public data, aggregate results","公开数据，汇总结果"],["Public data only","只用公开数据"],["Every analysis uses only information that any logged-in OpenReview user, or any visitor to arXiv, DBLP and the conference websites, could see during the review period. Submission PDFs were downloaded through the public OpenReview API at its published rate limits.","所有分析只使用评审期间任何登录的 OpenReview 用户、或任何访问 arXiv、DBLP 和会议网站的人都能看到的信息。投稿 PDF 通过公开的 OpenReview API、按其公布的限流下载。"],["Nothing restricted to a role","不使用任何角色专属信息"],["The author serves as an ICLR 2027 reviewer. We used no information visible only to reviewers, area chairs or program chairs: not the identities or size of the reviewer pool, assignments, bids, reviews, discussions or author identities.","作者本人是 ICLR 2027 的审稿人。我们没有使用任何只有审稿人、领域主席或程序主席才能看到的信息：审稿人身份与人数、分配、bid、评审意见、讨论和作者身份都没有用。"],["Aggregates only","只报告汇总"],["This page and the paper report aggregate statistics only. No submission is identified, and no title, number or excerpt of any flagged submission is shown.","本页和论文只报告汇总统计。不指认任何一篇投稿，也不展示任何被标记投稿的标题、编号或内容摘录。"],["Leads are not findings","线索不是结论"],["Integrity leads come from automated signals with known error rates and have not been adjudicated. We report aggregates only and do not identify any submission, here or in the downloadable data.","诚信线索来自误差率已知的自动信号，未经裁定。我们只报告汇总结果，在页面和可下载数据中都不点名任何投稿。"],["Aggregate data","汇总数据"],["The tables behind the charts on this page. Every number on the page is read from \u003ccode>paper/numbers.tex\u003c/code>, the macro file generated by \u003ccode>src/paper_numbers.py\u003c/code> that the paper itself uses, so page and paper cannot disagree.","本页图表背后的数据表。页面上的每个数字都读自 \u003ccode>paper/numbers.tex\u003c/code>，即由 \u003ccode>src/paper_numbers.py\u003c/code> 生成、论文本身也在使用的宏文件，所以页面和论文不会对不上。"],["Citation","引用"],["BibTeX","BibTeX"],["\u003cb>Where Are We Going? A Systematic Analysis of ICLR 2027 Submissions\u003c/b> · Yuzhuo Chen","\u003cb>我们将走向何方？ICLR 2027 投稿的系统分析\u003c/b> · 陈宇卓"],["Data snapshot \u003cspan data-n=\"dSnapshot\">\u003c/span> · submission status refreshed \u003cspan data-n=\"dStatusChecked\">\u003c/span> · numbers from \u003ccode>paper/numbers.tex\u003c/code>","数据快照 \u003cspan data-n=\"dSnapshot\">\u003c/span> · 投稿状态更新于 \u003cspan data-n=\"dStatusChecked\">\u003c/span> · 数字取自 \u003ccode>paper/numbers.tex\u003c/code>"]],"title":[["The arXiv version will be linked here once it is posted","arXiv 版本发布后会链接到这里"]]},"media_base":"","prefer_embedded":true,"built":"2026-10-11 07:13 UTC"}</script>
+<script>
+/* ICLR 2027 analysis project page: numbers from paper/numbers.tex, SVG charts, EN / ZH. No dependencies. */
+(function () {
+  "use strict";
+  var DATA_FILES = ["numbers", "charts", "downloads", "i18n"];
+  var embedded = {};
+  try { embedded = JSON.parse(document.getElementById("page-data").textContent || "{}"); } catch (e) { embedded = {}; }
+  var MEDIA_BASE = embedded.media_base || "";
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  /* ---------------------------------------------------------------- language */
+  var LANG = (function () {
+    var q = (location.search.match(/[?&]lang=(en|zh)/) || [])[1];
+    if (q) { try { localStorage.setItem("iclr27-lang", q); } catch (e) { /* file:// may block storage */ } return q; }
+    try { return localStorage.getItem("iclr27-lang") || "en"; } catch (e) { return "en"; }
+  })();
+  function L(en, zh) { return LANG === "zh" && zh != null ? zh : en; }
+  function T(o) { return LANG === "zh" && o.zh != null ? o.zh : o.en; }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function src(p) { return /^(https?:|data:|\/|#)/.test(p) ? p : MEDIA_BASE + p; }
+
+  function load() {
+    if (embedded.prefer_embedded && embedded.numbers) return Promise.resolve(embedded);
+    return Promise.all(DATA_FILES.map(function (n) {
+      return fetch("data/" + n + ".json").then(function (r) { if (!r.ok) throw new Error(n); return r.json(); });
+    })).then(function (res) {
+      var out = { built: embedded.built };
+      DATA_FILES.forEach(function (n, i) { out[n] = res[i]; });
+      return out;
+    }).catch(function () { return embedded; });
+  }
+
+  /* ---------------------------------------------------------------- numbers (paper/numbers.tex) */
+  var MAC = {};
+  var MISSING = "[\u2014]";
+  function N(k) { return MAC[k] != null ? MAC[k] : MISSING; }
+  function NV(k) { var v = parseFloat(String(MAC[k] || "").replace(/,/g, "")); return isNaN(v) ? null : v; }
+  function fillNumbers() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-n]"), function (el) {
+      var k = el.getAttribute("data-n"), v = MAC[k];
+      el.textContent = v != null ? v : MISSING;
+      el.classList.toggle("ph-missing", v == null);
+    });
+  }
+  function fmtN(v) { return Math.round(v).toLocaleString("en-US"); }
+  function fmtP(v) { return v == null ? "\u2014" : (Math.abs(v) < 1 && v !== 0 ? v.toFixed(2) : v.toFixed(1)) + "%"; }
+
+  /* ---------------------------------------------------------------- svg helpers */
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svgFor(host, W, H, label) {
+    host.innerHTML = "";
+    var s = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img", "aria-label": label });
+    host.appendChild(s);
+    return s;
+  }
+  function width(host) { return Math.max(280, Math.floor(host.clientWidth || host.getBoundingClientRect().width || 600)); }
+  function niceMax(v, step) { step = step || (v > 50 ? 20 : v > 20 ? 10 : v > 8 ? 5 : v > 3 ? 1 : v > 1 ? 0.5 : 0.25); return Math.max(step, Math.ceil(v / step - 1e-9) * step); }
+  function niceLog(v, dir) {  /* nearest 1-2-5 x 10^k at or below (dir < 0) / above (dir > 0) v */
+    var e = Math.floor(Math.log10(v)), c = [];
+    [e - 1, e, e + 1].forEach(function (k) { [1, 2, 5].forEach(function (f) { c.push(f * Math.pow(10, k)); }); });
+    c.sort(function (a, b) { return a - b; });
+    if (dir < 0) return c.filter(function (t) { return t <= v * 1.0001; }).pop();
+    return c.filter(function (t) { return t >= v * 0.9999; })[0];
+  }
+  function ticks(max, n) {
+    var raw = max / (n || 5), mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    var step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag, out = [];
+    for (var t = 0; t <= max + 1e-9; t += step) out.push(+t.toFixed(6));
+    return out;
+  }
+
+  /* tooltip */
+  var tip = null;
+  function showTip(html, ev) {
+    tip = tip || document.getElementById("tip");
+    if (!tip) return;
+    tip.innerHTML = html;
+    tip.classList.add("show");
+    var x = ev.clientX, y = ev.clientY, r = tip.getBoundingClientRect();
+    var left = x + 14, top = y + 14;
+    if (left + r.width > window.innerWidth - 8) left = Math.max(8, x - r.width - 14);
+    if (top + r.height > window.innerHeight - 8) top = Math.max(8, y - r.height - 14);
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip() { if (tip) tip.classList.remove("show"); }
+  document.addEventListener("scroll", hideTip, { passive: true });
+  function bindTip(node, fn) {
+    node.addEventListener("pointermove", function (ev) { showTip(fn(ev), ev); });
+    node.addEventListener("pointerdown", function (ev) { showTip(fn(ev), ev); });
+    node.addEventListener("pointerleave", hideTip);
+  }
+
+  function altTable(id, head, rows, rightFrom) {
+    var d = document.getElementById(id); if (!d) return;
+    var old = d.querySelector(".tw"); if (old) old.remove();
+    var r0 = rightFrom == null ? 1 : rightFrom;
+    var h = '<div class="tw"><table><thead><tr>' + head.map(function (c, i) { return '<th' + (i >= r0 ? ' class="r"' : "") + ">" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      rows.map(function (r) { return "<tr>" + r.map(function (c, i) { return "<td" + (i >= r0 ? ' class="r"' : "") + ">" + esc(c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+    d.insertAdjacentHTML("beforeend", h);
+  }
+
+  var C = null;   // charts.json
+  var PALETTE = ["#1f4e8c", "#d62728", "#2ca02c", "#ff7f0e", "#9467bd", "#8c564b", "#e377c2", "#17becf", "#7f7f7f", "#bcbd22", "#0b7a75", "#c2410c", "#4c1d95", "#be185d"];
+
+  /* ---------------------------------------------------------------- RQ1: areas */
+  var areaSort = "n";
+  function drawAreas() {
+    var host = document.getElementById("chart-areas"); if (!host || !C) return;
+    var rows = C.areas.slice().sort(function (a, b) { return areaSort === "n" ? b.n2027 - a.n2027 : b.growth - a.growth; });
+    var W = width(host), narrow = W < 560;
+    var labelW = narrow ? 0 : Math.min(230, Math.round(W * 0.32)), valW = 104;
+    var rowH = narrow ? 44 : 30, top = 4, H = top + rows.length * rowH + 26;
+    var bw = W - labelW - valW - 8, max = Math.max.apply(null, rows.map(function (r) { return r.n2027; }));
+    var s = svgFor(host, W, H, L("Bar chart: submissions per primary area, ICLR 2026 vs 2027", "条形图：各 primary area 的投稿数，ICLR 2026 与 2027"));
+    var x0 = labelW + 4;
+    ticks(max, narrow ? 3 : 5).forEach(function (t) {
+      var x = x0 + t / max * bw;
+      el("line", { x1: x, x2: x, y1: top, y2: H - 22, "class": "grid-l" }, s);
+      el("text", { x: x, y: H - 6, "text-anchor": "middle", "class": "axis" }, s, fmtN(t)).setAttribute("style", "fill:var(--ink-3);font-size:11px");
+    });
+    rows.forEach(function (r, i) {
+      var y = top + i * rowH, g = el("g", { "class": "row" }, s);
+      el("rect", { x: 0, y: y, width: W, height: rowH, "class": "hl", rx: 4 }, g);
+      var lab = T(r);
+      var b26y = narrow ? y + 19 : y + 4, b27y = narrow ? y + 28 : y + 14;
+      if (narrow) el("text", { x: x0, y: y + 13, "class": "lbl" }, g, lab);
+      else el("text", { x: labelW - 6, y: y + rowH / 2 + 4, "text-anchor": "end", "class": "lbl" }, g, lab);
+      el("rect", { x: x0, y: b26y, width: Math.max(1, r.n2026 / max * bw), height: 8, fill: "var(--c26)", rx: 2 }, g);
+      el("rect", { x: x0, y: b27y, width: Math.max(1, r.n2027 / max * bw), height: 11, fill: "var(--c27)", rx: 2 }, g);
+      el("text", { x: x0 + r.n2027 / max * bw + 6, y: b27y + 10, "class": "val" }, g, fmtN(r.n2027) + "  \u00d7" + r.growth.toFixed(2));
+      bindTip(g, function () {
+        return "<b>" + esc(LANG === "zh" ? r.zh_full : r.area) + "</b><br>" +
+          "ICLR 2026: " + fmtN(r.n2026) + " (" + fmtP(r.share2026) + ")<br>ICLR 2027: " + fmtN(r.n2027) + " (" + fmtP(r.share2027) + ")<br>" +
+          L("growth ", "增长 ") + "\u00d7" + r.growth.toFixed(2) + "<br>" + L("desk-rejected ", "桌拒 ") + fmtP(r.desk) + " · " + L("withdrawn ", "撤稿 ") + fmtP(r.withdrawn);
+      });
+    });
+    altTable("tbl-areas", [L("Primary area", "Primary area"), "2026", "2027", L("Growth", "增长"), L("Share 2026", "2026 占比"), L("Share 2027", "2027 占比")],
+      rows.map(function (r) { return [T(r), fmtN(r.n2026), fmtN(r.n2027), "\u00d7" + r.growth.toFixed(2), fmtP(r.share2026), fmtP(r.share2027)]; }));
+  }
+
+  /* ---------------------------------------------------------------- line charts (topics, style) */
+  function makeSel(list) {
+    var sel = { order: [], color: {} };
+    list.forEach(function (d) { if (d["default"]) add(sel, d.key); });
+    return sel;
+  }
+  function add(sel, k) {
+    if (sel.order.indexOf(k) >= 0) return;
+    var used = sel.order.map(function (x) { return sel.color[x]; });
+    sel.color[k] = PALETTE.filter(function (c) { return used.indexOf(c) < 0; })[0] || PALETTE[sel.order.length % PALETTE.length];
+    sel.order.push(k);
+  }
+  function toggle(sel, k) {
+    var i = sel.order.indexOf(k);
+    if (i >= 0) { sel.order.splice(i, 1); delete sel.color[k]; } else add(sel, k);
+  }
+
+  function lineChart(host, opt) {
+    var W = width(host), narrow = W < 560, years = C.years;
+    var series = opt.series, log = opt.log;
+    var endW = narrow ? 8 : Math.min(190, Math.round(W * 0.26));
+    var m = { l: 46, r: endW, t: 12, b: 28 }, H = narrow ? 260 : 310;
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var s = svgFor(host, W, H, opt.label);
+    if (!series.length) { el("text", { x: W / 2, y: H / 2, "text-anchor": "middle", "class": "val" }, s, L("Select at least one series above.", "请在上方至少选择一项。")); return; }
+    var all = []; series.forEach(function (d) { d.values.forEach(function (v) { if (v != null) all.push(v); }); });
+    var vmax = Math.max.apply(null, all), pos = all.filter(function (v) { return v > 0; });
+    var lo = log ? niceLog(Math.min.apply(null, pos.length ? pos : [0.01]), -1) : 0;
+    var hi = log ? niceLog(vmax, 1) : niceMax(vmax);
+    function y(v) {
+      if (log) { var vv = Math.max(lo, v); return m.t + ph - (Math.log10(vv) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)) * ph; }
+      return m.t + ph - v / hi * ph;
+    }
+    function x(i) { return m.l + (years.length === 1 ? pw / 2 : i / (years.length - 1) * pw); }
+    var tk = [];
+    if (log) {
+      for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach(function (f) { var t = f * Math.pow(10, e); if (t >= lo * 0.999 && t <= hi * 1.001) tk.push(t); });
+    } else tk = ticks(hi, 5);
+    var ax = el("g", { "class": "axis" }, s);
+    tk.forEach(function (t) {
+      el("line", { x1: m.l, x2: m.l + pw, y1: y(t), y2: y(t) }, ax);
+      el("text", { x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, ax, (t < 1 ? +t.toPrecision(2) : +t.toFixed(1)) + "%");
+    });
+    years.forEach(function (yr, i) { el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, ax, String(yr)); });
+    var guide = el("line", { x1: 0, x2: 0, y1: m.t, y2: m.t + ph, stroke: "#94a3b8", "stroke-dasharray": "3 3", visibility: "hidden" }, s);
+    var groups = [];
+    series.forEach(function (d) {
+      var g = el("g", { "class": "series" + (d.bold ? " bold" : "") + (d.down ? " down" : ""), "data-k": d.key }, s);
+      var p = d.values.map(function (v, i) { return (i ? "L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1); }).join("");
+      el("path", { d: p, stroke: d.color }, g);
+      d.values.forEach(function (v, i) { el("circle", { cx: x(i), cy: y(v), r: d.bold ? 4 : 3.2, fill: d.color }, g); });
+      groups.push({ g: g, d: d });
+    });
+    if (!narrow) {  // end labels, nudged apart
+      var labs = series.map(function (d) { return { d: d, y: y(d.values[d.values.length - 1]) }; }).sort(function (a, b) { return a.y - b.y; });
+      var gap = 14;
+      for (var i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < gap) labs[i].y = labs[i - 1].y + gap;
+      var over = labs.length ? labs[labs.length - 1].y - (m.t + ph + 4) : 0;
+      if (over > 0) { labs.forEach(function (l) { l.y -= over; }); for (var j = labs.length - 2; j >= 0; j--) if (labs[j + 1].y - labs[j].y < gap) labs[j].y = labs[j + 1].y - gap; }
+      labs.forEach(function (l) {
+        var t = el("text", { x: m.l + pw + 8, y: l.y + 4, "class": "endlbl", fill: l.d.color }, s, l.d.label);
+        t.setAttribute("style", "fill:" + l.d.color);
+        if (l.d.label.length > 26) t.textContent = l.d.label.slice(0, 25) + "\u2026";
+      });
+    }
+    function focus(k) {
+      host.classList.toggle("dim", !!k);
+      groups.forEach(function (o) { o.g.classList.toggle("on", o.d.key === k); });
+    }
+    groups.forEach(function (o) {
+      o.g.addEventListener("pointerenter", function () { focus(o.d.key); });
+      o.g.addEventListener("pointerleave", function () { focus(null); });
+    });
+    host.__focus = focus;
+    s.addEventListener("pointermove", function (ev) {
+      var r = s.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+      var i = Math.max(0, Math.min(years.length - 1, Math.round((px - m.l) / pw * (years.length - 1))));
+      guide.setAttribute("x1", x(i)); guide.setAttribute("x2", x(i)); guide.setAttribute("visibility", "visible");
+      var lines = series.slice().sort(function (a, b) { return b.values[i] - a.values[i]; }).map(function (d) {
+        return '<span style="color:' + d.color + '">\u25cf</span> ' + esc(d.label) + ": <b>" + fmtP(d.values[i]) + "</b>" + (d.counts ? " (" + fmtN(d.counts[i]) + ")" : "");
+      });
+      showTip("<b>ICLR " + years[i] + "</b><br>" + lines.join("<br>"), ev);
+    });
+    s.addEventListener("pointerleave", function () { guide.setAttribute("visibility", "hidden"); hideTip(); });
+  }
+
+  function chips(hostId, list, sel, limit, expanded, onChange) {
+    var host = document.getElementById(hostId); if (!host) return;
+    var show = list;
+    if (limit && !expanded) show = list.filter(function (d, i) { return i < limit || sel.order.indexOf(d.key) >= 0; });
+    host.innerHTML = show.map(function (d) {
+      var on = sel.order.indexOf(d.key) >= 0;
+      return '<button type="button" class="chip' + (on ? " on" : "") + '" data-k="' + esc(d.key) + '" aria-pressed="' + on + '"' + (on ? ' style="color:' + sel.color[d.key] + '"' : "") + '><i' + (on ? ' style="background:' + sel.color[d.key] + '"' : "") + "></i>" + esc(T(d)) + "</button>";
+    }).join("") + (limit && list.length > show.length ? '<button type="button" class="chip more" data-more="1">' + L("+ " + (list.length - show.length) + " more topics", "+ 另外 " + (list.length - show.length) + " 个主题") + "</button>" :
+      limit && expanded ? '<button type="button" class="chip more" data-more="0">' + L("show fewer", "收起") + "</button>" : "");
+    if (!host.__bound) {
+      host.__bound = true;
+      host.addEventListener("click", function (e) {
+        var b = e.target.closest(".chip"); if (!b) return;
+        if (b.dataset.more != null) { onChange(null, b.dataset.more === "1"); return; }
+        onChange(b.dataset.k);
+      });
+      host.addEventListener("pointerover", function (e) {
+        var b = e.target.closest(".chip.on"), ch = host.parentElement.querySelector(".chart");
+        if (ch && ch.__focus) ch.__focus(b ? b.dataset.k : null);
+      });
+      host.addEventListener("pointerleave", function () { var ch = host.parentElement.querySelector(".chart"); if (ch && ch.__focus) ch.__focus(null); });
+    }
+  }
+
+  var topicSel = null, topicLog = false, topicMore = false;
+  function drawTopics() {
+    var host = document.getElementById("chart-topics"); if (!host || !C) return;
+    if (!topicSel) topicSel = makeSel(C.topics);
+    chips("topic-chips", C.topics, topicSel, 14, topicMore, function (k, more) {
+      if (k == null) topicMore = more; else toggle(topicSel, k);
+      drawTopics();
+    });
+    var byKey = {}; C.topics.forEach(function (d) { byKey[d.key] = d; });
+    var series = topicSel.order.map(function (k) {
+      var d = byKey[k], v = d.share;
+      return { key: k, label: T(d), values: v, counts: d.n, color: topicSel.color[k], down: v[3] < v[2] };
+    });
+    lineChart(host, { series: series, log: topicLog, label: L("Line chart: share of titles per topic, ICLR 2024-2027", "折线图：各主题的标题占比，ICLR 2024–2027") });
+    altTable("tbl-topics", [L("Topic", "主题"), "2024", "2025", "2026", "2027", L("n 2027", "2027 篇数")],
+      C.topics.map(function (d) { return [T(d)].concat(d.share.map(fmtP)).concat([fmtN(d.n[3])]); }));
+  }
+
+  var styleSel = null;
+  function drawStyle() {
+    var host = document.getElementById("chart-style"); if (!host || !C) return;
+    if (!styleSel) styleSel = makeSel(C.style);
+    var chipHost = document.getElementById("style-chips");
+    if (!chipHost) { chipHost = document.createElement("div"); chipHost.className = "chips"; chipHost.id = "style-chips"; host.parentElement.insertBefore(chipHost, host); }
+    chips("style-chips", C.style, styleSel, 0, true, function (k) { if (k != null) toggle(styleSel, k); drawStyle(); });
+    var byKey = {}; C.style.forEach(function (d) { byKey[d.key] = d; });
+    var series = styleSel.order.map(function (k) { var d = byKey[k]; return { key: k, label: T(d), values: d.share, color: styleSel.color[k], bold: d.bold }; });
+    lineChart(host, { series: series, log: false, label: L("Line chart: share of titles with automated-research style markers, 2024-2027", "折线图：带“自动化科研”风格标记的标题占比，2024–2027") });
+    altTable("tbl-style", [L("Marker", "标记"), "2024", "2025", "2026", "2027"],
+      C.style.map(function (d) { return [T(d)].concat(d.share.map(fmtP)); }).concat(C.style_n_titles ? [[L("titles (n)", "标题数")].concat(C.style_n_titles.map(fmtN))] : []));
+  }
+
+  /* ---------------------------------------------------------------- RQ2: funnel */
+  var funnelOn = 0, funnelPlayed = false;
+  function drawFunnel() {
+    var host = document.getElementById("chart-funnel"), list = document.getElementById("funnel-stages");
+    if (!host || !C) return;
+    var st = C.funnel, W = width(host), rowH = 52, barH = 36, H = st.length * rowH + 6, lm = 30;
+    var vals = st.map(function (d) { return d.v || 1; });
+    var lmax = Math.log10(Math.max.apply(null, vals)), lmin = Math.log10(Math.min.apply(null, vals));
+    var full = W - lm, minW = Math.max(56, full * 0.14);
+    function bw(v) { return minW + (full - minW) * (Math.log10(v) - lmin) / ((lmax - lmin) || 1); }
+    var s = svgFor(host, W, H, L("Funnel chart of the integrity audit, log-scaled widths", "学术诚信审计漏斗图，宽度按对数刻度"));
+    var cx = lm + full / 2;
+    if (!funnelPlayed) host.classList.add("pre");
+    st.forEach(function (d, i) {
+      if (i === st.length - 1) return;
+      var y1 = 3 + i * rowH + barH, y2 = 3 + (i + 1) * rowH, w1 = bw(vals[i]), w2 = bw(vals[i + 1]);
+      el("polygon", { points: [cx - w1 / 2, y1, cx + w1 / 2, y1, cx + w2 / 2, y2, cx - w2 / 2, y2].join(" "), "class": "conn" }, s);
+    });
+    st.forEach(function (d, i) {
+      var y = 3 + i * rowH, w = bw(vals[i]);
+      var g = el("g", { "class": "fstage" + (i === funnelOn ? " on" : ""), "data-i": i, tabindex: 0 }, s);
+      var fill = i === st.length - 1 ? "var(--bad)" : i === st.length - 2 ? "var(--c27)" : ["#9db4d6", "#87a3cb", "#7192bf", "#5b82b8"][i] || "#5b82b8";
+      el("rect", { x: cx - w / 2, y: y, width: w, height: barH, rx: 7, fill: fill, "class": "bar" }, g);
+      el("text", { x: cx, y: y + barH / 2 + 5, "text-anchor": "middle", "class": "fn" + (i < 2 ? " dark" : "") }, g, d.n);
+      var c = el("g", {}, g);
+      el("circle", { cx: 11, cy: y + barH / 2, r: 10, fill: "#eef2f9" }, c);
+      el("text", { x: 11, y: y + barH / 2 + 4, "text-anchor": "middle", style: "font-size:11px;font-weight:700;fill:var(--ink-2)" }, c, String(i + 1));
+      g.addEventListener("pointerenter", function () { setFunnel(i); });
+      g.addEventListener("click", function () { setFunnel(i); });
+      g.addEventListener("focus", function () { setFunnel(i); });
+    });
+    list.innerHTML = st.map(function (d, i) {
+      return '<li data-i="' + i + '" class="' + (i === funnelOn ? "on " : "") + (i === st.length - 1 ? "last" : i === st.length - 2 ? "ft" : "") + '"><b>' + esc(d.n) + "</b> " + esc(T(d)) + '<br><span class="muted">' + esc(LANG === "zh" ? d.x_zh : d.x_en) + "</span></li>";
+    }).join("");
+    if (!list.__bound) {
+      list.__bound = true;
+      list.addEventListener("pointerover", function (e) { var li = e.target.closest("li"); if (li) setFunnel(+li.dataset.i); });
+      list.addEventListener("click", function (e) { var li = e.target.closest("li"); if (li) setFunnel(+li.dataset.i); });
+    }
+    if (!funnelPlayed) {
+      var play = function () { funnelPlayed = true; requestAnimationFrame(function () { host.classList.remove("pre"); }); };
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); play(); } }, { threshold: 0.35 });
+        io.observe(host);
+      } else play();
+    }
+  }
+  function setFunnel(i) {
+    funnelOn = i;
+    Array.prototype.forEach.call(document.querySelectorAll("#chart-funnel .fstage"), function (g) { g.classList.toggle("on", +g.dataset.i === i); });
+    Array.prototype.forEach.call(document.querySelectorAll("#funnel-stages li"), function (li) { li.classList.toggle("on", +li.dataset.i === i); });
+  }
+
+  /* full-text verdicts */
+  var VCOL = { same: "var(--bad)", partial: "#f59e0b", numbers: "#fcd34d", different: "#86b8a0", other: "#cbd5e1" };
+  function drawVerdicts() {
+    var host = document.getElementById("chart-verdicts"); if (!host || !C) return;
+    var v = C.ft_verdicts, tot = v.reduce(function (a, d) { return a + (d.v || 0); }, 0), W = width(host), H = 40;
+    var s = svgFor(host, W, H, L("Stacked bar: full-text verdicts", "堆叠条：全文判定结果")), x = 0;
+    v.forEach(function (d) {
+      var w = (d.v || 0) / tot * W; if (!w) return;
+      var g = el("g", {}, s);
+      el("rect", { x: x, y: 0, width: Math.max(1, w - 1), height: 34, fill: VCOL[d.cls], rx: 3 }, g);
+      if (w > 30) el("text", { x: x + w / 2, y: 22, "text-anchor": "middle", style: "font-weight:800;font-size:13px;fill:" + (d.cls === "same" ? "#fff" : "#0f172a") }, g, d.n);
+      bindTip(g, function () { return "<b>" + esc(T(d)) + "</b><br>" + d.n + " / " + fmtN(tot); });
+      x += w;
+    });
+    var leg = host.querySelector(".legend") || document.createElement("div");
+    leg.className = "legend";
+    leg.innerHTML = v.map(function (d) { return '<span><i class="sw" style="background:' + VCOL[d.cls] + '"></i>' + esc(T(d)) + " <b>" + esc(d.n) + "</b></span>"; }).join("");
+    host.appendChild(leg);
+    altTable("tbl-verdicts", [L("Verdict", "判定"), L("Submissions", "投稿数")], v.map(function (d) { return [T(d), d.n]; }).concat([[L("Total", "合计"), N("nFtSubs")]]));
+  }
+
+  /* recall study: placeholder until \rec... macros exist */
+  function drawRecall(numbers) {
+    var host = document.getElementById("recall"); if (!host) return;
+    var rec = (numbers && numbers.recall) || {}, keys = Object.keys(rec), tbl = C && C.recall_table;
+    if (!keys.length && !tbl) {
+      host.innerHTML = '<div class="placeholder"><span class="phtag">PLACEHOLDER</span><h3>' + L("How much would the audit miss? \u2014 recall study in progress", "审计会漏掉多少？\u2014 召回率研究进行中") + "</h3><p>" +
+        L("Finding little could mean there is little to find, or that the audit cannot see it. To measure this, known duplicates (submissions and their own arXiv versions) are disguised at increasing strength and pushed through every stage of the funnel, and hard negatives (distinct papers on the same task) measure false-positive rates. Results will appear here automatically once the paper's recall macros exist.",
+          "检出的少，可能是真的少，也可能是审计看不见。为此我们把已知的重复（投稿与其自己的 arXiv 版本）按伪装强度逐级处理，送过漏斗的每一层，测量各层召回率；再用困难负样本（同一任务上的不同论文）测量误报率。论文中的召回率宏生成后，结果会自动显示在这里。") +
+        "</p><ol>" + [L("new title", "改标题"), L("+ paraphrased abstract", "+ 改写摘要"), L("+ every body paragraph paraphrased", "+ 逐段改写正文"), L("+ figures removed, numbers perturbed", "+ 去掉图片、扰动数字"), L("+ references shuffled, 30% dropped", "+ 打乱参考文献并删去 30%")].map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol></div>";
+      return;
+    }
+    var h = '<div class="card recall-done"><div class="tag t-info">' + L("Recall study", "召回率研究") + "</div><h3>" + L("How much would the audit miss?", "审计会漏掉多少？") + '</h3><p class="muted">' +
+      L("Filled automatically from the recall macros in paper/numbers.tex; see the paper for the definitions.", "由 paper/numbers.tex 中的召回率宏自动填入；定义见论文。") + "</p>";
+    if (keys.length) h += '<div class="dl"><table><tbody>' + keys.map(function (k) { return "<tr><td><code>" + esc(k) + '</code></td><td class="r">' + esc(rec[k]) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    if (tbl) h += '<div class="dl"><table><thead><tr>' + tbl.columns.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      tbl.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+    host.innerHTML = h + "</div>";
+  }
+
+  /* ---------------------------------------------------------------- RQ3 */
+  function drawP1Banner(numbers) {
+    var host = document.getElementById("p1-banner"); if (!host) return;
+    host.innerHTML = numbers && numbers.p1_preliminary ? '<div class="banner"><b>' + L("PRELIMINARY", "初步结果") + "</b><span>" +
+      L("Based on " + N("pOneNUsedPdfs") + " of " + N("nPOne") + " sampled PDFs so far, covering areas with " + N("pOneCovPop") + "% of the pool. Final numbers after the download completes.",
+        "目前基于抽样的 " + N("nPOne") + " 篇中已下载的 " + N("pOneNUsedPdfs") + " 篇 PDF，覆盖占投稿池 " + N("pOneCovPop") + "% 的领域。下载完成后更新为最终数字。") + "</span></div>" : "";
+  }
+  var PDFGRP = { leak: ["Identity leaks", "身份泄露"], hidden: ["Hidden text and injection, strict rules", "隐藏文字与提示注入（严格规则）"], loose: ["Simple rules (almost all hits benign)", "简单规则（命中几乎都是无害的）"], context: ["For comparison", "作为对照"] };
+  var PDFCOL = { leak: "var(--c27)", hidden: "var(--bad)", loose: "#b45309", context: "#64748b" };
+  function num(s) { var v = parseFloat(String(s).replace(/,/g, "")); return isNaN(v) ? null : v; }
+  function drawPdf() {
+    var host = document.getElementById("chart-pdf"); if (!host || !C) return;
+    var W = width(host), narrow = W < 600, rows = [], last = null;
+    C.pdf.forEach(function (d) { if (d.group !== last) { rows.push({ head: d.group }); last = d.group; } rows.push(d); });
+    var labelW = narrow ? 0 : Math.min(330, Math.round(W * 0.4)), valW = 118, x0 = labelW + 6, pw = W - x0 - valW;
+    var hiMax = Math.max.apply(null, C.pdf.map(function (d) { return num(d.hi) || 0; })), xmax = niceMax(hiMax, 5);
+    var y = 0, layout = rows.map(function (r) { var h = r.head ? 30 : narrow ? 42 : 26; var o = { r: r, y: y, h: h }; y += h; return o; });
+    var H = y + 24, s = svgFor(host, W, H, L("Dot plot with 95% intervals: PDF-level leakage", "点图（含 95% 区间）：PDF 层面的泄露"));
+    ticks(xmax, narrow ? 3 : 6).forEach(function (t) {
+      var x = x0 + t / xmax * pw;
+      el("line", { x1: x, x2: x, y1: 0, y2: H - 20, "class": "grid-l" }, s);
+      el("text", { x: x, y: H - 5, "text-anchor": "middle", style: "fill:var(--ink-3);font-size:11px" }, s, t + "%");
+    });
+    var nUsed = N("pOneNUsedPdfs");
+    layout.forEach(function (o) {
+      var r = o.r;
+      if (r.head) { el("text", { x: 0, y: o.y + 20, style: "font-weight:700;font-size:12px;letter-spacing:.04em;fill:" + PDFCOL[r.head] }, s, L(PDFGRP[r.head][0], PDFGRP[r.head][1]).toUpperCase()); return; }
+      var g = el("g", { "class": "row" }, s), cy = narrow ? o.y + 30 : o.y + o.h / 2;
+      el("rect", { x: 0, y: o.y, width: W, height: o.h, "class": "hl", rx: 4 }, g);
+      if (narrow) el("text", { x: x0, y: o.y + 14, "class": "lbl", style: "font-size:12px" }, g, T(r));
+      else el("text", { x: labelW - 4, y: cy + 4, "text-anchor": "end", "class": "lbl", style: "font-size:12.5px" }, g, T(r));
+      var e = num(r.est), lo = num(r.lo), hi = num(r.hi);
+      if (e == null) { el("text", { x: x0, y: cy + 4, "class": "val" }, g, r.est); return; }
+      var X = function (v) { return x0 + Math.min(v, xmax) / xmax * pw; };
+      el("line", { x1: X(lo), x2: X(hi), y1: cy, y2: cy, stroke: PDFCOL[r.group], "stroke-width": 2 }, g);
+      el("line", { x1: X(lo), x2: X(lo), y1: cy - 5, y2: cy + 5, stroke: PDFCOL[r.group], "stroke-width": 1.5 }, g);
+      el("line", { x1: X(hi), x2: X(hi), y1: cy - 5, y2: cy + 5, stroke: PDFCOL[r.group], "stroke-width": 1.5 }, g);
+      el("circle", { cx: X(e), cy: cy, r: 5, fill: PDFCOL[r.group], stroke: "#fff", "stroke-width": 1.5 }, g);
+      el("text", { x: W - valW + 10, y: cy + 4, "class": "val" }, g, r.est + "% [" + r.lo + ", " + r.hi + "]");
+      bindTip(g, function () {
+        return "<b>" + esc(T(r)) + "</b><br>" + L("estimate ", "估计 ") + r.est + "%, 95% CI [" + r.lo + ", " + r.hi + "]" +
+          (r.count != null ? "<br>" + L(r.count + " of " + nUsed + " PDFs in the sample", "样本 " + nUsed + " 篇中 " + r.count + " 篇") : "");
+      });
+    });
+    altTable("tbl-pdf", [L("Signal", "信号"), L("Estimate", "估计"), "95% CI", L("PDFs (raw)", "命中 PDF 数")],
+      C.pdf.map(function (d) { return [T(d), d.est + "%", "[" + d.lo + ", " + d.hi + "]", d.count != null ? d.count + " / " + nUsed : "\u2014"]; }).concat([[L("statement on LLM usage", "LLM 使用声明"), N("pOneLlmStatement") + "%", "[" + N("pOneLlmStatementLo") + ", " + N("pOneLlmStatementHi") + "]", N("pOneLlmStatementN") + " / " + nUsed]]));
+  }
+
+  function drawRefs() {
+    var host = document.getElementById("chart-refs"); if (!host || !C) return;
+    host.innerHTML = '<div class="grid g3 refgrid"></div>';
+    var grid = host.firstChild;
+    C.refs.forEach(function (d) {
+      var cell = document.createElement("div"); grid.appendChild(cell);
+      cell.innerHTML = '<div class="muted" style="font-size:13.5px;min-height:2.9em">' + esc(T(d)) + "</div>";
+      var box = document.createElement("div"); cell.appendChild(box);
+      var W = Math.max(220, Math.floor(cell.clientWidth || 300)), H = 74, lw = 74, vw = 0, pw = W - lw - vw - 8;
+      var vals = [d.y2027, d.y2024].map(function (a) { return a.map(num); });
+      var xmax = niceMax(Math.max(vals[0][2] || 0, vals[1][2] || 0) * 1.12, null);
+      if (xmax > 90) xmax = 100;
+      var s = svgFor(box, W, H, T(d));
+      [[L("ICLR 2027", "ICLR 2027"), vals[0], "var(--c27)", d.y2027], [L("2024 control", "2024 对照"), vals[1], "var(--c24)", d.y2024]].forEach(function (row, i) {
+        var y = 6 + i * 34, v = row[1];
+        el("text", { x: 0, y: y + 15, style: "font-size:12px;fill:var(--ink-2)" }, s, row[0]);
+        if (v[0] == null) { el("text", { x: lw, y: y + 15, "class": "val" }, s, row[3][0]); return; }
+        var X = function (t) { return lw + t / xmax * pw; };
+        el("rect", { x: lw, y: y + 2, width: Math.max(1, X(v[0]) - lw), height: 20, fill: row[2], rx: 3, opacity: .9 }, s);
+        el("line", { x1: X(v[1]), x2: X(v[2]), y1: y + 12, y2: y + 12, stroke: "#0f172a", "stroke-width": 1.4 }, s);
+        el("line", { x1: X(v[1]), x2: X(v[1]), y1: y + 7, y2: y + 17, stroke: "#0f172a", "stroke-width": 1.4 }, s);
+        el("line", { x1: X(v[2]), x2: X(v[2]), y1: y + 7, y2: y + 17, stroke: "#0f172a", "stroke-width": 1.4 }, s);
+        var tx = X(v[0]) - 8, inside = X(v[0]) - lw > 60;
+        el("text", { x: inside ? lw + 6 : X(v[2]) + 6, y: y + 16, style: "font-size:12px;font-weight:700;fill:" + (inside ? "#fff" : "var(--ink)") }, s, row[3][0] + "%");
+        void tx;
+      });
+      bindTip(s, function () { return "<b>" + esc(T(d)) + "</b><br>ICLR 2027: " + d.y2027[0] + "% [" + d.y2027[1] + ", " + d.y2027[2] + "]<br>" + L("ICLR 2024 control: ", "ICLR 2024 对照：") + d.y2024[0] + "% [" + d.y2024[1] + ", " + d.y2024[2] + "]"; });
+    });
+    altTable("tbl-refs", [L("Measure", "指标"), L("ICLR 2027 sample", "ICLR 2027 样本"), L("ICLR 2024 control", "ICLR 2024 对照")],
+      C.refs.map(function (d) { return [T(d), d.y2027[0] + "% [" + d.y2027[1] + ", " + d.y2027[2] + "]", d.y2024[0] + "% [" + d.y2024[1] + ", " + d.y2024[2] + "]"]; }));
+    var st = document.getElementById("refs-style");
+    if (st) {
+      var a = MAC.pOneResolvedStyle;
+      st.innerHTML = a == null || a === "n/a" ? '<span class="ph">' + esc(L("Pending:", "待补：")) + "</span> " + esc(L("comparison with automated-style submissions (their PDFs are not yet downloaded).", "与“自动化科研”风格投稿的对比（这部分 PDF 尚未下载）。")) :
+        esc(L("Automated-style submissions: " + a + "% of references resolved, versus " + N("pOneResolvedNonStyle") + "% for the rest.", "“自动化科研”风格投稿：参考文献可解析比例 " + a + "%，其余投稿为 " + N("pOneResolvedNonStyle") + "%。"));
+    }
+  }
+
+  var fateSt = "Reject";
+  function drawFate() {
+    var host = document.getElementById("chart-fate"); if (!host || !C) return;
+    var rows = C.fate[fateSt] || [], W = width(host), narrow = W < 560, H = narrow ? 270 : 300;
+    var m = { l: 46, r: 8, t: 26, b: 48 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var ymax = niceMax(Math.max.apply(null, rows.map(function (r) { return r.loose; })) * 1.05, 5);
+    var s = svgFor(host, W, H, L("Bar chart: ICLR 2026 papers later accepted at ICML or NeurIPS 2026, by rating", "条形图：ICLR 2026 论文后来被 ICML 或 NeurIPS 2026 接收的比例，按评分"));
+    var Y = function (v) { return m.t + ph - v / ymax * ph; };
+    ticks(ymax, 5).forEach(function (t) {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), "class": "grid-l" }, s);
+      el("text", { x: m.l - 6, y: Y(t) + 4, "text-anchor": "end", style: "fill:var(--ink-3);font-size:11px" }, s, t + "%");
+    });
+    var step = pw / rows.length, bw = Math.min(76, step * 0.58);
+    rows.forEach(function (r, i) {
+      var cx = m.l + step * (i + 0.5), g = el("g", { "class": "row" }, s);
+      el("rect", { x: cx - step / 2, y: m.t - 20, width: step, height: ph + 20, "class": "hl", rx: 6 }, g);
+      el("rect", { x: cx - bw / 2, y: Y(r.strict), width: bw, height: Y(0) - Y(r.strict), fill: "var(--c27)" }, g);
+      el("rect", { x: cx - bw / 2, y: Y(r.loose), width: bw, height: Math.max(0, Y(r.strict) - Y(r.loose)), fill: "var(--c26)" }, g);
+      el("line", { x1: cx - bw / 2 - 5, x2: cx + bw / 2 + 5, y1: Y(r.title), y2: Y(r.title), stroke: "#0f172a", "stroke-width": 2.5 }, g);
+      el("text", { x: cx, y: Y(r.loose) - 7, "text-anchor": "middle", style: "font-size:11px;fill:var(--ink-3)" }, g, "n=" + fmtN(r.n));
+      el("text", { x: cx, y: H - m.b + 18, "text-anchor": "middle", style: "font-size:12px;fill:var(--ink-2)" }, g, r.bin);
+      bindTip(g, function () {
+        return "<b>" + L("mean rating ", "平均分 ") + r.bin + "</b> (n=" + fmtN(r.n) + ")<br>" + L("identical title: ", "标题完全相同：") + fmtP(r.title) + "<br>" +
+          L("abstract match, strict: ", "摘要匹配（严格）：") + fmtP(r.strict) + "<br>" + L("abstract match, loose: ", "摘要匹配（宽松）：") + fmtP(r.loose);
+      });
+    });
+    el("text", { x: m.l + pw / 2, y: H - 6, "text-anchor": "middle", style: "font-size:12px;fill:var(--ink-3)" }, s,
+      fateSt === "Reject" ? L("mean ICLR 2026 rating of the rejected paper", "被拒论文的 ICLR 2026 平均分") : L("mean ICLR 2026 rating of the withdrawn paper", "撤稿论文的 ICLR 2026 平均分"));
+    altTable("tbl-fate", [L("Mean rating", "平均分"), "n", L("Identical title", "标题相同"), L("Strict", "严格"), L("Loose", "宽松")],
+      rows.map(function (r) { return [r.bin, fmtN(r.n), fmtP(r.title), fmtP(r.strict), fmtP(r.loose)]; }));
+  }
+
+  /* ---------------------------------------------------------------- data downloads */
+  function drawDownloads(dl) {
+    var host = document.getElementById("downloads"); if (!host || !dl) return;
+    host.innerHTML = "<table><thead><tr><th>" + L("File", "文件") + "</th><th>" + L("Contents", "内容") + '</th><th class="r">' + L("Rows", "行数") + '</th><th class="r">KB</th></tr></thead><tbody>' +
+      dl.files.map(function (f) { return '<tr><td><a href="' + esc(src(f.file)) + '" download>' + esc(f.name) + '</a></td><td class="desc">' + esc(T(f)) + '</td><td class="r">' + fmtN(f.rows) + '</td><td class="r">' + f.kb + "</td></tr>"; }).join("") + "</tbody></table>";
+  }
+
+  /* ---------------------------------------------------------------- segmented controls, copy */
+  function seg(id, attr, fn) {
+    var host = document.getElementById(id); if (!host) return;
+    host.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      Array.prototype.forEach.call(host.querySelectorAll("button"), function (x) { x.classList.toggle("on", x === b); });
+      fn(b.getAttribute(attr));
+    });
+  }
+  function initControls() {
+    seg("area-sort", "data-sort", function (v) { areaSort = v; drawAreas(); });
+    seg("topic-scale", "data-scale", function (v) { topicLog = v === "log"; drawTopics(); });
+    seg("fate-status", "data-st", function (v) { fateSt = v; drawFate(); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (b) {
+      b.addEventListener("click", function () {
+        var box = document.getElementById(b.getAttribute("data-copy")), txt = box.textContent.replace(b.textContent, "").trim();
+        var done = function () { var o = b.textContent; b.textContent = L("Copied", "已复制"); setTimeout(function () { b.textContent = o; }, 1200); };
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () {}); else done();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("a.btn.disabled"), function (a) { a.addEventListener("click", function (e) { e.preventDefault(); }); });
+  }
+
+  /* ---------------------------------------------------------------- static text i18n (as in the reference page) */
+  function norm(h) { return h.replace(/\s+/g, " ").trim(); }
+  var STATIC = null;
+  var DYN = ".chart, .tw, .stages, #recall, #p1-banner, #downloads, #built, #refs-style, #topic-chips, #style-chips, #tip, script, svg, .bib, [data-n]";
+  var BTN = { "Paper": "论文", "PDF": "PDF", "Data": "数据", "BibTeX": "BibTeX" };
+  function collectStatic(dict) {
+    var html = {}, titles = {}, back = {}, used = {}, pairs = [];
+    ((dict && dict.html) || []).forEach(function (p) { html[norm(p[0])] = p[1]; });
+    ((dict && dict.title) || []).forEach(function (p) { titles[p[0]] = p[1]; back[p[1]] = p[0]; });
+    Array.prototype.forEach.call(document.body.querySelectorAll("*"), function (el) {
+      if (el.closest(DYN)) return;
+      for (var i = pairs.length - 1; i >= 0; i--) if (pairs[i].el.contains(el)) return;
+      var k = norm(el.innerHTML);
+      if (html[k] != null) { pairs.push({ el: el, en: el.innerHTML, zh: html[k] }); used[k] = 1; }
+    });
+    var btns = [];
+    Array.prototype.forEach.call(document.querySelectorAll(".btn"), function (el) {
+      Array.prototype.forEach.call(el.childNodes, function (n) { if (n.nodeType === 3 && BTN[n.nodeValue.trim()]) btns.push({ node: n, en: n.nodeValue, zh: BTN[n.nodeValue.trim()] }); });
+    });
+    STATIC = { pairs: pairs, titles: titles, back: back, btns: btns, title: document.title };
+    window.__i18nMissing = Object.keys(html).filter(function (k) { return !used[k]; });
+    /* English text that no pair covers (shown untranslated in Chinese) */
+    var un = [];
+    Array.prototype.forEach.call(document.body.querySelectorAll("*"), function (el) {
+      if (el.closest(DYN) || el.closest(".notr, code, .ph")) return;
+      for (var i = 0; i < pairs.length; i++) if (pairs[i].el.contains(el)) return;
+      Array.prototype.forEach.call(el.childNodes, function (n) {
+        if (n.nodeType === 3 && /[A-Za-z]{2,}/.test(n.nodeValue) && !BTN[n.nodeValue.trim()]) un.push(norm(n.nodeValue));
+      });
+    });
+    window.__i18nUntranslated = un;
+  }
+  function applyStatic() {
+    document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
+    var btn = document.getElementById("langbtn");
+    if (btn) { btn.textContent = LANG === "zh" ? "EN" : "中文"; btn.title = LANG === "zh" ? "Switch to English" : "切换到中文"; }
+    if (!STATIC) return;
+    document.title = LANG === "zh" ? "我们将走向何方？ICLR 2027 投稿的系统分析" : STATIC.title;
+    STATIC.pairs.forEach(function (p) { var h = LANG === "zh" ? p.zh : p.en; if (p.el.innerHTML !== h) p.el.innerHTML = h; });
+    var map = LANG === "zh" ? STATIC.titles : STATIC.back;
+    Array.prototype.forEach.call(document.querySelectorAll("[title]"), function (el) {
+      if (el.id !== "langbtn" && map[el.title] != null) el.title = map[el.title];
+    });
+    STATIC.btns.forEach(function (b) { b.node.nodeValue = LANG === "zh" ? b.zh : b.en; });
+    Array.prototype.forEach.call(document.querySelectorAll("a[data-rel]"), function (el) { el.href = src(el.getAttribute("data-rel")); });
+    Array.prototype.forEach.call(document.querySelectorAll(".copy"), function (b) { b.textContent = L("Copy", "复制"); });
+    fillNumbers();
+  }
+
+  /* keep the reader where they are across a language switch */
+  function survives(el) {
+    if (!STATIC) return true;
+    for (var i = 0; i < STATIC.pairs.length; i++) { var p = STATIC.pairs[i].el; if (p !== el && p.contains(el)) return false; }
+    var d = el.closest(DYN);
+    return !d || d === el;
+  }
+  function captureAnchor() {
+    if (window.scrollY < 2) return null;
+    var nav = document.querySelector(".nav"), y = (nav ? nav.getBoundingClientRect().bottom : 0) + 4;
+    var el = document.elementFromPoint(Math.round(window.innerWidth / 2), y) || document.body;
+    while (el && el !== document.body && !survives(el)) el = el.parentElement;
+    if (!el || el === document.body || el === document.documentElement) return { y: y, abs: window.scrollY };
+    var r = el.getBoundingClientRect();
+    return { el: el, y: y, frac: r.height ? Math.max(0, Math.min(1, (y - r.top) / r.height)) : 0 };
+  }
+  function restoreAnchor(a) {
+    if (!a) return;
+    var top = a.abs;
+    if (a.el && a.el.isConnected) { var r = a.el.getBoundingClientRect(); top = window.scrollY + r.top + a.frac * r.height - a.y; }
+    if (top != null) window.scrollTo({ top: Math.max(0, top), left: 0, behavior: "instant" });
+  }
+
+  var PAGE = null;
+  function renderAll() {
+    if (!PAGE) return;
+    drawAreas(); drawTopics(); drawStyle(); drawFunnel(); drawVerdicts(); drawRecall(PAGE.numbers);
+    drawP1Banner(PAGE.numbers); drawPdf(); drawRefs(); drawFate(); drawDownloads(PAGE.downloads);
+    setBuilt();
+  }
+  function setBuilt() {
+    var bt = document.getElementById("built");
+    if (bt && PAGE && PAGE.built) bt.textContent = L("Last updated ", "最后更新 ") + PAGE.built + (embedded.prefer_embedded ? L(" · single-file build", " · 单文件版") : "");
+  }
+  function setLang(next) {
+    if (next === LANG) return;
+    var a = captureAnchor();
+    LANG = next;
+    try { localStorage.setItem("iclr27-lang", next); } catch (e) { /* file:// may block storage */ }
+    hideTip();
+    applyStatic();
+    renderAll();
+    restoreAnchor(a);
+    if (window.requestAnimationFrame) requestAnimationFrame(function () { restoreAnchor(a); });
+    try {
+      var q = location.search.replace(/([?&])lang=(en|zh)(&|$)/, "$1").replace(/[?&]$/, "");
+      history.replaceState(history.state, "", location.pathname + (q ? q + "&" : "?") + "lang=" + next + location.hash);
+    } catch (e) { /* some file:// setups refuse replaceState; the language is still remembered in localStorage */ }
+  }
+  function initLang() {
+    var btn = document.getElementById("langbtn"); if (!btn) return;
+    btn.addEventListener("click", function () { setLang(LANG === "zh" ? "en" : "zh"); });
+  }
+  window.__setLang = setLang;
+
+  var lastW = window.innerWidth, rt = null;
+  window.addEventListener("resize", function () {
+    if (Math.abs(window.innerWidth - lastW) < 2) return;
+    lastW = window.innerWidth; clearTimeout(rt); rt = setTimeout(renderAll, 150);
+  });
+
+  initControls(); initLang();
+  load().then(function (d) {
+    PAGE = d;
+    MAC = (d.numbers && d.numbers.macros) || {};
+    C = d.charts || null;
+    collectStatic(d.i18n);
+    applyStatic();
+    renderAll();
+  });
+})();
+
+</script>
+</body>
+</html>

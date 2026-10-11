@@ -1,0 +1,82 @@
+metric,label,domain,n_pdfs,raw_count,estimate,ci_lo,ci_hi,n_eff,unit,covered_pop
+_coverage,downloaded / sampled PDFs,pool,319.0,1501.0,,,,,,0.261
+_coverage,"downloaded PDFs, style domain",style,0.0,333.0,,,,,,
+_coverage,"downloaded PDFs, nonstyle domain",nonstyle,307.0,1168.0,,,,,,
+_coverage,PDFs in cells with >= 10 PDFs (used),used,307.0,1501.0,,,,,,0.261
+_coverage,control PDFs (ICLR 2024 arXiv versions),control_iclr2024,150.0,150.0,,,,,,
+_refs,reference entries: plausible,ctl,,284.0,,,,,,
+_refs,reference entries: resolved,ctl,,6942.0,,,,,,
+_refs,reference entries: suspect,ctl,,92.0,,,,,,
+_refs,reference entries: plausible,p1,,560.0,,,,,,
+_refs,reference entries: resolved,p1,,13388.0,,,,,,
+_refs,reference entries: suspect,p1,,94.0,,,,,,
+own_repo_link,"non-anonymous own-code link (GitHub/GitLab/HF, 'our code is available at')",pool,307.0,1.0,0.365,0.0,1.096,306.2,%,0.261
+meta_author_leak,author name in PDF metadata,pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+has_ack,acknowledgements / funding section,pool,307.0,5.0,1.733,0.365,3.415,306.2,%,0.261
+selfref_any,"self-identifying reference ('our previous work', 'we previously proposed')",pool,307.0,1.0,0.317,0.0,0.951,306.2,%,0.261
+published_header,running head of a previous venue ('Published as a conference paper at'),pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+email,e-mail address in the text layer,pool,307.0,3.0,0.953,0.0,2.223,306.2,%,0.261
+hidden_text,"hidden text (>= 5 words), pdf_scan rule: any reason",pool,307.0,15.0,4.865,2.591,7.449,306.2,%,0.261
+hidden_text_strict,hidden text with nothing drawn beneath; off-page only if reviewer-directed (strict),pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+hidden_prompt,hidden text addressing reviewers/LLMs (strict),pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+hidden_invisible_render_mode,hidden text: invisible render mode,pool,307.0,2.0,0.682,0.0,1.73,306.2,%,0.261
+hidden_white_fill,hidden text: white fill,pool,307.0,9.0,2.862,1.27,4.773,306.2,%,0.261
+hidden_tiny_font,hidden text: font < 1 pt,pool,307.0,1.0,0.365,0.0,1.096,306.2,%,0.261
+hidden_off_page,hidden text: outside the page box,pool,307.0,5.0,1.64,0.319,3.007,306.2,%,0.261
+hidden_opacity_0,hidden text: opacity 0,pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+injection,"prompt-injection phrase, pdf_scan rule (anywhere in the text layer)",pool,307.0,5.0,1.584,0.317,3.169,306.2,%,0.261
+injection_strict,"prompt-injection phrase outside references and injection-topic papers, or hidden",pool,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+topical_injection,paper is about prompt injection / jailbreaking (context for the above),pool,307.0,37.0,11.742,8.571,14.924,306.2,%,0.261
+any_repo_link,any GitHub/GitLab/HF link,pool,307.0,70.0,22.723,18.139,27.149,306.2,%,0.261
+anon_link,anonymised code link (anonymous.4open.science etc.),pool,307.0,51.0,16.743,12.608,21.059,306.2,%,0.261
+llm_statement,LLM/AI usage statement section,pool,307.0,295.0,95.942,93.622,97.992,306.2,%,0.261
+resolved_rate,per-paper share of references resolved,pool,306.0,,95.52,94.738,96.265,304.9,%,0.261
+suspect_rate,per-paper share of references unresolved-suspect,pool,306.0,,0.649,0.45,0.927,304.9,%,0.261
+n_suspect,share of all references unresolved-suspect (ratio),pool,306.0,90.0,0.665,0.505,0.838,304.9,%,0.261
+suspect_ge1,papers with >= 1 suspect reference,pool,306.0,63.0,20.557,16.245,25.023,304.9,%,0.261
+suspect_ge3,papers with >= 3 suspect references,pool,306.0,6.0,2.019,0.636,3.769,304.9,%,0.261
+style_per_1k,"LLM-associated words per 1,000 body words",pool,307.0,,0.113,0.082,0.149,306.2,mean,0.261
+emdash_per_1k,"em dashes per 1,000 body words",pool,307.0,,0.34,0.249,0.45,306.2,mean,0.261
+pages,PDF pages,pool,307.0,,26.801,25.314,28.598,306.2,mean,0.261
+main_pages,page on which the reference list starts,pool,306.0,,9.021,8.967,9.069,304.9,mean,0.261
+n_refs,reference entries per paper,pool,307.0,,44.169,42.236,46.183,306.2,mean,0.261
+own_repo_link,"non-anonymous own-code link (GitHub/GitLab/HF, 'our code is available at')",nonstyle,307.0,1.0,0.365,0.0,1.096,306.2,%,0.261
+meta_author_leak,author name in PDF metadata,nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+has_ack,acknowledgements / funding section,nonstyle,307.0,5.0,1.733,0.365,3.367,306.2,%,0.261
+selfref_any,"self-identifying reference ('our previous work', 'we previously proposed')",nonstyle,307.0,1.0,0.317,0.0,0.951,306.2,%,0.261
+published_header,running head of a previous venue ('Published as a conference paper at'),nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+email,e-mail address in the text layer,nonstyle,307.0,3.0,0.953,0.0,2.218,306.2,%,0.261
+hidden_text,"hidden text (>= 5 words), pdf_scan rule: any reason",nonstyle,307.0,15.0,4.865,2.591,7.546,306.2,%,0.261
+hidden_text_strict,hidden text with nothing drawn beneath; off-page only if reviewer-directed (strict),nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+hidden_prompt,hidden text addressing reviewers/LLMs (strict),nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+hidden_invisible_render_mode,hidden text: invisible render mode,nonstyle,307.0,2.0,0.682,0.0,1.73,306.2,%,0.261
+hidden_white_fill,hidden text: white fill,nonstyle,307.0,9.0,2.862,1.27,4.771,306.2,%,0.261
+hidden_tiny_font,hidden text: font < 1 pt,nonstyle,307.0,1.0,0.365,0.0,1.096,306.2,%,0.261
+hidden_off_page,hidden text: outside the page box,nonstyle,307.0,5.0,1.64,0.319,3.278,306.2,%,0.261
+hidden_opacity_0,hidden text: opacity 0,nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+injection,"prompt-injection phrase, pdf_scan rule (anywhere in the text layer)",nonstyle,307.0,5.0,1.584,0.317,2.852,306.2,%,0.261
+injection_strict,"prompt-injection phrase outside references and injection-topic papers, or hidden",nonstyle,307.0,0.0,0.0,0.0,1.198,306.2,%,0.261
+topical_injection,paper is about prompt injection / jailbreaking (context for the above),nonstyle,307.0,37.0,11.742,8.568,14.916,306.2,%,0.261
+any_repo_link,any GitHub/GitLab/HF link,nonstyle,307.0,70.0,22.723,18.363,27.627,306.2,%,0.261
+anon_link,anonymised code link (anonymous.4open.science etc.),nonstyle,307.0,51.0,16.743,12.835,20.85,306.2,%,0.261
+llm_statement,LLM/AI usage statement section,nonstyle,307.0,295.0,95.942,93.612,97.997,306.2,%,0.261
+resolved_rate,per-paper share of references resolved,nonstyle,306.0,,95.52,94.713,96.235,304.9,%,0.261
+suspect_rate,per-paper share of references unresolved-suspect,nonstyle,306.0,,0.649,0.442,0.935,304.9,%,0.261
+n_suspect,share of all references unresolved-suspect (ratio),nonstyle,306.0,90.0,0.665,0.513,0.841,304.9,%,0.261
+suspect_ge1,papers with >= 1 suspect reference,nonstyle,306.0,63.0,20.557,16.15,25.388,304.9,%,0.261
+suspect_ge3,papers with >= 3 suspect references,nonstyle,306.0,6.0,2.019,0.637,3.668,304.9,%,0.261
+style_per_1k,"LLM-associated words per 1,000 body words",nonstyle,307.0,,0.113,0.082,0.149,306.2,mean,0.261
+emdash_per_1k,"em dashes per 1,000 body words",nonstyle,307.0,,0.34,0.25,0.442,306.2,mean,0.261
+pages,PDF pages,nonstyle,307.0,,26.801,25.345,28.502,306.2,mean,0.261
+main_pages,page on which the reference list starts,nonstyle,306.0,,9.021,8.968,9.071,304.9,mean,0.261
+n_refs,reference entries per paper,nonstyle,307.0,,44.169,42.204,46.118,306.2,mean,0.261
+resolved_rate,per-paper share of references resolved,control_iclr2024,149.0,,94.512,93.553,95.342,127.7,%,1.0
+suspect_rate,per-paper share of references unresolved-suspect,control_iclr2024,149.0,,1.431,1.069,1.853,127.7,%,1.0
+n_suspect,share of all references unresolved-suspect (ratio),control_iclr2024,149.0,92.0,1.287,0.971,1.67,127.7,%,1.0
+suspect_ge1,papers with >= 1 suspect reference,control_iclr2024,149.0,62.0,41.78,33.048,50.191,127.7,%,1.0
+suspect_ge3,papers with >= 3 suspect references,control_iclr2024,149.0,5.0,3.44,0.778,6.671,127.7,%,1.0
+style_per_1k,"LLM-associated words per 1,000 body words",control_iclr2024,150.0,,0.626,0.51,0.743,128.6,mean,1.0
+emdash_per_1k,"em dashes per 1,000 body words",control_iclr2024,150.0,,0.274,0.182,0.376,128.6,mean,1.0
+pages,PDF pages,control_iclr2024,150.0,,21.78,19.989,23.987,128.6,mean,1.0
+main_pages,page on which the reference list starts,control_iclr2024,149.0,,10.224,9.317,11.43,127.7,mean,1.0
+n_refs,reference entries per paper,control_iclr2024,150.0,,48.451,45.533,51.421,128.6,mean,1.0

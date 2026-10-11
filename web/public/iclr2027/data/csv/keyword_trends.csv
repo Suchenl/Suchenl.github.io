@@ -1,0 +1,732 @@
+kw,n2025,n2026,n2027,per10k_26,per10k_27,log2_ratio
+large language models,872,1587,3414,800.95,793.71,-0.01
+reinforcement learning,489,1302,2391,657.11,555.88,-0.24
+llm agents,22,89,1565,44.92,363.84,3.02
+vision language models,113,294,1246,148.38,289.68,0.96
+representation learning,236,374,1108,188.76,257.6,0.45
+benchmark,264,547,962,276.07,223.65,-0.3
+diffusion models,376,524,931,264.46,216.45,-0.29
+mechanistic interpretability,84,143,840,72.17,195.29,1.43
+llm,362,808,789,407.79,183.43,-1.15
+flow matching,76,206,780,103.97,181.34,0.8
+world models,22,50,628,25.23,146.0,2.53
+multimodal large language models,60,174,586,87.82,136.24,0.63
+interpretability,223,332,585,167.56,136.01,-0.3
+large language model,495,743,566,374.99,131.59,-1.51
+continual learning,133,205,523,103.46,121.59,0.23
+on policy distillation,0,0,488,0.0,113.45,10.15
+multi agent systems,16,114,481,57.54,111.83,0.96
+knowledge distillation,91,144,480,72.68,111.59,0.62
+vision language action models,2,36,455,18.17,105.78,2.53
+uncertainty quantification,71,147,445,74.19,103.46,0.48
+efficient inference,22,49,444,24.73,103.22,2.06
+graph neural networks,201,230,434,116.08,100.9,-0.2
+self supervised learning,145,160,417,80.75,96.95,0.26
+mixture of experts,84,154,417,77.72,96.95,0.32
+ai safety,79,138,411,69.65,95.55,0.46
+retrieval augmented generation,80,157,400,79.24,93.0,0.23
+reasoning,125,455,394,229.64,91.6,-1.32
+video generation,65,170,384,85.8,89.28,0.06
+generative models,192,239,382,120.62,88.81,-0.44
+post training,11,97,379,48.96,88.11,0.85
+agent memory,0,5,345,2.52,80.21,4.94
+multimodal learning,65,143,344,72.17,79.98,0.15
+time series forecasting,71,158,343,79.74,79.74,0.0
+robot learning,18,39,342,19.68,79.51,2.01
+evaluation,124,185,341,93.37,79.28,-0.24
+federated learning,168,240,323,121.13,75.09,-0.69
+in context learning,154,171,320,86.3,74.4,-0.21
+agent,43,161,318,81.26,73.93,-0.14
+parameter efficient fine tuning,72,85,304,42.9,70.68,0.72
+embodied ai,32,74,301,37.35,69.98,0.9
+autonomous driving,64,100,299,50.47,69.51,0.46
+distribution shift,37,34,291,17.16,67.65,1.97
+language models,150,169,289,85.29,67.19,-0.34
+llms,161,355,283,179.17,65.79,-1.44
+activation steering,8,25,282,12.62,65.56,2.37
+agent evaluation,0,5,277,2.52,64.4,4.62
+scientific machine learning,19,28,269,14.13,62.54,2.14
+optimization,141,189,269,95.39,62.54,-0.61
+credit assignment,3,6,269,3.03,62.54,4.32
+test time adaptation,35,71,265,35.83,61.61,0.78
+benchmarking,44,79,263,39.87,61.14,0.62
+tool use,9,40,250,20.19,58.12,1.52
+transformers,157,190,243,95.89,56.49,-0.76
+llm as a judge,17,50,242,25.23,56.26,1.15
+world model,38,68,241,34.32,56.03,0.71
+model compression,45,89,240,44.92,55.8,0.31
+contrastive learning,120,158,237,79.74,55.1,-0.53
+diffusion model,284,288,236,145.35,54.87,-1.4
+deep learning,277,335,235,169.07,54.63,-1.63
+machine unlearning,67,117,232,59.05,53.94,-0.13
+diffusion language models,3,41,223,20.69,51.84,1.32
+optimal transport,72,97,222,48.96,51.61,0.08
+transfer learning,92,94,219,47.44,50.91,0.1
+speculative decoding,25,71,219,35.83,50.91,0.51
+3d gaussian splatting,43,68,219,34.32,50.91,0.57
+foundation models,87,122,217,61.57,50.45,-0.29
+robustness,135,181,216,91.35,50.22,-0.86
+robot manipulation,11,17,216,8.58,50.22,2.54
+evaluation methodology,0,3,215,1.51,49.98,4.96
+quantization,75,124,211,62.58,49.05,-0.35
+test time scaling,3,110,209,55.52,48.59,-0.19
+low rank adaptation,40,75,207,37.85,48.12,0.35
+llm evaluation,15,53,203,26.75,47.2,0.82
+computer vision,114,156,203,78.73,47.2,-0.74
+online learning,61,64,203,32.3,47.2,0.55
+coding agents,1,5,202,2.52,46.96,4.17
+conformal prediction,43,81,197,40.88,45.8,0.16
+robotic manipulation,15,42,195,21.2,45.34,1.09
+image generation,70,145,193,73.18,44.87,-0.7
+multimodal reasoning,5,82,191,41.38,44.41,0.1
+generalization,127,145,186,73.18,43.24,-0.76
+ai for science,32,77,186,38.86,43.24,0.15
+selective prediction,2,5,184,2.52,42.78,4.03
+sparse autoencoders,19,57,184,28.77,42.78,0.57
+grpo,0,67,183,33.81,42.55,0.33
+neural operators,15,33,182,16.65,42.31,1.34
+post training quantization,13,39,181,19.68,42.08,1.09
+calibration,24,76,179,38.36,41.62,0.12
+adversarial robustness,62,88,179,44.41,41.62,-0.09
+video understanding,40,83,178,41.89,41.38,-0.02
+reinforcement learning with verifiable rewards,0,32,176,16.15,40.92,1.34
+agents,27,66,175,33.31,40.69,0.29
+catastrophic forgetting,32,54,173,27.25,40.22,0.56
+kv cache,18,39,172,19.68,39.99,1.02
+lora,58,83,171,41.89,39.76,-0.08
+sparse attention,6,53,171,26.75,39.76,0.57
+imitation learning,53,89,171,44.92,39.76,-0.18
+time series,90,129,169,65.11,39.29,-0.73
+large language model agents,3,7,169,3.53,39.29,3.44
+diffusion,114,171,169,86.3,39.29,-1.13
+alignment,154,169,169,85.29,39.29,-1.12
+kv cache compression,11,37,165,18.67,38.36,1.03
+state space models,46,39,164,19.68,38.13,0.95
+multi agent reinforcement learning,52,85,164,42.9,38.13,-0.17
+robotics,55,102,163,51.48,37.9,-0.44
+mathematical reasoning,32,53,163,26.75,37.9,0.5
+llm agent,26,88,163,44.41,37.9,-0.23
+supervised fine tuning,16,47,163,23.72,37.9,0.67
+causal inference,52,93,161,46.94,37.43,-0.33
+training dynamics,26,36,161,18.17,37.43,1.04
+text to image generation,30,78,159,39.37,36.97,-0.09
+spatial reasoning,3,58,158,29.27,36.73,0.33
+visual grounding,13,25,157,12.62,36.5,1.53
+world action models,0,0,157,0.0,36.5,8.52
+long term memory,5,9,156,4.54,36.27,2.97
+generative modeling,39,75,154,37.85,35.8,-0.08
+memory,15,40,153,20.19,35.57,0.81
+model merging,45,72,152,36.34,35.34,-0.04
+fine tuning,101,131,150,66.11,34.87,-0.92
+benchmarks,25,42,150,21.2,34.87,0.72
+identifiability,19,15,149,7.57,34.64,2.18
+self distillation,6,11,149,5.55,34.64,2.62
+machine learning,108,170,147,85.8,34.18,-1.33
+differential privacy,62,86,146,43.4,33.94,-0.35
+data selection,37,44,145,22.21,33.71,0.6
+chain of thought,35,132,144,66.62,33.48,-0.99
+synthetic data,71,79,144,39.87,33.48,-0.25
+anomaly detection,47,85,143,42.9,33.25,-0.37
+vision language model,71,163,143,82.27,33.25,-1.3
+code generation,58,110,140,55.52,32.55,-0.77
+learning theory,36,43,140,21.7,32.55,0.58
+llm safety,19,42,140,21.2,32.55,0.62
+out of distribution generalization,24,31,139,15.65,32.32,1.04
+reproducibility,0,13,138,6.56,32.08,2.27
+representation geometry,0,6,138,3.03,32.08,3.36
+llm reasoning,10,113,135,57.03,31.39,-0.86
+test time compute,4,27,134,13.63,31.15,1.19
+vlm,19,94,133,47.44,30.92,-0.62
+agentic ai,3,32,132,16.15,30.69,0.92
+spiking neural networks,23,61,131,30.79,30.46,-0.02
+on policy self distillation,0,0,131,0.0,30.46,8.26
+preference optimization,43,56,130,28.26,30.22,0.1
+transformer,182,164,130,82.77,30.22,-1.45
+geometric deep learning,39,40,130,20.19,30.22,0.58
+safety,83,153,129,77.22,29.99,-1.36
+latent reasoning,1,32,129,16.15,29.99,0.89
+recursive self improvement,0,0,129,0.0,29.99,8.23
+multi task learning,51,66,128,33.31,29.76,-0.16
+offline reinforcement learning,68,76,127,38.36,29.53,-0.38
+training free,20,53,127,26.75,29.53,0.14
+inverse problems,38,45,127,22.71,29.53,0.38
+self evolving agents,0,0,126,0.0,29.29,8.2
+activation patching,0,2,126,1.01,29.29,4.73
+agent safety,0,10,125,5.05,29.06,2.5
+novel view synthesis,29,52,125,26.24,29.06,0.15
+explainable ai,49,81,123,40.88,28.6,-0.51
+3d reconstruction,41,58,123,29.27,28.6,-0.03
+distillation,29,40,123,20.19,28.6,0.5
+rl,20,83,123,41.89,28.6,-0.55
+ai agents,7,23,122,11.61,28.36,1.28
+combinatorial optimization,35,59,121,29.78,28.13,-0.08
+vision transformers,14,42,119,21.2,27.67,0.38
+multimodal agents,3,4,118,2.02,27.43,3.7
+jepa,1,11,118,5.55,27.43,2.28
+active learning,53,43,118,21.7,27.43,0.34
+causal interventions,1,4,117,2.02,27.2,3.69
+rlvr,0,49,117,24.73,27.2,0.14
+generative model,108,121,115,61.07,26.74,-1.19
+privacy,63,82,115,41.38,26.74,-0.63
+policy optimization,10,43,114,21.7,26.5,0.29
+test time training,9,29,114,14.64,26.5,0.85
+scaling laws,37,49,114,24.73,26.5,0.1
+dynamical systems,33,40,114,20.19,26.5,0.39
+attention,62,88,114,44.41,26.5,-0.74
+reward hacking,8,19,114,9.59,26.5,1.46
+benchmark evaluation,1,11,114,5.55,26.5,2.23
+safety alignment,20,57,112,28.77,26.04,-0.14
+uncertainty estimation,22,51,110,25.74,25.57,-0.01
+domain adaptation,55,70,110,35.33,25.57,-0.46
+muon,0,17,110,8.58,25.57,1.56
+agentic reinforcement learning,0,7,110,3.53,25.57,2.82
+vla,1,27,110,13.63,25.57,0.9
+image editing,26,76,110,38.36,25.57,-0.58
+llm post training,0,14,110,7.07,25.57,1.84
+multi objective optimization,25,33,108,16.65,25.11,0.59
+linear attention,16,34,108,17.16,25.11,0.55
+pretraining,28,66,108,33.31,25.11,-0.41
+adaptive computation,0,9,107,4.54,24.88,2.43
+planning,60,63,107,31.8,24.88,-0.35
+time series foundation models,2,11,106,5.55,24.64,2.13
+mllm,17,85,105,42.9,24.41,-0.81
+meta learning,48,87,105,43.91,24.41,-0.84
+model based reinforcement learning,26,31,105,15.65,24.41,0.64
+multimodal representation learning,10,18,104,9.08,24.18,1.4
+model evaluation,14,20,104,10.09,24.18,1.25
+tool using agents,0,0,103,0.0,23.95,7.91
+tabular foundation models,1,7,103,3.53,23.95,2.73
+model selection,8,16,103,8.08,23.95,1.56
+shortcut learning,7,8,100,4.04,23.25,2.5
+remote sensing,12,24,99,12.11,23.02,0.92
+eeg,22,47,98,23.72,22.78,-0.06
+long horizon agents,0,1,98,0.5,22.78,5.24
+domain generalization,27,39,97,19.68,22.55,0.2
+diffusion transformers,4,19,97,9.59,22.55,1.23
+inference acceleration,12,32,97,16.15,22.55,0.48
+preference learning,35,36,96,18.17,22.32,0.3
+multi agent system,17,63,96,31.8,22.32,-0.51
+bayesian optimization,29,54,95,27.25,22.09,-0.3
+causal discovery,42,51,94,25.74,21.85,-0.24
+multimodal large language model,49,95,94,47.95,21.85,-1.13
+dataset,76,105,94,52.99,21.85,-1.27
+efficiency,64,108,93,54.51,21.62,-1.33
+curriculum learning,17,61,93,30.79,21.62,-0.51
+multi agent,27,66,93,33.31,21.62,-0.62
+agent skills,0,0,92,0.0,21.39,7.75
+long context inference,3,5,92,2.52,21.39,3.03
+multimodal,76,113,92,57.03,21.39,-1.41
+gui agents,1,18,91,9.08,21.16,1.21
+causal intervention,2,2,91,1.01,21.16,4.26
+compositional generalization,12,20,91,10.09,21.16,1.06
+large vision language models,23,52,90,26.24,20.92,-0.33
+prompt injection,2,19,90,9.59,20.92,1.12
+agent security,0,1,90,0.5,20.92,5.12
+efficient llm inference,4,4,90,2.02,20.92,3.31
+datasets and benchmarks,4,13,89,6.56,20.69,1.64
+unsupervised learning,65,80,89,40.38,20.69,-0.96
+representation analysis,2,3,89,1.51,20.69,3.69
+visual reasoning,13,43,88,21.7,20.46,-0.08
+information theory,31,38,88,19.18,20.46,0.09
+self improvement,21,21,88,10.6,20.46,0.94
+world action model,0,1,88,0.5,20.46,5.09
+scientific discovery,4,15,87,7.57,20.23,1.41
+personalization,22,59,87,29.78,20.23,-0.56
+clip,62,61,86,30.79,19.99,-0.62
+hallucination detection,8,37,86,18.67,19.99,0.1
+sample complexity,19,20,86,10.09,19.99,0.98
+memorization,42,49,85,24.73,19.76,-0.32
+graph representation learning,26,32,85,16.15,19.76,0.29
+partial differential equations,21,35,84,17.66,19.53,0.14
+few shot learning,41,67,83,33.81,19.3,-0.81
+representation alignment,1,16,83,8.08,19.3,1.25
+language model agents,3,8,83,4.04,19.3,2.23
+recommender systems,13,21,82,10.6,19.06,0.84
+counterfactual evaluation,0,0,82,0.0,19.06,7.58
+language agents,10,10,82,5.05,19.06,1.9
+llm serving,2,3,82,1.51,19.06,3.57
+reasoning models,0,37,82,18.67,19.06,0.03
+formal verification,6,18,81,9.08,18.83,1.04
+language modeling,21,34,81,17.16,18.83,0.13
+retrieval,30,21,81,10.6,18.83,0.82
+exploration,31,48,81,24.23,18.83,-0.36
+gaussian splatting,50,59,81,29.78,18.83,-0.66
+looped transformers,2,4,81,2.02,18.83,3.16
+agent harness,0,0,81,0.0,18.83,7.56
+hallucination,41,75,80,37.85,18.6,-1.02
+information retrieval,29,46,79,23.22,18.37,-0.34
+harness,0,0,79,0.0,18.37,7.53
+fairness,90,83,79,41.89,18.37,-1.19
+sequential decision making,9,18,78,9.08,18.13,0.99
+agentic rl,0,8,78,4.04,18.13,2.14
+hallucination mitigation,5,25,78,12.62,18.13,0.52
+long video understanding,8,22,78,11.1,18.13,0.7
+stochastic optimization,25,44,78,22.21,18.13,-0.29
+foundation model,64,71,78,35.83,18.13,-0.98
+prompt optimization,18,32,77,16.15,17.9,0.15
+group relative policy optimization,0,25,77,12.62,17.9,0.5
+parameter efficient adaptation,1,4,77,2.02,17.9,3.09
+synthetic data generation,22,40,77,20.19,17.9,-0.17
+graph neural network,101,91,77,45.93,17.9,-1.35
+long context,51,50,77,25.23,17.9,-0.49
+learning dynamics,11,29,76,14.64,17.67,0.27
+3d generation,32,35,76,17.66,17.67,0.0
+linear probing,5,7,75,3.53,17.44,2.27
+reward modeling,7,31,75,15.65,17.44,0.16
+instruction following,26,37,75,18.67,17.44,-0.1
+verification,9,19,74,9.59,17.2,0.84
+streaming video understanding,2,3,74,1.51,17.2,3.42
+training free inference,0,3,74,1.51,17.2,3.42
+image restoration,18,37,74,18.67,17.2,-0.12
+class incremental learning,20,18,74,9.08,17.2,0.91
+symbolic regression,20,27,73,13.63,16.97,0.31
+discrete diffusion,11,41,73,20.69,16.97,-0.28
+direct preference optimization,18,41,73,20.69,16.97,-0.28
+self evolution,1,11,73,5.55,16.97,1.59
+recurrent neural networks,16,19,73,9.59,16.97,0.82
+representation engineering,7,13,72,6.56,16.74,1.34
+coding agent,0,9,72,4.54,16.74,1.86
+vision language action model,5,34,71,17.16,16.51,-0.06
+context compression,4,11,71,5.55,16.51,1.56
+controllable generation,12,28,71,14.13,16.51,0.22
+computational pathology,4,11,70,5.55,16.27,1.53
+adversarial attacks,51,59,70,29.78,16.27,-0.87
+probabilistic forecasting,0,9,70,4.54,16.27,1.82
+abstention,1,6,69,3.03,16.04,2.37
+protein language models,7,16,69,8.08,16.04,0.98
+inference efficiency,5,9,69,4.54,16.04,1.8
+video diffusion models,6,13,68,6.56,15.81,1.26
+mamba,55,51,68,25.74,15.81,-0.7
+visual question answering,17,36,67,18.17,15.58,-0.22
+computer use agents,0,13,67,6.56,15.58,1.23
+program synthesis,16,19,67,9.59,15.58,0.69
+object detection,31,54,67,27.25,15.58,-0.8
+operator learning,16,26,67,13.12,15.58,0.25
+pre registration,0,0,66,0.0,15.34,7.27
+red teaming,19,26,66,13.12,15.34,0.22
+game theory,28,38,66,19.18,15.34,-0.32
+adaptive inference,3,3,65,1.51,15.11,3.24
+ai generated image detection,5,9,65,4.54,15.11,1.71
+graph learning,27,44,65,22.21,15.11,-0.55
+vector quantization,12,26,65,13.12,15.11,0.2
+long horizon tasks,1,5,64,2.52,14.88,2.51
+physics informed machine learning,6,22,63,11.1,14.65,0.4
+parallel decoding,2,10,63,5.05,14.65,1.52
+bayesian inference,20,33,63,16.65,14.65,-0.18
+generative recommendation,1,10,63,5.05,14.65,1.52
+constrained optimization,11,16,62,8.08,14.41,0.83
+out of distribution detection,42,38,62,19.18,14.41,-0.41
+neural decoding,5,14,62,7.07,14.41,1.02
+multi hop question answering,3,10,62,5.05,14.41,1.5
+model routing,1,9,61,4.54,14.18,1.62
+partial identification,1,3,61,1.51,14.18,3.15
+explainability,71,72,61,36.34,14.18,-1.35
+autoregressive video generation,0,6,61,3.03,14.18,2.19
+context management,0,7,61,3.53,14.18,1.97
+neural combinatorial optimization,15,21,61,10.6,14.18,0.42
+language model,67,58,61,29.27,14.18,-1.04
+embodied agents,1,8,61,4.04,14.18,1.79
+agentic systems,1,14,61,7.07,14.18,0.99
+chain of thought reasoning,5,20,61,10.09,14.18,0.49
+llm inference,10,25,60,12.62,13.95,0.14
+spatial transcriptomics,7,15,60,7.57,13.95,0.87
+quantum machine learning,13,32,60,16.15,13.95,-0.21
+model editing,24,28,60,14.13,13.95,-0.02
+probing,8,24,60,12.11,13.95,0.2
+self consistency,2,12,59,6.06,13.72,1.17
+multimodal evaluation,0,5,59,2.52,13.72,2.4
+physics informed neural networks,26,24,59,12.11,13.72,0.18
+structured prediction,1,1,58,0.5,13.48,4.49
+trustworthy ai,12,30,58,15.14,13.48,-0.17
+few step generation,0,8,58,4.04,13.48,1.72
+visual token pruning,0,4,58,2.02,13.48,2.68
+classifier free guidance,7,22,58,11.1,13.48,0.28
+process reward models,0,7,58,3.53,13.48,1.9
+unified multimodal models,0,7,57,3.53,13.25,1.88
+medical imaging,13,38,57,19.18,13.25,-0.53
+grokking,14,14,57,7.07,13.25,0.9
+medical image segmentation,10,25,57,12.62,13.25,0.07
+drug discovery,25,25,57,12.62,13.25,0.07
+multimodal fusion,6,23,56,11.61,13.02,0.16
+rlhf,83,83,56,41.89,13.02,-1.68
+clustering,51,61,56,30.79,13.02,-1.24
+efficient reasoning,0,46,56,23.22,13.02,-0.83
+zeroth order optimization,19,27,56,13.63,13.02,-0.07
+compression,47,65,56,32.81,13.02,-1.33
+variational inference,46,39,55,19.68,12.79,-0.62
+partial observability,6,12,55,6.06,12.79,1.07
+data poisoning,14,19,55,9.59,12.79,0.41
+feature learning,27,24,55,12.11,12.79,0.08
+web agents,2,18,55,9.08,12.79,0.49
+joint embedding predictive architecture,1,2,55,1.01,12.79,3.54
+embodied intelligence,4,11,55,5.55,12.79,1.19
+semi supervised learning,25,55,54,27.76,12.55,-1.14
+sampling,38,43,54,21.7,12.55,-0.78
+model based planning,3,3,54,1.51,12.55,2.97
+equivariance,41,37,54,18.67,12.55,-0.57
+latent world models,0,0,54,0.0,12.55,6.98
+joint embedding predictive architectures,0,0,54,0.0,12.55,6.98
+tokenization,15,29,53,14.64,12.32,-0.25
+small language models,6,15,53,7.57,12.32,0.7
+adversarial training,35,39,53,19.68,12.32,-0.67
+backdoor attacks,14,21,53,10.6,12.32,0.22
+diffusion language model,2,19,53,9.59,12.32,0.36
+pruning,33,65,53,32.81,12.32,-1.41
+safe reinforcement learning,11,27,53,13.63,12.32,-0.14
+multivariate time series forecasting,9,9,53,4.54,12.32,1.42
+decision making,33,35,52,17.66,12.09,-0.54
+llm routing,2,13,52,6.56,12.09,0.87
+inference,16,47,52,23.72,12.09,-0.97
+interpretable machine learning,7,15,52,7.57,12.09,0.67
+dexterous manipulation,1,6,52,3.03,12.09,1.96
+fmri,21,28,52,14.13,12.09,-0.22
+multivariate time series,6,15,52,7.57,12.09,0.67
+model predictive control,8,8,52,4.04,12.09,1.56
+associative memory,5,10,52,5.05,12.09,1.24
+deepfake detection,10,20,52,10.09,12.09,0.26
+efficient training,12,23,51,11.61,11.86,0.03
+attention mechanisms,5,18,51,9.08,11.86,0.38
+data curation,5,17,51,8.58,11.86,0.46
+sequential recommendation,5,11,51,5.55,11.86,1.08
+conditional generation,11,15,51,7.57,11.86,0.64
+black box optimization,21,13,51,6.56,11.86,0.84
+concept erasure,5,14,51,7.07,11.86,0.74
+mllms,15,42,51,21.2,11.86,-0.83
+counterfactual reasoning,8,12,50,6.06,11.62,0.93
+user simulation,2,3,50,1.51,11.62,2.86
+inference time scaling,1,34,50,17.16,11.62,-0.56
+data augmentation,66,68,50,34.32,11.62,-1.55
+vision foundation models,3,9,50,4.54,11.62,1.34
+temporal reasoning,4,8,50,4.04,11.62,1.5
+self evolving,0,6,50,3.03,11.62,1.91
+variance reduction,10,21,50,10.6,11.62,0.13
+deep reinforcement learning,50,56,49,28.26,11.39,-1.3
+spectral analysis,3,8,49,4.04,11.39,1.47
+large reasoning models,1,57,49,28.77,11.39,-1.33
+moe,11,39,49,19.68,11.39,-0.78
+long horizon reasoning,0,4,49,2.02,11.39,2.44
+knowledge editing,14,28,49,14.13,11.39,-0.31
+cross modal alignment,3,10,49,5.05,11.39,1.16
+structured pruning,8,21,49,10.6,11.39,0.1
+electronic health records,2,5,49,2.52,11.39,2.13
+state tracking,1,1,49,0.5,11.39,4.25
+sycophancy,3,8,49,4.04,11.39,1.47
+end to end autonomous driving,5,10,49,5.05,11.39,1.16
+uncertainty,37,49,49,24.73,11.39,-1.11
+evolutionary search,4,10,48,5.05,11.16,1.13
+ai alignment,12,22,48,11.1,11.16,0.01
+implicit bias,18,23,48,11.61,11.16,-0.06
+latent dynamics,1,2,48,1.01,11.16,3.34
+agent harnesses,0,0,48,0.0,11.16,6.81
+visual token compression,1,3,48,1.51,11.16,2.8
+video world models,0,0,48,0.0,11.16,6.81
+positional encoding,8,17,48,8.58,11.16,0.38
+token pruning,4,20,48,10.09,11.16,0.14
+brain computer interfaces,7,12,48,6.06,11.16,0.87
+fisher information,6,6,48,3.03,11.16,1.85
+steering,3,36,47,18.17,10.93,-0.73
+self correction,9,14,47,7.07,10.93,0.62
+adversarial attack,43,67,47,33.81,10.93,-1.62
+bilevel optimization,20,24,47,12.11,10.93,-0.15
+linear probes,0,5,47,2.52,10.93,2.07
+contextual bandits,13,11,47,5.55,10.93,0.96
+inference time intervention,2,3,47,1.51,10.93,2.77
+membership inference,5,7,47,3.53,10.93,1.6
+process supervision,3,5,47,2.52,10.93,2.07
+protein design,19,24,46,12.11,10.69,-0.18
+rag,29,79,46,39.87,10.69,-1.89
+spatial intelligence,0,13,46,6.56,10.69,0.7
+system identification,9,8,46,4.04,10.69,1.38
+attention heads,2,6,46,3.03,10.69,1.79
+computational neuroscience,22,24,46,12.11,10.69,-0.18
+question answering,23,47,46,23.72,10.69,-1.14
+indirect prompt injection,1,3,46,1.51,10.69,2.74
+neuroscience,45,45,46,22.71,10.69,-1.08
+video question answering,6,7,46,3.53,10.69,1.57
+long context language models,2,8,46,4.04,10.69,1.38
+representation probing,0,0,46,0.0,10.69,6.75
+benchmark validity,1,0,45,0.0,10.46,6.72
+knowledge graphs,15,33,45,16.65,10.46,-0.67
+neural operator,20,25,45,12.62,10.46,-0.27
+self play,10,10,45,5.05,10.46,1.04
+low bit quantization,3,4,45,2.02,10.46,2.32
+model interpretability,6,15,45,7.57,10.46,0.46
+causal reasoning,8,12,45,6.06,10.46,0.78
+software engineering,9,25,45,12.62,10.46,-0.27
+multi agent collaboration,8,11,45,5.55,10.46,0.9
+multi hop reasoning,1,8,44,4.04,10.23,1.32
+causal representation learning,12,15,44,7.57,10.23,0.43
+nonconvex optimization,25,18,44,9.08,10.23,0.17
+confidence calibration,5,15,44,7.57,10.23,0.43
+skill evolution,0,0,44,0.0,10.23,6.69
+theory,22,52,44,26.24,10.23,-1.35
+action chunking,1,5,44,2.52,10.23,1.98
+expressivity,14,23,43,11.61,10.0,-0.21
+multimodal retrieval,1,11,43,5.55,10.0,0.84
+agentic search,0,3,43,1.51,10.0,2.65
+multimodal generation,1,11,43,5.55,10.0,0.84
+zero shot learning,19,18,43,9.08,10.0,0.14
+importance sampling,10,9,43,4.54,10.0,1.12
+language model pretraining,2,1,43,0.5,10.0,4.06
+gaussian processes,13,13,43,6.56,10.0,0.6
+multi agent debate,2,11,43,5.55,10.0,0.84
+unlearning,14,42,43,21.2,10.0,-1.08
+survival analysis,9,20,43,10.09,10.0,-0.01
+long horizon planning,2,6,43,3.03,10.0,1.69
+information bottleneck,15,28,43,14.13,10.0,-0.5
+neural networks,64,59,43,29.78,10.0,-1.57
+experimental design,5,8,43,4.04,10.0,1.29
+conditional computation,4,0,43,0.0,10.0,6.66
+model auditing,1,2,42,1.01,9.76,3.15
+lean,2,9,42,4.54,9.76,1.09
+self improving agents,0,1,42,0.5,9.76,4.03
+regularization,28,37,42,18.67,9.76,-0.93
+diffusion transformer,10,36,42,18.17,9.76,-0.89
+vlms,10,29,42,14.64,9.76,-0.58
+implicit neural representations,13,18,42,9.08,9.76,0.1
+training stability,5,8,41,4.04,9.53,1.22
+energy based models,15,16,41,8.08,9.53,0.24
+inductive bias,7,12,41,6.06,9.53,0.65
+continuous control,6,10,41,5.05,9.53,0.9
+evaluation protocol,0,2,41,1.01,9.53,3.12
+causality,43,45,41,22.71,9.53,-1.24
+weak supervision,3,7,41,3.53,9.53,1.41
+llm alignment,20,26,41,13.12,9.53,-0.46
+gradient descent,23,25,41,12.62,9.53,-0.4
+3d scene understanding,6,14,41,7.07,9.53,0.43
+goal conditioned reinforcement learning,6,13,41,6.56,9.53,0.53
+gui agent,6,32,41,16.15,9.53,-0.75
+faithfulness,10,22,41,11.1,9.53,-0.22
+expert routing,0,2,41,1.01,9.53,3.12
+video editing,12,23,41,11.61,9.53,-0.28
+provenance,1,2,40,1.01,9.3,3.08
+human motion generation,9,20,40,10.09,9.3,-0.12
+pre training,38,45,40,22.71,9.3,-1.28
+video diffusion,6,11,40,5.55,9.3,0.73
+scientific agents,0,1,40,0.5,9.3,3.96
+vision language action,2,14,40,7.07,9.3,0.39
+multi view clustering,6,12,40,6.06,9.3,0.61
+policy gradient,11,20,40,10.09,9.3,-0.12
+certified robustness,12,11,40,5.55,9.3,0.73
+reward shaping,3,16,40,8.08,9.3,0.2
+adam,14,14,40,7.07,9.3,0.39
+convergence analysis,27,18,40,9.08,9.3,0.03
+physics informed learning,5,7,40,3.53,9.3,1.37
+semantic segmentation,20,34,40,17.16,9.3,-0.88
+safety evaluation,1,8,40,4.04,9.3,1.18
+measurement validity,0,0,40,0.0,9.3,6.55
+robustness evaluation,2,3,40,1.51,9.3,2.54
+text to sql,15,19,40,9.59,9.3,-0.04
+watermarking,15,31,40,15.65,9.3,-0.74
+sequence modeling,11,22,39,11.1,9.07,-0.29
+vision transformer,23,37,39,18.67,9.07,-1.03
+node classification,22,21,39,10.6,9.07,-0.22
+latent diffusion,11,14,39,7.07,9.07,0.36
+manifold learning,14,31,39,15.65,9.07,-0.78
+evaluation metrics,6,15,39,7.57,9.07,0.26
+reward design,5,4,39,2.02,9.07,2.11
+reliability,7,8,39,4.04,9.07,1.15
+language model evaluation,4,2,39,1.01,9.07,3.05
+decision focused learning,4,9,38,4.54,8.83,0.94
+vision and language navigation,3,10,38,5.05,8.83,0.8
+dense retrieval,5,10,38,5.05,8.83,0.8
+long context modeling,4,8,38,4.04,8.83,1.11
+conditional flow matching,2,5,38,2.52,8.83,1.77
+molecular property prediction,15,14,38,7.07,8.83,0.32
+multi view learning,5,5,38,2.52,8.83,1.77
+natural language processing,57,61,38,30.79,8.83,-1.79
+generative ai,23,34,38,17.16,8.83,-0.95
+large language model reasoning,0,8,38,4.04,8.83,1.11
+long context reasoning,1,10,38,5.05,8.83,0.8
+feature attribution,10,12,38,6.06,8.83,0.54
+neural rendering,13,16,38,8.08,8.83,0.13
+amortized inference,4,5,38,2.52,8.83,1.77
+mutual information,17,38,38,19.18,8.83,-1.11
+adaptive sampling,2,4,38,2.02,8.83,2.08
+jailbreak,19,36,38,18.17,8.83,-1.03
+privacy preserving machine learning,5,5,38,2.52,8.83,1.77
+tabular data,44,41,38,20.69,8.83,-1.22
+agentic reasoning,0,9,38,4.54,8.83,0.94
+video language models,2,3,38,1.51,8.83,2.47
+long horizon,1,7,37,3.53,8.6,1.26
+medical image analysis,6,24,37,12.11,8.6,-0.49
+vision language navigation,3,10,37,5.05,8.6,0.76
+scientific reasoning,2,6,37,3.03,8.6,1.48
+prototype learning,8,12,37,6.06,8.6,0.5
+mixed precision quantization,3,6,37,3.03,8.6,1.48
+manipulation,6,24,37,12.11,8.6,-0.49
+theory of mind,12,15,37,7.57,8.6,0.18
+neuro symbolic reasoning,2,3,37,1.51,8.6,2.43
+online adaptation,1,4,37,2.02,8.6,2.04
+personalized federated learning,11,15,37,7.57,8.6,0.18
+physical reasoning,3,7,37,3.53,8.6,1.26
+time series anomaly detection,4,14,36,7.07,8.37,0.24
+computational biology,9,16,36,8.08,8.37,0.05
+multimodal models,15,17,36,8.58,8.37,-0.04
+neural tangent kernel,20,27,36,13.63,8.37,-0.7
+neural architecture search,20,23,36,11.61,8.37,-0.47
+sample efficiency,14,20,36,10.09,8.37,-0.27
+long video generation,3,10,36,5.05,8.37,0.72
+multi armed bandits,11,17,35,8.58,8.14,-0.08
+llm security,6,16,35,8.08,8.14,0.01
+video large language models,1,7,35,3.53,8.14,1.18
+sparsity,32,45,35,22.71,8.14,-1.47
+molecular generation,5,12,35,6.06,8.14,0.42
+quantization aware training,6,18,35,9.08,8.14,-0.16
+length generalization,9,13,35,6.56,8.14,0.31
+dataset distillation,25,34,35,17.16,8.14,-1.07
+low rank approximation,8,21,35,10.6,8.14,-0.38
+3d vision,14,27,35,13.63,8.14,-0.74
+efficient attention,4,10,35,5.05,8.14,0.68
+embodied navigation,0,5,35,2.52,8.14,1.65
+instruction tuning,42,26,34,13.12,7.9,-0.72
+graph transformers,12,8,34,4.04,7.9,0.95
+kernel methods,12,21,34,10.6,7.9,-0.42
+constrained decoding,2,6,34,3.03,7.9,1.36
+hierarchical reinforcement learning,14,20,34,10.09,7.9,-0.35
+attribution,10,17,34,8.58,7.9,-0.12
+human ai interaction,4,10,34,5.05,7.9,0.64
+latent representations,6,6,34,3.03,7.9,1.36
+non convex optimization,17,28,34,14.13,7.9,-0.83
+forecasting,19,29,34,14.64,7.9,-0.88
+rectified flow,12,12,34,6.06,7.9,0.38
+distributed training,15,16,34,8.08,7.9,-0.03
+security,33,44,33,22.21,7.67,-1.52
+graph foundation models,1,8,33,4.04,7.67,0.91
+optimizer,9,15,33,7.57,7.67,0.02
+spurious correlations,18,11,33,5.55,7.67,0.46
+video reasoning,2,12,33,6.06,7.67,0.34
+affective computing,2,8,33,4.04,7.67,0.91
+peft,26,36,33,18.17,7.67,-1.23
+neuro symbolic ai,7,7,33,3.53,7.67,1.1
+multiple instance learning,5,8,33,4.04,7.67,0.91
+simulation,17,22,33,11.1,7.67,-0.53
+scaling law,16,32,33,16.15,7.67,-1.06
+information geometry,4,13,33,6.56,7.67,0.22
+knowledge graph,26,46,33,23.22,7.67,-1.58
+data synthesis,15,31,33,15.65,7.67,-1.02
+discrete diffusion models,11,16,32,8.08,7.44,-0.12
+stochastic gradient descent,13,10,32,5.05,7.44,0.55
+diversity,20,30,32,15.14,7.44,-1.02
+posterior sampling,10,8,32,4.04,7.44,0.87
+monte carlo tree search,19,29,32,14.64,7.44,-0.97
+medical ai,2,12,32,6.06,7.44,0.29
+adaptive optimization,6,8,32,4.04,7.44,0.87
+autoregressive models,12,20,32,10.09,7.44,-0.44
+large language models llms,35,117,32,59.05,7.44,-2.97
+dictionary learning,7,10,32,5.05,7.44,0.55
+lifelong learning,19,24,32,12.11,7.44,-0.7
+human ai collaboration,4,13,31,6.56,7.21,0.13
+mechanism design,10,10,31,5.05,7.21,0.51
+convex optimization,23,32,31,16.15,7.21,-1.15
+diffusion distillation,6,14,31,7.07,7.21,0.03
+concept bottleneck models,12,14,31,7.07,7.21,0.03
+spatiotemporal forecasting,1,12,31,6.06,7.21,0.25
+ensemble learning,9,9,31,4.54,7.21,0.65
+ai security,19,22,31,11.1,7.21,-0.62
+latent variable models,5,12,31,6.06,7.21,0.25
+deep learning theory,24,28,31,14.13,7.21,-0.96
+molecular dynamics,9,18,31,9.08,7.21,-0.33
+4d reconstruction,2,14,30,7.07,6.97,-0.02
+reward model,16,36,30,18.17,6.97,-1.37
+time series analysis,14,21,30,10.6,6.97,-0.6
+image classification,41,46,30,23.22,6.97,-1.72
+text to speech,12,15,30,7.57,6.97,-0.12
+decoding,12,12,30,6.06,6.97,0.2
+motion generation,10,20,30,10.09,6.97,-0.53
+scaling,15,19,30,9.59,6.97,-0.45
+neurosymbolic ai,2,11,30,5.55,6.97,0.32
+tree search,8,12,30,6.06,6.97,0.2
+zero shot generalization,6,16,30,8.08,6.97,-0.21
+classification,48,72,30,36.34,6.97,-2.36
+neuromorphic computing,11,18,30,9.08,6.97,-0.38
+distributionally robust optimization,8,12,30,6.06,6.97,0.2
+autoformalization,7,14,30,7.07,6.97,-0.02
+cybersecurity,4,16,30,8.08,6.97,-0.21
+controllable video generation,5,14,30,7.07,6.97,-0.02
+automated theorem proving,2,10,30,5.05,6.97,0.46
+topological data analysis,15,18,30,9.08,6.97,-0.38
+multi modal,18,35,30,17.66,6.97,-1.33
+weakly supervised learning,21,17,30,8.58,6.97,-0.3
+epistemic uncertainty,4,14,29,7.07,6.74,-0.07
+algorithmic fairness,5,13,29,6.56,6.74,0.04
+electronic design automation,3,12,29,6.06,6.74,0.15
+knowledge transfer,10,13,29,6.56,6.74,0.04
+earth observation,1,11,29,5.55,6.74,0.28
+persistent homology,9,14,29,7.07,6.74,-0.07
+3dgs,5,18,29,9.08,6.74,-0.42
+compositionality,17,22,29,11.1,6.74,-0.71
+distributed optimization,12,20,28,10.09,6.51,-0.63
+hyperparameter optimization,11,13,28,6.56,6.51,-0.01
+reward models,10,20,28,10.09,6.51,-0.63
+model quantization,9,12,28,6.06,6.51,0.1
+3d,17,12,28,6.06,6.51,0.1
+text to image,23,42,28,21.2,6.51,-1.69
+super resolution,10,30,28,15.14,6.51,-1.21
+data attribution,15,18,28,9.08,6.51,-0.47
+normalizing flows,9,14,28,7.07,6.51,-0.12
+backdoor defense,15,15,28,7.57,6.51,-0.21
+preference alignment,15,32,28,16.15,6.51,-1.3
+time series classification,8,16,27,8.08,6.28,-0.36
+link prediction,16,18,27,9.08,6.28,-0.53
+ai,6,19,27,9.59,6.28,-0.6
+artificial intelligence,15,29,27,14.64,6.28,-1.21
+segmentation,21,26,26,13.12,6.04,-1.11
+deep research,0,40,26,20.19,6.04,-1.72
+model calibration,3,15,26,7.57,6.04,-0.32
+logical reasoning,11,16,26,8.08,6.04,-0.41
+graph generation,19,14,26,7.07,6.04,-0.22
+low resource languages,2,15,26,7.57,6.04,-0.32
+benchmark dataset,7,20,25,10.09,5.81,-0.79
+physics,10,16,25,8.08,5.81,-0.47
+stability,13,20,25,10.09,5.81,-0.79
+healthcare,14,21,25,10.6,5.81,-0.86
+llm unlearning,5,23,25,11.61,5.81,-0.99
+hypernetworks,14,19,25,9.59,5.81,-0.71
+search,18,15,25,7.57,5.81,-0.38
+finetuning,22,39,25,19.68,5.81,-1.74
+multimodality,18,37,25,18.67,5.81,-1.67
+jailbreak attacks,2,23,24,11.61,5.58,-1.04
+inverse problem,15,19,24,9.59,5.58,-0.77
+multilingual,16,33,24,16.65,5.58,-1.56
+zero shot,27,35,24,17.66,5.58,-1.65
+guidance,12,18,23,9.08,5.35,-0.75
+attention mechanism,21,30,23,15.14,5.35,-1.48
+sparse autoencoder,6,25,23,12.62,5.35,-1.22
+graph,19,28,23,14.13,5.35,-1.39
+reinforcement learning from human feedback,26,21,22,10.6,5.11,-1.04
+prompt learning,40,23,22,11.61,5.11,-1.17
+diffusion policy,4,19,22,9.59,5.11,-0.89
+backdoor attack,29,35,22,17.66,5.11,-1.77
+state space model,24,27,22,13.63,5.11,-1.4
+ai4science,18,25,22,12.62,5.11,-1.29
+geometry,17,23,22,11.61,5.11,-1.17
+nlp,42,50,21,25.23,4.88,-2.35
+acceleration,15,20,21,10.09,4.88,-1.03
+autoencoder,12,28,21,14.13,4.88,-1.51
+self attention,24,24,21,12.11,4.88,-1.29
+multimodal llm,19,27,21,13.63,4.88,-1.46
+datasets,20,30,20,15.14,4.65,-1.68
+bias,29,32,19,16.15,4.42,-1.85
+multimodal llms,8,23,19,11.61,4.42,-1.37
+prompt engineering,16,31,19,15.65,4.42,-1.8
+video diffusion model,6,24,19,12.11,4.42,-1.43
+sharpness aware minimization,16,21,19,10.6,4.42,-1.24
+disentanglement,17,22,18,11.1,4.18,-1.39
+generation,13,35,18,17.66,4.18,-2.05
+data efficiency,12,27,18,13.63,4.18,-1.68
+human in the loop,4,22,18,11.1,4.18,-1.39
+spiking neural network,17,24,18,12.11,4.18,-1.51
+xai,23,44,18,22.21,4.18,-2.38
+out of distribution,26,26,18,13.12,4.18,-1.63
+gnn,21,25,18,12.62,4.18,-1.57
+dpo,18,26,17,13.12,3.95,-1.71
+offline rl,18,30,17,15.14,3.95,-1.91
+large multimodal models,30,34,16,17.16,3.72,-2.18
+multi modal learning,19,31,15,15.65,3.49,-2.13
+deep neural networks,31,33,15,16.65,3.49,-2.22
+neural network,27,28,13,14.13,3.02,-2.19
+large vision language model,22,29,13,14.64,3.02,-2.24
+reasoning model,0,31,11,15.65,2.56,-2.57
+entropy,7,31,10,15.65,2.32,-2.7
+large reasoning model,0,34,8,17.16,1.86,-3.14
