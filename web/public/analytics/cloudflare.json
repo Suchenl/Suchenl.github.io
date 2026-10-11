@@ -5,71 +5,71 @@
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
   "timezone": "Asia/Shanghai",
-  "updatedAt": "2026-10-04T18:52:56.853Z",
-  "snapshotCount": 8,
+  "updatedAt": "2026-10-11T19:47:33.708Z",
+  "snapshotCount": 9,
   "site": {
-    "pageviews": 303,
-    "visits": 162
+    "pageviews": 364,
+    "visits": 191
   },
   "paths": {
     "/": {
-      "pageviews": 177,
-      "visits": 149
+      "pageviews": 206,
+      "visits": 173
     },
     "/publications": {
-      "pageviews": 38,
-      "visits": 3
+      "pageviews": 45,
+      "visits": 4
     },
     "/publications/": {
-      "pageviews": 38,
-      "visits": 3
+      "pageviews": 45,
+      "visits": 4
     },
     "/analytics": {
-      "pageviews": 19,
+      "pageviews": 20,
       "visits": 3
     },
     "/analytics/": {
-      "pageviews": 19,
+      "pageviews": 20,
       "visits": 3
     },
     "/work": {
-      "pageviews": 16,
-      "visits": 2
+      "pageviews": 20,
+      "visits": 3
     },
     "/work/": {
-      "pageviews": 16,
-      "visits": 2
+      "pageviews": 20,
+      "visits": 3
     },
     "/projects": {
-      "pageviews": 13,
-      "visits": 0
+      "pageviews": 22,
+      "visits": 2
     },
     "/projects/": {
-      "pageviews": 13,
-      "visits": 0
+      "pageviews": 22,
+      "visits": 2
     },
     "/expertise": {
-      "pageviews": 13,
+      "pageviews": 14,
       "visits": 2
     },
     "/expertise/": {
-      "pageviews": 13,
+      "pageviews": 14,
       "visits": 2
     },
     "/blog/why-flow-matching-works": {
-      "pageviews": 9,
+      "pageviews": 11,
       "visits": 1
     },
     "/blog/why-flow-matching-works/": {
-      "pageviews": 9,
+      "pageviews": 11,
       "visits": 1
     },
     "/blog": {
-      "pageviews": 15,
+      "pageviews": 20,
       "visits": 1
     },
     "/blog/": {
-      "pageviews": 15,
+      "pageviews": 20,
       "visits": 1
     },
     "/blog/memory-centric-robot-system": {
@@ -86,6 +86,14 @@
     },
     "/blog/hello-world/": {
       "pageviews": 1,
+      "visits": 1
+    },
+    "/blog/iclr-2027-submissions": {
+      "pageviews": 3,
+      "visits": 1
+    },
+    "/blog/iclr-2027-submissions/": {
+      "pageviews": 3,
       "visits": 1
     }
   },

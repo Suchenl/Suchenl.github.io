@@ -4,70 +4,70 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-10-04T18:52:56.853Z",
+  "updatedAt": "2026-10-11T19:47:33.708Z",
   "site": {
-    "pageviews": 303,
-    "visits": 162
+    "pageviews": 364,
+    "visits": 191
   },
   "paths": {
     "/": {
-      "pageviews": 177,
-      "visits": 149
+      "pageviews": 206,
+      "visits": 173
     },
     "/publications": {
-      "pageviews": 38,
-      "visits": 3
+      "pageviews": 45,
+      "visits": 4
     },
     "/publications/": {
-      "pageviews": 38,
-      "visits": 3
+      "pageviews": 45,
+      "visits": 4
     },
     "/analytics": {
-      "pageviews": 19,
+      "pageviews": 20,
       "visits": 3
     },
     "/analytics/": {
-      "pageviews": 19,
+      "pageviews": 20,
       "visits": 3
     },
     "/work": {
-      "pageviews": 16,
-      "visits": 2
+      "pageviews": 20,
+      "visits": 3
     },
     "/work/": {
-      "pageviews": 16,
-      "visits": 2
+      "pageviews": 20,
+      "visits": 3
     },
     "/projects": {
-      "pageviews": 13,
-      "visits": 0
+      "pageviews": 22,
+      "visits": 2
     },
     "/projects/": {
-      "pageviews": 13,
-      "visits": 0
+      "pageviews": 22,
+      "visits": 2
     },
     "/expertise": {
-      "pageviews": 13,
+      "pageviews": 14,
       "visits": 2
     },
     "/expertise/": {
-      "pageviews": 13,
+      "pageviews": 14,
       "visits": 2
     },
     "/blog/why-flow-matching-works": {
-      "pageviews": 9,
+      "pageviews": 11,
       "visits": 1
     },
     "/blog/why-flow-matching-works/": {
-      "pageviews": 9,
+      "pageviews": 11,
       "visits": 1
     },
     "/blog": {
-      "pageviews": 15,
+      "pageviews": 20,
       "visits": 1
     },
     "/blog/": {
-      "pageviews": 15,
+      "pageviews": 20,
       "visits": 1
     },
     "/blog/memory-centric-robot-system": {
@@ -84,6 +84,14 @@
     },
     "/blog/hello-world/": {
       "pageviews": 1,
+      "visits": 1
+    },
+    "/blog/iclr-2027-submissions": {
+      "pageviews": 3,
+      "visits": 1
+    },
+    "/blog/iclr-2027-submissions/": {
+      "pageviews": 3,
       "visits": 1
     }
   },
@@ -557,6 +565,86 @@
         "/blog/hello-world/": {
           "pageviews": 1,
           "visits": 1
+        }
+      }
+    },
+    {
+      "id": "20261011",
+      "fetchedAt": "2026-10-11T19:47:33.707Z",
+      "since": "2026-10-04T16:00:00Z",
+      "until": "2026-10-11T16:00:00Z",
+      "site": {
+        "pageviews": 61,
+        "visits": 29
+      },
+      "paths": {
+        "/": {
+          "pageviews": 29,
+          "visits": 24
+        },
+        "/projects": {
+          "pageviews": 9,
+          "visits": 2
+        },
+        "/projects/": {
+          "pageviews": 9,
+          "visits": 2
+        },
+        "/publications": {
+          "pageviews": 7,
+          "visits": 1
+        },
+        "/publications/": {
+          "pageviews": 7,
+          "visits": 1
+        },
+        "/blog": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/blog/": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/work": {
+          "pageviews": 4,
+          "visits": 1
+        },
+        "/work/": {
+          "pageviews": 4,
+          "visits": 1
+        },
+        "/blog/iclr-2027-submissions": {
+          "pageviews": 3,
+          "visits": 1
+        },
+        "/blog/iclr-2027-submissions/": {
+          "pageviews": 3,
+          "visits": 1
+        },
+        "/blog/why-flow-matching-works": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/blog/why-flow-matching-works/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/expertise": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/expertise/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/analytics": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/analytics/": {
+          "pageviews": 1,
+          "visits": 0
         }
       }
     }
