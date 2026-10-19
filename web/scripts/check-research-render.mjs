@@ -14,3 +14,15 @@ for (const [slug, required] of targets) {
   console.log('KaTeX verified:', slug, '(' + count + ' display equations)');
 }
 console.log('Research math regression checks passed.');
+
+const reviewPath = path.join('dist', 'research', 'topics', 'llm-agent-training', 'reviews', 'sft-rl-co-training', 'index.html');
+const review = readFileSync(reviewPath, 'utf8');
+if (!review.includes('href="/research/papers/2026/bridge/"')) {
+  throw new Error('Review links should resolve to the canonical internal BRIDGE paper page');
+}
+const library = readFileSync(path.join('dist', 'research', 'index.html'), 'utf8');
+for (const marker of ['lit-shortcuts', 'lit-search', 'lit-context', 'lit-sort']) {
+  if (!library.includes(marker)) throw new Error('Missing library UI: ' + marker);
+}
+if (!existsSync(path.join('dist', 'reading', 'index.html'))) throw new Error('Missing deprecated /reading/ redirect');
+console.log('Research routes, navigation and internal paper links verified.');

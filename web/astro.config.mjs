@@ -10,7 +10,7 @@ export default defineConfig({
   site: 'https://suchenl.github.io',
   base: '/',
   integrations: [
-    // Keep the private reading base out of the public sitemap.
+    // The old /reading route now redirects to Research and stays out of the sitemap.
     sitemap({ filter: (page) => !page.includes('/reading') }),
   ],
   markdown: {

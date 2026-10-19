@@ -29,3 +29,10 @@
 ## 完成核对
 
 运行 `python knowledge/scripts/check_kb.py`；查看 Git diff；确认只调整被授权的内容；小批提交并推送。
+
+## 数学公式与研究阅读页（2026-10）
+
+- 行内公式写为 `$x_t$`，独立公式写为成对 `$$ ... $$`。不要把展示公式当作普通文本或代码块。
+- `remark-math` + `rehype-katex` 负责渲染。此前自定义 Markdown 公式节点转换器因未设置 HTML 渲染信息已移除，不要恢复。
+- `npm run build` 自动运行 `scripts/check-research-render.mjs`，核对数学公式、研究内部链接和主页面必需元素。
+- `/research/` 仅做静态浏览；笔记和阅读状态修改通过详情页的 GitHub 编辑链接及 Markdown frontmatter 完成。网页本身不提供直接写回仓库的保存操作。

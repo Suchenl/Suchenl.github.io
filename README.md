@@ -32,6 +32,8 @@ npm run preview  # preview the production build
 
 Pushing to `main` (changes under `web/**`) triggers
 [`.github/workflows/deploy-astro.yml`](./.github/workflows/deploy-astro.yml),
-which builds `web/` and publishes to GitHub Pages.
+which builds `web/` (including formula and navigation checks via `scripts/check-research-render.mjs`) and publishes to GitHub Pages.
+
+Research content is browsed at `/research/` and maintained as Markdown under `knowledge/`. The deprecated `/reading/` URL redirects to the unified Research page.
 
 > The previous Jekyll (academicpages) site is preserved on the `legacy-jekyll` branch.
