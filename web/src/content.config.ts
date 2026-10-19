@@ -31,7 +31,7 @@ const blog = defineCollection({
 // Only content, not AI maintenance files, is exposed as public research pages.
 const knowledge = defineCollection({
   loader: glob({
-    pattern: ['papers/**/*.md', 'topics/**/*.md', 'glossary/**/*.md', 'research/**/*.md'],
+    pattern: ['papers/**/*.md', 'topics/**/*.md', 'glossary/**/*.md', 'research/**/*.md', 'paths/**/*.md'],
     base: '../knowledge',
     generateId: ({ entry }) => entry.replace(/\.md$/, ''),
   }),
