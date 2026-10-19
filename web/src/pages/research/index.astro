@@ -1,171 +1,304 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Bi from '../../components/Bi.astro';
 import { getCollection } from 'astro:content';
 
-const all = await getCollection('knowledge');
-const href = (id: string) => '/research/' + id + '/';
-const body = (e: (typeof all)[number]) => e.body || '';
-const heading = (e: (typeof all)[number]) => body(e).match(/^#\s+(.+)$/m)?.[1]?.trim() || e.id.split('/').pop() || e.id;
-const chinese = (e: (typeof all)[number]) => body(e).match(/^[-*]\s+\*\*中文(?:主题|标题)\*\*[:：]\s*(.+)$/m)?.[1]?.trim();
-const title = (e: (typeof all)[number]) => chinese(e) || heading(e);
-const abstract = (e: (typeof all)[number]) => {
-  const m = body(e).match(/^##\s+一句话[^\n]*\n+([^\n]+)/m);
-  if (m) return m[1].replace(/[*`]/g, '').slice(0, 180);
-  const m2 = body(e).match(/^>\s+(.+)$/m);
-  return (m2?.[1] || '').replace(/[*`]/g, '').slice(0, 180);
+type PaperMeta = {
+  title?: string;
+  authors?: string[];
+  year?: number;
+  venue?: string;
+  categories?: string[];
+  tags?: string[];
+  status?: 'to-read' | 'reading' | 'read' | 'untracked';
+  rating?: number;
+  summaryZh?: string;
+  abstract?: string;
+  added?: string | Date;
 };
-const preview = (e: (typeof all)[number]) => (title(e) + ' ' + heading(e) + ' ' + body(e).slice(0, 5000)).toLowerCase();
-const year = (e: (typeof all)[number]) => e.id.match(/20\d\d/)?.[0] || '';
-const reviews = all.filter(e => e.id.includes('/reviews/'));
-const papers = all.filter(e => /^papers\/20\d{2}\//.test(e.id)).sort((a, b) => year(b).localeCompare(year(a)) || title(a).localeCompare(title(b), 'zh'));
-const glossaries = all.filter(e => e.id.startsWith('glossary/') && !e.id.endsWith('README'));
-const proposals = all.filter(e => e.id.startsWith('research/') && !e.id.endsWith('README'));
-const subjects = Array.from(new Set(reviews.map(e => e.id.split('/')[1])));
+const entries = await getCollection('knowledge');
+const body = (e: (typeof entries)[number]) => e.body || '';
+const heading = (e: (typeof entries)[number]) => body(e).match(/^#\s+(.+)$/m)?.[1]?.trim() || e.id.split('/').pop() || e.id;
+const meta = (e: (typeof entries)[number]) => e.data as PaperMeta;
+const getYear = (id: string) => Number(id.match(/20\d{2}/)?.[0] || 0);
+const paperNotes = entries.filter(e => /^papers\/20\d{2}\//.test(e.id));
+const reviews = entries.filter(e => e.id.includes('/reviews/'));
+const glossaries = entries.filter(e => e.id.startsWith('glossary/') && !e.id.endsWith('README'));
+const ideas = entries.filter(e => e.id.startsWith('research/') && !e.id.endsWith('README'));
+const papers = paperNotes.map(e => {
+  const m = meta(e);
+  return {
+    kind: 'paper',
+    id: e.id,
+    href: '/research/' + e.id + '/',
+    title: m.title || heading(e),
+    summary: m.summaryZh || m.abstract || '',
+    authors: m.authors || [],
+    year: m.year || getYear(e.id),
+    venue: m.venue || '',
+    categories: m.categories?.length ? m.categories : ['其他研究'],
+    tags: m.tags || [],
+    status: m.status || 'untracked',
+    rating: m.rating || 0,
+    searchText: body(e).slice(0, 14000),
+    added: m.added ? String(m.added) : '',
+  };
+});
+const other = [
+  ...reviews.map(e => ({ kind: 'reviews', id: e.id, href: '/research/' + e.id + '/', title: heading(e), summary: '研究脉络、方法比较、实验证据和开放问题', searchText: body(e).slice(0, 14000) })),
+  ...glossaries.map(e => ({ kind: 'glossary', id: e.id, href: '/research/' + e.id + '/', title: heading(e), summary: '概念定义、公式与反例', searchText: body(e).slice(0, 14000) })),
+  ...ideas.map(e => ({ kind: 'ideas', id: e.id, href: '/research/' + e.id + '/', title: heading(e), summary: '研究假设、反例与实验设计', searchText: body(e).slice(0, 14000) })),
+];
+const items = [...papers, ...other];
+const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
-<Base title="中文研究知识库" description="中文研究综述、逐篇论文解读、技术术语与研究假设，持续整理与维护。">
-  <section class="rk-hero">
-    <div>
-      <p class="rk-eyebrow"><Bi zh="PERSONAL RESEARCH LIBRARY · 持续维护" en="PERSONAL RESEARCH LIBRARY" /></p>
-      <h1 class="page-title"><Bi zh="研究知识库" en="Research Library" /></h1>
-      <p class="page-intro"><Bi zh="把文献读成自己的知识：从一个问题出发，理解不同研究的技术路线、证据、局限与争议。不是只收藏论文标题。" en="In-depth Chinese research surveys, paper analyses, shared terminology, and open questions." /></p>
+<Base title="研究知识库" description="按研究方向组织的论文阅读、中文解读、主题综述、术语与研究问题。">
+  <h1 class="page-title">研究知识库</h1>
+  <p class="page-intro">像整理文件夹一样整理研究：按方向浏览论文，也能直接阅读笔记、综述、术语和研究思路。正文以中文为主，论文原标题保留英文。</p>
+  <div class="lit" id="lit">
+    <label class="sr-only" for="lit-search">搜索知识库</label>
+    <input id="lit-search" class="lit-search" type="search" placeholder="搜索论文、作者、方向、术语或研究问题…" autocomplete="off" />
+    <div class="lit-main">
+      <aside class="lit-tree" id="lit-tree" aria-label="研究目录"></aside>
+      <section class="lit-results" aria-label="内容列表">
+        <div class="lit-crumb" id="lit-crumb"></div>
+        <div class="lit-filters" id="lit-filters" aria-label="论文阅读状态">
+          <button type="button" data-status="all" class="active">全部</button>
+          <button type="button" data-status="to-read">想读</button>
+          <button type="button" data-status="reading">在读</button>
+          <button type="button" data-status="read">已读</button>
+          <button type="button" data-status="untracked">未标记</button>
+        </div>
+        <div id="lit-body"></div>
+      </section>
     </div>
-    <div class="rk-counts">
-      <div><strong>{reviews.length}</strong><span>主题综述</span></div>
-      <div><strong>{papers.length}</strong><span>论文解读</span></div>
-      <div><strong>{glossaries.length}</strong><span>术语文档</span></div>
-    </div>
-  </section>
-
-  <nav class="rk-shortcuts" aria-label="知识库目录">
-    <a href="#surveys">深入综述</a>
-    <a href="#papers">论文笔记</a>
-    <a href="#glossary">术语词典</a>
-    <a href="#ideas">研究思路</a>
-    <a href="/reading/">轻量阅读清单 ↗</a>
-  </nav>
-
-  <section class="rk-featured" id="surveys">
-    <div class="rk-section-head"><h2>研究综述</h2><p>以研究问题为中心；详细解释论文间真正的差异</p></div>
-    <div class="rk-feature-grid">
-      {reviews.map((e) => (
-        <a class="rk-feature" href={href(e.id)}>
-          <span class="rk-kicker">专题 · {e.id.split('/')[1]?.replaceAll('-', ' ')}</span>
-          <h3>{title(e)}</h3>
-          <p>{abstract(e) || '完整文献脉络、核心方法、证据边界与未解决问题。'}</p>
-          <span class="rk-more">阅读全文 →</span>
-        </a>
-      ))}
-    </div>
-    {subjects.length === 0 && <p class="muted">主题综述正在整理。</p>}
-  </section>
-
-  <section class="rk-section" id="papers">
-    <div class="rk-section-head"><h2>逐篇论文解读 <span class="rk-n">{papers.length}</span></h2><p>不是只存摘要；包括方法、实验设置、批判性分析和可复用结论</p></div>
-    <div class="rk-find"><span aria-hidden="true">⌕</span><input id="research-search" type="search" placeholder="搜索论文、方法、算法、作者、术语……" autocomplete="off" /><span id="research-result-count" class="muted" aria-live="polite"></span></div>
-    <div class="rk-paper-list" id="research-paper-list">
-      {papers.map((e) => (
-        <a class="rk-paper" href={href(e.id)} data-research-search={preview(e)}>
-          <span class="rk-paper-year">{year(e)}</span>
-          <div class="rk-paper-text">
-            <h3>{title(e)}</h3>
-            {chinese(e) && <p class="rk-paper-original">{heading(e)}</p>}
-            {abstract(e) && <p class="rk-paper-desc">{abstract(e)}</p>}
-          </div>
-          <span class="rk-open" aria-hidden="true">↗</span>
-        </a>
-      ))}
-    </div>
-    <p class="rk-empty" id="research-empty" hidden>没有找到匹配的文献。试试英文论文名、方法名称或换个关键词。</p>
-  </section>
-
-  <div class="rk-bottom">
-    <section id="glossary" class="rk-section">
-      <div class="rk-section-head"><h2>概念与术语</h2><p>同一个术语只维护一份权威定义</p></div>
-      <div class="rk-mini-list">
-        {glossaries.map(e => <a href={href(e.id)}><strong>{heading(e)}</strong><span>定义、公式、反例 →</span></a>)}
-      </div>
-    </section>
-    <section id="ideas" class="rk-section">
-      <div class="rk-section-head"><h2>我的研究思路</h2><p>标记假设、尚无结论的实验与反证</p></div>
-      <div class="rk-mini-list">
-        {proposals.map(e => <a href={href(e.id)}><strong>{heading(e)}</strong><span>待验证的研究设计 →</span></a>)}
-      </div>
-    </section>
   </div>
-  <p class="rk-footer">内容源：<a href="https://github.com/Suchenl/Suchenl.github.io/tree/main/knowledge" target="_blank" rel="noopener">个人主页仓库的 knowledge/ Markdown</a>。每条文献的事实核对日期见原文；网页发布时间不等于论文发布日期。</p>
+  <p class="muted" style="margin-top:1.6rem;font-size:.84rem">全部条目维护在 <a href="https://github.com/Suchenl/Suchenl.github.io/tree/main/knowledge" target="_blank" rel="noopener">GitHub / knowledge</a>；一篇论文只有一份 Markdown，可被多个主题引用。</p>
+  <script type="application/json" id="research-items-json" set:html={serialized}></script>
 </Base>
 
 <script>
-  const field = document.getElementById('research-search') as HTMLInputElement | null;
-  const count = document.getElementById('research-result-count');
-  const empty = document.getElementById('research-empty');
-  const papers = Array.from(document.querySelectorAll<HTMLElement>('[data-research-search]'));
-  field?.addEventListener('input', () => {
-    const q = field.value.trim().toLowerCase();
-    let visible = 0;
-    for (const item of papers) {
-      const match = !q || (item.dataset.researchSearch || '').includes(q);
-      item.hidden = !match;
-      if (match) visible += 1;
-    }
-    if (count) count.textContent = q ? '找到 ' + visible + ' 篇' : '';
-    if (empty) empty.hidden = visible > 0;
-  });
-</script>
+  type Item = {
+    kind: string; id: string; href: string; title: string; summary: string;
+    authors?: string[]; year?: number; venue?: string; categories?: string[];
+    tags?: string[]; status?: string; rating?: number; searchText?: string; added?: string;
+  };
+  type Folder = { name: string; path: string; count: number; children: Map<string, Folder> };
+  const ALL: Item[] = JSON.parse(document.getElementById('research-items-json')?.textContent || '[]');
+  const state = { selected: 'papers', query: '', status: 'all' };
+  const expanded = new Set<string>(['papers']);
+  const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
+  const labels: Record<string, string> = { papers: '全部论文', reviews: '主题综述', glossary: '术语词典', ideas: '研究思路' };
+  const escapeHtml = (s: string) => String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c] as string));
 
-<style>
-  .rk-hero { padding: 2.3rem 0 1.4rem; display: flex; gap: 2rem; justify-content: space-between; align-items: end; }
-  .rk-hero .page-title { margin: .2rem 0 .65rem; }
-  .rk-hero .page-intro { max-width: 650px; margin: 0; }
-  .rk-eyebrow { color: var(--accent-ink); font-size: .72rem; font-weight: 800; letter-spacing: .15em; margin: .2rem 0 .8rem; }
-  .rk-counts { display: flex; gap: .4rem; flex: 0 0 auto; }
-  .rk-counts > div { padding: .7rem .85rem; text-align: center; border-radius: 12px; background: var(--surface-2); min-width: 76px; }
-  .rk-counts strong { display: block; font-size: 1.3rem; line-height: 1.4; }
-  .rk-counts span { display: block; font-size: .72rem; color: var(--fg-muted); }
-  .rk-shortcuts { display: flex; gap: .45rem; overflow-x: auto; padding: 1rem 0 1.2rem; border-bottom: 1px solid var(--border); }
-  .rk-shortcuts a { font-weight: 700; font-size: .85rem; flex: 0 0 auto; color: var(--fg-muted); border: 1px solid var(--border); padding: .35rem .8rem; border-radius: 30px; }
-  .rk-shortcuts a:hover { color: var(--accent-ink); background: var(--accent-soft); }
-  .rk-featured,.rk-section { margin: 2.2rem 0 2.8rem; }
-  .rk-section-head { margin-bottom: 1rem; }
-  .rk-section-head h2 { font-size: 1.4rem; letter-spacing: -.015em; margin: 0; }
-  .rk-section-head p { font-size: .86rem; color: var(--fg-muted); margin: .3rem 0 0; }
-  .rk-n { color: var(--fg-muted); font-size: .88rem; font-weight: 500; }
-  .rk-feature-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1rem; }
-  .rk-feature { border: 1px solid var(--border); border-radius: 17px; padding: 1.3rem; display: block; color: var(--fg); background: var(--surface); }
-  .rk-feature:hover { border-color: var(--accent); color: var(--fg); box-shadow: var(--shadow-sm); }
-  .rk-kicker { font-size: .73rem; text-transform: uppercase; font-weight: 800; color: var(--accent-ink); letter-spacing: .04em; }
-  .rk-feature h3 { font-size: 1.22rem; margin: .65rem 0; }
-  .rk-feature p { font-size: .88rem; line-height: 1.7; color: var(--fg-muted); }
-  .rk-more { font-size: .83rem; font-weight: 800; color: var(--accent-ink); }
-  .rk-find { display: flex; gap: .65rem; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: .3rem .85rem; margin-bottom: 1rem; }
-  .rk-find input { width: 100%; min-width: 0; border: 0; outline: 0; padding: .55rem 0; font: inherit; background: transparent; color: var(--fg); font-size: .9rem; }
-  .rk-find #research-result-count { white-space: nowrap; font-size: .76rem; }
-  .rk-paper-list { display: grid; gap: .55rem; }
-  .rk-paper { display: flex; gap: 1.1rem; align-items: start; color: var(--fg); padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 13px; }
-  .rk-paper:hover { border-color: var(--accent); color: var(--fg); }
-  .rk-paper[hidden] { display: none; }
-  .rk-paper-year { flex: 0 0 44px; color: var(--fg-muted); font-size: .76rem; font-weight: 800; padding-top: .26rem; }
-  .rk-paper-text { min-width: 0; flex: 1; }
-  .rk-paper h3 { margin: 0; line-height: 1.45; font-size: .96rem; }
-  .rk-paper-original { margin: .24rem 0 0; font-size: .8rem; color: var(--fg-muted); line-height: 1.45; }
-  .rk-paper-desc { margin: .4rem 0 0; font-size: .81rem; color: var(--fg-muted); line-height: 1.6; }
-  .rk-open { color: var(--accent-ink); }
-  .rk-empty { color: var(--fg-muted); padding: 1.2rem; }
-  .rk-bottom { display: grid; gap: 1.4rem; grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .rk-mini-list { display: grid; gap: .65rem; }
-  .rk-mini-list a { padding: 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; display: flex; flex-direction: column; gap: .25rem; color: var(--fg); }
-  .rk-mini-list a:hover { border-color: var(--accent); }
-  .rk-mini-list strong { font-size: .87rem; }
-  .rk-mini-list span { font-size: .75rem; color: var(--accent-ink); }
-  .rk-footer { font-size: .8rem; color: var(--fg-muted); border-top: 1px solid var(--border); padding: 1.2rem 0 2rem; }
-  @media (max-width:740px) {
-    .rk-hero { flex-direction: column; align-items: start; gap: 1rem; }
-    .rk-counts { width: 100%; }
-    .rk-counts>div { flex: 1; }
-    .rk-bottom { grid-template-columns: 1fr; }
-    .rk-paper { gap: .65rem; padding: .8rem; }
-    .rk-paper-year { flex-basis: 36px; }
+  function makeTree(): Folder[] {
+    const result: Folder[] = ['papers', 'reviews', 'glossary', 'ideas'].map(k => ({
+      name: labels[k], path: k, count: ALL.filter(p => k === 'papers' ? p.kind === 'paper' : p.kind === k).length, children: new Map(),
+    }));
+    const root = result[0];
+    for (const p of ALL.filter(p => p.kind === 'paper')) {
+      for (const category of p.categories || []) {
+        let parent = root;
+        let partial = '';
+        for (const segment of category.split('/').filter(Boolean)) {
+          partial = partial ? partial + '/' + segment : segment;
+          if (!parent.children.has(segment)) {
+            parent.children.set(segment, { name: segment, path: 'cat:' + partial, count: 0, children: new Map() });
+          }
+          parent = parent.children.get(segment)!;
+        }
+      }
+    }
+    const countChildren = (node: Folder) => {
+      for (const child of node.children.values()) {
+        const category = child.path.slice(4);
+        child.count = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === category || c.startsWith(category + '/'))).length;
+        countChildren(child);
+      }
+    };
+    countChildren(root);
+    return result;
   }
+  const roots = makeTree();
+  function treeNode(n: Folder, depth: number): string {
+    const children = [...n.children.values()].sort((a,b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
+    const hasChildren = children.length > 0;
+    const open = expanded.has(n.path);
+    const active = state.selected === n.path ? ' sel' : '';
+    const arrow = hasChildren
+      ? '<button type="button" class="caret' + (open ? ' open' : '') + '" data-toggle="' + escapeHtml(n.path) + '" aria-label="展开或折叠 ' + escapeHtml(n.name) + '">▸</button>'
+      : '<span class="caret-sp"></span>';
+    let result = '<div class="tnode' + active + '" data-path="' + escapeHtml(n.path) + '" style="padding-left:' + (depth * 12 + 6) + 'px">'
+      + arrow + '<span class="tname">' + escapeHtml(n.name) + '</span><span class="tcount">' + n.count + '</span></div>';
+    if (hasChildren && open) result += children.map(c => treeNode(c, depth + 1)).join('');
+    return result;
+  }
+  function renderTree() {
+    const host = document.getElementById('lit-tree')!;
+    host.innerHTML = roots.map(n => treeNode(n, 0)).join('');
+    host.querySelectorAll<HTMLElement>('[data-path]').forEach(el => el.addEventListener('click', event => {
+      if ((event.target as HTMLElement).closest('[data-toggle]')) return;
+      state.selected = el.dataset.path || 'papers';
+      expanded.add(state.selected);
+      state.status = 'all';
+      state.query = '';
+      (document.getElementById('lit-search') as HTMLInputElement).value = '';
+      render();
+    }));
+    host.querySelectorAll<HTMLElement>('[data-toggle]').forEach(el => el.addEventListener('click', event => {
+      event.stopPropagation();
+      const key = el.dataset.toggle || '';
+      if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
+      renderTree();
+    }));
+  }
+  function filteredItems(): Item[] {
+    let values: Item[];
+    const q = state.query.trim().toLowerCase();
+    if (q) {
+      values = ALL.filter(p => [p.title, p.summary, p.id, p.searchText || '', (p.authors || []).join(' '), (p.tags || []).join(' '), (p.categories || []).join(' ')].join(' ').toLowerCase().includes(q));
+    } else if (state.selected === 'papers') {
+      values = ALL.filter(p => p.kind === 'paper');
+    } else if (state.selected.startsWith('cat:')) {
+      const category = state.selected.slice(4);
+      values = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === category || c.startsWith(category + '/')));
+    } else {
+      values = ALL.filter(p => p.kind === state.selected);
+    }
+    if (state.status !== 'all') values = values.filter(p => p.kind !== 'paper' || p.status === state.status);
+    const kindOrder = (k: string) => ({ reviews: 0, paper: 1, glossary: 2, ideas: 3 }[k] ?? 4);
+    return values.sort((a,b) => kindOrder(a.kind) - kindOrder(b.kind) || (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title));
+  }
+  function itemRow(p: Item): string {
+    const isPaper = p.kind === 'paper';
+    const subtitle = isPaper
+      ? [p.venue, p.year, (p.categories || [])[0]].filter(Boolean).join(' · ')
+      : labels[p.kind] || '研究资料';
+    const chips = isPaper ? (p.tags || []).slice(0, 5).map(t => '<span class="tag-chip">' + escapeHtml(t) + '</span>').join('') : '';
+    const rating = p.rating && p.rating > 0 ? '★'.repeat(p.rating) + '☆'.repeat(Math.max(0,5-p.rating)) : '';
+    return '<article class="row">'
+      + '<div class="row-main"><div class="row-title"><a href="' + escapeHtml(p.href) + '">' + escapeHtml(p.title) + '</a></div>'
+      + '<div class="row-sub muted">' + escapeHtml(subtitle) + '</div>'
+      + (p.summary ? '<div class="row-abs muted">' + escapeHtml(p.summary) + '</div>' : '')
+      + (chips ? '<div class="row-tags">' + chips + '</div>' : '')
+      + '</div><div class="row-meta">'
+      + (isPaper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')
+      + (rating ? '<span class="stars">' + rating + '</span>' : '')
+      + '<span class="muted rmeta">' + (isPaper ? '查看笔记 →' : '阅读内容 →') + '</span></div></article>';
+  }
+  function render() {
+    renderTree();
+    const data = filteredItems();
+    const name = state.selected.startsWith('cat:') ? state.selected.slice(4).replaceAll('/', ' / ') : labels[state.selected] || '研究目录';
+    const label = state.query.trim() ? '搜索 “' + escapeHtml(state.query.trim()) + '”' : escapeHtml(name);
+    document.getElementById('lit-crumb')!.innerHTML = '<span class="cpath">' + label + '</span><span class="muted"> · ' + data.length + ' 条</span>';
+    document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.map(itemRow).join('') + '</div>' : '<div class="lit-empty muted">暂无匹配内容</div>';
+    const showingPapers = state.query.trim() || state.selected === 'papers' || state.selected.startsWith('cat:');
+    (document.getElementById('lit-filters') as HTMLElement).hidden = !showingPapers;
+    document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => {
+      button.classList.toggle('active', button.dataset.status === state.status);
+    });
+  }
+  document.getElementById('lit-search')!.addEventListener('input', e => {
+    state.query = (e.target as HTMLInputElement).value;
+    state.status = 'all';
+    render();
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.addEventListener('click', () => {
+    state.status = button.dataset.status || 'all';
+    render();
+  }));
+  const folder = new URLSearchParams(window.location.search).get('folder');
+  if (folder) {
+    const valid = folder === 'papers' || ['reviews','glossary','ideas'].includes(folder) || (folder.startsWith('cat:') && ALL.some(p => p.categories?.some(c => c === folder.slice(4) || c.startsWith(folder.slice(4) + '/'))));
+    if (valid) {
+      state.selected = folder;
+      if (folder.startsWith('cat:')) {
+        let partial = '';
+        for (const segment of folder.slice(4).split('/')) {
+          partial = partial ? partial + '/' + segment : segment;
+          expanded.add('cat:' + partial);
+        }
+        expanded.add('papers');
+      }
+    }
+  }
+  render();
+</script>
+<style is:global>
+  /* Namespaced under #lit so styles reach JS-injected nodes. */
+  #lit .lit-search {
+    width: 100%; font: inherit; font-size: 0.95rem; margin-bottom: 0.9rem;
+    padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface); color: var(--fg); box-shadow: var(--shadow-sm);
+  }
+  #lit .lit-search:focus { outline: none; border-color: var(--accent); }
+
+  #lit .lit-main { display: grid; grid-template-columns: 250px 1fr; gap: 1.1rem; align-items: start; }
+
+  /* folder tree */
+  #lit .lit-tree {
+    position: sticky; top: 74px; align-self: start;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+    box-shadow: var(--shadow-sm); padding: 0.4rem; max-height: calc(100vh - 90px); overflow-y: auto;
+  }
+  #lit .tnode {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.34rem 0.5rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600;
+  }
+  #lit .tnode:hover { background: var(--surface-2); }
+  #lit .tnode.sel { background: var(--accent-soft); color: var(--accent-ink); }
+  #lit .caret { font-size: 0.7rem; color: var(--fg-muted); transition: transform 0.12s ease; width: 12px; display: inline-block; }
+  #lit .caret.open { transform: rotate(90deg); }
+  #lit .caret-sp { width: 12px; display: inline-block; }
+  #lit .tname { flex: 1 1 auto; }
+  #lit .tcount { font-size: 0.72rem; color: var(--fg-muted); background: var(--surface-2); padding: 0 0.45em; border-radius: 999px; }
+  #lit .tnode.sel .tcount { background: var(--surface); }
+
+  /* results */
+  #lit .lit-crumb { font-size: 0.85rem; margin: 0.2rem 0 0.8rem 0.2rem; }
+  #lit .cpath { font-weight: 800; }
+  #lit .view-list { display: grid; gap: 0.55rem; }
+  #lit .row {
+    display: flex; justify-content: space-between; gap: 1.2rem;
+    padding: 0.9rem 1.1rem; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--surface); box-shadow: var(--shadow-sm);
+  }
+  #lit .row:hover { border-color: var(--border-strong); }
+  #lit .row-main { min-width: 0; }
+  #lit .row-title { font-weight: 700; }
+  #lit .row-sub { font-size: 0.85rem; margin-top: 0.12rem; }
+  #lit .row-abs { font-size: 0.85rem; margin-top: 0.3rem; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  #lit .row-tags { margin-top: 0.45rem; }
+  #lit .row-meta { flex: 0 0 auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; white-space: nowrap; }
+  #lit .rmeta { font-size: 0.76rem; max-width: 220px; white-space: normal; }
+
+  #lit .st { font-size: 0.72rem; font-weight: 700; padding: 0.12em 0.6em; border-radius: 999px; }
+  #lit .st-read { color: #fff; background: linear-gradient(120deg, #16a34a, #22c55e); }
+  #lit .st-reading { color: #8a6d00; background: #fff4cc; }
+  #lit .st-to-read { color: var(--fg-muted); background: var(--surface-2); }
+  @media (prefers-color-scheme: dark) { #lit .st-reading { color: #ffd874; background: #2a2410; } }
+  #lit .stars { color: #f5a623; font-size: 0.82rem; letter-spacing: 1px; }
+  #lit .lit-empty { padding: 2rem; text-align: center; }
+
+  @media (max-width: 820px) {
+    #lit .lit-main { grid-template-columns: 1fr; }
+    #lit .lit-tree { position: static; max-height: 260px; }
+    #lit .row { flex-direction: column; }
+    #lit .row-meta { text-align: left; align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  }
+</style>
+
+<style is:global>
+  #lit .lit-filters { display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem; }
+  #lit .lit-filters[hidden] { display:none; }
+  #lit .lit-filters button { border:1px solid var(--border);background:var(--surface);color:var(--fg-muted);border-radius:999px;padding:.28rem .75rem;font:inherit;font-size:.77rem;cursor:pointer; }
+  #lit .lit-filters button.active { background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent); }
+  #lit .tnode .caret { flex: 0 0 12px; border:0; padding:0; margin:0; background:transparent; cursor:pointer; text-align:left; }
+  #lit .tnode .caret:hover { color:var(--accent-ink); }
+  #lit .row-main a { color:var(--fg); }
+  #lit .row-main a:hover { color:var(--accent-ink); }
+  #lit .st-untracked { background:var(--surface-2);color:var(--fg-muted); }
+  .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
 </style>
