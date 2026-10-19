@@ -154,44 +154,161 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     return result;
   }
   const roots = makeTree();
-  function treeNode(n: Folder, depth: number): string {
-    const children = [...n.children.values()].sort((a,b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
-    const hasChildren = children.length > 0;
+  // One full-row control per folder: click selects it and opens/closes its subtree.
+  // Flat ARIA tree levels keep the visual hierarchy understandable to keyboard and screen-reader users.
+  const sortedChildren = (n: Folder) => [...n.children.values()].sort((a,b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
+  function treeNode(n: Folder, depth: number, position: number, setsize: number): string {
+    const children = sortedChildren(n);
     const open = expanded.has(n.path);
-    const active = state.selected === n.path;
+    const hasChildren = children.length > 0;
+    const selected = state.selected === n.path;
     const arrow = hasChildren
-      ? '<button type="button" class="caret' + (open ? ' open' : '') + '" data-toggle="' + escapeHtml(n.path) + '" aria-expanded="' + open + '" aria-label="展开或折叠 ' + escapeHtml(n.name) + '">▸</button>'
-      : '<span class="caret-sp"></span>';
-    let result = '<div class="tnode' + (active ? ' sel' : '') + '" style="padding-left:' + (depth * 11 + 3) + 'px">'
-      + arrow + '<button type="button" class="tnode-select" data-path="' + escapeHtml(n.path) + '"' + (active ? ' aria-current="page"' : '') + '>'
-      + '<span class="tname">' + escapeHtml(n.name) + '</span><span class="tcount">' + n.count + '</span></button></div>';
-    if (hasChildren && open) result += children.map(c => treeNode(c, depth + 1)).join('');
-    return result;
+      ? '<span class="caret' + (open ? ' open' : '') + '" aria-hidden="true">▸</span>'
+      : '<span class="caret-sp" aria-hidden="true"></span>';
+    const button = '<button type="button" class="tnode-select" role="treeitem" data-path="' + escapeHtml(n.path)
+      + '" data-depth="' + depth + '" data-has-children="' + hasChildren + '" aria-level="' + (depth + 1)
+      + '" aria-posinset="' + position + '" aria-setsize="' + setsize + '"'
+      + (hasChildren ? ' aria-expanded="' + open + '"' : '')
+      + (selected ? ' aria-current="true"' : '')
+      + ' tabindex="' + (n.path === focusPath ? '0' : '-1') + '"'
+      + ' style="padding-left:' + (10 + depth * 13) + 'px">'
+      + arrow + '<span class="tname">' + escapeHtml(n.name)
+      + '</span><span class="tcount" aria-label="' + n.count + '篇或项">' + n.count + '</span></button>';
+    return '<div class="tnode' + (selected ? ' sel' : '') + '" role="none">' + button + '</div>'
+      + (hasChildren && open ? children.map((c,i) => treeNode(c,depth+1,i+1,children.length)).join('') : '');
   }
-  function selectView(view: string) {
+
+  let focusPath = 'papers';
+  function parentOf(path: string): string | null {
+    if (path === 'papers' || ['reviews','glossary','ideas'].includes(path)) return null;
+    if (!path.startsWith('cat:')) return 'papers';
+    const raw = path.slice(4);
+    return raw.includes('/') ? 'cat:' + raw.slice(0,raw.lastIndexOf('/')) : 'papers';
+  }
+  function exposeAncestors(path: string) {
+    for (let p = parentOf(path);p;p = parentOf(p)) expanded.add(p);
+  }
+  function currentFolderFromUrl(): string {
+    const params = new URLSearchParams(window.location.search);
+    const folder = params.get('folder') || 'papers';
+    return roots.some(n => n.path === folder) ||
+      (folder.startsWith('cat:') && ALL.some(p => (p.categories || []).some(c => c === folder.slice(4) || c.startsWith(folder.slice(4)+'/'))))
+      ? folder : 'papers';
+  }
+  function syncExpandLabel() {
+    const control = document.getElementById('lit-expand');
+    if (!control) return;
+    const paths: string[] = [];
+    const scan = (n: Folder) => { if (n.children.size) paths.push(n.path); n.children.forEach(scan); };
+    roots.forEach(scan);
+    control.textContent = paths.length && paths.every(p => expanded.has(p)) ? '折叠全部' : '展开全部';
+  }
+  function renderTree(focus?: string) {
+    const host = document.getElementById('lit-tree')!;
+    const side = host.closest('.lit-sidebar');
+    const scroll = side?.scrollTop || 0;
+    const oldFocus = host.contains(document.activeElement)
+      ? (document.activeElement as HTMLElement).dataset.path : undefined;
+    focusPath = focus || oldFocus || focusPath;
+    const html = roots.map((n,i) => treeNode(n,0,i+1,roots.length)).join('');
+    host.innerHTML = html;
+    if (!host.querySelector('[data-path="' + CSS.escape(focusPath) + '"]')) focusPath = state.selected;
+    if (!host.querySelector('[data-path="' + CSS.escape(focusPath) + '"]')) focusPath = 'papers';
+    host.querySelectorAll<HTMLButtonElement>('[data-path]').forEach(b => b.tabIndex = b.dataset.path === focusPath ? 0 : -1);
+    if (side) side.scrollTop = scroll;
+    const needsFocus = Boolean(focus || oldFocus);
+    if (needsFocus) {
+      const b = Array.from(host.querySelectorAll<HTMLButtonElement>('[data-path]')).find(x=>x.dataset.path===focusPath);
+      b?.focus({ preventScroll:true });
+    }
+    syncExpandLabel();
+  }
+  function selectView(view: string, fromRow = false, historyMode: 'push' | 'replace' | 'none' = 'push') {
+    const same = state.selected === view;
+    const n = findFolder(view);
+    if (n?.children.size) {
+      if (fromRow && same && expanded.has(view)) expanded.delete(view);
+      else expanded.add(view);
+    }
+    exposeAncestors(view);
     state.selected = view;
     state.query = '';
     state.status = 'all';
-    expanded.add(view);
     (document.getElementById('lit-search') as HTMLInputElement).value = '';
-    const next = new URL(window.location.href);
-    if (view === 'papers') next.searchParams.delete('folder'); else next.searchParams.set('folder', view);
-    next.searchParams.delete('q');
-    history.replaceState(null, '', next.pathname + next.search + next.hash);
+    if (historyMode !== 'none') {
+      const next = new URL(window.location.href);
+      if (view === 'papers') next.searchParams.delete('folder'); else next.searchParams.set('folder',view);
+      next.searchParams.delete('q');
+      history[historyMode === 'push' ? 'pushState' : 'replaceState'](null,'',next.pathname+next.search+next.hash);
+    }
+    focusPath = view;
     render();
   }
-  function renderTree() {
-    const host = document.getElementById('lit-tree')!;
-    host.innerHTML = roots.map(n => treeNode(n, 0)).join('');
-    host.querySelectorAll<HTMLButtonElement>('[data-path]').forEach(el => el.addEventListener('click', () => {
-      selectView(el.dataset.path || 'papers');
-    }));
-    host.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach(el => el.addEventListener('click', () => {
-      const key = el.dataset.toggle || '';
-      if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
-      renderTree();
-    }));
+  function findFolder(path: string): Folder | undefined {
+    const pending = roots.slice();
+    while(pending.length) {
+      const n = pending.shift()!;
+      if (n.path === path) return n;
+      pending.push(...n.children.values());
+    }
+    return undefined;
   }
+  function focusButton(button: HTMLButtonElement | undefined) {
+    if (!button) return;
+    focusPath = button.dataset.path || 'papers';
+    const host = document.getElementById('lit-tree')!;
+    host.querySelectorAll<HTMLButtonElement>('[data-path]').forEach(b=>b.tabIndex=b===button?0:-1);
+    button.focus();
+  }
+  const treeHost = document.getElementById('lit-tree')!;
+  treeHost.setAttribute('role','tree');
+  treeHost.addEventListener('click',e=>{
+    const button = (e.target as Element).closest<HTMLButtonElement>('button[data-path]');
+    if (!button) return;
+    selectView(button.dataset.path || 'papers',true);
+  });
+  treeHost.addEventListener('keydown',e=>{
+    const target = (e.target as Element).closest<HTMLButtonElement>('button[data-path]');
+    if (!target) return;
+    const visible = Array.from(treeHost.querySelectorAll<HTMLButtonElement>('button[data-path]'));
+    const i = visible.indexOf(target);
+    const key = target.dataset.path || 'papers';
+    let destination: HTMLButtonElement | undefined;
+    if (e.key === 'ArrowDown') destination=visible[Math.min(visible.length-1,i+1)];
+    else if (e.key === 'ArrowUp') destination=visible[Math.max(0,i-1)];
+    else if (e.key === 'Home') destination=visible[0];
+    else if (e.key === 'End') destination=visible[visible.length-1];
+    else if (e.key === 'ArrowRight') {
+      if (target.dataset.hasChildren === 'true' && !expanded.has(key)) {
+        expanded.add(key);
+        e.preventDefault();
+        renderTree(key);
+        return;
+      }
+      const next = visible[i+1];
+      if (next && Number(next.dataset.depth) > Number(target.dataset.depth)) destination=next;
+    } else if (e.key === 'ArrowLeft') {
+      if (expanded.has(key) && target.dataset.hasChildren === 'true') {
+        expanded.delete(key);
+        e.preventDefault();
+        renderTree(key);
+        return;
+      }
+      const parent=parentOf(key);
+      destination=parent ? visible.find(x=>x.dataset.path===parent) : undefined;
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectView(key,true);
+      return;
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const search=e.key.toLocaleLowerCase();
+      destination=visible.slice(i+1).concat(visible.slice(0,i+1)).find(x=>(x.querySelector('.tname')?.textContent || '').toLocaleLowerCase().startsWith(search));
+    }
+    if (destination) {
+      e.preventDefault();
+      focusButton(destination);
+    }
+  });
   function filteredItems(): Item[] {
     let values: Item[];
     const q = state.query.trim().toLowerCase();
@@ -284,14 +401,14 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => {
     selectView(button.dataset.view || 'papers');
   }));
-  document.getElementById('lit-expand')!.addEventListener('click', event => {
-    const button = event.currentTarget as HTMLButtonElement;
-    const everyPath: string[] = [];
-    const visit = (node: Folder) => { if (node.children.size) everyPath.push(node.path); node.children.forEach(visit); };
+  document.getElementById('lit-expand')!.addEventListener('click', () => {
+    const all: string[] = [];
+    const visit=(n:Folder)=>{if(n.children.size)all.push(n.path);n.children.forEach(visit);};
     roots.forEach(visit);
-    const expandAll = everyPath.some(x => !expanded.has(x));
-    for (const path of everyPath) { if (expandAll) expanded.add(path); else expanded.delete(path); }
-    button.textContent = expandAll ? '折叠全部' : '展开全部';
+    const expand=all.some(x=>!expanded.has(x));
+    for (const p of all) { if(expand) expanded.add(p); else expanded.delete(p); }
+    // Collapsed subtrees must never retain invisible keyboard focus.
+    focusPath='papers';
     renderTree();
   });
   const sortField = document.getElementById('lit-sort') as HTMLSelectElement;
@@ -310,22 +427,17 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       render();
     }
   });
-  const folder = new URLSearchParams(window.location.search).get('folder');
-  if (folder) {
-    const valid = folder === 'papers' || ['reviews','glossary','ideas'].includes(folder) || (folder.startsWith('cat:') && ALL.some(p => p.categories?.some(c => c === folder.slice(4) || c.startsWith(folder.slice(4) + '/'))));
-    if (valid) {
-      state.selected = folder;
-      if (folder.startsWith('cat:')) {
-        let partial = '';
-        for (const segment of folder.slice(4).split('/')) {
-          partial = partial ? partial + '/' + segment : segment;
-          expanded.add('cat:' + partial);
-        }
-        expanded.add('papers');
-      }
-    }
-  }
-  render();
+  const restoreFromHistory = () => {
+    state.selected = currentFolderFromUrl();
+    state.status = 'all';
+    state.query = '';
+    (document.getElementById('lit-search') as HTMLInputElement).value='';
+    exposeAncestors(state.selected);
+    focusPath = state.selected;
+    render();
+  };
+  window.addEventListener('popstate',restoreFromHistory);
+  restoreFromHistory();
 </script>
 <style is:global>
   /* Namespaced under #lit so styles reach JS-injected nodes. */
@@ -512,4 +624,19 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   #lit .lit-context-kind {color:var(--accent-ink);font-size:.69rem;font-weight:780;}
   #lit .lit-context-links strong {font-size:.83rem;font-weight:700;line-height:1.5;overflow-wrap:anywhere;}
   #lit .lit-context-summary {color:var(--fg-muted);font-size:.73rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+</style>
+
+<style is:global>
+  /* UX audit: one generous interactive target per tree row, not a tiny disclosure hitbox. */
+  #lit .lit-tree .tnode {display:block;padding:0;margin:1px 0;cursor:default;}
+  #lit .lit-tree .tnode-select {display:flex;align-items:center;box-sizing:border-box;width:100%;min-height:44px;gap:.55rem;padding-right:.7rem;border-radius:9px;text-align:left;cursor:pointer;}
+  #lit .lit-tree .tnode-select:hover {background:var(--surface-2);}
+  #lit .lit-tree .tnode.sel .tnode-select {background:var(--accent-soft);color:var(--accent-ink);}
+  #lit .lit-tree .tnode-select:focus-visible {outline:2px solid var(--accent);outline-offset:-2px;}
+  #lit .lit-tree .caret, #lit .lit-tree .caret-sp {display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;height:24px;pointer-events:none;color:var(--fg-muted);}
+  #lit .lit-tree .caret {transform:rotate(0deg);transition:transform .12s ease;}
+  #lit .lit-tree .caret.open {transform:rotate(90deg);}
+  #lit .lit-tree .tnode .tname {flex:1;min-width:0;font-size:.83rem;line-height:1.4;}
+  #lit .lit-tree .tnode .tcount {flex-shrink:0;line-height:1.6;padding:0 .45rem;}
+  @media (prefers-reduced-motion:reduce) { #lit .lit-tree .caret {transition:none;} }
 </style>
