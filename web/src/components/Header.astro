@@ -11,13 +11,14 @@ const isActive = (href: string) =>
       <span class="brand-dot" aria-hidden="true"></span>
       <span data-l="zh">{SITE.titleZh}</span><span data-l="en">{SITE.title}</span>
     </a>
-    <nav class="site-nav">
+    <button class="mobile-menu-button" id="mobile-menu-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="打开导航菜单">☰ <span data-l="zh">菜单</span><span data-l="en">Menu</span></button>
+    <nav id="primary-navigation" class="site-nav" aria-label="站点主导航">
       {NAV.map((item) => (
-        <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+        <a href={item.href} class={isActive(item.href) ? 'active' : ''} aria-current={isActive(item.href) ? 'page' : undefined}>
           <span data-l="zh">{item.zh}</span><span data-l="en">{item.en}</span>
         </a>
       ))}
-      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language">
+      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="切换页面导航语言 / Switch language">
         <span data-l="zh">EN</span><span data-l="en">中</span>
       </button>
     </nav>
@@ -25,6 +26,33 @@ const isActive = (href: string) =>
 </header>
 
 <script is:inline>
+  var menu = document.getElementById('primary-navigation');
+  var menuButton = document.getElementById('mobile-menu-toggle');
+  function closeMenu() {
+    if (!menu || !menuButton) return;
+    menu.classList.remove('is-open');
+    menuButton.setAttribute('aria-expanded','false');
+    menuButton.setAttribute('aria-label','打开导航菜单');
+  }
+  menuButton?.addEventListener('click', function () {
+    var open = !menu?.classList.contains('is-open');
+    menu?.classList.toggle('is-open',open);
+    menuButton.setAttribute('aria-expanded',String(open));
+    menuButton.setAttribute('aria-label',open ? '关闭导航菜单' : '打开导航菜单');
+  });
+  menu?.querySelectorAll('a').forEach(function (link) { link.addEventListener('click',closeMenu); });
+  document.addEventListener('keydown',function (event) {
+    if (event.key === 'Escape' && menu?.classList.contains('is-open')) {
+      closeMenu();
+      menuButton?.focus();
+    }
+  });
+  document.addEventListener('click',function (event) {
+    if (menu?.classList.contains('is-open') && !(event.target instanceof Node && (menu.contains(event.target) || menuButton?.contains(event.target)))) closeMenu();
+  });
+  window.matchMedia('(min-width: 901px)').addEventListener('change',function(event) {
+    if (event.matches) closeMenu();
+  });
   document.getElementById('lang-toggle')?.addEventListener('click', function () {
     var cur = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
     var next = cur === 'zh' ? 'en' : 'zh';
@@ -35,6 +63,16 @@ const isActive = (href: string) =>
 </script>
 
 <style>
+  .mobile-menu-button {display:none;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:.5rem .7rem;color:var(--fg);font:inherit;font-size:.83rem;font-weight:700;min-height:44px;cursor:pointer;}
+  .mobile-menu-button:hover {background:var(--surface-2);}
+  @media (max-width:900px) {
+    .header-inner {min-height:62px;flex-wrap:nowrap;position:relative;}
+    .mobile-menu-button {display:inline-flex;align-items:center;gap:.4rem;}
+    .site-nav {display:none;position:absolute;top:100%;left:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.55rem;box-shadow:var(--shadow);z-index:80;max-height:calc(100vh - 90px);overflow:auto;}
+    .site-nav.is-open {display:flex;flex-direction:column;align-items:stretch;gap:.15rem;}
+    .site-nav a {display:flex;align-items:center;min-height:44px;padding:.6rem .85rem;}
+    .lang-toggle {min-height:44px;margin:.35rem 0 0;text-align:left;border-radius:9px;}
+  }
   .site-header {
     position: sticky;
     top: 0;

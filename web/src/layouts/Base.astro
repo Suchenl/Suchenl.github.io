@@ -66,8 +66,9 @@ const ogImageURL = new URL(ogImage, Astro.site ?? SITE.url);
     </script>
   </head>
   <body>
+    <a class="skip-to-content" href="#main-content">跳到正文 / Skip to content</a>
     <Header />
-    <main class="container">
+    <main class="container" id="main-content" tabindex="-1">
       <slot />
     </main>
     <Footer />
