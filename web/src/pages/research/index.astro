@@ -78,7 +78,10 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       <kbd>/</kbd>
     </div>
     <div class="lit-main">
-      <aside class="lit-sidebar" aria-label="研究目录">
+      <button type="button" class="lit-mobile-folder-toggle" id="lit-mobile-folder-toggle" aria-expanded="false" aria-controls="lit-sidebar">
+        <span id="lit-mobile-active">浏览研究方向：全部论文</span><span aria-hidden="true">⌄</span>
+      </button>
+      <aside class="lit-sidebar" id="lit-sidebar" aria-label="研究目录">
         <div class="lit-side-head"><strong>研究目录</strong><button id="lit-expand" type="button">展开全部</button></div>
         <nav class="lit-tree" id="lit-tree" aria-label="研究方向"></nav>
         <p class="lit-side-hint">同一篇论文可以出现在多个研究方向中，笔记只维护一份。</p>
@@ -104,6 +107,9 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
           <button type="button" data-status="untracked">未标记</button>
         </div>
         <div id="lit-body"></div>
+        <div id="lit-more" class="lit-more" hidden>
+          <button type="button" id="lit-more-button">加载更多</button>
+        </div>
       </section>
     </div>
   </div>
@@ -119,7 +125,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   };
   type Folder = { name: string; path: string; count: number; children: Map<string, Folder> };
   const ALL: Item[] = JSON.parse(document.getElementById('research-items-json')?.textContent || '[]');
-  const state = { selected: 'papers', query: '', status: 'all', sort: 'year' };
+  const state = { selected: 'papers', query: '', status: 'all', sort: 'year', visibleLimit: 12 };
   const expanded = new Set<string>(['papers']);
   const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
   const labels: Record<string, string> = { papers: '全部论文', reviews: '主题综述', glossary: '术语词典', ideas: '研究思路' };
@@ -223,6 +229,24 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     }
     syncExpandLabel();
   }
+  function persistUrl(mode: 'push' | 'replace' = 'replace') {
+    const next = new URL(window.location.href);
+    for (const key of ['folder','q','status','sort']) next.searchParams.delete(key);
+    if (state.selected !== 'papers') next.searchParams.set('folder',state.selected);
+    if (state.query.trim()) next.searchParams.set('q',state.query.trim());
+    if (state.status !== 'all') next.searchParams.set('status',state.status);
+    if (state.sort !== 'year') next.searchParams.set('sort',state.sort);
+    history[mode === 'push' ? 'pushState' : 'replaceState'](null,'',next.pathname+next.search+next.hash);
+  }
+  const mobileDirectoryButton = document.getElementById('lit-mobile-folder-toggle') as HTMLButtonElement;
+  const sidebar = document.getElementById('lit-sidebar') as HTMLElement;
+  const isMobile = () => window.matchMedia('(max-width:700px)').matches;
+  const setMobileDirectory = (open: boolean, returnFocus = false) => {
+    sidebar.classList.toggle('is-open',open);
+    mobileDirectoryButton.setAttribute('aria-expanded',String(open));
+    if (returnFocus) mobileDirectoryButton.focus({preventScroll:true});
+  };
+  mobileDirectoryButton.addEventListener('click', () => setMobileDirectory(!sidebar.classList.contains('is-open')));
   function selectView(view: string, fromRow = false, historyMode: 'push' | 'replace' | 'none' = 'push') {
     const same = state.selected === view;
     const n = findFolder(view);
@@ -234,15 +258,12 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     state.selected = view;
     state.query = '';
     state.status = 'all';
+    state.visibleLimit = 12;
     (document.getElementById('lit-search') as HTMLInputElement).value = '';
-    if (historyMode !== 'none') {
-      const next = new URL(window.location.href);
-      if (view === 'papers') next.searchParams.delete('folder'); else next.searchParams.set('folder',view);
-      next.searchParams.delete('q');
-      history[historyMode === 'push' ? 'pushState' : 'replaceState'](null,'',next.pathname+next.search+next.hash);
-    }
+    if (historyMode !== 'none' && !same) persistUrl(historyMode);
     focusPath = view;
     render();
+    if (isMobile() && fromRow) setMobileDirectory(false,true);
   }
   function findFolder(path: string): Folder | undefined {
     const pending = roots.slice();
@@ -334,7 +355,12 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   function itemRow(p: Item): string {
     // Preserve the chosen directory across detail navigation without changing canonical IDs.
     const returnFolder = state.selected.startsWith('cat:') ? state.selected : (p.kind === 'paper' ? 'papers' : state.selected);
-    const detailHref = p.href + '?from=' + encodeURIComponent(returnFolder);
+    const destination = new URLSearchParams();
+    destination.set('from',returnFolder);
+    if (state.query.trim()) destination.set('q',state.query.trim());
+    if (state.status !== 'all') destination.set('status',state.status);
+    if (state.sort !== 'year') destination.set('sort',state.sort);
+    const detailHref = p.href + '?' + destination.toString();
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
     const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
@@ -377,7 +403,12 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     const current = state.selected.startsWith('cat:') ? state.selected.slice(4).replaceAll('/', ' / ') : labels[state.selected] || '研究目录';
     const label = state.query.trim() ? '搜索 “' + escapeHtml(state.query.trim()) + '”' : escapeHtml(current);
     document.getElementById('lit-crumb')!.innerHTML = '<strong>' + label + '</strong><span>' + data.length + ' 条结果</span>';
-    document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.map(itemRow).join('') + '</div>' : '<div class="lit-empty">没有匹配内容。试试其他关键词或清除筛选条件。</div>';
+    document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.slice(0,state.visibleLimit).map(itemRow).join('') + '</div>' : '<div class="lit-empty">没有匹配内容。试试其他关键词或清除筛选条件。</div>';
+    const more = document.getElementById('lit-more') as HTMLElement;
+    const remaining = Math.max(0,data.length-state.visibleLimit);
+    more.hidden = remaining===0;
+    (document.getElementById('lit-more-button') as HTMLButtonElement).textContent = '显示更多 · 剩余 '+remaining+' 条';
+    (document.getElementById('lit-mobile-active') as HTMLElement).textContent = '浏览研究方向：' + current;
     const showingPapers = !state.query.trim() && (state.selected === 'papers' || state.selected.startsWith('cat:'));
     (document.getElementById('lit-filters') as HTMLElement).hidden = !showingPapers;
     (document.querySelector('.lit-sort-label') as HTMLElement).hidden = !showingPapers && !state.query.trim();
@@ -389,16 +420,22 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   searchField.addEventListener('input', () => {
     state.query = searchField.value;
     state.status = 'all';
+    state.visibleLimit = 12;
+    persistUrl('replace');
     render();
   });
   document.getElementById('lit-clear')!.addEventListener('click', () => {
     state.query = '';
+    state.visibleLimit = 12;
     searchField.value = '';
+    persistUrl('replace');
     render();
     searchField.focus();
   });
   document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.addEventListener('click', () => {
     state.status = button.dataset.status || 'all';
+    state.visibleLimit = 12;
+    persistUrl('replace');
     render();
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => {
@@ -415,7 +452,16 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     renderTree();
   });
   const sortField = document.getElementById('lit-sort') as HTMLSelectElement;
-  sortField.addEventListener('change', () => { state.sort = sortField.value; render(); });
+  sortField.addEventListener('change', () => {
+    state.sort = sortField.value;
+    state.visibleLimit = 12;
+    persistUrl('replace');
+    render();
+  });
+  document.getElementById('lit-more-button')!.addEventListener('click',()=>{
+    state.visibleLimit+=12;
+    render();
+  });
   document.addEventListener('keydown', (event) => {
     const target = event.target as HTMLElement;
     const editing = target?.matches('input,textarea,select,[contenteditable="true"]');
@@ -426,15 +472,23 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     } else if (event.key === 'Escape' && document.activeElement === searchField) {
       searchField.value = '';
       state.query = '';
+      state.visibleLimit = 12;
       searchField.blur();
+      persistUrl('replace');
       render();
     }
   });
   const restoreFromHistory = () => {
+    const params = new URLSearchParams(window.location.search);
     state.selected = currentFolderFromUrl();
-    state.status = 'all';
-    state.query = '';
-    (document.getElementById('lit-search') as HTMLInputElement).value='';
+    const status = params.get('status')||'all';
+    const sort = params.get('sort')||'year';
+    state.status = ['all','read','reading','to-read','untracked'].includes(status) ? status : 'all';
+    state.sort = ['year','added','rating','title'].includes(sort) ? sort : 'year';
+    state.query = (params.get('q')||'').slice(0,300);
+    state.visibleLimit = 12;
+    (document.getElementById('lit-search') as HTMLInputElement).value=state.query;
+    (document.getElementById('lit-sort') as HTMLSelectElement).value=state.sort;
     exposeAncestors(state.selected);
     focusPath = state.selected;
     render();
@@ -651,4 +705,20 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   #lit .view-list .row-meta a {position:relative;z-index:2;}
   #lit .view-list .row:focus-within {border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);}
   #lit .view-list .row-title a:focus-visible {outline:none;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;}
+</style>
+
+<style is:global>
+  /* On smaller screens, the directory is an explicit, accessible disclosure. */
+  #lit .lit-mobile-folder-toggle {display:none;}
+  #lit .lit-more {padding:1.15rem 0 .2rem;text-align:center;}
+  #lit .lit-more[hidden] {display:none;}
+  #lit #lit-more-button {padding:.65rem 1.3rem;min-height:44px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--fg);font:inherit;font-size:.83rem;font-weight:650;cursor:pointer;}
+  #lit #lit-more-button:hover {border-color:var(--accent);color:var(--accent-ink);}
+  @media (max-width:700px) {
+    #lit .lit-mobile-folder-toggle {display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;min-height:46px;margin:0 0 .55rem;padding:.75rem .9rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--fg);font:inherit;font-weight:710;cursor:pointer;text-align:left;}
+    #lit .lit-mobile-folder-toggle[aria-expanded="true"] span:last-child {transform:rotate(180deg);}
+    #lit .lit-sidebar {display:none;}
+    #lit .lit-sidebar.is-open {display:block;max-height:65vh;overflow:auto;}
+    #lit .lit-tree {max-height:none;overflow:visible;}
+  }
 </style>

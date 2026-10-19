@@ -53,3 +53,14 @@ if (!base.includes('id="lit-tree"') || !base.includes('id="lit-search"')) {
   throw new Error('Research explorer output incomplete');
 }
 console.log('Research interaction contracts verified.');
+
+
+const explorer = readFileSync('src/pages/research/index.astro','utf8');
+const article = readFileSync('src/pages/research/[...slug].astro','utf8');
+for (const contract of ['id="lit-mobile-folder-toggle"','id="lit-more-button"',"persistUrl('replace')","state.visibleLimit+=12","params.get('q')","setMobileDirectory(false,true)"]) {
+  if (!explorer.includes(contract)) throw new Error('Research navigation usability regression: '+contract);
+}
+for(const contract of ["ret.searchParams.set('q'","ret.searchParams.set('sort'","ret.searchParams.set('status'"]) {
+  if (!article.includes(contract)) throw new Error('Reader return state lost: '+contract);
+}
+console.log('Mobile directory, incremental results and search restoration contracts verified.');
