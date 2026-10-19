@@ -26,12 +26,6 @@ const folderHref = category ? '/research/?folder=' + encodeURIComponent('cat:' +
 const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
 const outLinks = Object.entries(data.links || {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string' && /^https?:\/\//.test(pair[1]));
 const sourceLabels: Record<string, string> = { arxiv: 'arXiv', pdf: 'PDF', project: '项目主页', code: '代码' };
-const relatedReviews = isPaper ? (await getCollection('knowledge'))
-  .filter(e => e.id.includes('/reviews/') && (e.body || '').includes(entry.id + '.md'))
-  .map(e => ({
-    href: '/research/' + e.id + '/',
-    title: (e.data as { title?: string }).title || (e.body || '').match(/^#\s+(.+)$/m)?.[1] || e.id,
-  })) : [];
 const isLearningPath = entry.id.startsWith('paths/');
 const kind = isLearningPath ? '学习路线' : isPaper ? '论文笔记' : entry.id.startsWith('glossary/') ? '术语解释' : entry.id.startsWith('research/') ? '研究设想' : '主题综述';
 const prose = (entry.body || '').replace(/^---[\s\S]*?---\s*/, '').replace(/`{3}[\s\S]*?`{3}/g, '');
@@ -198,12 +192,6 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
                 </div>
               </div>
             ))}
-          </section>
-        )}
-        {relatedReviews.length > 0 && (
-          <section class="rkd-related">
-            <h2>关联主题综述</h2>
-            {relatedReviews.map(item => <a href={item.href}>{item.title} ↗</a>)}
           </section>
         )}
         {relatedPapers.length > 0 && (
