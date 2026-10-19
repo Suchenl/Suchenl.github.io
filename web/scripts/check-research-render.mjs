@@ -26,3 +26,30 @@ for (const marker of ['lit-shortcuts', 'lit-search', 'lit-context', 'lit-sort'])
 }
 if (!existsSync(path.join('dist', 'reading', 'index.html'))) throw new Error('Missing deprecated /reading/ redirect');
 console.log('Research routes, navigation and internal paper links verified.');
+
+
+// Interaction contracts: do not regress to split caret/text click targets.
+const fs = await import('node:fs');
+const explorerSource = fs.readFileSync('src/pages/research/index.astro','utf8');
+const readerSource = fs.readFileSync('src/pages/research/[...slug].astro','utf8');
+const headerSource = fs.readFileSync('src/components/Header.astro','utf8');
+const base = readFileSync(path.join('dist','research','index.html'),'utf8');
+for (const text of [
+  'role="treeitem"', "e.key === 'ArrowLeft'", "e.key === 'ArrowRight'",
+  "e.key === 'ArrowDown'", "e.key === 'Home'", "window.addEventListener('popstate'",
+  'min-height:44px', 'selectView(key,true)',
+]) {
+  if (!explorerSource.includes(text)) throw new Error('Missing tree interaction contract: ' + text);
+}
+if (explorerSource.includes('data-toggle=')) throw new Error('Split caret-only toggle was reintroduced');
+for (const text of ['id="main-content"','href="#main-content"','aria-current','id="mobile-menu-toggle"']) {
+  const source = text === 'id="main-content"' || text === 'href="#main-content"' ? fs.readFileSync('src/layouts/Base.astro','utf8') : headerSource;
+  if (!source.includes(text)) throw new Error('Missing global accessibility feature: ' + text);
+}
+if (!readerSource.includes("mobileToc.open = false") || !readerSource.includes('id="research-return"')) {
+  throw new Error('Reading navigation contract regressed');
+}
+if (!base.includes('id="lit-tree"') || !base.includes('id="lit-search"')) {
+  throw new Error('Research explorer output incomplete');
+}
+console.log('Research interaction contracts verified.');
