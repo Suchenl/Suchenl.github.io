@@ -19,6 +19,7 @@ const title = data.title || (entry.body || '').match(/^#\s+(.+)$/m)?.[1]?.trim()
 const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 const isPaper = entry.id.startsWith('papers/');
 const source = 'https://github.com/Suchenl/Suchenl.github.io/blob/main/knowledge/' + entry.id + '.md';
+const editSource = 'https://github.com/Suchenl/Suchenl.github.io/edit/main/knowledge/' + entry.id + '.md';
 const category = data.categories?.[0];
 const folderHref = category ? '/research/?folder=' + encodeURIComponent('cat:' + category) : '/research/';
 const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
@@ -65,7 +66,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       )}
       <div class="rkd-sources">
         {outLinks.map(([name, url]) => <a href={url} target="_blank" rel="noopener noreferrer">{sourceLabels[name] || name} ↗</a>)}
-        <a href={source} target="_blank" rel="noopener noreferrer">在 GitHub 编辑笔记 ↗</a>
+        <a href={editSource} target="_blank" rel="noopener noreferrer">编辑 Markdown ↗</a>
       </div>
     </header>
 
@@ -107,7 +108,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
         )}
         <div class="rkd-foot">
           <a href={isPaper ? folderHref : '/research/'}>← 返回研究目录</a>
-          <a href={source} target="_blank" rel="noopener noreferrer">提出修订 / 编辑 Markdown ↗</a>
+          <a href={editSource} target="_blank" rel="noopener noreferrer">编辑或完善笔记 ↗</a>
         </div>
       </article>
 
