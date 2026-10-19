@@ -112,6 +112,39 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       <article class="rkd-article" id="reader-article">
         <div class="rkd-prose">
           <Content />
+          {!isLearningPath && (
+            <details class="rkd-recall">
+              <summary>学完以后，我能否回答这些问题？</summary>
+              <ol>
+                {isPaper ? (
+                  <>
+                    <li>这篇论文真正优化的目标是什么？训练信号从哪里获得？</li>
+                    <li>它的核心机制相对基线新增了什么？主要收益在什么条件下成立？</li>
+                    <li>论文中哪些结论有实验支持，哪些迁移到我的研究还需要验证？</li>
+                  </>
+                ) : entry.id.includes('/reviews/') ? (
+                  <>
+                    <li>这里比较的几条方法路线，本质差别是什么？</li>
+                    <li>每条路线最有力的证据和未解决的争议分别是什么？</li>
+                    <li>如果重新设计一个消融实验，最先检验哪条假设？</li>
+                  </>
+                ) : entry.id.startsWith('glossary/') ? (
+                  <>
+                    <li>我能不用原文复述这些概念的定义吗？</li>
+                    <li>能举出一个满足定义的例子和一个常见反例吗？</li>
+                    <li>哪些概念容易混淆？分界条件在哪里？</li>
+                  </>
+                ) : (
+                  <>
+                    <li>这里最重要、尚未验证的研究假设是什么？</li>
+                    <li>什么实验结果会直接否定这个假设？</li>
+                    <li>哪些现有工作已覆盖部分设想？哪些新能力仍需证据？</li>
+                  </>
+                )}
+              </ol>
+              <p>建议不看正文先回答，再回到相关章节核对。这里不自动判定「已读」。</p>
+            </details>
+          )}
           {isLearningPath && steps.length > 0 && (
             <section class="rkd-learning-path" aria-label="循序学习任务">
               <div class="rkd-learning-heading">
@@ -448,4 +481,13 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   .rkd-relation-more summary {cursor:pointer;}
   .rkd-relation-more .rkd-relation-links {margin-top:.6rem;}
   .rkd-reading-tools button[hidden] {display:none;}
+</style>
+
+<style>
+  .rkd-recall {margin:2.2rem 0 1rem;border:1px solid var(--border);background:var(--surface-2);border-radius:12px;padding:.8rem 1rem;}
+  .rkd-recall summary {cursor:pointer;font-weight:750;font-size:.95rem;line-height:1.6;}
+  .rkd-recall[open] summary {margin-bottom:.7rem;color:var(--accent-ink);}
+  .rkd-recall ol {padding-left:1.4rem;margin:.6rem 0;}
+  .rkd-recall li {line-height:1.8;margin:.35rem 0;}
+  .rkd-recall p {color:var(--fg-muted);font-size:.78rem;margin:.8rem 0 0;}
 </style>
