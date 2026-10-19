@@ -33,42 +33,38 @@
 
 定义候选集合：
 
-```math
+$$
 \mathcal K_t^{\mathrm{valid}} =
 \{j>t: j\le t+K,\ \mathrm{samePhase}(t,j),
 \ \mathrm{feasibleSegment}(T_t,T_j)\}.
-```
-
+$$
 `feasibleSegment` 必须保守：至少检查目标动作可达、单步 bounds、可用的已知障碍几何或已验证的轨迹走廊；**不知道轨迹之间的自由空间就不能宣称碰撞安全**。
 
 将模型输出映射为目标位姿 `\hat T(a)`，用相对位置和 SO(3) 测地旋转距离打分：
 
-```math
+$$
 d(\hat T,T_j)
 =\alpha\|\hat p-p_j\|_2
 +\beta\|\log(R_j^\top\hat R)^\vee\|_2.
-```
-
+$$
 从局部有效轨迹点选择相近目标，同时防止选择远程跳过关键步骤：
 
-```math
+$$
 r_{\mathrm{align}}(a,t)=
 -\min_{j\in\mathcal K_t^{\mathrm{valid}}}
 \bigl[d(\hat T(a),T_j)+
 \lambda_c C_{\mathrm{path}}(a,j)
 -\lambda_p \Delta s_{t,j}\bigr].
-```
-
+$$
 其中 `Δs_{t,j}` 是允许范围内的正向进度，`C_path` 是从当前到目标的**连续路径**约束，不能只看终点。系数均需用验证集与真实 Closed-Loop 指标标定，而不是按视觉效果人工调一个“理想曲线”。
 
 动作边界代理：
 
-```math
+$$
 r_{\mathrm{bounds}}
 =-\gamma_p[\|\Delta p\|-p_{\max}]_+^2
 -\gamma_R[\|\log(\Delta R)^\vee\|-\theta_{\max}]_+^2.
-```
-
+$$
 推荐总 Reward 先**分级门控**而非线性相加：无效工具 JSON、能力不支持、越界、碰撞未知且高风险、错误夹爪状态 → 低奖励或拒绝纳入推进奖励；合格动作再比对齐、正向进度与工具成本。避免出现“进度够大奖励可以抵消危险动作惩罚”的漏洞。
 
 **硬边界必须由 Runtime 强制执行。** RL 奖励或惩罚只降低越界意愿，不是现实物理安全保证。
