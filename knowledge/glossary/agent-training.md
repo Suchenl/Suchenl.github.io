@@ -1,3 +1,9 @@
+---
+title: "LLM Agent 后训练术语"
+categories: ["强化学习与 Agent"]
+summaryZh: "RLVR、SFT、OPD、On-policy 等 Agent 后训练常见概念"
+---
+
 # LLM Agent 后训练术语
 
 **最近核验：2026-10-19** · 基础定义见 [core.md](core.md)。

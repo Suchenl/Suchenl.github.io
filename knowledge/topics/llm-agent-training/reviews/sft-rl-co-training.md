@@ -1,3 +1,9 @@
+---
+title: "SFT、RL 与 LLM Agent 的协同训练：2025–2026 年文献综述"
+categories: ["强化学习与 Agent"]
+summaryZh: "SFT 与 RL 的核心训练信号、协同方案、代表方法与证据边界"
+---
+
 # SFT、RL 与 LLM Agent 的协同训练：2025–2026 年文献综述
 
 > **核验日期：2026-10-19** · 研究范围：LLM / 多模态 Agent 后训练的 SFT、RLVR、交替训练、联合优化、在线蒸馏、工具选择与机器人迁移。  
