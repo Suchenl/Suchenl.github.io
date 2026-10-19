@@ -1,3 +1,11 @@
+---
+title: "Provable Benefits of RLVR over SFT for Reasoning Models: Learning to Backtrack Efficiently"
+year: 2026
+categories: ["强化学习与 Agent/强化学习算法"]
+summaryZh: "通过可验证奖励学习回溯策略的理论分析"
+status: untracked
+---
+
 # Provable Benefits of RLVR over SFT for Reasoning Models: Learning to Backtrack Efficiently
 
 - **中文主题**：为何结果奖励可能教会模型回溯，而最短路径模仿不能

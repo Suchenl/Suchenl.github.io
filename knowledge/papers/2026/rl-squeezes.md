@@ -1,3 +1,11 @@
+---
+title: "RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs"
+year: 2026
+categories: ["强化学习与 Agent/SFT 与 RL 协同"]
+summaryZh: "比较 SFT 和 RL 对推理轨迹分布的影响"
+status: untracked
+---
+
 # RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs
 
 - **中文主题**：SFT 扩展正确推理轨迹，RL 压缩错误推理轨迹

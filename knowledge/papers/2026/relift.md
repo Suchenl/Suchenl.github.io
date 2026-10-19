@@ -1,3 +1,11 @@
+---
+title: "Learning What Reinforcement Learning Can't: Interleaved Online Fine-Tuning for Hardest Questions"
+year: 2026
+categories: ["强化学习与 Agent/SFT 与 RL 协同"]
+summaryZh: "在强化学习困难阶段定向插入 SFT"
+status: untracked
+---
+
 # Learning What Reinforcement Learning Can't: Interleaved Online Fine-Tuning for Hardest Questions
 
 - **中文主题**：ReLIFT：困难问题的在线定向监督与强化学习交替

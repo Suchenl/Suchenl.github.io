@@ -1,3 +1,11 @@
+---
+title: "SFT or RL for Tool-Calling Agents? A Controlled Study Across Data, Method, and Scale"
+year: 2026
+categories: ["强化学习与 Agent/工具与训练框架"]
+summaryZh: "工具调用 Agent 中 SFT 与 RL 的受控比较"
+status: untracked
+---
+
 # SFT or RL for Tool-Calling Agents? A Controlled Study Across Data, Method, and Scale
 
 - **中文主题**：工具 Agent：SFT 与 GRPO 在匹配数据条件下谁更强

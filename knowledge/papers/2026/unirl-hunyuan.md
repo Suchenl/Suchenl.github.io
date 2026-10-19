@@ -1,3 +1,11 @@
+---
+title: "UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架"
+year: 2026
+categories: ["强化学习与 Agent/工具与训练框架"]
+summaryZh: "面向 SFT、Agentic RL 等的统一训练框架"
+status: untracked
+---
+
 # UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架
 
 - **中文主题**：统一工具链与训练工程，而非证明 SFT 和 RL 应当同一步联合优化
