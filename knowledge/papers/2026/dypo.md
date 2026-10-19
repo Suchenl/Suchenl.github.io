@@ -1,3 +1,11 @@
+---
+title: "Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning"
+year: 2026
+categories: ["强化学习与 Agent/SFT 与 RL 协同"]
+summaryZh: "利用奖励反馈动态平衡监督与强化学习"
+status: untracked
+---
+
 # Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning
 
 - **中文主题**：DYPO：以奖励反馈调节 SFT 的稳定性与 RL 的探索性

@@ -1,3 +1,11 @@
+---
+title: "Beyond Two-Stage Training: Cooperative SFT and RL for LLM Reasoning"
+year: 2026
+categories: ["强化学习与 Agent/SFT 与 RL 协同"]
+summaryZh: "利用奖励反馈协调 SFT 与 RL 更新方向"
+status: untracked
+---
+
 # Beyond Two-Stage Training: Cooperative SFT and RL for LLM Reasoning
 
 - **中文主题**：BRIDGE：让 SFT 学会只在有利于奖励优化时监督 RL

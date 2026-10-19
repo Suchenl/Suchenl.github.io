@@ -1,3 +1,11 @@
+---
+title: "MiMo-V2.6：MOPD2 与多教师在线策略蒸馏"
+year: 2026
+categories: ["强化学习与 Agent/蒸馏与能力融合"]
+summaryZh: "利用多教师与在线策略蒸馏融合不同能力"
+status: untracked
+---
+
 # MiMo-V2.6：MOPD2 与多教师在线策略蒸馏
 
 - **中文主题**：用领域教师把 SFT 和 RL 能力汇聚到学生，而不是简单混 Loss

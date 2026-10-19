@@ -1,3 +1,11 @@
+---
+title: "AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning"
+year: 2026
+categories: ["强化学习与 Agent/工具与训练框架"]
+summaryZh: "动态工具选择中的监督学习、强化学习与排序"
+status: untracked
+---
+
 # AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning
 
 - **中文主题**：动态工具选择：先稳住推理轨迹，再训练工具排序与泛化
