@@ -1,3 +1,11 @@
+---
+title: "Action-Constrained Imitation Learning"
+year: 2025
+categories: ["机器人与具身智能/模仿学习"]
+summaryZh: "通过轨迹对齐与约束放松逐时间戳行为克隆"
+status: untracked
+---
+
 # Action-Constrained Imitation Learning
 
 - **中文主题**：DTWIL：受执行约束的机器人不应逐时间戳模仿专家

@@ -1,3 +1,11 @@
+---
+title: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"
+year: 2025
+categories: ["强化学习与 Agent/推理与后训练"]
+summaryZh: "DeepSeek-R1 的直接强化学习、冷启动与推理能力"
+status: untracked
+---
+
 # DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning
 
 - **中文主题**：R1-Zero 与 R1：Direct RL 的力量和冷启动的必要性

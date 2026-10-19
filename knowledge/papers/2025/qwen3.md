@@ -1,3 +1,11 @@
+---
+title: "Qwen3 Technical Report"
+year: 2025
+categories: ["强化学习与 Agent/推理与后训练"]
+summaryZh: "Qwen3 的分阶段监督、强化学习及蒸馏配方"
+status: untracked
+---
+
 # Qwen3 Technical Report
 
 - **中文主题**：四阶段 SFT/RL 与小模型的强到弱蒸馏
