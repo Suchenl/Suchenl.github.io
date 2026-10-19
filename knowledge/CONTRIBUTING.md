@@ -36,3 +36,13 @@
 - `remark-math` + `rehype-katex` 负责渲染。此前自定义 Markdown 公式节点转换器因未设置 HTML 渲染信息已移除，不要恢复。
 - `npm run build` 自动运行 `scripts/check-research-render.mjs`，核对数学公式、研究内部链接和主页面必需元素。
 - `/research/` 仅做静态浏览；笔记和阅读状态修改通过详情页的 GitHub 编辑链接及 Markdown frontmatter 完成。网页本身不提供直接写回仓库的保存操作。
+
+## 维护学习路线和双向关联
+
+新增学习路线存放在 `paths/<英文短名>.md`，使用 `templates/learning-path.md`。`steps.ref` 必须是现有内容的唯一稳定 ID（例如 `papers/2026/bridge`），`steps.why` 解释这一步训练什么理解能力。绝对不要把一篇论文的全文复制到路线里。
+
+新增术语只需在 `glossary/*.md` 下编写 `## 术语名`，Research 会用 Astro 渲染生成的准确 heading slug 为它建搜索入口。不要求作者手工编写容易失效的锚点。
+
+综述引用独立论文时使用正常 Markdown 相对链接；详情页自动显示逆向导航。给出的「引用」仅指知识库内部 Markdown 关联，不宣称代表学术论文之间的引文。
+
+每次维护运行 `python knowledge/scripts/check_kb.py` 和 `cd web && npm run build`，后者检查学习路线、KaTeX、内部路径等静态产物。真正的点击和移动端布局还应按 `docs/UX_AUDIT.md` 验收。

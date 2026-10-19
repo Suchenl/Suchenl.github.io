@@ -64,3 +64,25 @@ for(const contract of ["ret.searchParams.set('q'","ret.searchParams.set('sort'",
   if (!article.includes(contract)) throw new Error('Reader return state lost: '+contract);
 }
 console.log('Mobile directory, incremental results and search restoration contracts verified.');
+
+
+// Knowledge-to-learning route integration (actual generated pages, not only source strings).
+const learningHtmlFile = path.join('dist','research','paths','agent-post-training','index.html');
+if (!existsSync(learningHtmlFile)) throw new Error('Missing learning path page');
+const learningHtml = readFileSync(learningHtmlFile,'utf8');
+const stepCount = (learningHtml.match(/data-learning-step=/g)||[]).length;
+if (stepCount !== 7) throw new Error('Expected 7 curated learning steps, got '+stepCount);
+for(const ref of ['/research/glossary/core/','/research/papers/2026/bridge/','/research/research/robot-trajectory-reward/']) {
+  if(!learningHtml.includes(ref)) throw new Error('Missing learning path target '+ref);
+}
+const bridge = readFileSync(path.join('dist','research','papers','2026','bridge','index.html'),'utf8');
+if(!bridge.includes('哪些内容链接到这里') || !bridge.includes('/research/paths/agent-post-training/')) {
+  throw new Error('Learning-path backlink missing from BRIDGE');
+}
+if(!library.includes('条术语速查') || !library.includes('glossary/agent-training#')) {
+  throw new Error('Glossary heading deep-link index is missing');
+}
+if(!readerSource.includes('research-last-read-v1') || !readerSource.includes('rkd-recall')) {
+  throw new Error('Resume-reading and recall prompt contract missing');
+}
+console.log('Knowledge graph, seven-step learning path, term deep links, and recall checks passed.');

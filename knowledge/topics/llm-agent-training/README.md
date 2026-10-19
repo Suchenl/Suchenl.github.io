@@ -2,6 +2,10 @@
 
 **核心问题**：什么能力应该通过模仿学习，什么能力应该通过可验证结果、环境交互、教师蒸馏获得？不同学习信号如何协作而不互相抵消？
 
+## 建议学习入口
+
+- [按顺序学习 SFT、RL 与 LLM Agent 后训练（7 步）](../../paths/agent-post-training.md)
+
 ## 本方向文档
 
 - [长篇综述：SFT、RLVR、混合优化与 Agent 后训练](reviews/sft-rl-co-training.md)
