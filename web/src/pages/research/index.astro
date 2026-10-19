@@ -370,8 +370,25 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       values = ALL.filter(p => state.selected === 'glossary' ? (p.kind === 'glossary' || p.kind === 'term') : p.kind === state.selected);
     }
     if (state.status !== 'all') values = values.filter(p => p.kind === 'paper' && p.status === state.status);
-    const kindOrder = (k: string) => ({ paths: 0, reviews: 1, paper: 2, glossary: 3, term: 4, ideas: 5 }[k] ?? 6);
+    const kindOrder = (k: string) => ({ paths: 0, reviews: 1, term: 2, paper: 3, glossary: 4, ideas: 5 }[k] ?? 6);
+    const relevance = (p: Item) => {
+      if (!q) return 0;
+      const title = p.title.toLowerCase();
+      const tags = (p.tags || []).join(' ').toLowerCase();
+      const summary = (p.summary || '').toLowerCase();
+      const category = (p.categories || []).join(' ').toLowerCase();
+      // Search the whole body, but prioritize the user's likely intention: named concepts and titles.
+      return (title === q ? 200 : title.startsWith(q) ? 120 : title.includes(q) ? 85 : 0)
+        + (p.kind === 'term' && title.includes(q) ? 40 : 0)
+        + (tags.includes(q) ? 35 : 0)
+        + (summary.includes(q) ? 20 : 0)
+        + (category.includes(q) ? 10 : 0)
+        + ((p.searchText || '').toLowerCase().includes(q) ? 1 : 0);
+    };
     return values.sort((a,b) => {
+      if (q && state.sort === 'year') {
+        return relevance(b)-relevance(a) || kindOrder(a.kind)-kindOrder(b.kind) || (b.year || 0)-(a.year || 0);
+      }
       if (state.sort === 'rating') return (b.rating || 0) - (a.rating || 0) || (b.year || 0) - (a.year || 0);
       if (state.sort === 'added') return (b.added || '').localeCompare(a.added || '') || (b.year || 0) - (a.year || 0);
       if (state.sort === 'title') return a.title.localeCompare(b.title);
@@ -386,7 +403,10 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     if (state.query.trim()) destination.set('q',state.query.trim());
     if (state.status !== 'all') destination.set('status',state.status);
     if (state.sort !== 'year') destination.set('sort',state.sort);
-    const detailHref = p.href + '?' + destination.toString();
+    const hashIndex = p.href.indexOf('#');
+    const baseHref = hashIndex >= 0 ? p.href.slice(0, hashIndex) : p.href;
+    const fragment = hashIndex >= 0 ? p.href.slice(hashIndex) : '';
+    const detailHref = baseHref + '?' + destination.toString() + fragment;
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
     const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
@@ -439,6 +459,8 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     (document.getElementById('lit-filters') as HTMLElement).hidden = !showingPapers;
     (document.querySelector('.lit-sort-label') as HTMLElement).hidden = !showingPapers && !state.query.trim();
     (document.getElementById('lit-clear') as HTMLButtonElement).hidden = !state.query.trim();
+    const defaultSort = document.querySelector<HTMLOptionElement>('#lit-sort option[value="year"]');
+    if (defaultSort) defaultSort.textContent = state.query.trim() ? '相关度优先' : '年份：新到旧';
     document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.classList.toggle('active', button.dataset.status === state.status));
     document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === state.selected && !state.query.trim()));
   }
@@ -451,7 +473,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   if (previous && typeof previous.id === 'string') {
     const match = ALL.find(p => p.id === previous.id);
     if (match) {
-      const fragment = typeof previous.section === 'string' && /^[a-z0-9_%-]+$/i.test(previous.section) ? '#' + previous.section : '';
+      const fragment = typeof previous.section === 'string' && /^[\p{L}\p{N}_%-]+$/u.test(previous.section) ? '#' + encodeURIComponent(previous.section) : '';
       continueLink.href = match.href + fragment;
       continueLink.textContent = '接着阅读：' + match.title + (previous.heading ? ' · ' + String(previous.heading) : '') + ' →';
       continueBox.hidden = false;
