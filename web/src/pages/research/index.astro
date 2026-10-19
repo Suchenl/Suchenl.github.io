@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 type PaperMeta = {
   title?: string;
@@ -26,6 +26,23 @@ const reviews = entries.filter(e => e.id.includes('/reviews/'));
 const glossaries = entries.filter(e => e.id.startsWith('glossary/') && !e.id.endsWith('README'));
 const ideas = entries.filter(e => e.id.startsWith('research/') && !e.id.endsWith('README'));
 const paths = entries.filter(e => e.id.startsWith('paths/'));
+const termGroups = await Promise.all(glossaries.map(async e => {
+  const { headings } = await render(e);
+  const sections = (e.body || '').split(/^##\s+/m).slice(1);
+  return headings.filter(h => h.depth === 2).map((h,i) => {
+    const section = sections[i] || '';
+    const description = section.split('\n').slice(1).join(' ')
+      .replace(/`[^`]+`/g, ' ').replace(/\[([^\]]+)]\([^)]+\)/g, '$1')
+      .replace(/[*_~#>|]/g, ' ').replace(/\s+/g,' ').trim().slice(0,155);
+    return {
+      kind: 'term', id: e.id + '#' + h.slug, href: '/research/' + e.id + '/#' + h.slug,
+      title: h.text, summary: description,
+      categories: meta(e).categories || [],
+      searchText: h.text + ' ' + description,
+    };
+  });
+}));
+const glossaryTerms = termGroups.flat();
 const papers = paperNotes.map(e => {
   const m = meta(e);
   const embeddedTags = body(e).match(/^[-*]\s+\*\*标签\*\*[:：]\s*(.+)$/m)?.[1]?.split(/\s*[\/、,，|]\s*/).filter(Boolean) || [];
@@ -50,6 +67,7 @@ const papers = paperNotes.map(e => {
   };
 });
 const other = [
+  ...glossaryTerms,
   ...paths.map(e => ({ kind: 'paths', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '按顺序学习基础概念、代表方法及研究问题', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
   ...reviews.map(e => ({ kind: 'reviews', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '研究脉络、方法比较、实验证据和开放问题', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
   ...glossaries.map(e => ({ kind: 'glossary', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '概念定义、公式与反例', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
@@ -68,7 +86,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       <button type="button" data-view="paths"><strong>{paths.length}</strong><span>条学习路线</span></button>
       <button type="button" data-view="papers"><strong>{papers.length}</strong><span>篇论文</span></button>
       <button type="button" data-view="reviews"><strong>{reviews.length}</strong><span>篇专题综述</span></button>
-      <button type="button" data-view="glossary"><strong>{glossaries.length}</strong><span>份术语整理</span></button>
+      <button type="button" data-view="glossary"><strong>{glossaryTerms.length}</strong><span>条术语速查</span></button>
       <button type="button" data-view="ideas"><strong>{ideas.length}</strong><span>个研究问题</span></button>
     </div>
   </section>
@@ -141,7 +159,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
 
   function makeTree(): Folder[] {
     const result: Folder[] = ['papers', 'paths', 'reviews', 'glossary', 'ideas'].map(k => ({
-      name: labels[k], path: k, count: ALL.filter(p => k === 'papers' ? p.kind === 'paper' : p.kind === k).length, children: new Map(),
+      name: labels[k], path: k, count: ALL.filter(p => k === 'papers' ? p.kind === 'paper' : k === 'glossary' ? (p.kind === 'term' || p.kind === 'glossary') : p.kind === k).length, children: new Map(),
     }));
     const root = result[0];
     for (const p of ALL.filter(p => p.kind === 'paper')) {
@@ -349,10 +367,10 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       const cat = state.selected.slice(4);
       values = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === cat || c.startsWith(cat + '/')));
     } else {
-      values = ALL.filter(p => p.kind === state.selected);
+      values = ALL.filter(p => state.selected === 'glossary' ? (p.kind === 'glossary' || p.kind === 'term') : p.kind === state.selected);
     }
     if (state.status !== 'all') values = values.filter(p => p.kind === 'paper' && p.status === state.status);
-    const kindOrder = (k: string) => ({ paths: 0, reviews: 1, paper: 2, glossary: 3, ideas: 4 }[k] ?? 5);
+    const kindOrder = (k: string) => ({ paths: 0, reviews: 1, paper: 2, glossary: 3, term: 4, ideas: 5 }[k] ?? 6);
     return values.sort((a,b) => {
       if (state.sort === 'rating') return (b.rating || 0) - (a.rating || 0) || (b.year || 0) - (a.year || 0);
       if (state.sort === 'added') return (b.added || '').localeCompare(a.added || '') || (b.year || 0) - (a.year || 0);
@@ -372,7 +390,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
     const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
-    const kind = paper ? (p.noteDepth || '阅读笔记') : (labels[p.kind] || '研究资料');
+    const kind = paper ? (p.noteDepth || '阅读笔记') : (p.kind === 'term' ? '术语解释' : labels[p.kind] || '研究资料');
     const year = paper ? [p.year || '', p.venue || ''].filter(Boolean).join(' · ') : kind;
     const chips = paper ? (p.tags || []).slice(0,3).map(tag => '<span class="lit-chip">' + escapeHtml(tag) + '</span>').join('') : '';
     const rating = paper && p.rating && p.rating > 0 ? '<span class="lit-rating">' + '★'.repeat(p.rating) + '☆'.repeat(Math.max(0,5-p.rating)) + '</span>' : '';
@@ -394,7 +412,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       return;
     }
     const folder = state.selected.slice(4);
-    const match = ALL.filter(p => p.kind !== 'paper' && (p.categories || []).some(c =>
+    const match = ALL.filter(p => p.kind !== 'paper' && p.kind !== 'term' && (p.categories || []).some(c =>
       c === folder || c.startsWith(folder + '/') || folder.startsWith(c + '/')
     ));
     if (!match.length) { host.innerHTML = ''; return; }
