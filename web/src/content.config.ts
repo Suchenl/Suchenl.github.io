@@ -62,4 +62,15 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { papers, blog };
+// Canonical Chinese research knowledge base, stored once at repository-root knowledge/.
+// Only content, not AI maintenance files, is exposed as public research pages.
+const knowledge = defineCollection({
+  loader: glob({
+    pattern: ['papers/**/*.md', 'topics/**/*.md', 'glossary/**/*.md', 'research/**/*.md'],
+    base: '../knowledge',
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+  }),
+  schema: z.object({}).passthrough(),
+});
+
+export const collections = { papers, blog, knowledge };

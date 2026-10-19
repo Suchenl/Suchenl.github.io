@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'web/**'
+      - 'knowledge/**'
       - '.github/workflows/deploy-astro.yml'
   # Sunday 23:59 Asia/Shanghai = Sunday 15:59 UTC — pull Mon→Sun week into history.
   schedule:
