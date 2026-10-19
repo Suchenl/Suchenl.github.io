@@ -1,7 +1,7 @@
 # 研究提议：SFT Loss 不变，让 RLVR 从真实机器人演示中学习可变动作进度
 
 > **状态**：研究假设 / 待实验；不是已完成实现或已验证的方法。**首次记录：2026-10-19**。  
-> 背景阅读：[SFT × RL 中文综述](../topics/llm-agent-training/reviews/sft-rl-co-training.md) · [DTWIL](../papers/2025/dtwil.md) · [术语](../glossary/agent-training.md)。
+> 背景阅读：[SFT × RL 主题综述](../topics/llm-agent-training/reviews/sft-rl-co-training.md) · [DTWIL](../papers/2025/dtwil.md) · [术语](../glossary/agent-training.md)。
 
 ## 0. 核心观点
 

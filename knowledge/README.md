@@ -1,4 +1,4 @@
-# 个人中文研究知识库
+# 个人研究知识库
 
 > **正式阅读入口**：[个人主页 · 研究知识库](https://suchenl.github.io/research/) · **唯一可编辑内容源**：本仓库 `knowledge/`。此前的 `Suchenl/sus_research_review` 仓库仅保留历史快照，不再更新。
 
@@ -11,7 +11,7 @@
 
 | 我想做什么 | 从哪里开始 |
 |---|---|
-| 阅读某个方向的中文文献综述 | [研究主题](topics/README.md) |
+| 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
 | 阅读第一篇综合综述：SFT × RL | [SFT、RL 与 Agent 后训练：协同范式和最新证据](topics/llm-agent-training/reviews/sft-rl-co-training.md) |
 | 按论文查找独立解读 | [论文卡片索引](papers/README.md) |
 | 查定义、数学符号、术语区别 | [共享术语](glossary/README.md) |
@@ -25,11 +25,11 @@
 README.md                    首页/导航；不堆积长篇综述
 AGENTS.md                    人类与 AI 共同遵循的维护原则
 CONTRIBUTING.md              新增方向、文献与术语的统一流程
-topics/                      问题导向、跨论文的中文综述（允许持续修订）
+topics/                      问题导向、跨论文的综述（允许持续修订）
   llm-agent-training/
     README.md
     reviews/                 主题综述：归纳、对比、争议与证据边界
-papers/                      每篇论文一份可复用解读；避免各主题重复写
+papers/                      每篇论文唯一 Markdown：元信息+阅读状态+可渐进扩展的笔记
   2025/ 2026/...
 glossary/                    单一术语定义来源（通用/各领域）
 research/                    作者自己的假设、设计、反例与待验证问题
@@ -51,6 +51,8 @@ CHANGELOG.md                 逐次更新摘要
 
 GitHub 原生显示公式、目录、代码和链接；每次更改都可以用 Git diff 查看；无需 LaTeX 或构建步骤；AI 很容易检索和编辑。以后如需全文检索、静态站点或 Zotero 导出，可在保持原 Markdown 路径的前提下加索引层，**不要为了展示功能改变唯一知识来源**。
 
-## 仓库命名建议
+## 统一浏览方式
 
-更长期的名称是 `sus_knowledge_base`。目前实际仓库仍为 `sus_research_review`；重命名只影响仓库设置，不应移动本仓库内部内容。GitHub 改名后的旧地址通常会重定向，但外部系统中固定的 `git remote`、子模块和集成地址需要核对。**本次没有执行重命名。**
+网站使用 `/research/` 作为唯一入口：左侧文件夹式目录、右侧按论文与研究资料浏览。原 `/reading/` 自动跳转到 Research。原 `web/src/content/papers/` 的论文记录已并入 `knowledge/papers/`，不再创建第二份笔记。分类来自论文 frontmatter 的 `categories` 数组，一篇论文可以关联多个目录；原论文英文题目保留，摘要、笔记及分类中文优先。
+
+阅读状态分为 `to-read`（想读）、`reading`（在读）、`read`（已读）和 `untracked`（未标记）。已有 AI 解读不等于用户本人已经读过，不应擅自标记为已读。

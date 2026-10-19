@@ -27,4 +27,19 @@
 | [DAPO](2025/dapo.md) | NeurIPS 2025 | 稳定和有效地进行长思维链 RL |
 | [Action-Constrained Imitation Learning](2025/dtwil.md) | ICML 2025 | 动作约束和轨迹对齐如何放松行为克隆 |
 
+## 原 Reading 迁入的轻量卡片
+
+这些是早期收藏/阅读清单，已经迁入统一论文库，**不代表完成深度原文核验**。原始阅读状态、评分、标签和简要备注保留；详细方法与实验待按原论文补全。
+
+| 年份 | 论文 | 当前记录 |
+|---|---|---|
+| 2025 | [DreamOmni2](2025/dreamomni2.md) | 图像生成与编辑 |
+| 2025 | [LongLive](2025/longlive.md) | 实时交互长视频 |
+| 2025 | [Phantom Data](2025/phantom-data.md) | 视频生成数据 |
+| 2025 | [VACE](2025/vace.md) | 可控视频生成与编辑 |
+| 2025 | [Qwen3-VL](2025/qwen3-vl.md) | 视觉语言模型 |
+| 2025 | [RoboBrain 2.0](2025/robobrain2.md) | 具身基础模型 |
+| 2025 | [Motus](2025/motus.md) | 世界动作模型 |
+| 2026 | [Echo Memory](2026/echo-memory.md) | 世界模型与长期记忆 |
+
 新文献优先填 `templates/paper-note.md`，并保持该文件与 `topics/` 同步。

@@ -9,10 +9,11 @@ Live at <https://suchenl.github.io/>.
 
 The site source lives in [`web/`](./web):
 
-- `web/src/pages/` — routes (home, blog, publications, work, expertise, reading)
-- `web/src/content/` — content collections (blog posts, paper reading list)
-- `knowledge/` — canonical Chinese research reviews, deep paper notes, glossary, research hypotheses, AI maintenance rules (rendered at `/research/`)
-- `web/src/pages/research/` — research knowledge base browse/read UI
+- `web/src/pages/` — routes (home, blog, publications, work, expertise, unified research)
+- `web/src/content/` — blog content (the paper library lives only under knowledge/)
+- `knowledge/` — canonical Chinese-first research library: paper metadata, detailed notes, topic reviews, glossary, hypotheses, AI maintenance rules (rendered at `/research/`)
+- `web/src/pages/research/` — one Research UI combining the former Reading folder tree and deep research pages
+- `/reading/` — legacy URL redirected to `/research/`
 - `web/src/config.ts` — site metadata, navigation, bilingual (中文/EN) strings
 - `web/src/data/` — structured data (publications, expertise)
 - `web/public/` — static assets (images, favicons)
