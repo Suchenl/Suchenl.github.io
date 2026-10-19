@@ -9,23 +9,60 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const title = (entry.body || '').match(/^#\s+(.+)$/m)?.[1]?.trim() || entry.id.split('/').pop() || '研究笔记';
+const data = entry.data as {
+  title?: string; summaryZh?: string; categories?: string[];
+  status?: string; rating?: number;
+  links?: { arxiv?: string; pdf?: string; code?: string; project?: string };
+};
+const hasHeading = /^#\s+/m.test(entry.body || '');
+const title = data.title || (entry.body || '').match(/^#\s+(.+)$/m)?.[1]?.trim() || entry.id.split('/').pop() || '研究笔记';
 const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 const isPaper = entry.id.startsWith('papers/');
 const source = 'https://github.com/Suchenl/Suchenl.github.io/blob/main/knowledge/' + entry.id + '.md';
+const category = data.categories?.[0];
+const folderHref = category ? '/research/?folder=' + encodeURIComponent('cat:' + category) : '/research/';
+const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
+const outLinks = Object.entries(data.links || {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string' && /^https?:\/\//.test(pair[1]));
+const sourceLabels: Record<string, string> = { arxiv: 'arXiv', pdf: 'PDF', project: '项目主页', code: '代码' };
+const relatedReviews = isPaper ? (await getCollection('knowledge'))
+  .filter(e => e.id.includes('/reviews/') && (e.body || '').includes(entry.id + '.md'))
+  .map(e => ({
+    href: '/research/' + e.id + '/',
+    title: (e.data as { title?: string }).title || (e.body || '').match(/^#\s+(.+)$/m)?.[1] || e.id,
+  })) : [];
 ---
 
-<Base title={title} description={'中文研究知识库 · ' + title}>
+<Base title={title} description={'研究知识库 · ' + title}>
   <div class="rkd-crumb">
-    <a href="/research/">← 研究知识库</a>
+    <a href={isPaper ? folderHref : "/research/"}>← 研究知识库</a>
     <span>/</span>
     <span>{isPaper ? '论文解读' : entry.id.startsWith('glossary/') ? '术语' : entry.id.startsWith('research/') ? '研究问题' : '主题综述'}</span>
   </div>
   <div class="rkd-shell">
     <article class="rkd-article">
       <div class="rkd-copy"><a href={source} target="_blank" rel="noopener">GitHub 上查看与编辑 Markdown ↗</a></div>
+      {isPaper && (
+        <div class="rkd-metadata">
+          {category && <a href={folderHref}>{category.replaceAll('/', ' / ')}</a>}
+          {data.status && <span>{statusLabel[data.status] || data.status}</span>}
+          {data.rating && data.rating > 0 && <span>评分：{data.rating}/5</span>}
+        </div>
+      )}
+      {!hasHeading && <h1>{title}</h1>}
+      {!hasHeading && data.summaryZh && <p class="rkd-summary">{data.summaryZh}</p>}
+      {outLinks.length > 0 && (
+        <div class="rkd-externals">
+          {outLinks.map(([kind, url]) => <a href={url} target="_blank" rel="noopener noreferrer">{sourceLabels[kind] || kind} ↗</a>)}
+        </div>
+      )}
       <Content />
-      <div class="rkd-end"><a href="/research/">← 返回知识库</a></div>
+      {relatedReviews.length > 0 && (
+        <section class="rkd-related">
+          <h2>关联主题综述</h2>
+          {relatedReviews.map(review => <p><a href={review.href}>{review.title} →</a></p>)}
+        </section>
+      )}
+      <div class="rkd-end"><a href={isPaper ? folderHref : "/research/"}>← 返回研究目录</a></div>
     </article>
     {toc.length > 1 && (
       <aside class="rkd-sidebar">
@@ -41,6 +78,13 @@ const source = 'https://github.com/Suchenl/Suchenl.github.io/blob/main/knowledge
 </Base>
 
 <style>
+  .rkd-metadata { display:flex;gap:.65rem;flex-wrap:wrap;margin:.8rem 0 1rem;color:var(--fg-muted);font-size:.81rem; }
+  .rkd-metadata a { font-weight:700; }
+  .rkd-metadata span { padding:.15rem .55rem;background:var(--surface-2);border-radius:999px; }
+  .rkd-summary { color:var(--fg-muted);font-size:1.02rem; }
+  .rkd-externals { display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0; }
+  .rkd-externals a { display:inline-flex;padding:.3rem .65rem;border-radius:10px;background:var(--accent-soft);font-size:.82rem;font-weight:650; }
+  .rkd-related { margin-top:2.5rem;padding-top:.5rem;border-top:1px solid var(--border); }
   .rkd-crumb { display: flex; gap: .5rem; align-items: center; margin: 1.4rem 0; color: var(--fg-muted); font-size: .86rem; }
   .rkd-crumb a { color: var(--accent-ink); font-weight: 700; }
   .rkd-shell { display: grid; grid-template-columns: minmax(0,1fr) 214px; gap: 2.5rem; align-items: start; }
