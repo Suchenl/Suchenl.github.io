@@ -86,3 +86,13 @@ if(!readerSource.includes('research-last-read-v1') || !readerSource.includes('rk
   throw new Error('Resume-reading and recall prompt contract missing');
 }
 console.log('Knowledge graph, seven-step learning path, term deep links, and recall checks passed.');
+
+
+// Learning notes are explicitly local-only and exportable, with no pretend GitHub autosave.
+if (!readerSource.includes('rkd-personal-input') ||
+    !readerSource.includes('research-personal-note-v1:') ||
+    !readerSource.includes('复制为 Markdown') ||
+    !readerSource.includes('浏览器不允许本地保存')) {
+  throw new Error('Local study notes and backup UX contract regressed');
+}
+console.log('Local study notes autosave failure handling and Markdown export controls verified.');

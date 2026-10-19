@@ -6,7 +6,12 @@ on:
     branches: [main]
     paths:
       - 'web/**'
-      - 'knowledge/**'
+      # Only material published as Research pages needs a rebuild.
+      - 'knowledge/papers/**'
+      - 'knowledge/topics/**'
+      - 'knowledge/glossary/**'
+      - 'knowledge/research/**'
+      - 'knowledge/paths/**'
       - '.github/workflows/deploy-astro.yml'
   # Sunday 23:59 Asia/Shanghai = Sunday 15:59 UTC — pull Mon→Sun week into history.
   schedule:

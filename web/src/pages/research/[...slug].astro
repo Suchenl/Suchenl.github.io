@@ -257,7 +257,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       try { return localStorage.getItem(key); } catch { return null; }
     };
     const save = (key: string, value: string) => {
-      try { localStorage.setItem(key, value); } catch { /* disabled storage */ }
+      try { localStorage.setItem(key, value); return true; } catch { return false; }
     };
     const personalInput = document.getElementById('rkd-personal-input') as HTMLTextAreaElement | null;
     const personalStatus = document.getElementById('rkd-personal-status');
@@ -265,8 +265,10 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     if (personalInput) {
       personalInput.value = safeStored(personalKey) || '';
       personalInput.addEventListener('input', () => {
-        save(personalKey, personalInput.value);
-        if (personalStatus) personalStatus.textContent = '已尝试保存到当前浏览器。请定期复制备份。';
+        const persisted = save(personalKey, personalInput.value);
+        if (personalStatus) personalStatus.textContent = persisted
+          ? '已保存在当前浏览器。建议定期复制到笔记软件或 GitHub。'
+          : '浏览器不允许本地保存，请立即使用“复制为 Markdown”备份。';
       });
     }
     document.getElementById('rkd-personal-copy')?.addEventListener('click', async () => {
