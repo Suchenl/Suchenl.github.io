@@ -14,6 +14,7 @@ type PaperMeta = {
   summaryZh?: string;
   abstract?: string;
   added?: string | Date;
+  links?: { arxiv?: string; pdf?: string; project?: string; code?: string };
 };
 const entries = await getCollection('knowledge');
 const body = (e: (typeof entries)[number]) => e.body || '';
@@ -32,6 +33,8 @@ const papers = paperNotes.map(e => {
     href: '/research/' + e.id + '/',
     title: m.title || heading(e),
     summary: m.summaryZh || m.abstract || '',
+    external: Object.values(m.links || {}).find(v => typeof v === 'string' && /^https?:\/\//.test(v)) || '',
+    noteDepth: body(e).length > 750 ? '详细笔记' : '简要笔记',
     authors: m.authors || [],
     year: m.year || getYear(e.id),
     venue: m.venue || '',
@@ -52,18 +55,46 @@ const items = [...papers, ...other];
 const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
-<Base title="研究知识库" description="按研究方向组织的论文阅读、中文解读、主题综述、术语与研究问题。">
-  <h1 class="page-title">研究知识库</h1>
-  <p class="page-intro">像整理文件夹一样整理研究：按方向浏览论文，也能直接阅读笔记、综述、术语和研究思路。正文以中文为主，论文原标题保留英文。</p>
+<Base title="研究知识库" description="按研究方向检索、阅读并持续维护论文、主题综述与研究笔记。">
+  <section class="lit-intro">
+    <p class="lit-eyebrow">PERSONAL RESEARCH LIBRARY</p>
+    <h1 class="page-title">研究知识库</h1>
+    <p class="page-intro">论文、方法与研究思考，统一整理在这里。按研究方向浏览，按关键词检索，从简要笔记逐步深入到专题综述。</p>
+    <div class="lit-shortcuts" aria-label="内容类别">
+      <button type="button" data-view="papers"><strong>{papers.length}</strong><span>篇论文</span></button>
+      <button type="button" data-view="reviews"><strong>{reviews.length}</strong><span>篇专题综述</span></button>
+      <button type="button" data-view="glossary"><strong>{glossaries.length}</strong><span>份术语整理</span></button>
+      <button type="button" data-view="ideas"><strong>{ideas.length}</strong><span>个研究问题</span></button>
+    </div>
+  </section>
   <div class="lit" id="lit">
-    <label class="sr-only" for="lit-search">搜索知识库</label>
-    <input id="lit-search" class="lit-search" type="search" placeholder="搜索论文、作者、方向、术语或研究问题…" autocomplete="off" />
+    <div class="lit-search-wrap">
+      <span class="lit-search-icon" aria-hidden="true">⌕</span>
+      <label class="sr-only" for="lit-search">搜索研究知识库</label>
+      <input id="lit-search" class="lit-search" type="search" placeholder="搜索论文标题、内容、作者、关键词、术语…" autocomplete="off" />
+      <button type="button" id="lit-clear" hidden>清除</button>
+      <kbd>/</kbd>
+    </div>
     <div class="lit-main">
-      <aside class="lit-tree" id="lit-tree" aria-label="研究目录"></aside>
-      <section class="lit-results" aria-label="内容列表">
-        <div class="lit-crumb" id="lit-crumb"></div>
-        <div class="lit-filters" id="lit-filters" aria-label="论文阅读状态">
-          <button type="button" data-status="all" class="active">全部</button>
+      <aside class="lit-sidebar" aria-label="研究目录">
+        <div class="lit-side-head"><strong>研究目录</strong><button id="lit-expand" type="button">展开全部</button></div>
+        <nav class="lit-tree" id="lit-tree" aria-label="研究方向"></nav>
+        <p class="lit-side-hint">同一篇论文可以出现在多个研究方向中，笔记只维护一份。</p>
+      </aside>
+      <section class="lit-results" aria-label="研究条目">
+        <div class="lit-heading">
+          <div class="lit-crumb" id="lit-crumb" aria-live="polite"></div>
+          <label class="lit-sort-label" for="lit-sort">排序
+            <select id="lit-sort">
+              <option value="year">年份：新到旧</option>
+              <option value="added">收藏时间</option>
+              <option value="rating">我的评分</option>
+              <option value="title">标题 A–Z</option>
+            </select>
+          </label>
+        </div>
+        <div class="lit-filters" id="lit-filters" aria-label="筛选阅读状态">
+          <button type="button" data-status="all" class="active">全部论文</button>
           <button type="button" data-status="to-read">想读</button>
           <button type="button" data-status="reading">在读</button>
           <button type="button" data-status="read">已读</button>
@@ -73,7 +104,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       </section>
     </div>
   </div>
-  <p class="muted" style="margin-top:1.6rem;font-size:.84rem">全部条目维护在 <a href="https://github.com/Suchenl/Suchenl.github.io/tree/main/knowledge" target="_blank" rel="noopener">GitHub / knowledge</a>；一篇论文只有一份 Markdown，可被多个主题引用。</p>
+  <p class="lit-source-note">内容使用 Markdown 维护于 <a href="https://github.com/Suchenl/Suchenl.github.io/tree/main/knowledge" target="_blank" rel="noopener noreferrer">GitHub / knowledge</a>。阅读状态代表你的实际阅读进度，不会因为 AI 写过笔记就自动标记为「已读」。</p>
   <script type="application/json" id="research-items-json" set:html={serialized}></script>
 </Base>
 
@@ -81,11 +112,11 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   type Item = {
     kind: string; id: string; href: string; title: string; summary: string;
     authors?: string[]; year?: number; venue?: string; categories?: string[];
-    tags?: string[]; status?: string; rating?: number; searchText?: string; added?: string;
+    tags?: string[]; status?: string; rating?: number; searchText?: string; added?: string; external?: string; noteDepth?: string;
   };
   type Folder = { name: string; path: string; count: number; children: Map<string, Folder> };
   const ALL: Item[] = JSON.parse(document.getElementById('research-items-json')?.textContent || '[]');
-  const state = { selected: 'papers', query: '', status: 'all' };
+  const state = { selected: 'papers', query: '', status: 'all', sort: 'year' };
   const expanded = new Set<string>(['papers']);
   const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
   const labels: Record<string, string> = { papers: '全部论文', reviews: '主题综述', glossary: '术语词典', ideas: '研究思路' };
@@ -124,29 +155,35 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     const children = [...n.children.values()].sort((a,b) => b.count - a.count || a.name.localeCompare(b.name, 'zh'));
     const hasChildren = children.length > 0;
     const open = expanded.has(n.path);
-    const active = state.selected === n.path ? ' sel' : '';
+    const active = state.selected === n.path;
     const arrow = hasChildren
-      ? '<button type="button" class="caret' + (open ? ' open' : '') + '" data-toggle="' + escapeHtml(n.path) + '" aria-label="展开或折叠 ' + escapeHtml(n.name) + '">▸</button>'
+      ? '<button type="button" class="caret' + (open ? ' open' : '') + '" data-toggle="' + escapeHtml(n.path) + '" aria-expanded="' + open + '" aria-label="展开或折叠 ' + escapeHtml(n.name) + '">▸</button>'
       : '<span class="caret-sp"></span>';
-    let result = '<div class="tnode' + active + '" data-path="' + escapeHtml(n.path) + '" style="padding-left:' + (depth * 12 + 6) + 'px">'
-      + arrow + '<span class="tname">' + escapeHtml(n.name) + '</span><span class="tcount">' + n.count + '</span></div>';
+    let result = '<div class="tnode' + (active ? ' sel' : '') + '" style="padding-left:' + (depth * 11 + 3) + 'px">'
+      + arrow + '<button type="button" class="tnode-select" data-path="' + escapeHtml(n.path) + '"' + (active ? ' aria-current="page"' : '') + '>'
+      + '<span class="tname">' + escapeHtml(n.name) + '</span><span class="tcount">' + n.count + '</span></button></div>';
     if (hasChildren && open) result += children.map(c => treeNode(c, depth + 1)).join('');
     return result;
+  }
+  function selectView(view: string) {
+    state.selected = view;
+    state.query = '';
+    state.status = 'all';
+    expanded.add(view);
+    (document.getElementById('lit-search') as HTMLInputElement).value = '';
+    const next = new URL(window.location.href);
+    if (view === 'papers') next.searchParams.delete('folder'); else next.searchParams.set('folder', view);
+    next.searchParams.delete('q');
+    history.replaceState(null, '', next.pathname + next.search + next.hash);
+    render();
   }
   function renderTree() {
     const host = document.getElementById('lit-tree')!;
     host.innerHTML = roots.map(n => treeNode(n, 0)).join('');
-    host.querySelectorAll<HTMLElement>('[data-path]').forEach(el => el.addEventListener('click', event => {
-      if ((event.target as HTMLElement).closest('[data-toggle]')) return;
-      state.selected = el.dataset.path || 'papers';
-      expanded.add(state.selected);
-      state.status = 'all';
-      state.query = '';
-      (document.getElementById('lit-search') as HTMLInputElement).value = '';
-      render();
+    host.querySelectorAll<HTMLButtonElement>('[data-path]').forEach(el => el.addEventListener('click', () => {
+      selectView(el.dataset.path || 'papers');
     }));
-    host.querySelectorAll<HTMLElement>('[data-toggle]').forEach(el => el.addEventListener('click', event => {
-      event.stopPropagation();
+    host.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach(el => el.addEventListener('click', () => {
       const key = el.dataset.toggle || '';
       if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
       renderTree();
@@ -160,54 +197,97 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     } else if (state.selected === 'papers') {
       values = ALL.filter(p => p.kind === 'paper');
     } else if (state.selected.startsWith('cat:')) {
-      const category = state.selected.slice(4);
-      values = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === category || c.startsWith(category + '/')));
+      const cat = state.selected.slice(4);
+      values = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === cat || c.startsWith(cat + '/')));
     } else {
       values = ALL.filter(p => p.kind === state.selected);
     }
-    if (state.status !== 'all') values = values.filter(p => p.kind !== 'paper' || p.status === state.status);
+    if (state.status !== 'all') values = values.filter(p => p.kind === 'paper' && p.status === state.status);
     const kindOrder = (k: string) => ({ reviews: 0, paper: 1, glossary: 2, ideas: 3 }[k] ?? 4);
-    return values.sort((a,b) => kindOrder(a.kind) - kindOrder(b.kind) || (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title));
+    return values.sort((a,b) => {
+      if (state.sort === 'rating') return (b.rating || 0) - (a.rating || 0) || (b.year || 0) - (a.year || 0);
+      if (state.sort === 'added') return (b.added || '').localeCompare(a.added || '') || (b.year || 0) - (a.year || 0);
+      if (state.sort === 'title') return a.title.localeCompare(b.title);
+      return kindOrder(a.kind) - kindOrder(b.kind) || (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title);
+    });
   }
   function itemRow(p: Item): string {
-    const isPaper = p.kind === 'paper';
-    const subtitle = isPaper
-      ? [p.venue, p.year, (p.categories || [])[0]].filter(Boolean).join(' · ')
-      : labels[p.kind] || '研究资料';
-    const chips = isPaper ? (p.tags || []).slice(0, 5).map(t => '<span class="tag-chip">' + escapeHtml(t) + '</span>').join('') : '';
-    const rating = p.rating && p.rating > 0 ? '★'.repeat(p.rating) + '☆'.repeat(Math.max(0,5-p.rating)) : '';
+    const paper = p.kind === 'paper';
+    const title = escapeHtml(p.title);
+    const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
+    const kind = paper ? (p.noteDepth || '阅读笔记') : (labels[p.kind] || '研究资料');
+    const year = paper ? [p.year || '', p.venue || ''].filter(Boolean).join(' · ') : kind;
+    const chips = paper ? (p.tags || []).slice(0,3).map(tag => '<span class="lit-chip">' + escapeHtml(tag) + '</span>').join('') : '';
+    const rating = paper && p.rating && p.rating > 0 ? '<span class="lit-rating">' + '★'.repeat(p.rating) + '☆'.repeat(Math.max(0,5-p.rating)) + '</span>' : '';
+    const external = paper && p.external && /^https?:\/\//.test(p.external)
+      ? '<a class="lit-external" href="' + escapeHtml(p.external) + '" target="_blank" rel="noopener noreferrer" aria-label="在新标签页打开 ' + title + ' 的原始来源">原始资料 ↗</a>' : '';
     return '<article class="row">'
-      + '<div class="row-main"><div class="row-title"><a href="' + escapeHtml(p.href) + '">' + escapeHtml(p.title) + '</a></div>'
-      + '<div class="row-sub muted">' + escapeHtml(subtitle) + '</div>'
-      + (p.summary ? '<div class="row-abs muted">' + escapeHtml(p.summary) + '</div>' : '')
-      + (chips ? '<div class="row-tags">' + chips + '</div>' : '')
-      + '</div><div class="row-meta">'
-      + (isPaper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')
-      + (rating ? '<span class="stars">' + rating + '</span>' : '')
-      + '<span class="muted rmeta">' + (isPaper ? '查看笔记 →' : '阅读内容 →') + '</span></div></article>';
+      + '<div class="row-main"><div class="lit-row-eyebrow"><span>' + escapeHtml(year) + '</span><span>' + escapeHtml(kind) + '</span></div>'
+      + '<div class="row-title"><a href="' + escapeHtml(p.href) + '">' + title + '</a></div>'
+      + (p.summary ? '<p class="row-abs">' + escapeHtml(p.summary) + '</p>' : '')
+      + '<div class="lit-row-bottom"><span class="lit-category">' + escapeHtml(category.replaceAll('/', ' / ')) + '</span>' + chips + '</div></div>'
+      + '<div class="row-meta">' + (paper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')
+      + rating + '<span class="lit-card-links">' + external + '<a href="' + escapeHtml(p.href) + '">阅读笔记 →</a></span></div></article>';
   }
   function render() {
     renderTree();
     const data = filteredItems();
-    const name = state.selected.startsWith('cat:') ? state.selected.slice(4).replaceAll('/', ' / ') : labels[state.selected] || '研究目录';
-    const label = state.query.trim() ? '搜索 “' + escapeHtml(state.query.trim()) + '”' : escapeHtml(name);
-    document.getElementById('lit-crumb')!.innerHTML = '<span class="cpath">' + label + '</span><span class="muted"> · ' + data.length + ' 条</span>';
-    document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.map(itemRow).join('') + '</div>' : '<div class="lit-empty muted">暂无匹配内容</div>';
-    const showingPapers = state.query.trim() || state.selected === 'papers' || state.selected.startsWith('cat:');
+    const current = state.selected.startsWith('cat:') ? state.selected.slice(4).replaceAll('/', ' / ') : labels[state.selected] || '研究目录';
+    const label = state.query.trim() ? '搜索 “' + escapeHtml(state.query.trim()) + '”' : escapeHtml(current);
+    document.getElementById('lit-crumb')!.innerHTML = '<strong>' + label + '</strong><span>' + data.length + ' 条结果</span>';
+    document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.map(itemRow).join('') + '</div>' : '<div class="lit-empty">没有匹配内容。试试其他关键词或清除筛选条件。</div>';
+    const showingPapers = !state.query.trim() && (state.selected === 'papers' || state.selected.startsWith('cat:'));
     (document.getElementById('lit-filters') as HTMLElement).hidden = !showingPapers;
-    document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => {
-      button.classList.toggle('active', button.dataset.status === state.status);
-    });
+    (document.querySelector('.lit-sort-label') as HTMLElement).hidden = !showingPapers && !state.query.trim();
+    (document.getElementById('lit-clear') as HTMLButtonElement).hidden = !state.query.trim();
+    document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.classList.toggle('active', button.dataset.status === state.status));
+    document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === state.selected && !state.query.trim()));
   }
-  document.getElementById('lit-search')!.addEventListener('input', e => {
-    state.query = (e.target as HTMLInputElement).value;
+  const searchField = document.getElementById('lit-search') as HTMLInputElement;
+  searchField.addEventListener('input', () => {
+    state.query = searchField.value;
     state.status = 'all';
     render();
+  });
+  document.getElementById('lit-clear')!.addEventListener('click', () => {
+    state.query = '';
+    searchField.value = '';
+    render();
+    searchField.focus();
   });
   document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.addEventListener('click', () => {
     state.status = button.dataset.status || 'all';
     render();
   }));
+  document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => {
+    selectView(button.dataset.view || 'papers');
+  }));
+  document.getElementById('lit-expand')!.addEventListener('click', event => {
+    const button = event.currentTarget as HTMLButtonElement;
+    const everyPath: string[] = [];
+    const visit = (node: Folder) => { if (node.children.size) everyPath.push(node.path); node.children.forEach(visit); };
+    roots.forEach(visit);
+    const expandAll = everyPath.some(x => !expanded.has(x));
+    for (const path of everyPath) { if (expandAll) expanded.add(path); else expanded.delete(path); }
+    button.textContent = expandAll ? '折叠全部' : '展开全部';
+    renderTree();
+  });
+  const sortField = document.getElementById('lit-sort') as HTMLSelectElement;
+  sortField.addEventListener('change', () => { state.sort = sortField.value; render(); });
+  document.addEventListener('keydown', (event) => {
+    const target = event.target as HTMLElement;
+    const editing = target?.matches('input,textarea,select,[contenteditable="true"]');
+    if (((event.key === '/' && !editing) || ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k'))) {
+      event.preventDefault();
+      searchField.focus();
+      searchField.select();
+    } else if (event.key === 'Escape' && document.activeElement === searchField) {
+      searchField.value = '';
+      state.query = '';
+      searchField.blur();
+      render();
+    }
+  });
   const folder = new URLSearchParams(window.location.search).get('folder');
   if (folder) {
     const valid = folder === 'papers' || ['reviews','glossary','ideas'].includes(folder) || (folder.startsWith('cat:') && ALL.some(p => p.categories?.some(c => c === folder.slice(4) || c.startsWith(folder.slice(4) + '/'))));
