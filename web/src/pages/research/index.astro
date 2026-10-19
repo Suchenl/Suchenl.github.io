@@ -332,6 +332,9 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     });
   }
   function itemRow(p: Item): string {
+    // Preserve the chosen directory across detail navigation without changing canonical IDs.
+    const returnFolder = state.selected.startsWith('cat:') ? state.selected : (p.kind === 'paper' ? 'papers' : state.selected);
+    const detailHref = p.href + '?from=' + encodeURIComponent(returnFolder);
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
     const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
@@ -343,11 +346,11 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       ? '<a class="lit-external" href="' + escapeHtml(p.external) + '" target="_blank" rel="noopener noreferrer" aria-label="在新标签页打开 ' + title + ' 的原始来源">原始资料 ↗</a>' : '';
     return '<article class="row">'
       + '<div class="row-main"><div class="lit-row-eyebrow"><span>' + escapeHtml(year) + '</span><span>' + escapeHtml(kind) + '</span></div>'
-      + '<div class="row-title"><a href="' + escapeHtml(p.href) + '">' + title + '</a></div>'
+      + '<div class="row-title"><a href="' + escapeHtml(detailHref) + '">' + title + '</a></div>'
       + (p.summary ? '<p class="row-abs">' + escapeHtml(p.summary) + '</p>' : '')
       + '<div class="lit-row-bottom"><span class="lit-category">' + escapeHtml(category.replaceAll('/', ' / ')) + '</span>' + chips + '</div></div>'
       + '<div class="row-meta">' + (paper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')
-      + rating + '<span class="lit-card-links">' + external + '<a href="' + escapeHtml(p.href) + '">' + (paper ? '阅读笔记 →' : '查看内容 →') + '</a></span></div></article>';
+      + rating + '<span class="lit-card-links">' + external + '<a href="' + escapeHtml(detailHref) + '">' + (paper ? '阅读笔记 →' : '查看内容 →') + '</a></span></div></article>';
   }
   function renderContext() {
     const host = document.getElementById('lit-context');
@@ -639,4 +642,13 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   #lit .lit-tree .tnode .tname {flex:1;min-width:0;font-size:.83rem;line-height:1.4;}
   #lit .lit-tree .tnode .tcount {flex-shrink:0;line-height:1.6;padding:0 .45rem;}
   @media (prefers-reduced-motion:reduce) { #lit .lit-tree .caret {transition:none;} }
+</style>
+
+<style is:global>
+  /* Full item discovery: cards remain semantically articles with real links. */
+  #lit .view-list .row {position:relative;isolation:isolate;}
+  #lit .view-list .row-title a::after {content:"";position:absolute;inset:0;}
+  #lit .view-list .row-meta a {position:relative;z-index:2;}
+  #lit .view-list .row:focus-within {border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);}
+  #lit .view-list .row-title a:focus-visible {outline:none;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;}
 </style>
