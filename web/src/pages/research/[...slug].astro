@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import { buildKnowledgeGraph, readingSteps } from '../../lib/research-graph';
 
 export async function getStaticPaths() {
   const entries = await getCollection('knowledge');
@@ -31,10 +32,21 @@ const relatedReviews = isPaper ? (await getCollection('knowledge'))
     href: '/research/' + e.id + '/',
     title: (e.data as { title?: string }).title || (e.body || '').match(/^#\s+(.+)$/m)?.[1] || e.id,
   })) : [];
-const kind = isPaper ? '论文笔记' : entry.id.startsWith('glossary/') ? '术语解释' : entry.id.startsWith('research/') ? '研究设想' : '主题综述';
+const isLearningPath = entry.id.startsWith('paths/');
+const kind = isLearningPath ? '学习路线' : isPaper ? '论文笔记' : entry.id.startsWith('glossary/') ? '术语解释' : entry.id.startsWith('research/') ? '研究设想' : '主题综述';
 const prose = (entry.body || '').replace(/^---[\s\S]*?---\s*/, '').replace(/`{3}[\s\S]*?`{3}/g, '');
 const minutes = Math.max(1, Math.ceil((prose.match(/[\u3400-\u9fff]/g) || []).length / 350 + (prose.match(/[A-Za-z]+/g) || []).length / 200));
 const canShowToc = toc.length > 1;
+const graph = buildKnowledgeGraph(await getCollection('knowledge'));
+const inbound = graph.incomingFor(entry.id).filter(n => n.kind !== 'other');
+const outbound = graph.outgoingFor(entry.id).filter(n => n.kind !== 'other');
+const steps = readingSteps(entry).map((step, i) => ({
+  index: i,
+  ...step,
+  node: graph.nodes.get(step.ref)!,
+}));
+const navShortcuts = toc.filter(h => h.depth === 2 && /(一句话|核心|问题|方法|实验|局限|分析|结论|对比|研究|证据|学习目标)/.test(h.text)).slice(0, 5);
+
 const allPaperEntries = isPaper ? await getCollection('knowledge') : [];
 const relatedPapers = category ? allPaperEntries.filter(e => {
   if (e.id === entry.id || !e.id.startsWith('papers/')) return false;
@@ -47,7 +59,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
 ---
 
 <Base title={title} description={data.summaryZh || '研究知识库 · ' + title}>
-  <div class="rkd-page" id="research-reader">
+  <div class="rkd-page" id="research-reader" data-document-id={entry.id} data-document-title={title}>
     <div class="rkd-progress" id="reading-progress" aria-hidden="true"></div>
     <nav class="rkd-breadcrumb" aria-label="位置">
       <a href="/research/">Research</a><span aria-hidden="true">/</span>
@@ -77,9 +89,16 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       <span class="rkd-tool-divider" aria-hidden="true"></span>
       <button type="button" id="rkd-focus" aria-pressed="false">专注阅读</button>
       <button type="button" id="rkd-copy-link">复制链接</button>
+      <button type="button" id="rkd-resume" hidden>继续上次读到的章节</button>
       <span class="rkd-tool-note" aria-live="polite" id="rkd-tool-note"></span>
     </div>
 
+    {navShortcuts.length > 1 && !isLearningPath && (
+      <nav class="rkd-quick" aria-label="快速定位">
+        <span>快速定位</span>
+        {navShortcuts.map(h => <a href={'#' + h.slug}>{h.text}</a>)}
+      </nav>
+    )}
     {canShowToc && (
       <details class="rkd-mobile-toc">
         <summary>本页目录 · {toc.length} 节</summary>
@@ -93,7 +112,50 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       <article class="rkd-article" id="reader-article">
         <div class="rkd-prose">
           <Content />
+          {isLearningPath && steps.length > 0 && (
+            <section class="rkd-learning-path" aria-label="循序学习任务">
+              <div class="rkd-learning-heading">
+                <div><h2 id="learning-steps">按顺序学习</h2><p>每步都有明确目标，建议先复述关键概念，再继续下一步。</p></div>
+                <div class="rkd-learning-count" role="status" aria-live="polite" id="path-count">0 / {steps.length} 步</div>
+              </div>
+              <progress id="path-progress" value="0" max={steps.length} aria-label="本机学习路线完成进度">0</progress>
+              <div class="rkd-step-list">
+                {steps.map((step) => (
+                  <div class="rkd-step" data-step-index={step.index}>
+                    <label class="rkd-step-check">
+                      <input type="checkbox" data-learning-step={step.index} aria-label={'已学习：' + step.node.title}/>
+                      <span class="rkd-step-number">{step.index + 1}</span>
+                    </label>
+                    <div class="rkd-step-content">
+                      <span class="rkd-step-stage">{step.stage || '学习步骤'} · {step.node.kind === 'glossary' ? '术语' : step.node.kind === 'review' ? '综述' : step.node.kind === 'paper' ? '论文' : '研究问题'}</span>
+                      <a href={step.node.href}>{step.node.title} →</a>
+                      <p>{step.why}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p class="rkd-path-privacy">这里的勾选仅保存在当前浏览器，不会改动 GitHub 论文状态，也不会跨设备同步。</p>
+            </section>
+          )}
         </div>
+        {isLearningPath === false && outbound.length > 0 && (
+          <section class="rkd-related rkd-relations">
+            <h2>本文引用的知识资料 <span>{outbound.length}</span></h2>
+            <div class="rkd-relation-links">
+              {outbound.slice(0, 8).map(n => <a href={n.href}><small>{n.kind === 'paper' ? '论文' : n.kind === 'glossary' ? '术语' : n.kind === 'review' ? '综述' : n.kind === 'path' ? '路线' : '研究'}</small>{n.title}</a>)}
+            </div>
+            {outbound.length > 8 && <details class="rkd-relation-more"><summary>展开其余 {outbound.length - 8} 项</summary><div class="rkd-relation-links">{outbound.slice(8).map(n => <a href={n.href}>{n.title}</a>)}</div></details>}
+          </section>
+        )}
+        {inbound.length > 0 && (
+          <section class="rkd-related rkd-relations">
+            <h2>哪些内容链接到这里 <span>{inbound.length}</span></h2>
+            <div class="rkd-relation-links">
+              {inbound.map(n => <a href={n.href}><small>{n.kind === 'path' ? '学习路线' : n.kind === 'review' ? '综述' : n.kind === 'glossary' ? '术语' : n.kind === 'paper' ? '论文' : '研究问题'}</small>{n.title}</a>)}
+            </div>
+            <p class="rkd-path-privacy">根据本知识库的 Markdown 链接和学习步骤自动生成，不代表正式学术引用。</p>
+          </section>
+        )}
         {relatedReviews.length > 0 && (
           <section class="rkd-related">
             <h2>关联主题综述</h2>
@@ -145,6 +207,8 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
       back.href=ret.pathname+ret.search;
     }
+    const articleId = reader.dataset.documentId || '';
+    const articleTitle = reader.dataset.documentTitle || '';
     const safeStored = (key: string) => {
       try { return localStorage.getItem(key); } catch { return null; }
     };
@@ -152,6 +216,36 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       try { localStorage.setItem(key, value); } catch { /* disabled storage */ }
     };
     const note = document.getElementById('rkd-tool-note');
+    const resume = document.getElementById('rkd-resume') as HTMLButtonElement | null;
+    const storedSection = safeStored('research-read-position-v1:' + articleId);
+    if (resume && storedSection && document.getElementById(storedSection)) {
+      resume.hidden = false;
+      resume.addEventListener('click', () => {
+        document.getElementById(storedSection)?.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    }
+    const stepBoxes = Array.from(reader.querySelectorAll<HTMLInputElement>('[data-learning-step]'));
+    if (stepBoxes.length) {
+      const key = 'research-path-checked-v1:' + articleId;
+      let checked: number[] = [];
+      try {
+        const parsed = JSON.parse(safeStored(key) || '[]');
+        if (Array.isArray(parsed)) checked = parsed.filter(n => Number.isInteger(n) && n >= 0 && n < stepBoxes.length);
+      } catch { /* no stored state */ }
+      stepBoxes.forEach(c => c.checked = checked.includes(Number(c.dataset.learningStep)));
+      const progress = document.getElementById('path-progress') as HTMLProgressElement | null;
+      const count = document.getElementById('path-count');
+      const refresh = () => {
+        const done = stepBoxes.filter(c => c.checked).length;
+        if (progress) progress.value = done;
+        if (count) count.textContent = done + ' / ' + stepBoxes.length + ' 步';
+      };
+      stepBoxes.forEach(c => c.addEventListener('change', () => {
+        save(key, JSON.stringify(stepBoxes.filter(b=>b.checked).map(b=>Number(b.dataset.learningStep))));
+        refresh();
+      }));
+      refresh();
+    }
     const sizes = [15, 16, 17, 18, 19, 20];
     let size = Number(safeStored('research-font-size') || '17');
     if (!sizes.includes(size)) size = 17;
@@ -186,11 +280,31 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     const backTop = document.getElementById('rkd-back-top');
     backTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     const progress = document.getElementById('reading-progress');
+    let savedAt = 0;
+    const readingHeadings = Array.from(reader.querySelectorAll<HTMLElement>('.rkd-prose h2[id], .rkd-prose h3[id]'));
+    const storeReading = () => {
+      if (!articleId || window.scrollY < 220) return;
+      const now = Date.now();
+      if (now - savedAt < 1500) return;
+      savedAt = now;
+      let current: HTMLElement | undefined;
+      for (const el of readingHeadings) {
+        if (el.getBoundingClientRect().top < 190) current = el;
+        else break;
+      }
+      const section = current?.id || '';
+      if (section) save('research-read-position-v1:' + articleId,section);
+      save('research-last-read-v1',JSON.stringify({
+        id:articleId,heading:(current?.textContent || '').trim().slice(0,70),
+        section,title:articleTitle,time:now
+      }));
+    };
     const updateProgress = () => {
       const travel = document.documentElement.scrollHeight - window.innerHeight;
       const pct = travel > 0 ? Math.min(100, Math.max(0, window.scrollY / travel * 100)) : 100;
       if (progress) progress.style.width = pct + '%';
       backTop?.classList.toggle('visible', window.scrollY > 520);
+      storeReading();
     };
     window.addEventListener('scroll', updateProgress, { passive: true });
     window.addEventListener('resize', updateProgress);
@@ -304,4 +418,34 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     #rkd-back-top {right:.7rem;bottom:1rem;}
   }
   @media (prefers-reduced-motion:reduce) { .rkd-progress,#rkd-back-top {transition:none;} }
+</style>
+
+<style>
+  .rkd-quick {display:flex;flex-wrap:wrap;gap:.45rem .75rem;align-items:center;margin:0 0 1.7rem;font-size:.78rem;}
+  .rkd-quick span {color:var(--fg-muted);font-weight:740;}
+  .rkd-quick a {color:var(--accent-ink);padding:.28rem .55rem;border-radius:7px;background:var(--surface-2);}
+  .rkd-learning-path {margin:2rem 0 1rem;padding:1.2rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+  .rkd-learning-heading {display:flex;align-items:start;justify-content:space-between;gap:.5rem;flex-wrap:wrap;}
+  .rkd-learning-heading h2 {font-size:1.25rem;margin:0 0 .25rem;border:0;padding:0;}
+  .rkd-learning-heading p {margin:0;color:var(--fg-muted);font-size:.82rem;}
+  .rkd-learning-count {font-size:.82rem;font-weight:700;white-space:nowrap;color:var(--accent-ink);}
+  #path-progress {width:100%;height:8px;margin:.9rem 0 1rem;accent-color:var(--accent);}
+  .rkd-step-list {display:grid;gap:0;}
+  .rkd-step {display:flex;align-items:start;gap:.8rem;padding:.9rem 0;border-top:1px solid var(--border);}
+  .rkd-step-check {display:flex;align-items:center;gap:.25rem;cursor:pointer;min-height:44px;}
+  .rkd-step-check input {width:17px;height:17px;accent-color:var(--accent);}
+  .rkd-step-number {display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--surface-2);font-weight:750;}
+  .rkd-step-content {min-width:0;flex:1;}
+  .rkd-step-content>a {display:block;font-weight:750;line-height:1.5;text-decoration:none;overflow-wrap:anywhere;}
+  .rkd-step-content p {margin:.3rem 0 0;color:var(--fg-muted);font-size:.83rem;line-height:1.7;}
+  .rkd-step-stage {display:block;font-size:.7rem;color:var(--fg-muted);margin-bottom:.2rem;}
+  .rkd-path-privacy {color:var(--fg-muted);font-size:.75rem;line-height:1.65;margin:.7rem 0 0;}
+  .rkd-relations h2 span {font-size:.73rem;color:var(--fg-muted);font-weight:450;}
+  .rkd-relation-links {display:grid;gap:.4rem;}
+  .rkd-relation-links>a {line-height:1.55;overflow-wrap:anywhere;}
+  .rkd-relation-links small {display:inline-block;min-width:3em;color:var(--fg-muted);margin-right:.5rem;}
+  .rkd-relation-more {margin-top:.7rem;color:var(--fg-muted);font-size:.8rem;}
+  .rkd-relation-more summary {cursor:pointer;}
+  .rkd-relation-more .rkd-relation-links {margin-top:.6rem;}
+  .rkd-reading-tools button[hidden] {display:none;}
 </style>
