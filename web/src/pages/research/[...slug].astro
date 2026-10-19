@@ -107,7 +107,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
           </section>
         )}
         <div class="rkd-foot">
-          <a href={isPaper ? folderHref : '/research/'}>← 返回研究目录</a>
+          <a id="research-return" href={isPaper ? folderHref : '/research/'}>← 返回研究目录</a>
           <a href={editSource} target="_blank" rel="noopener noreferrer">编辑或完善笔记 ↗</a>
         </div>
       </article>
@@ -131,6 +131,11 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
 <script>
   const reader = document.getElementById('research-reader') as HTMLElement | null;
   if (reader) {
+    // A research page can be visited directly or through any of the paper's classifications.
+    const from = new URLSearchParams(window.location.search).get('from');
+    const back = document.getElementById('research-return') as HTMLAnchorElement | null;
+    const validFrom = from && /^(papers|reviews|glossary|ideas|cat:[^?#]+)$/.test(from);
+    if (back && validFrom) back.href = from === 'papers' ? '/research/' : '/research/?folder=' + encodeURIComponent(from);
     const safeStored = (key: string) => {
       try { return localStorage.getItem(key); } catch { return null; }
     };
