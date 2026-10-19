@@ -1,0 +1,171 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('knowledge');
+const href = (id: string) => '/research/' + id + '/';
+const body = (e: (typeof all)[number]) => e.body || '';
+const heading = (e: (typeof all)[number]) => body(e).match(/^#\s+(.+)$/m)?.[1]?.trim() || e.id.split('/').pop() || e.id;
+const chinese = (e: (typeof all)[number]) => body(e).match(/^[-*]\s+\*\*中文(?:主题|标题)\*\*[:：]\s*(.+)$/m)?.[1]?.trim();
+const title = (e: (typeof all)[number]) => chinese(e) || heading(e);
+const abstract = (e: (typeof all)[number]) => {
+  const m = body(e).match(/^##\s+一句话[^\n]*\n+([^\n]+)/m);
+  if (m) return m[1].replace(/[*`]/g, '').slice(0, 180);
+  const m2 = body(e).match(/^>\s+(.+)$/m);
+  return (m2?.[1] || '').replace(/[*`]/g, '').slice(0, 180);
+};
+const preview = (e: (typeof all)[number]) => (title(e) + ' ' + heading(e) + ' ' + body(e).slice(0, 5000)).toLowerCase();
+const year = (e: (typeof all)[number]) => e.id.match(/20\d\d/)?.[0] || '';
+const reviews = all.filter(e => e.id.includes('/reviews/'));
+const papers = all.filter(e => /^papers\/20\d{2}\//.test(e.id)).sort((a, b) => year(b).localeCompare(year(a)) || title(a).localeCompare(title(b), 'zh'));
+const glossaries = all.filter(e => e.id.startsWith('glossary/') && !e.id.endsWith('README'));
+const proposals = all.filter(e => e.id.startsWith('research/') && !e.id.endsWith('README'));
+const subjects = Array.from(new Set(reviews.map(e => e.id.split('/')[1])));
+---
+
+<Base title="中文研究知识库" description="中文研究综述、逐篇论文解读、技术术语与研究假设，持续整理与维护。">
+  <section class="rk-hero">
+    <div>
+      <p class="rk-eyebrow"><Bi zh="PERSONAL RESEARCH LIBRARY · 持续维护" en="PERSONAL RESEARCH LIBRARY" /></p>
+      <h1 class="page-title"><Bi zh="研究知识库" en="Research Library" /></h1>
+      <p class="page-intro"><Bi zh="把文献读成自己的知识：从一个问题出发，理解不同研究的技术路线、证据、局限与争议。不是只收藏论文标题。" en="In-depth Chinese research surveys, paper analyses, shared terminology, and open questions." /></p>
+    </div>
+    <div class="rk-counts">
+      <div><strong>{reviews.length}</strong><span>主题综述</span></div>
+      <div><strong>{papers.length}</strong><span>论文解读</span></div>
+      <div><strong>{glossaries.length}</strong><span>术语文档</span></div>
+    </div>
+  </section>
+
+  <nav class="rk-shortcuts" aria-label="知识库目录">
+    <a href="#surveys">深入综述</a>
+    <a href="#papers">论文笔记</a>
+    <a href="#glossary">术语词典</a>
+    <a href="#ideas">研究思路</a>
+    <a href="/reading/">轻量阅读清单 ↗</a>
+  </nav>
+
+  <section class="rk-featured" id="surveys">
+    <div class="rk-section-head"><h2>研究综述</h2><p>以研究问题为中心；详细解释论文间真正的差异</p></div>
+    <div class="rk-feature-grid">
+      {reviews.map((e) => (
+        <a class="rk-feature" href={href(e.id)}>
+          <span class="rk-kicker">专题 · {e.id.split('/')[1]?.replaceAll('-', ' ')}</span>
+          <h3>{title(e)}</h3>
+          <p>{abstract(e) || '完整文献脉络、核心方法、证据边界与未解决问题。'}</p>
+          <span class="rk-more">阅读全文 →</span>
+        </a>
+      ))}
+    </div>
+    {subjects.length === 0 && <p class="muted">主题综述正在整理。</p>}
+  </section>
+
+  <section class="rk-section" id="papers">
+    <div class="rk-section-head"><h2>逐篇论文解读 <span class="rk-n">{papers.length}</span></h2><p>不是只存摘要；包括方法、实验设置、批判性分析和可复用结论</p></div>
+    <div class="rk-find"><span aria-hidden="true">⌕</span><input id="research-search" type="search" placeholder="搜索论文、方法、算法、作者、术语……" autocomplete="off" /><span id="research-result-count" class="muted" aria-live="polite"></span></div>
+    <div class="rk-paper-list" id="research-paper-list">
+      {papers.map((e) => (
+        <a class="rk-paper" href={href(e.id)} data-research-search={preview(e)}>
+          <span class="rk-paper-year">{year(e)}</span>
+          <div class="rk-paper-text">
+            <h3>{title(e)}</h3>
+            {chinese(e) && <p class="rk-paper-original">{heading(e)}</p>}
+            {abstract(e) && <p class="rk-paper-desc">{abstract(e)}</p>}
+          </div>
+          <span class="rk-open" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+    <p class="rk-empty" id="research-empty" hidden>没有找到匹配的文献。试试英文论文名、方法名称或换个关键词。</p>
+  </section>
+
+  <div class="rk-bottom">
+    <section id="glossary" class="rk-section">
+      <div class="rk-section-head"><h2>概念与术语</h2><p>同一个术语只维护一份权威定义</p></div>
+      <div class="rk-mini-list">
+        {glossaries.map(e => <a href={href(e.id)}><strong>{heading(e)}</strong><span>定义、公式、反例 →</span></a>)}
+      </div>
+    </section>
+    <section id="ideas" class="rk-section">
+      <div class="rk-section-head"><h2>我的研究思路</h2><p>标记假设、尚无结论的实验与反证</p></div>
+      <div class="rk-mini-list">
+        {proposals.map(e => <a href={href(e.id)}><strong>{heading(e)}</strong><span>待验证的研究设计 →</span></a>)}
+      </div>
+    </section>
+  </div>
+  <p class="rk-footer">内容源：<a href="https://github.com/Suchenl/Suchenl.github.io/tree/main/knowledge" target="_blank" rel="noopener">个人主页仓库的 knowledge/ Markdown</a>。每条文献的事实核对日期见原文；网页发布时间不等于论文发布日期。</p>
+</Base>
+
+<script>
+  const field = document.getElementById('research-search') as HTMLInputElement | null;
+  const count = document.getElementById('research-result-count');
+  const empty = document.getElementById('research-empty');
+  const papers = Array.from(document.querySelectorAll<HTMLElement>('[data-research-search]'));
+  field?.addEventListener('input', () => {
+    const q = field.value.trim().toLowerCase();
+    let visible = 0;
+    for (const item of papers) {
+      const match = !q || (item.dataset.researchSearch || '').includes(q);
+      item.hidden = !match;
+      if (match) visible += 1;
+    }
+    if (count) count.textContent = q ? '找到 ' + visible + ' 篇' : '';
+    if (empty) empty.hidden = visible > 0;
+  });
+</script>
+
+<style>
+  .rk-hero { padding: 2.3rem 0 1.4rem; display: flex; gap: 2rem; justify-content: space-between; align-items: end; }
+  .rk-hero .page-title { margin: .2rem 0 .65rem; }
+  .rk-hero .page-intro { max-width: 650px; margin: 0; }
+  .rk-eyebrow { color: var(--accent-ink); font-size: .72rem; font-weight: 800; letter-spacing: .15em; margin: .2rem 0 .8rem; }
+  .rk-counts { display: flex; gap: .4rem; flex: 0 0 auto; }
+  .rk-counts > div { padding: .7rem .85rem; text-align: center; border-radius: 12px; background: var(--surface-2); min-width: 76px; }
+  .rk-counts strong { display: block; font-size: 1.3rem; line-height: 1.4; }
+  .rk-counts span { display: block; font-size: .72rem; color: var(--fg-muted); }
+  .rk-shortcuts { display: flex; gap: .45rem; overflow-x: auto; padding: 1rem 0 1.2rem; border-bottom: 1px solid var(--border); }
+  .rk-shortcuts a { font-weight: 700; font-size: .85rem; flex: 0 0 auto; color: var(--fg-muted); border: 1px solid var(--border); padding: .35rem .8rem; border-radius: 30px; }
+  .rk-shortcuts a:hover { color: var(--accent-ink); background: var(--accent-soft); }
+  .rk-featured,.rk-section { margin: 2.2rem 0 2.8rem; }
+  .rk-section-head { margin-bottom: 1rem; }
+  .rk-section-head h2 { font-size: 1.4rem; letter-spacing: -.015em; margin: 0; }
+  .rk-section-head p { font-size: .86rem; color: var(--fg-muted); margin: .3rem 0 0; }
+  .rk-n { color: var(--fg-muted); font-size: .88rem; font-weight: 500; }
+  .rk-feature-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1rem; }
+  .rk-feature { border: 1px solid var(--border); border-radius: 17px; padding: 1.3rem; display: block; color: var(--fg); background: var(--surface); }
+  .rk-feature:hover { border-color: var(--accent); color: var(--fg); box-shadow: var(--shadow-sm); }
+  .rk-kicker { font-size: .73rem; text-transform: uppercase; font-weight: 800; color: var(--accent-ink); letter-spacing: .04em; }
+  .rk-feature h3 { font-size: 1.22rem; margin: .65rem 0; }
+  .rk-feature p { font-size: .88rem; line-height: 1.7; color: var(--fg-muted); }
+  .rk-more { font-size: .83rem; font-weight: 800; color: var(--accent-ink); }
+  .rk-find { display: flex; gap: .65rem; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: .3rem .85rem; margin-bottom: 1rem; }
+  .rk-find input { width: 100%; min-width: 0; border: 0; outline: 0; padding: .55rem 0; font: inherit; background: transparent; color: var(--fg); font-size: .9rem; }
+  .rk-find #research-result-count { white-space: nowrap; font-size: .76rem; }
+  .rk-paper-list { display: grid; gap: .55rem; }
+  .rk-paper { display: flex; gap: 1.1rem; align-items: start; color: var(--fg); padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 13px; }
+  .rk-paper:hover { border-color: var(--accent); color: var(--fg); }
+  .rk-paper[hidden] { display: none; }
+  .rk-paper-year { flex: 0 0 44px; color: var(--fg-muted); font-size: .76rem; font-weight: 800; padding-top: .26rem; }
+  .rk-paper-text { min-width: 0; flex: 1; }
+  .rk-paper h3 { margin: 0; line-height: 1.45; font-size: .96rem; }
+  .rk-paper-original { margin: .24rem 0 0; font-size: .8rem; color: var(--fg-muted); line-height: 1.45; }
+  .rk-paper-desc { margin: .4rem 0 0; font-size: .81rem; color: var(--fg-muted); line-height: 1.6; }
+  .rk-open { color: var(--accent-ink); }
+  .rk-empty { color: var(--fg-muted); padding: 1.2rem; }
+  .rk-bottom { display: grid; gap: 1.4rem; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .rk-mini-list { display: grid; gap: .65rem; }
+  .rk-mini-list a { padding: 1rem; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; display: flex; flex-direction: column; gap: .25rem; color: var(--fg); }
+  .rk-mini-list a:hover { border-color: var(--accent); }
+  .rk-mini-list strong { font-size: .87rem; }
+  .rk-mini-list span { font-size: .75rem; color: var(--accent-ink); }
+  .rk-footer { font-size: .8rem; color: var(--fg-muted); border-top: 1px solid var(--border); padding: 1.2rem 0 2rem; }
+  @media (max-width:740px) {
+    .rk-hero { flex-direction: column; align-items: start; gap: 1rem; }
+    .rk-counts { width: 100%; }
+    .rk-counts>div { flex: 1; }
+    .rk-bottom { grid-template-columns: 1fr; }
+    .rk-paper { gap: .65rem; padding: .8rem; }
+    .rk-paper-year { flex-basis: 36px; }
+  }
+</style>
