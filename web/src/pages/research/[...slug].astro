@@ -37,9 +37,20 @@ const kind = isLearningPath ? '学习路线' : isPaper ? '论文笔记' : entry.
 const prose = (entry.body || '').replace(/^---[\s\S]*?---\s*/, '').replace(/`{3}[\s\S]*?`{3}/g, '');
 const minutes = Math.max(1, Math.ceil((prose.match(/[\u3400-\u9fff]/g) || []).length / 350 + (prose.match(/[A-Za-z]+/g) || []).length / 200));
 const canShowToc = toc.length > 1;
-const graph = buildKnowledgeGraph(await getCollection('knowledge'));
+const graphEntries = await getCollection('knowledge');
+const graph = buildKnowledgeGraph(graphEntries);
 const inbound = graph.incomingFor(entry.id).filter(n => n.kind !== 'other');
 const outbound = graph.outgoingFor(entry.id).filter(n => n.kind !== 'other');
+const routeNeighbors = graph.pathsFor(entry.id).map(pathNode => {
+  const pathRecord = (graphEntries).find(e => e.id === pathNode.id);
+  const items = pathRecord ? readingSteps(pathRecord) : [];
+  const index = items.findIndex(x => x.ref === entry.id);
+  return index < 0 ? null : {
+    title: pathNode.title, href: pathNode.href, current: index + 1, total: items.length,
+    previous: index > 0 ? graph.nodes.get(items[index - 1].ref) : null,
+    next: index + 1 < items.length ? graph.nodes.get(items[index + 1].ref) : null,
+  };
+}).filter((item): item is NonNullable<typeof item> => item !== null);
 const steps = readingSteps(entry).map((step, i) => ({
   index: i,
   ...step,
@@ -174,6 +185,19 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
               {inbound.map(n => <a href={n.href}><small>{n.kind === 'path' ? '学习路线' : n.kind === 'review' ? '综述' : n.kind === 'glossary' ? '术语' : n.kind === 'paper' ? '论文' : '研究问题'}</small>{n.title}</a>)}
             </div>
             <p class="rkd-path-privacy">根据本知识库的 Markdown 链接和学习步骤自动生成，不代表正式学术引用。</p>
+          </section>
+        )}
+        {routeNeighbors.length > 0 && (
+          <section class="rkd-route-neighbors" aria-label="学习路线前后步骤">
+            {routeNeighbors.map(route => (
+              <div class="rkd-route-neighbor">
+                <p><a href={route.href}>{route.title}</a> · 第 {route.current}/{route.total} 步</p>
+                <div class="rkd-route-actions">
+                  {route.previous ? <a href={route.previous.href}>← 上一步：{route.previous.title}</a> : <span>这是路线起点</span>}
+                  {route.next ? <a href={route.next.href}>下一步：{route.next.title} →</a> : <span>已经到达路线终点</span>}
+                </div>
+              </div>
+            ))}
           </section>
         )}
         {relatedReviews.length > 0 && (
@@ -477,4 +501,14 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   .rkd-recall ol {padding-left:1.4rem;margin:.6rem 0;}
   .rkd-recall li {line-height:1.8;margin:.35rem 0;}
   .rkd-recall p {color:var(--fg-muted);font-size:.78rem;margin:.8rem 0 0;}
+</style>
+
+<style>
+  .rkd-route-neighbors {display:grid;gap:.75rem;margin-top:2rem;}
+  .rkd-route-neighbor {padding:.85rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;}
+  .rkd-route-neighbor p {margin:0 0 .7rem;font-size:.8rem;color:var(--fg-muted);}
+  .rkd-route-actions {display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;font-size:.82rem;line-height:1.55;}
+  .rkd-route-actions>* {flex:1;min-width:180px;}
+  .rkd-route-actions>a:last-child {text-align:right;}
+  .rkd-route-actions span {color:var(--fg-muted);}
 </style>
