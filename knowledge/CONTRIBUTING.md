@@ -1,5 +1,7 @@
 # 中文研究知识库维护手册
 
+> 本文维护唯一内容源 `Suchenl/Suchenl.github.io/knowledge/`，网页展示入口为 `https://suchenl.github.io/research/`。不要手工复制 Markdown 到 Astro 博客文章，也不要更新旧 `sus_research_review` 镜像。
+
 ## 增加新主题
 
 优先建立 `topics/<英文稳定目录名>/README.md` 与 `reviews/<中文或英文短名>.md`。主题页面解释核心问题、当前共识、代表方法、争议、文献入口和下一轮待核验方向，不必写成会议论文格式。
@@ -26,4 +28,4 @@
 
 ## 完成核对
 
-运行 `python scripts/check_kb.py`；查看 Git diff；确认只调整被授权的内容；小批提交并推送。
+运行 `python knowledge/scripts/check_kb.py`；查看 Git diff；确认只调整被授权的内容；小批提交并推送。

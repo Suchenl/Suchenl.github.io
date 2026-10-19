@@ -2,6 +2,8 @@
 
 **此文件是维护约定，不是具体技术观点的来源。阅读后再修改仓库。**
 
+**单一维护位置**：`Suchenl/Suchenl.github.io` 仓库的 `knowledge/`。网站 `/research/` 直接由这里渲染。不要再向 `Suchenl/sus_research_review` 写新知识；那是迁移前的只读快照。
+
 ## 一、语言与分工
 
 - 使用简体中文写作和维护。保留原论文英文标题、作者姓名、会议名、模型名、URL 和必要术语原文。
@@ -31,7 +33,7 @@
 4. 更新 `papers/README.md`；相关的 `topics/.../reviews/` 只做归纳和指向这张卡片。
 5. 如果出现新的术语，只在 `glossary/` 下的适当主题定义，交叉链接。
 6. 在 `research/` 单独记录对研究项目的可执行启发和反例。
-7. 运行 `python scripts/check_kb.py`，修复失效的**仓库内部**相对链接；外链需人工或联网工具核实。
+7. 运行 `python knowledge/scripts/check_kb.py`，修复失效的**仓库内部**相对链接；外链需人工或联网工具核实。
 8. 更新 `CHANGELOG.md`；检查 Git diff 后提交。
 
 ## 四、AI 更新综述时的输出契约

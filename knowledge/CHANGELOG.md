@@ -1,6 +1,7 @@
 # 更新记录
 
 ## 2026-10-19
+- 迁入个人主页仓库的 `knowledge/`，由 Astro 内容集合在 `/research/` 展示；旧仓库停止同步，未来只维护此处。
 - 进一步检索 10 月近期研究，补充 TSRL（困难状态触发 SFT）、AgentTune（统一 EventLog）及腾讯混元 UniRL（多模式训练基础设施），均标注论文/仓库证据等级。
 - 初始化中文 Markdown 个人研究知识库及 AI 维护规范。
 - 建立 SFT、RL、RLVR、OPD、混合训练等共享术语。

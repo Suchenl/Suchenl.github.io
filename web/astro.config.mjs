@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
+import remarkKnowledgeMath from './src/lib/remark-knowledge-math.mjs';
 import remarkKnowledgeLinks from './src/lib/remark-knowledge-links.mjs';
 import rehypeKatex from 'rehype-katex';
 import rehypeExternalLinks from './src/lib/rehype-external-links.mjs';
@@ -15,7 +16,7 @@ export default defineConfig({
   ],
   markdown: {
     shikiConfig: { theme: 'github-dark' },
-    remarkPlugins: [remarkMath, remarkKnowledgeLinks],
+    remarkPlugins: [remarkMath, remarkKnowledgeMath, remarkKnowledgeLinks],
     rehypePlugins: [rehypeKatex, rehypeExternalLinks],
   },
 });
