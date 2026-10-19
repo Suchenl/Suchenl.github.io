@@ -200,6 +200,18 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
             {relatedPapers.map(item => <a href={item.href}>{item.title} ↗</a>)}
           </section>
         )}
+        <details class="rkd-personal-note" id="rkd-personal-note">
+          <summary>我的学习笔记 <span>记录疑问、反例和研究启发</span></summary>
+          <div class="rkd-personal-body">
+            <label for="rkd-personal-input">阅读这篇内容后，有哪些值得保留的理解或问题？</label>
+            <textarea id="rkd-personal-input" rows="6" placeholder="例如：\n- 核心问题：……\n- 我自己的解释：……\n- 与现有工作的区别：……\n- 反例或待验证实验：……"></textarea>
+            <div class="rkd-personal-actions">
+              <span id="rkd-personal-status" role="status" aria-live="polite">仅保存在当前浏览器，不会自动同步到 GitHub。</span>
+              <button type="button" id="rkd-personal-copy">复制为 Markdown</button>
+            </div>
+            <p class="rkd-personal-warning">建议定期复制到 GitHub 或自己的笔记软件。清理浏览器数据会使此处的本地记录丢失；不要记录密码等敏感信息。</p>
+          </div>
+        </details>
         <div class="rkd-foot">
           <a id="research-return" href={isPaper ? folderHref : '/research/'}>← 返回研究目录</a>
           <a href={editSource} target="_blank" rel="noopener noreferrer">编辑或完善笔记 ↗</a>
@@ -247,6 +259,33 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     const save = (key: string, value: string) => {
       try { localStorage.setItem(key, value); } catch { /* disabled storage */ }
     };
+    const personalInput = document.getElementById('rkd-personal-input') as HTMLTextAreaElement | null;
+    const personalStatus = document.getElementById('rkd-personal-status');
+    const personalKey = 'research-personal-note-v1:' + articleId;
+    if (personalInput) {
+      personalInput.value = safeStored(personalKey) || '';
+      personalInput.addEventListener('input', () => {
+        save(personalKey, personalInput.value);
+        if (personalStatus) personalStatus.textContent = '已尝试保存到当前浏览器。请定期复制备份。';
+      });
+    }
+    document.getElementById('rkd-personal-copy')?.addEventListener('click', async () => {
+      const content = [
+        '# 阅读笔记：' + articleTitle,
+        '',
+        '来源：' + location.origin + location.pathname,
+        '',
+        personalInput?.value.trim() || '（还没有记录内容）',
+        ''
+      ].join('\n');
+      try {
+        await navigator.clipboard.writeText(content);
+        if (personalStatus) personalStatus.textContent = 'Markdown 已复制，可粘贴到 GitHub 或自己的笔记软件。';
+      } catch {
+        if (personalInput) { personalInput.focus(); personalInput.select(); }
+        if (personalStatus) personalStatus.textContent = '复制失败：已选中输入框内容，可手动复制。';
+      }
+    });
     const note = document.getElementById('rkd-tool-note');
     const resume = document.getElementById('rkd-resume') as HTMLButtonElement | null;
     const storedSection = safeStored('research-read-position-v1:' + articleId);
@@ -499,4 +538,20 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   .rkd-route-actions>* {flex:1;min-width:180px;}
   .rkd-route-actions>a:last-child {text-align:right;}
   .rkd-route-actions span {color:var(--fg-muted);}
+</style>
+
+<style>
+  .rkd-personal-note {margin:2.4rem 0 1.2rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden;}
+  .rkd-personal-note summary {display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;cursor:pointer;font-size:.94rem;font-weight:750;padding:.95rem 1rem;}
+  .rkd-personal-note summary span {font-size:.75rem;font-weight:450;color:var(--fg-muted);}
+  .rkd-personal-note[open] summary {border-bottom:1px solid var(--border);}
+  .rkd-personal-body {padding:1rem;}
+  .rkd-personal-body label {display:block;margin-bottom:.55rem;font-size:.84rem;font-weight:650;}
+  #rkd-personal-input {display:block;box-sizing:border-box;width:100%;min-height:155px;resize:vertical;padding:.8rem;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--fg);font:inherit;font-size:.89rem;line-height:1.7;}
+  #rkd-personal-input:focus-visible {outline:2px solid var(--accent);outline-offset:2px;}
+  .rkd-personal-actions {display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin:.7rem 0 0;}
+  #rkd-personal-status {font-size:.75rem;color:var(--fg-muted);line-height:1.6;flex:1;}
+  #rkd-personal-copy {min-height:44px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);padding:.5rem .85rem;color:var(--fg);font:inherit;font-size:.79rem;font-weight:700;cursor:pointer;}
+  #rkd-personal-copy:hover {border-color:var(--accent);color:var(--accent-ink);}
+  .rkd-personal-warning {font-size:.72rem;color:var(--fg-muted);margin:.75rem 0 0;line-height:1.6;}
 </style>
