@@ -4,7 +4,7 @@ import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PUB_GROUPS } from '../../data';
 import { SITE, AUTHOR } from '../../config';
-const milestones = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.releasedYear).sort((a,b)=>(b.releasedYear || 0)-(a.releasedYear || 0));
+
 ---
 
 <Base title="Publications" structuredData={{
@@ -32,15 +32,6 @@ const milestones = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.releasedYear)
     <Bi zh="按研究领域分组。* 表示共同一作。" en="Grouped by research area. * indicates equal contribution." />
   </p>
 
-  <section class="pub-timeline" aria-label="公开研究成果时间线">
-    <h2><Bi zh="研究成果时间线" en="Research publication timeline" /></h2>
-    <p class="pub-timeline-note"><Bi zh="根据已公开的论文和研究成果整理，年份代表发表或公开时间，不代表项目起始时间。" en="Based on publicly released work; years indicate publication/release, not when research began." /></p>
-    <ol>
-      {milestones.map(p=>(
-        <li><span class="pub-timeline-year">{p.releasedYear}</span><span class="pub-timeline-dot" aria-hidden="true"></span><span><strong>{p.venue}</strong> <a href={p.url} target="_blank" rel="noopener noreferrer">{p.titleEn}</a></span></li>
-      ))}
-    </ol>
-  </section>
   {PUB_GROUPS.map((group) => (
     <div class="pub-group">
       <h2><span data-l="zh">{group.zh}</span><span data-l="en">{group.en}</span></h2>
@@ -88,10 +79,7 @@ const milestones = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.releasedYear)
                     ] as const).map(([zh,en,zhText,enText])=><div class="pub-brief-row"><strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong><p><span data-l="zh">{zhText}</span><span data-l="en">{enText}</span></p></div>)}
                   </>
                 ) : <p>内容正在整理，请参考原论文。</p>}
-                <div class="pub-milestone"><strong><span data-l="zh">公开研究时间线</span><span data-l="en">Public timeline</span></strong>
-                  <p>{p.releasedYear ? p.releasedYear + ' · ' + p.venue : p.venue} <span data-l="zh">（发表或公开年份，不代表研究开始时间）</span><span data-l="en">(publication/release year, not research start date)</span></p>
                 </div>
-              </div>
             </details>
           </div>
         ) : (
@@ -167,6 +155,5 @@ const milestones = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.releasedYear)
   }
 </style>
 
-<style>.pub-abstract{grid-column:1/-1;border-top:1px solid var(--border)}.pub-abstract summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;min-height:44px;padding:.6rem 0;color:var(--accent-ink);font-size:.85rem;font-weight:700}.pub-chevron{margin-left:auto}.pub-abstract[open] .pub-chevron{transform:rotate(180deg)}.pub-abstract-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.3rem;padding:.6rem 0}.pub-brief-row strong,.pub-milestone strong{font-size:.77rem;color:var(--fg-muted)}.pub-brief-row p,.pub-milestone p{font-size:.85rem;line-height:1.75;margin:.3rem 0}.pub-milestone{grid-column:1/-1;padding-top:.7rem;border-top:1px solid var(--border)}@media(max-width:720px){.pub-abstract-body{grid-template-columns:1fr}}</style>
+<style>.pub-abstract{grid-column:1/-1;border-top:1px solid var(--border)}.pub-abstract summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;min-height:44px;padding:.6rem 0;color:var(--accent-ink);font-size:.85rem;font-weight:700}.pub-chevron{margin-left:auto}.pub-abstract[open] .pub-chevron{transform:rotate(180deg)}.pub-abstract-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.3rem;padding:.6rem 0}.pub-brief-row strong,.pub-brief-row strong{font-size:.77rem;color:var(--fg-muted)}.pub-brief-row p,.pub-brief-row p{font-size:.85rem;line-height:1.75;margin:.3rem 0}@media(max-width:720px){.pub-abstract-body{grid-template-columns:1fr}}</style>
 
-<style>.pub-timeline{padding:1rem 1.25rem;margin:1.2rem 0 3rem;background:var(--surface);border:1px solid var(--border);border-radius:14px}.pub-timeline h2{font-size:1.18rem;margin:.2rem 0}.pub-timeline-note{font-size:.8rem;color:var(--fg-muted);line-height:1.7;margin:.25rem 0 1.2rem}.pub-timeline ol{list-style:none;padding:0;margin:0}.pub-timeline li{display:grid;grid-template-columns:55px 14px minmax(0,1fr);gap:.7rem;align-items:start;padding:.6rem 0;border-top:1px solid var(--border);font-size:.82rem;line-height:1.65}.pub-timeline-year{color:var(--accent-ink);font-weight:800}.pub-timeline-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;margin-top:.43rem}.pub-timeline li strong{color:var(--fg-muted);font-size:.72rem;margin-right:.5rem}.pub-timeline li a{overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}</style>

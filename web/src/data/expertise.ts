@@ -118,8 +118,8 @@ export const INTERESTS: Interest[] = [
   {
     zh: '机器人 · 具身智能',
     en: 'Robotics · Embodied AI',
-    noteZh: '围绕 VLA、世界-动作模型与机器人 Agent，持续开展工具、环境和闭环控制方面的探索。',
-    noteEn: 'Exploring VLA, world-action models and robot agents, including tools, environments, and closed-loop control.',
+    noteZh: '系统性阅读 VLA、世界-动作模型、模仿学习（占我近期阅读很大比重），正从阅读走向实践。',
+    noteEn: 'Systematic reading on VLA, world-action models and imitation learning (a large part of my reading base); moving toward practice.',
     tags: ['VLA', 'World Action Models', 'Imitation Learning'],
   },
   {
