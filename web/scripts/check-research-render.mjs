@@ -30,8 +30,18 @@ console.log('Research routes, navigation and internal paper links verified.');
 
 // Interaction contracts: do not regress to split caret/text click targets.
 const fs = await import('node:fs');
-const explorerSource = fs.readFileSync('src/pages/research/index.astro','utf8');
-const readerSource = fs.readFileSync('src/pages/research/[...slug].astro','utf8');
+// Contract checks follow the actual component boundary rather than assuming
+// interaction logic and CSS are embedded in a single .astro page.
+const explorerSource = [
+  'src/pages/research/index.astro',
+  'src/scripts/research-library.ts',
+  'src/styles/research-library.css',
+].map(file=>fs.readFileSync(file,'utf8')).join('\n');
+const readerSource = [
+  'src/pages/research/[...slug].astro',
+  'src/scripts/research-reader.ts',
+  'src/styles/research-reader.css',
+].map(file=>fs.readFileSync(file,'utf8')).join('\n');
 const headerSource = fs.readFileSync('src/components/Header.astro','utf8');
 const base = readFileSync(path.join('dist','research','index.html'),'utf8');
 for (const text of [
@@ -55,8 +65,8 @@ if (!base.includes('id="lit-tree"') || !base.includes('id="lit-search"')) {
 console.log('Research interaction contracts verified.');
 
 
-const explorer = readFileSync('src/pages/research/index.astro','utf8');
-const article = readFileSync('src/pages/research/[...slug].astro','utf8');
+const explorer = explorerSource;
+const article = readerSource;
 for (const contract of ['id="lit-mobile-folder-toggle"','id="lit-more-button"',"persistUrl('replace')","state.visibleLimit+=12","params.get('q')","setMobileDirectory(false,true)"]) {
   if (!explorer.includes(contract)) throw new Error('Research navigation usability regression: '+contract);
 }
