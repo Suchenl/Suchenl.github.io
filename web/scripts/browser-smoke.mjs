@@ -25,6 +25,21 @@ try {
    if(width<=390){assert.equal(await page.locator('#primary-navigation').isVisible(),false,'Mobile nav should start collapsed');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');}assert(await page.getByText('精选研究成果').count()>0);
    assert((await page.locator('.chips .tag-chip').count())===5,'Original research tags must remain');
    assert((await page.locator('.hero-interests').textContent()).includes('多模态生成'),'Original interests must remain');});
+  await check('Independent Experience and Expertise navigation '+width,async()=>{
+   const nav=page.locator('#primary-navigation');
+   const experience=nav.locator('a[href="/work/"]');
+   const expertise=nav.locator('a[href="/expertise/"]');
+   const about=nav.locator('a[href="/about/"]');
+   assert.equal(await experience.count(),1,'Experience should be a main navigation item');
+   assert.equal(await expertise.count(),1,'Expertise should be a main navigation item');
+   await navigate(page,'/work/');
+   assert.equal(await experience.getAttribute('aria-current'),'page');
+   assert.equal(await about.getAttribute('aria-current'),null,'About must not stand in for Experience');
+   await navigate(page,'/expertise/');
+   assert.equal(await expertise.getAttribute('aria-current'),'page');
+   assert.equal(await about.getAttribute('aria-current'),null,'About must not stand in for Expertise');
+   await noOverflow(page);
+  });
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
   await check('Publications '+width,async()=>{
    await navigate(page,'/publications/');await noOverflow(page);
@@ -49,7 +64,17 @@ try {
    await navigate(page,articleLink);await noOverflow(page);assert(await page.locator('.post-body').count()===1,'Blog and Research should use shared reading styles');
    if(await page.locator('[data-reading-toc]').count()){
     const aside=page.locator('[data-reading-toc]');const btn=aside.locator('.reading-toc-toggle');
-    if(width===1440){assert((await aside.boundingBox()).x < (await page.locator('.post-body').boundingBox()).x,'Blog left TOC must precede article');await aside.locator('.reading-toc-close').click();assert.equal(await btn.getAttribute('aria-expanded'),'false');await btn.click();assert.equal(await btn.getAttribute('aria-expanded'),'true');}
+    if(width===1440){
+     const rail=await aside.boundingBox();
+     const before=await page.locator('.post-body').boundingBox();
+     assert(rail.x<=48,'Blog chapter rail must be near viewport left: '+rail.x);
+     assert(rail.x<before.x,'Blog left TOC must precede article');
+     await aside.locator('.reading-toc-close').click();
+     assert.equal(await btn.getAttribute('aria-expanded'),'false');
+     const after=await page.locator('.post-body').boundingBox();
+     assert(Math.abs(before.x-after.x)<=2,'Collapsing Blog TOC should not shift the article');
+     await btn.click();assert.equal(await btn.getAttribute('aria-expanded'),'true');
+    }
     else{assert(await btn.isVisible(),'Mobile left TOC toggle must be visible');await btn.click();assert(await aside.locator('.reading-toc-panel').isVisible());await aside.locator('.reading-toc-close').click();}
    }
   });
@@ -96,7 +121,10 @@ try {
    await noOverflow(page);assert(await page.locator('.katex-display').count()>=4);
    assert.equal(await page.locator('.rkd-prose').count(),1);
    const toc=page.locator('[data-reading-toc]');assert.equal(await toc.count(),1,'Research has shared left TOC');
-   if(width===1440){assert((await toc.boundingBox()).x < (await page.locator('.rkd-prose').boundingBox()).x,'Research TOC should be left');
+   if(width===1440){
+    const rail=await toc.boundingBox();
+    assert(rail.x<=48,'Research chapter rail must be near viewport left: '+rail.x);
+    assert(rail.x<(await page.locator('.rkd-prose').boundingBox()).x,'Research TOC should be left');
     const first=page.locator('.reading-toc-link').first();await first.click();await page.waitForTimeout(300);assert.equal(await first.getAttribute('aria-current'),'location','Active section should update');
     const current=page.locator('.reading-toc-location');assert((await current.textContent()).includes('阅读位置'),'Outline gives section progress');
     // Scroll the DOCUMENT, rather than clicking a TOC item. The outline itself

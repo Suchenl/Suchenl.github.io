@@ -40,3 +40,35 @@
 .reading-toc-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .reading-toc-link.is-current.reading-toc-level3{color:var(--accent-ink);}
 @media(max-width:1000px){.reading-toc{top:76px}.reading-toc-panel{height:calc(100dvh - 94px);max-height:calc(100dvh - 94px)}.reading-toc-links{padding-bottom:1.3rem}}
+
+/* Desktop full-bleed reading layout: the chapter rail hugs the viewport's
+   left edge while article text stays constrained for comfortable reading.
+   Reserve the rail on collapse so content does not jump horizontally. */
+@media (min-width:1001px) {
+  #main-content .reading-with-toc:has(> .reading-toc) {
+    --toc-edge-gap: clamp(20px, 2vw, 32px);
+    --toc-rail-width: clamp(254px, 21vw, 294px);
+    display: grid;
+    grid-template-columns: var(--toc-rail-width) minmax(0, 1fr);
+    gap: clamp(24px, 3vw, 44px);
+    width: calc(100vw - var(--toc-edge-gap) - var(--toc-edge-gap));
+    max-width: none;
+    margin-left: calc(50% - 50vw + var(--toc-edge-gap));
+  }
+  #main-content .reading-with-toc.toc-collapsed:has(> .reading-toc) {
+    grid-template-columns: var(--toc-rail-width) minmax(0, 1fr);
+  }
+  #main-content .reading-with-toc:has(> .reading-toc) > :is(.rkd-article, .post-body) {
+    width: 100%;
+    max-width: 800px;
+  }
+  #main-content .rkd-page.focus-mode .rkd-layout.reading-with-toc {
+    display: block;
+    width: auto;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  #main-content .post-body-wrap.reading-with-toc:not(:has(> .reading-toc)) {
+    display: block;
+  }
+}
