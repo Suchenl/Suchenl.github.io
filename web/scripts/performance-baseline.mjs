@@ -34,7 +34,14 @@ try{
       .filter(ref => ref.weight > 0 && report.audits?.[ref.id]?.score != null && report.audits[ref.id].score < 1)
       .map(ref => ({category,id:ref.id,title:report.audits[ref.id].title,score:report.audits[ref.id].score,detail:report.audits[ref.id].displayValue || ''}))
   );
-  if(failures.length) console.log('LIGHTHOUSE_ISSUES',name,JSON.stringify(failures));
+  if(failures.length) {
+    console.log('LIGHTHOUSE_ISSUES',name,JSON.stringify(failures));
+    const locations=failures.map(issue=>{
+      const audit=report.audits?.[issue.id];
+      return {id:issue.id,items:(audit?.details?.items || []).slice(0,4).map(item=>({selector:item.node?.selector || '',snippet:item.node?.snippet || '',url:item.url || '',message:item.message || '',source:item.source?.url || ''}))};
+    });
+    console.log('LIGHTHOUSE_DETAILS',name,JSON.stringify(locations));
+  }
  }
  console.log('Lighthouse baseline generated (informational; scores not gated).');
 }catch(error){console.error('Lighthouse audit failed:',error);process.exitCode=1;}

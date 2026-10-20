@@ -223,7 +223,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
       + ' tabindex="' + (n.path === focusPath ? '0' : '-1') + '"'
       + ' style="padding-left:' + (10 + depth * 13) + 'px">'
       + arrow + '<span class="tname">' + escapeHtml(n.name)
-      + '</span><span class="tcount" aria-label="' + n.count + '篇或项">' + n.count + '</span></button>';
+      + '</span><span class="tcount">' + n.count + '</span></button>';
     return '<div class="tnode' + (selected ? ' sel' : '') + '" role="none">' + button + '</div>'
       + (hasChildren && open ? children.map((c,i) => treeNode(c,depth+1,i+1,children.length)).join('') : '');
   }
