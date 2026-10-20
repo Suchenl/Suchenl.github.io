@@ -1,4 +1,11 @@
 ---
+
+comparison:
+  objective: "从基座模型发展可验证推理能力，并改善推理可读性与通用性"
+  training: "R1-Zero 直接 RL；R1 采用冷启动 SFT、RL 及后续监督与对齐"
+  signal: "可验证答案提供奖励；冷启动提供示范"
+  evidence: "官方技术报告对比 R1-Zero 和 R1，覆盖推理能力与可读性"
+  limitation: "基础模型已有预训练先验；数学可验证奖励不能直接替代机器人闭环成功标准"
 title: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"
 year: 2025
 categories: ["强化学习与 Agent/推理与后训练"]

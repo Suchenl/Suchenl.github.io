@@ -1,4 +1,11 @@
 ---
+
+comparison:
+  objective: "在 RL 难以得到成功样本的困难问题上恢复有效学习信号"
+  training: "在线识别困难题，并将针对性 SFT 与 RL 交替执行"
+  signal: "当前策略的难题分布 + 额外提供的高质量正确解答"
+  evidence: "论文报告在其数学及 OOD 基准设置下平均领先所选 RLVR 基线 6.7 个百分点"
+  limitation: "依赖能够获得可靠教师正确解；训练开销与向具身任务迁移仍需独立验证"
 title: "Learning What Reinforcement Learning Can't: Interleaved Online Fine-Tuning for Hardest Questions"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]

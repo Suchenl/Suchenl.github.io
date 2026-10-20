@@ -1,0 +1,99 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const papers=(await getCollection('knowledge')).filter(e=>/^papers\/20\d{2}\//.test(e.id));
+const paperData=papers.map(e=>{
+ const d=e.data as {
+  title?:string;summaryZh?:string;year?:number;categories?:string[];
+  comparison?: {objective?:string;training?:string;signal?:string;evidence?:string;limitation?:string};
+ };
+ return {id:e.id,href:'/research/'+e.id+'/',title:d.title || e.id.split('/').pop()!,
+ year:d.year || Number(e.id.match(/20\d{2}/)?.[0]||0),summary:d.summaryZh || '',
+ comparison:d.comparison || {},categories:d.categories || []};
+});
+const json=JSON.stringify(paperData).replace(/</g,'\\u003c');
+---
+<Base title="论文横向比较" description="按研究目标、训练流程、监督信号、证据与局限对照论文，未标注的信息保持空白，不自动编造。">
+  <div class="compare-page">
+    <nav class="compare-back"><a href="/research/">← 返回研究知识库</a></nav>
+    <h1 class="page-title">论文横向比较</h1>
+    <p class="page-intro">对比 2–3 篇论文的研究目标、训练信号、实验证据与适用边界。字段来自维护过的研究卡片，没有整理的内容明确显示「待整理」。</p>
+    <div class="compare-tools">
+      <label for="compare-pick">选择论文（最多 3 篇）</label>
+      <select id="compare-pick"><option value="">添加一篇论文…</option>{paperData.map(p=><option value={p.id}>{p.title}</option>)}</select>
+      <button type="button" id="compare-copy">复制对比链接</button>
+      <span role="status" aria-live="polite" id="compare-status"></span>
+    </div>
+    <div id="compare-picked" class="compare-picked" aria-label="已选择的论文"></div>
+    <div class="compare-scroll" tabindex="0" aria-label="论文对比表格，可横向滚动">
+      <table class="compare-table" id="compare-table">
+        <caption>论文方法与证据对照</caption>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+    <p class="compare-note">此页用于阅读和整理，不是论文作者的统一评测。不同论文的基准、数据和算力可能不同，不能直接横向比较数字的优劣。</p>
+  </div>
+  <script type="application/json" id="compare-data" set:html={json}></script>
+</Base>
+<script>
+  type Paper={id:string;href:string;title:string;year:number;summary:string;comparison:Record<string,string>};
+  const all=JSON.parse(document.getElementById('compare-data')?.textContent || '[]') as Paper[];
+  const selected:string[]=[];
+  const pick=document.getElementById('compare-pick') as HTMLSelectElement;
+  const host=document.getElementById('compare-picked')!;
+  const body=document.getElementById('compare-body')!;
+  const status=document.getElementById('compare-status')!;
+  const safe=(text:string)=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
+  const rows=[['研究目标','objective'],['训练流程','training'],['训练信号','signal'],['实验证据','evidence'],['局限与风险','limitation']];
+  function renderTable(){
+    const chosen=selected.map(id=>all.find(p=>p.id===id)).filter((x):x is Paper=>Boolean(x));
+    host.innerHTML=chosen.map(p=>'<div class="compare-chip"><span>'+safe(p.title)+'</span><button type="button" data-remove="'+safe(p.id)+'" aria-label="移除 '+safe(p.title)+'">×</button></div>').join('');
+    host.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(b=>b.addEventListener('click',()=>{
+      const i=selected.indexOf(b.dataset.remove || '');if(i>=0)selected.splice(i,1);renderTable();
+    }));
+    const header='<tr><th scope="col">比较维度</th>'+chosen.map(p=>'<th scope="col"><a href="'+safe(p.href)+'">'+safe(p.title)+'</a><small>'+p.year+'</small></th>').join('')+'</tr>';
+    const fields=rows.map(([label,key])=>'<tr><th scope="row">'+label+'</th>'+chosen.map(p=>
+      '<td>'+safe(p.comparison[key] || '待整理；请查看论文笔记及原文核对')+'</td>').join('')+'</tr>').join('');
+    body.innerHTML=chosen.length ? header+fields : '<tr><td>请从上方选择 2–3 篇论文，开始方法对照。</td></tr>';
+    const url=new URL(location.href);
+    if(selected.length)url.searchParams.set('papers',selected.join(',')); else url.searchParams.delete('papers');
+    history.replaceState(null,'',url.pathname+url.search);
+    status.textContent=chosen.length>0 ? '已选择 '+chosen.length+' / 3 篇' : '未选择论文';
+    pick.disabled=selected.length>=3;pick.value='';
+  }
+  pick.addEventListener('change',()=>{
+    const id=pick.value;
+    if(id&&all.some(p=>p.id===id)&&!selected.includes(id)&&selected.length<3)selected.push(id);
+    renderTable();
+  });
+  document.getElementById('compare-copy')!.addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(location.href);status.textContent='对比链接已复制';}
+    catch{status.textContent='复制失败，请使用浏览器地址栏';}
+  });
+  const param=new URLSearchParams(location.search).get('papers')||'';
+  for(const id of param.split(',').slice(0,3)){if(all.some(p=>p.id===id)&&!selected.includes(id))selected.push(id);}
+  renderTable();
+</script>
+<style>
+  .compare-page{margin:2rem auto 5rem;max-width:1100px;}
+  .compare-back{font-size:.85rem;margin-bottom:1rem;}
+  .compare-tools{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;padding:1rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+  .compare-tools label{font-weight:700;font-size:.85rem;}
+  .compare-tools select{flex:1;min-width:min(300px,100%);max-width:100%;min-height:44px;padding:.45rem;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--fg);}
+  .compare-tools button{min-height:44px;padding:.5rem .8rem;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);color:var(--fg);cursor:pointer;}
+  #compare-status{color:var(--fg-muted);font-size:.75rem;}
+  .compare-picked{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0;}
+  .compare-chip{display:flex;gap:.5rem;align-items:center;padding:.4rem .6rem;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:.8rem;max-width:100%;}
+  .compare-chip span{overflow-wrap:anywhere;}
+  .compare-chip button{border:0;background:transparent;font:inherit;font-size:1rem;cursor:pointer;color:inherit;min-width:30px;min-height:30px;}
+  .compare-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+  .compare-table{border-collapse:collapse;min-width:680px;width:100%;font-size:.88rem;line-height:1.7;}
+  .compare-table caption{text-align:left;padding:.75rem 1rem;color:var(--fg-muted);font-size:.8rem;}
+  .compare-table th,.compare-table td{padding:1rem;text-align:left;vertical-align:top;border-top:1px solid var(--border);min-width:185px;}
+  .compare-table th:first-child{position:sticky;left:0;z-index:1;background:var(--surface-2);min-width:112px;width:112px;}
+  .compare-table thead th{background:var(--surface-2);}
+  .compare-table th a{font-weight:750;}
+  .compare-table th small{display:block;font-weight:400;color:var(--fg-muted);}
+  .compare-note{font-size:.83rem;color:var(--fg-muted);line-height:1.7;}
+</style>

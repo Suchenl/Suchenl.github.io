@@ -1,4 +1,11 @@
 ---
+
+comparison:
+  objective: "使 SFT 更新对最终 RL 奖励有利，而非简单叠加损失"
+  training: "双层元优化协调 SFT/RL 更新，轻量 LoRA 学习协同增益"
+  signal: "监督梯度 + 奖励反馈驱动的 cooperative gain"
+  evidence: "论文在数学基准上报告相对所选两阶段与混训基线平均绝对提升超过 3 个百分点"
+  limitation: "依赖可靠奖励，需审计额外元优化成本、梯度冲突与 stale-policy 风险"
 title: "Beyond Two-Stage Training: Cooperative SFT and RL for LLM Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
