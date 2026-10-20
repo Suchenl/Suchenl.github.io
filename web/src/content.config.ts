@@ -35,7 +35,29 @@ const knowledge = defineCollection({
     base: '../knowledge',
     generateId: ({ entry }) => entry.replace(/\.md$/, ''),
   }),
-  schema: z.object({}).passthrough(),
+  schema: z.object({
+    title: z.string().optional(),
+    summaryZh: z.string().optional(),
+    categories: z.array(z.string()).optional(),
+    status: z.enum(['untracked','to-read','reading','read']).optional(),
+    comparison: z.object({
+      objective: z.string().optional(),
+      training: z.string().optional(),
+      signal: z.string().optional(),
+      evidence: z.string().optional(),
+      limitation: z.string().optional(),
+    }).optional(),
+    related: z.array(z.object({
+      ref: z.string().min(1),
+      type: z.enum(['compares','extends','requires','questions','supports']),
+      note: z.string().min(1),
+    })).optional(),
+    steps: z.array(z.object({
+      ref: z.string().min(1),
+      why: z.string().min(1),
+      stage: z.string().optional(),
+    })).optional(),
+  }).passthrough(),
 });
 
 export const collections = { blog, knowledge };

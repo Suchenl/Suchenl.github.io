@@ -141,7 +141,7 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
           <a id="lit-compare-link" href="/research/compare/" aria-disabled="true">开始比较</a>
           <button type="button" id="lit-compare-clear">清除选择</button>
         </section>
-        <div id="lit-context" aria-label="研究方向关联内容"></div>
+        <div id="lit-context"></div>
         <div class="lit-filters" id="lit-filters" aria-label="筛选阅读状态">
           <button type="button" data-status="all" class="active">全部论文</button>
           <button type="button" data-status="to-read">想读</button>
@@ -889,4 +889,9 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   .lit-backup-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:.8rem 0;}
   .lit-backup-actions button,.lit-backup-actions label{min-height:44px;display:inline-flex;align-items:center;cursor:pointer;border:1px solid var(--border-strong);border-radius:9px;padding:.45rem .8rem;font:inherit;font-weight:700;}
   #lit-backup-status{color:var(--fg-muted);font-size:.73rem;}
+</style>
+
+<style is:global>
+  /* Strong enough text contrast on the lavender selected-category surface. */
+  .lit-intro .lit-shortcuts button.active span { color: var(--accent-ink); }
 </style>
