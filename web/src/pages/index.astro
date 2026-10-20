@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Bi from '../components/Bi.astro';
-import { AUTHOR } from '../config';
+import { AUTHOR, SITE } from '../config';
 import { NEWS, PUB_GROUPS } from '../data';
 
 const interests = [
@@ -25,11 +25,27 @@ const socials = [
 ];
 ---
 
-<Base>
+<Base structuredData={{
+  '@context':'https://schema.org',
+  '@type':'ProfilePage',
+  '@id':SITE.url+'/#profile',
+  url:SITE.url+'/',
+  name:SITE.titleZh+' · '+SITE.title,
+  mainEntity:{
+    '@type':'Person',
+    '@id':SITE.url+'/#person',
+    name:AUTHOR.name,
+    alternateName:AUTHOR.nameZh,
+    url:SITE.url+'/',
+    image:SITE.url+AUTHOR.avatar,
+    affiliation:{'@type':'EducationalOrganization',name:AUTHOR.affiliation},
+    sameAs:Object.values(AUTHOR.links)
+  }
+}}>
   <section class="hero">
     <div class="hero-bg" aria-hidden="true"></div>
     <div class="hero-photo">
-      <img src={AUTHOR.avatar} alt={AUTHOR.name} width="220" height="220" />
+      <img src={AUTHOR.avatar} alt={AUTHOR.name} width="220" height="220" fetchpriority="high" decoding="async" />
     </div>
     <div class="hero-text">
       <p class="hero-hi"><Bi zh="你好，我是" en="Hi, I'm" /></p>

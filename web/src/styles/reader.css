@@ -1,0 +1,30 @@
+/* Shared long-form reading defaults for Blog and Research.
+   Page-specific typography can override these without duplicating overflow rules. */
+:where(.post-body, .rkd-prose) {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+:where(.post-body, .rkd-prose) :is(pre, table, .katex-display) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+:where(.post-body, .rkd-prose) .katex-display {
+  overflow-y: hidden;
+  padding-block: .45rem;
+}
+:where(.post-body, .rkd-prose) img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+:where(.post-body, .rkd-prose) :is(h2, h3, h4) { scroll-margin-top: 86px; }
+:where(.post-body, .rkd-prose) :is(pre, blockquote) { break-inside: avoid; }
+@media (max-width: 600px) {
+  :where(.post-body, .rkd-prose) pre { font-size: .82rem; }
+}
+@media print {
+  .site-header,.site-footer,.rkd-reading-tools,.rkd-aside,.toc-float { display:none!important; }
+  body{background:white;color:black;}
+  :where(.post-body,.rkd-prose) pre {white-space:pre-wrap;overflow:visible;}
+}

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://suchenl.github.io/sitemap-index.xml

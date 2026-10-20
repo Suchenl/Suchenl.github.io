@@ -3,9 +3,29 @@ import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PUB_GROUPS } from '../../data';
+import { SITE, AUTHOR } from '../../config';
 ---
 
-<Base title="Publications">
+<Base title="Publications" structuredData={{
+  '@context':'https://schema.org',
+  '@type':'CollectionPage',
+  name:'Publications · '+AUTHOR.name,
+  url:SITE.url+'/publications/',
+  mainEntity:{
+    '@type':'ItemList',
+    itemListElement:PUB_GROUPS.flatMap(group=>group.papers).map((paper,i)=>({
+      '@type':'ListItem',
+      position:i+1,
+      item:{
+        '@type':'ScholarlyArticle',
+        name:paper.titleEn,
+        url:new URL(paper.url,SITE.url).href,
+        author:{'@type':'Person',name:AUTHOR.name,url:SITE.url+'/'},
+        isPartOf:paper.venue==='Preprint'?undefined:{'@type':'CreativeWorkSeries',name:paper.venue}
+      }
+    }))
+  }
+}}>
   <h1 class="page-title"><Bi zh="论文" en="Publications" /></h1>
   <p class="page-intro">
     <Bi zh="按研究领域分组。* 表示共同一作。" en="Grouped by research area. * indicates equal contribution." />
