@@ -62,6 +62,7 @@ try {
    await noOverflow(page);
    await navigate(page,'/research/compare/?papers=papers/2025/deepseek-r1,papers/2026/relift');
    assert.equal(await page.locator('.compare-selected').count(),2);
+   assert.equal(await page.locator('#compare-results[hidden]').count(),0);
    await page.screenshot({path:'visual-qa/compare-'+width+'.png',fullPage:true});
    await page.locator('#compare-search').fill('brIdGe');
    assert((await page.locator('.compare-option-abbr').allTextContents()).some(x=>x.toLowerCase()==='bridge'),'Acronym search case insensitive');

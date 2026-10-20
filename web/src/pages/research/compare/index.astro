@@ -70,6 +70,9 @@ const payload=JSON.stringify(papers).replace(/</g,'\\u003c');
  const ids=()=>chosen.map(id=>items.find(p=>p.id===id)).filter((x):x is P=>Boolean(x));
  function renderSearch(){
   const q=normalize(input.value);
+  // Search suggestions appear only after an explicit query, not as a long permanent dropdown.
+  matches.hidden=!q || chosen.length>=3;
+  if(!q){matches.innerHTML='';return;}
   const found=items.filter(p=>!chosen.includes(p.id)&&(!q||[p.shortName,p.title,p.summary,p.category,...p.aliases].some(v=>normalize(v).includes(q))))
     .sort((a,b)=>{
       const aa=normalize(a.shortName),bb=normalize(b.shortName);
