@@ -1,4 +1,6 @@
 ---
+shortName: "DTWIL"
+aliases: ["Action-Constrained IL"]
 title: "Action-Constrained Imitation Learning"
 year: 2025
 categories: ["机器人与具身智能/模仿学习"]

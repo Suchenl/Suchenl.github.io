@@ -1,4 +1,5 @@
 ---
+shortName: "LongLive"
 categories: ["生成模型/视频生成"]
 summaryZh: "实时交互长视频生成、长程一致性与记忆机制"
 title: "LongLive: Real-time Interactive Long Video Generation"

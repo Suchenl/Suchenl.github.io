@@ -1,4 +1,5 @@
 ---
+shortName: "Qwen3"
 title: "Qwen3 Technical Report"
 year: 2025
 categories: ["强化学习与 Agent/推理与后训练"]

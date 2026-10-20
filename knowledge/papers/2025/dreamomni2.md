@@ -1,4 +1,5 @@
 ---
+shortName: "DreamOmni2"
 categories: ["生成模型/图像生成"]
 summaryZh: "统一图像生成与编辑能力的研究"
 title: "DreamOmni2: Multimodal Instruction-based Editing and Generation"

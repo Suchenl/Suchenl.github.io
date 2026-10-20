@@ -1,4 +1,5 @@
 ---
+shortName: "Motus"
 categories: ["机器人与具身智能/世界动作模型"]
 summaryZh: "用于机器人动作与世界预测的建模路线"
 title: "Motus: A Unified Latent Action World Model"

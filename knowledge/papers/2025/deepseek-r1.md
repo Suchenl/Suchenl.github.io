@@ -1,4 +1,6 @@
 ---
+shortName: "DeepSeek-R1"
+aliases: ["R1","R1-Zero","DeepSeek-R1-Zero"]
 related:
   - ref: papers/2026/relift
     type: compares

@@ -1,4 +1,5 @@
 ---
+shortName: "DAPO"
 title: "DAPO: An Open-Source LLM Reinforcement Learning System at Scale"
 year: 2025
 categories: ["强化学习与 Agent/强化学习算法"]

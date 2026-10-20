@@ -1,4 +1,5 @@
 ---
+shortName: "Phantom-Data"
 categories: ["生成模型/视频生成"]
 summaryZh: "面向视频生成的训练数据构建与使用"
 title: "Phantom-Data: Towards a General Subject-Consistent Video Generation Dataset"

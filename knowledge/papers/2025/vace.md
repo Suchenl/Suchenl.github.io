@@ -1,4 +1,5 @@
 ---
+shortName: "VACE"
 categories: ["生成模型/视频生成"]
 summaryZh: "可控视频生成与编辑框架"
 title: "VACE: All-in-One Video Creation and Editing"
