@@ -26,7 +26,7 @@ const levelOrder: Level[] = ['proficient', 'advanced', 'growing', 'familiar'];
               <span class="skill-name"><span data-l="zh">{s.zh}</span><span data-l="en">{s.en}</span></span>
               <span class={`skill-level lv-${s.level}`}><span data-l="zh">{lv.zh}</span><span data-l="en">{lv.en}</span></span>
             </div>
-            <div class="skill-bar"><span style={`width:${lv.pct}%`}></span></div>
+            <p class="level-context"><Bi zh="基于可核验成果与实践经验的定性描述，不是数值能力评分。" en="A qualitative description supported by evidence, not a numeric skill score." /></p>
             <p class="skill-did"><span data-l="zh">{s.didZh}</span><span data-l="en">{s.didEn}</span></p>
             {s.evidence.length > 0 && (
               <div class="skill-evidence">
@@ -145,4 +145,8 @@ const levelOrder: Level[] = ['proficient', 'advanced', 'growing', 'familiar'];
   }
   .rubric-item { padding: 1rem 1.1rem; }
   .rubric-item p { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--fg-muted); }
+</style>
+
+<style>
+  .level-context {margin:.15rem 0 .5rem;font-size:.73rem;color:var(--fg-muted);}
 </style>

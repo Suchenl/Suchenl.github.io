@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PROJECTS } from '../../data/projects';
+import { PUB_GROUPS } from '../../data';
+const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code && ['LAMIC','TAG-WM'].some(name => p.titleEn.startsWith(name)));
 ---
 
 <Base title="Projects">
@@ -14,7 +16,24 @@ import { PROJECTS } from '../../data/projects';
     />
   </p>
 
-  <div class="proj-grid">
+  <section class="proj-section">
+    <h2><Bi zh="公开研究实现" en="Public research implementations" /></h2>
+    <p class="muted"><Bi zh="仅展示已公开的论文、代码和实验资源，不收录尚未公开的研究项目。" en="Only publicly released papers and code are listed; private research remains private." /></p>
+    <div class="research-proj-grid">
+      {researchHighlights.map(p=>(
+        <article class="card research-proj">
+          {p.image && <a href={p.url} target="_blank" rel="noopener noreferrer"><img src={p.image.replace(/\.png$/, '-thumb.jpg')} loading="lazy" decoding="async" alt={'方法示意：' + p.titleEn} /></a>}
+          <div><span class="featured-venue">{p.venue}</span><h3>{p.titleEn}</h3><p class="muted"><span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span></p>
+            <div class="proj-links"><a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="论文 ↗" en="Paper ↗" /></a>
+            {p.code && <a href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="代码 ↗" en="Code ↗" /></a>}</div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+  <section class="proj-section">
+    <h2><Bi zh="开源工具与开发项目" en="Open-source tools" /></h2>
+    <div class="proj-grid">
     {PROJECTS.map((p) => (
       <div class="proj card">
         <div class="proj-head">
@@ -36,13 +55,14 @@ import { PROJECTS } from '../../data/projects';
           </a>
           {p.url && (
             <a class="demo-link" href={p.url} target="_blank" rel="noopener">
-              <span data-l="zh">在线体验 →</span><span data-l="en">Live demo →</span>
+              <span data-l="zh">{p.url.includes('bilibili.com') ? '演示视频 →' : '在线体验 →'}</span><span data-l="en">{p.url.includes('bilibili.com') ? 'Demo video →' : 'Live demo →'}</span>
             </a>
           )}
         </div>
       </div>
     ))}
-  </div>
+    </div>
+  </section>
 </Base>
 
 <style>
@@ -78,4 +98,18 @@ import { PROJECTS } from '../../data/projects';
   }
   .repo-link:hover { text-decoration: none; border-color: var(--accent); }
   .demo-link { font-size: 0.82rem; font-weight: 700; }
+</style>
+
+<style>
+  .proj-section {margin:2rem 0 2.7rem;}
+  .proj-section>h2 {font-size:1.3rem;margin-bottom:.45rem;}
+  .proj-section>p {margin:.3rem 0 1rem;font-size:.85rem;}
+  .research-proj-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
+  .research-proj {display:flex;flex-direction:column;gap:.7rem;}
+  .research-proj img {display:block;width:100%;height:160px;object-fit:contain;background:var(--surface-2);border-radius:8px;}
+  .research-proj h3 {font-size:1rem;line-height:1.5;margin:.35rem 0;}
+  .research-proj p {font-size:.82rem;line-height:1.6;}
+  .research-proj .proj-links {margin-top:.7rem;font-size:.85rem;}
+  .featured-venue {font-size:.76rem;font-weight:700;color:var(--accent-ink);}
+  @media(max-width:720px){.research-proj-grid{grid-template-columns:1fr;}.research-proj img{height:auto;max-height:210px;}}
 </style>
