@@ -1,4 +1,10 @@
 ---
+comparison:
+  objective: "动态协调 SFT 稳定性与 RL 探索，缓解推理训练中的偏差和高方差"
+  training: "Group Alignment Loss + 多教师蒸馏 + 动态探索-利用门控"
+  signal: "组结构反馈、教师知识及 RL 奖励共同参与权衡"
+  evidence: "作者报告复杂推理 4.8%、OOD 任务 13.3% 改善；百分比原始分母仍待逐表核对"
+  limitation: "多教师引入额外信息与成本；门控增益与监督数据增益尚需分开分析"
 shortName: "DYPO"
 title: "Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning"
 year: 2026

@@ -1,4 +1,10 @@
 ---
+comparison:
+  objective: "持续训练 Agent 时按困难状态触发专家监督，保留旧技能"
+  training: "RL 主干 + 基于组成功率的监督触发 + 随时间衰减监督强度"
+  signal: "在线奖励和当前策略失败状态 + 额外可信专家演示"
+  evidence: "作者在 ALFWorld、WebShop、Deep Search 报告旧任务能力最多多保持 9.6 个百分点"
+  limitation: "需要困难状态专家，且低成功率可能来自验证器失误或工具不可用"
 shortName: "TSRL"
 title: "TSRL: Trigger-based Supervised Reinforcement Learning for Continual Agent Training"
 year: 2026

@@ -1,4 +1,10 @@
 ---
+comparison:
+  objective: "在可验证数学推理中提高 RL 的有效探索和长链训练稳定性"
+  training: "Clip-Higher、Dynamic Sampling、Token-Level PG Loss、Overlong Reward Shaping 四项配方"
+  signal: "答案正确性规则奖励 + 组相对优势；更新前的无效组需额外生成和过滤"
+  evidence: "作者官方项目在 Qwen2.5-32B Base / AIME 2024 报告约 50 分，并公布训练配方与资源"
+  limitation: "被过滤组和额外采样仍计入 GPU-hours；数学规则验证不自动迁移真实 Agent"
 shortName: "DAPO"
 title: "DAPO: An Open-Source LLM Reinforcement Learning System at Scale"
 year: 2025

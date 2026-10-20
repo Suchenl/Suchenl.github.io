@@ -1,4 +1,10 @@
 ---
+comparison:
+  objective: "结合思考与非思考模式，同时提升推理与通用指令表现"
+  training: "长 CoT 冷启动 SFT → 推理 RL → 模式融合 SFT → 通用 RL"
+  signal: "监督示范、可验证推理奖励与通用任务反馈按阶段引入"
+  evidence: "Qwen3 技术报告给出多阶段后训练及模型对比"
+  limitation: "各阶段训练数据与奖励均变化；不能从最终得分独立归因到某一个阶段"
 shortName: "Qwen3"
 title: "Qwen3 Technical Report"
 year: 2025
