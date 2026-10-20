@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const data = entry.data as {
-  title?: string; summaryZh?: string; categories?: string[];
+  title?: string; shortName?: string; aliases?: string[]; summaryZh?: string; categories?: string[];
   status?: string; rating?: number;
   links?: { arxiv?: string; pdf?: string; code?: string; project?: string };
 };
@@ -79,6 +79,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     </nav>
     <header class="rkd-head">
       <div class="rkd-kicker">{kind} <span aria-hidden="true">·</span> 约 {minutes} 分钟阅读</div>
+      {isPaper && data.shortName && <p class="rkd-short-name">{data.shortName}</p>}
       <h1>{title}</h1>
       {data.summaryZh && <p class="rkd-description">{data.summaryZh}</p>}
       {isPaper && (

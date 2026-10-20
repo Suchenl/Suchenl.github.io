@@ -5,6 +5,8 @@ import { getCollection, render } from 'astro:content';
 
 type PaperMeta = {
   title?: string;
+  shortName?: string;
+  aliases?: string[];
   authors?: string[];
   year?: number;
   venue?: string;
@@ -53,6 +55,8 @@ const papers = paperNotes.map(e => {
     id: e.id,
     href: '/research/' + e.id + '/',
     title: m.title || heading(e),
+    shortName: m.shortName || '',
+    aliases: m.aliases || [],
     summary: m.summaryZh || m.abstract || '',
     external: Object.values(m.links || {}).find(v => typeof v === 'string' && /^https?:\/\//.test(v)) || embeddedSource,
     noteDepth: body(e).length > 750 ? '详细笔记' : '简要笔记',
@@ -63,7 +67,7 @@ const papers = paperNotes.map(e => {
     tags: m.tags?.length ? m.tags : embeddedTags,
     status: m.status || 'untracked',
     rating: m.rating || 0,
-    searchText: body(e).slice(0, 14000),
+    searchText: [m.shortName || '', ...(m.aliases || []), body(e).slice(0,14000)].join(' '),
     added: m.added ? (m.added instanceof Date ? m.added.toISOString().slice(0, 10) : String(m.added)) : '',
   };
 });

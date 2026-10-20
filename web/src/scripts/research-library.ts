@@ -1,5 +1,5 @@
 type Item = {
-    kind: string; id: string; href: string; title: string; summary: string;
+    kind: string; id: string; href: string; title: string; summary: string; shortName?: string; aliases?: string[];
     authors?: string[]; year?: number; venue?: string; categories?: string[];
     tags?: string[]; status?: string; rating?: number; searchText?: string; added?: string; external?: string; noteDepth?: string;
   };
@@ -215,7 +215,7 @@ type Item = {
     let values: Item[];
     const q = state.query.trim().toLowerCase();
     if (q) {
-      values = ALL.filter(p => [p.title, p.summary, p.id, p.searchText || '', (p.authors || []).join(' '), (p.tags || []).join(' '), (p.categories || []).join(' ')].join(' ').toLowerCase().includes(q));
+      values = ALL.filter(p => [p.shortName || '', (p.aliases || []).join(' '), p.title, p.summary, p.id, p.searchText || '', (p.authors || []).join(' '), (p.tags || []).join(' '), (p.categories || []).join(' ')].join(' ').toLowerCase().includes(q));
     } else if (state.selected === 'papers') {
       values = ALL.filter(p => p.kind === 'paper');
     } else if (state.selected.startsWith('cat:')) {
@@ -229,11 +229,15 @@ type Item = {
     const relevance = (p: Item) => {
       if (!q) return 0;
       const title = p.title.toLowerCase();
+      const short = (p.shortName || '').toLowerCase();
+      const aliases = (p.aliases || []).join(' ').toLowerCase();
       const tags = (p.tags || []).join(' ').toLowerCase();
       const summary = (p.summary || '').toLowerCase();
       const category = (p.categories || []).join(' ').toLowerCase();
       // Search the whole body, but prioritize the user's likely intention: named concepts and titles.
-      return (title === q ? 200 : title.startsWith(q) ? 120 : title.includes(q) ? 85 : 0)
+      return (short === q ? 340 : short.startsWith(q) ? 235 : short.includes(q) ? 120 : 0)
+        + (aliases.split(' ').includes(q) ? 220 : aliases.includes(q) ? 90 : 0)
+        + (title === q ? 200 : title.startsWith(q) ? 120 : title.includes(q) ? 85 : 0)
         + (p.kind === 'term' && title.includes(q) ? 40 : 0)
         + (tags.includes(q) ? 35 : 0)
         + (summary.includes(q) ? 20 : 0)
@@ -264,6 +268,7 @@ type Item = {
     const detailHref = baseHref + '?' + destination.toString() + fragment;
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
+    const acronym = paper && p.shortName ? '<span class="lit-short-name">' + escapeHtml(p.shortName) + '</span>' : '';
     const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
     const kind = paper ? (p.noteDepth || '阅读笔记') : (p.kind === 'term' ? '术语解释' : labels[p.kind] || '研究资料');
     const year = paper ? [p.year || '', p.venue || ''].filter(Boolean).join(' · ') : kind;
@@ -274,7 +279,7 @@ type Item = {
       ? '<a class="lit-external" href="' + escapeHtml(p.external) + '" target="_blank" rel="noopener noreferrer" aria-label="在新标签页打开 ' + title + ' 的原始来源">原始资料 ↗</a>' : '';
     return '<article class="row">'
       + '<div class="row-main"><div class="lit-row-eyebrow"><span>' + escapeHtml(year) + '</span><span>' + escapeHtml(kind) + '</span></div>'
-      + '<div class="row-title"><a href="' + escapeHtml(detailHref) + '">' + title + '</a></div>'
+      + '<div class="row-title">' + acronym + '<a href="' + escapeHtml(detailHref) + '">' + title + '</a></div>'
       + (p.summary ? '<p class="row-abs">' + escapeHtml(p.summary) + '</p>' : '')
       + '<div class="lit-row-bottom"><span class="lit-category">' + escapeHtml(category.replaceAll('/', ' / ')) + '</span>' + chips + '</div></div>'
       + '<div class="row-meta">' + (paper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')

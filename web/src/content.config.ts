@@ -37,6 +37,8 @@ const knowledge = defineCollection({
   }),
   schema: z.object({
     title: z.string().optional(),
+    shortName: z.string().min(1).optional(),
+    aliases: z.array(z.string()).optional(),
     summaryZh: z.string().optional(),
     categories: z.array(z.string()).optional(),
     status: z.enum(['untracked','to-read','reading','read']).optional(),
