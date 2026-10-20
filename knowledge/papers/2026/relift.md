@@ -21,7 +21,7 @@ status: untracked
 
 - **中文主题**：ReLIFT：困难问题的在线定向监督与强化学习交替
 - **作者**：Lu Ma、Hao Liang 等
-- **首次公开 / 发表时间**：2026
+- **首次公开 / 发表时间**：2025-06-09 首次上传 arXiv:2506.07527；ICLR 2026 正式发表
 - **发表状态**：ICLR 2026 正式论文
 - **原始来源**：[论文或官方页面](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html) · [代码/模型/其他官方资源](https://github.com/TheRoadQaQ/ReLIFT)
 - **标签**：RLVR / 交替更新 / 冷启动 / 在线数据
@@ -64,8 +64,9 @@ ReLIFT 的关键是通过**困难题所需的外部正确解**提供另一种训
 
 > 阅读提示：以上“论文报告”是对作者公开材料的重述；“批判性分析”是知识库的研究判断，未经独立复现实验。
 
-## 7. 可复现性和证据口径
+## 7. 版本差异、可复现性和证据口径
 
+- **不要把 2025 v1 和 2026 正式版的实验均值混用**：[arXiv 2506.07527 的早期版本](https://arxiv.org/abs/2506.07527)摘要曾写六项基准平均超过 **+5.2 points**；最终 [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)报告的是 **+6.7 points**。不同版本的实验结果不能未经注明混写为同一张表。
 - [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)支持五项数学、一项 OOD 基准平均 +6.7 **points** 的作者报告，不能等同于相对提升 6.7%。
 - [官方训练仓库](https://github.com/TheRoadQaQ/ReLIFT)列有 ReLIFT/verl、数据准备、训练启动和评测脚本；README 宣传只需 13% 示范数据，**但不应将其误读为只需 13% GPU-hours**。实际复现仍要验证数据、模型版本与环境。
 - 机器人偏离示范后的状态可能根本没有可调用的可信专家；该任务并没有因为借鉴 ReLIFT 就自动解决。

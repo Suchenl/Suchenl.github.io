@@ -23,6 +23,8 @@ status: untracked
 
 # Beyond Two-Stage Training: Cooperative SFT and RL for LLM Reasoning
 
+> **时间口径**：2025-09-08 首次公开 arXiv:2509.06948，2026-07 作为 ICML 2026 正式论文发表；并非 2026 年才首次提出。
+>
 > **证据层级**：论文正式版 [ICML 2026 / PMLR](https://proceedings.mlr.press/v306/chen26an.html) 以及[作者的算法展示材料](https://chanliang.github.io/talks/bridge.pdf)（特别是算法 2）。下文区分原文方法、便于理解的局部推导与我对 Agent 迁移的判断。
 >
 > **代码核对（2026-10-20）**：[作者 BRIDGE 仓库](https://github.com/ChanLiang/BRIDGE) 的 README 仍写着实现将随后发布，当前没有可直接复现的完整训练代码。不要把「有 GitHub 链接」误写成「训练代码已开源」。
@@ -137,4 +139,4 @@ $$
 3. 为什么某个局部 $g_s^\top g_r<0$ 既值得监控，又不足以证明 SFT 在长期无益？
 4. 如果带有额外 RL 分支的 BRIDGE 在同样训练 step 下更好，却在相同 GPU-hours 下更差，你会如何报告结论？
 
-**原始依据**：[ICML 2026 正式论文](https://proceedings.mlr.press/v306/chen26an.html) · [作者方法/算法 2](https://chanliang.github.io/talks/bridge.pdf) · [代码发布状态](https://github.com/ChanLiang/BRIDGE)。
+**原始依据**：[2025-09 arXiv 首发](https://arxiv.org/abs/2509.06948) · [ICML 2026 正式论文](https://proceedings.mlr.press/v306/chen26an.html) · [作者方法/算法 2](https://chanliang.github.io/talks/bridge.pdf) · [代码发布状态](https://github.com/ChanLiang/BRIDGE)。
