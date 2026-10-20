@@ -2,7 +2,7 @@
 title: "CoT 是工具调用吗？长程 Agent 何时思考、Codex/GLM/Qwen 如何实现"
 shortName: "When to Think"
 aliases: ["CoT", "Chain-of-Thought", "reasoning", "think tool", "interleaved thinking", "preserved thinking", "reasoning_effort", "Codex", "update_plan", "GLM-5.3-Flash", "Qwen3.8-27B", "RACE", "CogRouter", "adaptive thinking", "tool calling"]
-summaryZh: "区分 CoT 与工具调用、同一轮 KV Cache 和跨工具轮推理回放；核对 Codex-to-GLM Bridge 的按 call_id 恢复机制、vLLM Prefix Cache 条件，以及 GLM/Qwen/Codex 的思考调度。"
+summaryZh: "区分 CoT 与工具调用、同一轮 KV Cache 和跨工具轮推理回放；讨论通用 API 协议适配、reasoning 状态回放与 vLLM Prefix Cache 的必要条件，以及 GLM/Qwen/Codex 的思考调度。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工具使用"]
 ---
 
@@ -126,31 +126,18 @@ user/task → model（可能生成 reasoning）
 
 注意 **KV Cache 不等于跨轮记忆**：请求结束后推理逻辑仍需有信息来源；物理 KV 块可能被重用，但重用计算不等于自动补进缺失的消息。
 
-### 3.2 本地 Codex → GLM Bridge 的实现（源码已核对）
+### 3.2 跨 API 协议转换的通用问题（不涉及任何私人实现）
 
-我检查了用户自有私有 `local-workbench` 仓库截至 2026-10-20 的 `model_bridge.py`。以下只记录其**可公开学习的机制**，不公开内部日志、私人路径、密钥或整个实现；`model_bridge.log` 的具体内容此次未单独核验。
+公开接口层面，OpenAI Responses 的 `reasoning`、`function_call` 和 `function_call_output` 不等同于 Chat Completions 的 `assistant.reasoning_content`、`tool_calls` 和 `role=tool`。如果使用协议适配层，必须**显式定义格式、调用 ID、工具结果配对和 reasoning 状态的回放规则**，否则历史推理可能缺失或重复。
 
-```text
-Codex app-server (Responses)       Bridge                     GLM / vLLM (Chat)
-reasoning item ───────────────────→ 跳过原始不兼容 item
-function_call(call_id,args) ──────→ 组装 assistant.tool_calls
-                                     查询 SQLite[call_id] ─────→ assistant.reasoning_content
-function_call_output ─────────────→ role=tool + tool_call_id ─→ tool result
-                                     
-GLM 返回 reasoning + tool_calls ─→ 适配为 Responses 事件
-                                    每个 call_id 保存对应明文 reasoning
-```
+需要做的公开通用检查：
 
-真实源码的关键行为：
+1. 同一轮多个 tool calls 的 `call_id` 是否准确配对。
+2. 模型的 chat template 是否会处理历史 `reasoning_content`，是否支持跨轮 preserved thinking。
+3. 对缺失的推理状态、会话压缩、服务重启如何降级。
+4. 工具权限、审批与沙箱应只由工具执行层管理，不能把模型生成的推理文本当成待执行命令。
 
-1. **读流**：接受 `delta.reasoning` 或 `delta.reasoning_content`，组装本轮 GLM **明文推理字符串**。
-2. **保存**：只有工具调用轮次才将该次推理按各个 `call_id` 放入本地 SQLite；同一轮有多个工具时可能对应相同推理文本。
-3. **回填**：下一轮将 Responses `function_call` 重新变成 `assistant.tool_calls` 时，以 `call_id` 查库；查询命中则挂到 `assistant.reasoning_content`。
-4. **原始 item**：对于 `kind == "reasoning"`，直接跳过原始 Responses item；工具执行与权限控制仍由 Codex 负责，Bridge **不执行**工具。
-
-**重要区别**：本例恢复的是 GLM 自己生成的**明文 CoT**，绝不是“解密 OpenAI opaque/encrypted reasoning item”。Bridge 同时把这段明文包装成 Codex 可理解的 reasoning **summary 事件**，因此也不能宣称它和原生 OpenAI opaque reasoning item 在语义或内部状态上完全等价。
-
-**实现存在不等于实验已验收**：交接文档对这条回填路径仍留有真实模型验证事项。工具能成功运行，不保证数十轮之后的推理内容不被错配、遗漏、重复或被压缩策略改写。建议测试丢失 SQLite 记录、并行多工具的 `call_id`、会话重启、历史压缩以及是否按预期渲染 chat template。
+这些是 API 兼容性和系统设计原则，**不描述或证明任何特定私人仓库的实现**。参见[OpenAI Reasoning](https://developers.openai.com/api/docs/guides/reasoning)、[vLLM Tool Calling](https://docs.vllm.ai/en/latest/features/tool_calling/)。
 
 ### 3.3 回填 CoT 会不会必然提高 Prefix Cache 命中率？
 
@@ -165,7 +152,7 @@ GLM 返回 reasoning + tool_calls ─→ 适配为 Responses 事件
 
 **跨 Responses → Chat 格式的回填不保证前后 prompt token 完全相同**。保留推理有时可能增加有效共享前缀，但也会增大逻辑上下文、带来 token/存储/隐私成本。
 
-还有一个实际统计陷阱：当前 Bridge 将返回给 Codex 的 `input_tokens_details.cached_tokens` 固定填作 **0**。这只是适配层占位，**既不是服务端未命中的证明，也不能作为已命中的测量**。需要查看 vLLM 真正的 prefix cache 命中指标、实际 Prefill/TTFT 和总 wall time。对自部署 GPU，减少 Prefill 算力不一定产生按 token 计费的账单折扣。
+还有一个实际统计陷阱：部分适配器可能不给出真实的服务端缓存统计，因此不能只看客户端返回的 `cached_tokens` 就断言发生或没有发生缓存命中。需要查看 vLLM 真正的 prefix cache 命中指标、实际 Prefill/TTFT 和总 wall time。对自部署 GPU，减少 Prefill 算力不一定产生按 token 计费的账单折扣。
 
 **建议做一组独立验证**：同任务同工具，用（A）不回填 CoT、（B）回填完整 CoT、（C）只回传简短显式计划进行对照；记录工具成功率、异常恢复率、错误重试、全程 token、TTFT、真实 cache hit、GPU 时间和隐私/磁盘占用。这样才知道回传推理是**有用的历史**还是**昂贵的噪声**。
 
@@ -337,7 +324,7 @@ $$
 - **误区 7**：「模型说要调用工具就已经执行了」→ 错；必须由 Harness 解析、验证权限、真正执行并回报结果。
 - **误区 8**：「模型学会了何时思考，安全性就解决了」→ 错；机器人/浏览器的高风险动作还需要独立执行约束和审计。
 - **误区 9**：「刚才生成时有 KV Cache，下一轮就一定记得 CoT」→ 错；跨请求历史与缓存是两种机制。
-- **误区 10**：「Bridge 解密 OpenAI 的推理」→ 错；该案例从本地 GLM 明文 reasoning 流恢复字符串。
+- **误区 10**：「第三方 Bridge 能解密 OpenAI 的推理」→ 错；opaque/encrypted item 不能直接还原为其他模型的明文 CoT。
 - **误区 11**：「回填 CoT 一定触发 Prefix Cache 命中」→ 错；需满足 token 前缀、缓存块和服务器配置等条件。
 - **误区 12**：「Harness 根本不能决定什么时候想」→ 错；具体 Agent 可选择模型/预算/输入、提供事件触发重规划或单独的 THINK/ACT 调度器。
 

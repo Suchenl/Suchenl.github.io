@@ -135,6 +135,6 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 
 ## CoT 与工具轮次回填的内容安全边界（2026-10-20）
 
-- Topic `topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md` 可以用**匿名化机制说明**介绍用户私有 local-workbench 的桥接方案，但**禁止发布私有日志、访问地址、密钥、部署路径或完整私有源码**。
+- 公开站点的知识库不得包含任何私人仓库内容，包括代码实现、日志、路径、配置、私有仓库名或从私人实现提取的细节。只能写基于已公开标准和官方文档的通用技术机制。
 - 必须明确同一次解码的 KV Cache、跨请求的消息/推理重放、服务端 Prefix Cache 是三件事；不许说“CoT 回传必命中缓存”，也不能把 GLM 明文 `reasoning_content` 说成 OpenAI 加密 reasoning 的解密结果。
 - 任何代码实现事实只代表已经存在该分支，是否提高长程 Agent 成功率、降低延迟，应通过独立回归与真实负载验证，不能仅凭工具调用通了就宣称成功。
