@@ -11,8 +11,8 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
   <h1 class="page-title"><Bi zh="项目" en="Projects" /></h1>
   <p class="page-intro">
     <Bi
-      zh="一些我做过的开源小项目与工具，会持续更新。"
-      en="Open-source side projects and tools I've built — updated over time."
+      zh="我的公开项目与开源工具，持续维护更新。"
+      en="Research projects and open-source tools I build and maintain."
     />
   </p>
 
@@ -33,6 +33,7 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
   </section>
   <section class="proj-section">
     <h2><Bi zh="开源工具与开发项目" en="Open-source tools" /></h2>
+    <p class="muted"><Bi zh="下方标签描述可以直接使用的功能，不再堆砌技术栈缩写。" en="Labels describe what each tool does, rather than generic tech-stack buzzwords." /></p>
     <div class="proj-grid">
     {PROJECTS.map((p) => (
       <div class="proj card">
@@ -47,7 +48,8 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
         </div>
         <p class="proj-desc"><span data-l="zh">{p.descZh}</span><span data-l="en">{p.descEn}</span></p>
         <div class="proj-tags">
-          {p.tags.map((t) => <span class="tag-chip">{t}</span>)}
+          {p.featuresZh.map((t) => <span class="tag-chip" data-l="zh">{t}</span>)}
+          {p.featuresEn.map((t) => <span class="tag-chip" data-l="en">{t}</span>)}
         </div>
         <div class="proj-links">
           <a class="repo-link" href={`https://github.com/${p.repo}`} target="_blank" rel="noopener">
