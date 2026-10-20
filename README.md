@@ -37,3 +37,13 @@ which builds `web/` (including formula and navigation checks via `scripts/check-
 Research content is browsed at `/research/` and maintained as Markdown under `knowledge/`. The deprecated `/reading/` URL redirects to the unified Research page.
 
 > The previous Jekyll (academicpages) site is preserved on the `legacy-jekyll` branch.
+
+
+
+## Development and site quality
+
+- Build: cd web && npm ci && npm run build. This checks generated research math, links, routes and public-page smoke conditions.
+- Browser QA: .github/workflows/browser-smoke.yml tests desktop/mobile Chromium, modal focus, category filters, comparison, learning progress and local data backup.
+- Performance: .github/workflows/lighthouse.yml records laboratory metrics for Home, Research and Publications. Do not treat Lighthouse numbers as real-user Core Web Vitals.
+- Content policy: keep publication facts in web/src/data.ts, tool project facts in web/src/data/projects.ts, and research Markdown in knowledge/ as a single source of truth. Never automatically publish private repositories or user-local study notes.
+- Full UX review and limitations: docs/UX_AUDIT.md.

@@ -86,3 +86,14 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 - 阅读后的复述题只用于主动回忆，不当作原文已经被正确理解的证据。
 - 本机学习笔记使用 `research-personal-note-v1:` 前缀保存在 localStorage，必须能复制成 Markdown 手工备份；本地保存失败要显示明确警告。严禁在页面上宣称已经同步到 GitHub。
 - 「已读」只能由用户自己设定；点击、路线勾选、页面停留或填写个人笔记均不能自动修改它。
+
+
+## 十二、整站发布与知识库一致性
+
+- 首页围绕当前研究方向和公开代表作品。论文数据在 web/src/data.ts 唯一维护；工具数据在 web/src/data/projects.ts 唯一维护。Projects 可读取论文数据，但禁止生成重复事实。
+- About 汇总经历、能力与合作入口；/work/ 与 /expertise/ 均保留历史 URL。导航重新整理时需检查键盘和移动端布局。
+- 未获允许不得公开私有研究仓库（含 Open-Robot-Agent、UniRobo-Data、VMem-Bench、AgentHarness3D）的源代码、截图、内部实验和指标。
+- publication 预览使用可访问 dialog；Blog 分类筛选必须是按钮组而不是伪 tab；未知统计不得当作 0。
+- comparison 文献卡片字段必须有原始证据。related 条目包含 ref、type、note，type 只接受 compares/extends/requires/questions/supports；不得将主题相似度自动视为正式引用或因果支持。
+- Research 本机学习笔记的 JSON 备份/恢复由读者主动操作，不得隐式上传；阅读勾选不等同于已读状态。
+- 变更后依次执行 Astro build 和站点静态校验、Chromium browser smoke，必要时对比 Lighthouse 指标。不以构建成功替代页面实际交互验收。

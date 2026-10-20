@@ -50,3 +50,11 @@
 ## 个人学习笔记的处理约定
 
 站点阅读器下方的「我的学习笔记」使用浏览器 localStorage，仅保存于当前设备的当前浏览器。它不是仓库的 Markdown 文件，也不代表已同步、正式发表或已完成阅读。用户可以点击「复制为 Markdown」手动转存；浏览器禁用存储时页面会提示备份。任何未来自动同步方案都必须得到明确授权，不能默认把本地草稿上传远端。
+
+
+## 比较字段与有类型研究关系
+
+- 可在论文 frontmatter 添加 comparison.objective、comparison.training、comparison.signal、comparison.evidence、comparison.limitation。信息不足不要猜测，页面会显示待整理。
+- 相关方法的 related 项必须具有 ref（已有知识库 ID）、type（compares/extends/requires/questions/supports）和 note（关联依据）。目标不存在时构建报错。
+- 浏览器上的论文比较由读者选择 2–3 篇。不同论文采用不同基准/资源时，作者报告的数值不可直接相减推断排名。
+- 从 Research 首页导出的 JSON 是私人本机学习笔记、阅读位置和学习路线进度的可移植备份。无默认远程上传，导入覆盖同名数据前需确认。

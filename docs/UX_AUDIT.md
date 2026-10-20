@@ -93,3 +93,26 @@
 - 对纯维护文本（AGENTS、templates、CHANGELOG、scripts）无需发布整站，新工作流只监听 `web/**` 以及包含实际站点内容的 knowledge 子目录。
 - 如 GitHub Actions 一直排队，先查看官方 status 和工作流 job 的调度状态，不要因为未领取 runner 就误判断为代码错误或自行宣称 build 成功。
 - 不为了某个前端功能引入运行时服务端数据库、用户账户或付费 API，除非以后确有跨设备同步、全文注释协同的明确需求。
+
+
+## 2026-10-20 四阶段整站优化补充
+
+| 阶段 | 改动 | 可验证性 |
+|---|---|---|
+| P0 基础交互 | Publications 弹窗键盘/焦点恢复；Blog 按钮筛选语义；统计缺失不显示虚假 0；404 导向 Research | Chromium browser smoke + 构建检查 |
+| P1 研究展示 | 首页精选 LAMIC/TAG-WM、优化当前研究定位；公开研究/工具项目分区；About 集成经历/能力导航 | 公共原始来源、页面浏览 |
+| P2 Research 学习 | 多篇论文对照（缺值待整理）；语义关联类型；本机个人笔记导出和导入 | 构建、数据核验、浏览器备份测试 |
+| P3 工程与 SEO | 全站共享长文溢出规则、移除外部字体依赖、站点 Schema.org 元数据、robots、Sitemap、RSS；Chromium 与 Lighthouse 工作流 | 自动化流水线 |
+
+### 有证据的内容维护
+
+- Publications 展示公开论文，Projects 复用同一论文数据而非复制。私有仓库的实验、代码和未发表成果不得擅自公开。
+- 研究对比字段 comparison 包括 objective、training、signal、evidence、limitation；只有核验过的项目才填写，空值明确显示待整理。
+- 显式关系 related 仅限 compares、extends、requires、questions、supports，并须写 ref 与依据 note。自动反向链接不等于论文的学术引用次数。
+- 本机 JSON 备份包含私人学习笔记、学习路线进度和阅读位置。只在浏览器端生成/导入，不自动上传；覆盖同名数据前必须确认。
+
+### 后续验收边界
+
+- Browser UI smoke 使用 Chromium 的 390px 与 1440px 模拟视口，不等于 Safari、VoiceOver、真实触屏和 200% 缩放已全部通过。
+- Lighthouse workflow 以实验室环境测首页、Research、Publications 的性能/无障碍/SEO。单次分数不是实际用户 Core Web Vitals，报告保留 7 天。
+- npm ci 的安全审计结果应在计划依赖升级时复核；不得直接执行可能带来破坏性升级的 npm audit fix --force。
