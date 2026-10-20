@@ -1,4 +1,8 @@
 ---
+related:
+  - ref: papers/2025/deepseek-r1
+    type: compares
+    note: "R1-Zero 展示可验证推理任务中直接强化学习的可能性；ReLIFT 研究策略难以产生正确样本时如何补充监督。"
 
 comparison:
   objective: "在 RL 难以得到成功样本的困难问题上恢复有效学习信号"

@@ -1,4 +1,11 @@
 ---
+related:
+  - ref: papers/2026/relift
+    type: compares
+    note: "ReLIFT 通过在线插入定向监督帮助探索困难题；BRIDGE 通过奖励反馈协调同时存在的 SFT/RL 目标。比较时应控制训练成本与奖励条件。"
+  - ref: papers/2025/deepseek-r1
+    type: requires
+    note: "先区分 Base 直接 RL 与冷启动 SFT，再讨论监督梯度是否帮助最终 RL 奖励。"
 
 comparison:
   objective: "使 SFT 更新对最终 RL 奖励有利，而非简单叠加损失"

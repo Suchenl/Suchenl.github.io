@@ -33,6 +33,12 @@ const minutes = Math.max(1, Math.ceil((prose.match(/[\u3400-\u9fff]/g) || []).le
 const canShowToc = toc.length > 1;
 const graphEntries = await getCollection('knowledge');
 const graph = buildKnowledgeGraph(graphEntries);
+const typedRelations = ((entry.data as { related?: {ref:string;type:string;note:string}[] }).related || [])
+  .map(relation=>({...relation,node:graph.nodes.get(relation.ref)}))
+  .filter(x=>x.node);
+const semanticLabels:Record<string,string> = {
+  compares:'方法对比', extends:'后续改进', requires:'前置知识', questions:'值得质疑', supports:'支持证据',
+};
 const inbound = graph.incomingFor(entry.id).filter(n => n.kind !== 'other');
 const outbound = graph.outgoingFor(entry.id).filter(n => n.kind !== 'other');
 const routeNeighbors = graph.pathsFor(entry.id).map(pathNode => {
@@ -163,6 +169,19 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
             </section>
           )}
         </div>
+        {typedRelations.length > 0 && (
+          <section class="rkd-related rkd-semantic" aria-label="有类型的研究关联">
+            <h2>重要研究关联</h2>
+            {typedRelations.map(r=>(
+              <div class="rkd-semantic-item">
+                <span>{semanticLabels[r.type] || r.type}</span>
+                <a href={r.node!.href}>{r.node!.title} →</a>
+                <p>{r.note}</p>
+              </div>
+            ))}
+            <p class="rkd-path-privacy">关联类型由知识库编辑者维护，不使用相似度猜测或自动归因。</p>
+          </section>
+        )}
         {isLearningPath === false && outbound.length > 0 && (
           <section class="rkd-related rkd-relations">
             <h2>本文引用的知识资料 <span>{outbound.length}</span></h2>
@@ -556,4 +575,12 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   #rkd-personal-copy {min-height:44px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);padding:.5rem .85rem;color:var(--fg);font:inherit;font-size:.79rem;font-weight:700;cursor:pointer;}
   #rkd-personal-copy:hover {border-color:var(--accent);color:var(--accent-ink);}
   .rkd-personal-warning {font-size:.72rem;color:var(--fg-muted);margin:.75rem 0 0;line-height:1.6;}
+</style>
+
+<style>
+  .rkd-semantic {gap:.75rem;}
+  .rkd-semantic-item {padding:.75rem .9rem;border:1px solid var(--border);border-radius:9px;background:var(--surface);}
+  .rkd-semantic-item>span {display:inline-block;color:var(--accent-ink);font-size:.73rem;font-weight:750;padding:.15rem .45rem;background:var(--accent-soft);border-radius:5px;margin-right:.35rem;}
+  .rkd-semantic-item>a {font-size:.86rem;font-weight:720;overflow-wrap:anywhere;}
+  .rkd-semantic-item p {font-size:.81rem;line-height:1.7;color:var(--fg-muted);margin:.4rem 0 0;}
 </style>

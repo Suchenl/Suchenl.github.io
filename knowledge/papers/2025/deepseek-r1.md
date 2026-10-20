@@ -1,4 +1,8 @@
 ---
+related:
+  - ref: papers/2026/relift
+    type: compares
+    note: "比较 Direct RL、冷启动和在线定向 SFT 的信息来源，不将不同基准上的得分直接比较。"
 
 comparison:
   objective: "从基座模型发展可验证推理能力，并改善推理可读性与通用性"

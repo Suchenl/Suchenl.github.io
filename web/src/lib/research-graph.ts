@@ -76,6 +76,18 @@ export function buildKnowledgeGraph(entries: KnowledgeRecord[]) {
       const target = targetOf(e.id, m[1]);
       if (target) register(e.id, target);
     }
+    // Explicit semantic relationships are authored, not guessed from shared tags.
+    const typed=e.data.related;
+    if (typed !== undefined && !Array.isArray(typed)) throw new Error('related must be an array in '+e.id);
+    for(const relation of (Array.isArray(typed) ? typed : [])){
+      if (!relation || typeof relation.ref!=='string' ||
+          !['compares','extends','requires','questions','supports'].includes(relation.type) ||
+          typeof relation.note!=='string' || !relation.note.trim()) {
+        throw new Error('Invalid related item in '+e.id);
+      }
+      if(!nodes.has(relation.ref)) throw new Error('Missing related target '+relation.ref+' in '+e.id);
+      register(e.id,relation.ref);
+    }
     for (const step of readingSteps(e)) {
       if (!nodes.has(step.ref)) throw new Error('Missing learning target ' + step.ref + ' in ' + e.id);
       if (step.ref === e.id) throw new Error('Learning path cannot link to itself: ' + e.id);
