@@ -50,7 +50,9 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 
 ## Current product decisions (2026-10-20)
 
-- Publications use unobstructed thumbnails and native expandable summaries, plus a public-release timeline; no hover-to-zoom image overlay.
+- Publications use unobstructed thumbnails and native expandable summaries for **every** paper. The duplicate public-release timeline was removed; there is no zoom overlay.
 - Research **does not** include a personal learning-notebook editor or JSON notebook-backup interface. Do not reintroduce these based on historical documentation.
 - The homepage favors specific current research descriptions over overlapping generic tags.
 - Project descriptions avoid “side projects” and “小项目”.
+
+- The owner's research areas and personal interests are author-controlled: restore/retain their original wording from Git history unless the owner explicitly requests a change. Do not rewrite them to match the latest research project.
