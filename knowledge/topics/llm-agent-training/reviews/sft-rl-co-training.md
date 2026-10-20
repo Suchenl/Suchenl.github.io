@@ -9,6 +9,8 @@ summaryZh: "SFT 与 RL 的核心训练信号、协同方案、代表方法与证
 > **核验日期：2026-10-20** · 研究范围：LLM / 多模态 Agent 后训练的 SFT、RLVR、交替训练、联合优化、在线蒸馏、工具选择与机器人迁移。  
 > **文献性质**：叙述性综述，不声称系统综述或穷尽所有工作。优先核对会议官方、arXiv 原文与官方模型卡；引用链接可点击。论文实验的数学/代码结果**不自动外推**到机器人 Agent。
 
+**如果不想按论文逐篇阅读**：先打开[研究主张证据地图](evidence-map.md)看 C01–C07、冲突与证据缺口；若已准备做实验，直接查看[Agent 后训练可证伪实验议程](../../../research/agent-post-training-experiment-agenda.md)中的 E0–E5。原有这篇综述继续负责方法概念与文献背景。
+
 ## 0. 先给研究判断
 
 1. **SFT 与 RL 不是互斥关系，也不存在普适的最优固定比例。** 阶段式 SFT→RL 是成熟基线；ReLIFT 将针对性 SFT 插入 RL；BRIDGE 与 DYPO 研究更精细的梯度协调；MiMo 使用多教师 On-Policy Distillation 汇总能力。
@@ -237,6 +239,10 @@ Clip-Higher、Dynamic Sampling、Token-Level PG Loss、Overlong Reward Shaping �
 5. 想研究机器人轨迹监督：读 [DTWIL](../../../papers/2025/dtwil.md)以及[真实轨迹奖励设计](../../../research/robot-trajectory-reward.md)。
 
 ## 9. 尚存争议与维护任务
+
+**已单独梳理的研究主张**：[证据地图](evidence-map.md)按统一口径分析「Direct RL vs SFT」「困难状态补监督」「梯度协调 vs 回溯」等常见误读；[可证伪实验议程](../../../research/agent-post-training-experiment-agenda.md)把这些分歧转为 E0–E5 受控实验。二者不是额外的论文卡片，也不应混作“作者做过的实验”。
+
+
 
 - 同步梯度与交替更新在**多模态、真实工具和长程机器人控制**上是否有同样优势？
 - 当不存在明显更强的教师时，能否利用可验证结果取代 OPD？

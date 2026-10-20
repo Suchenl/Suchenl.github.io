@@ -2,6 +2,8 @@
 
 这里记录我们的**假设**，不把它们归类为“已被论文证明”。
 
+- [Agent 后训练：从证据矛盾到可证伪实验](agent-post-training-experiment-agenda.md)：先 E0 核对验证器，再分离数据/算法贡献、触发监督、失败恢复及代理奖励有效性。
+- [SFT/RL 研究主张证据地图](../topics/llm-agent-training/reviews/evidence-map.md)：区分论文原始证据与尚未验证的研究假设。
 - [真实机器人轨迹如何成为 RLVR 的奖励来源？](robot-trajectory-reward.md)：固定 SFT Loss，探索轨迹匹配奖励、动作约束、反事实不可辨识与训练实验。
 
 每项提议应包含反例、基线、所需数据、通过/失败标准和与既有文献的差异。

@@ -2,6 +2,14 @@
 
 **核心问题**：什么能力应该通过模仿学习，什么能力应该通过可验证结果、环境交互、教师蒸馏获得？不同学习信号如何协作而不互相抵消？
 
+## 三层研究入口
+
+- **建立整体理解**：[SFT/RL 后训练长篇综述](reviews/sft-rl-co-training.md)——机制、定义、方法脉络。
+- **检验观点是否站得住**：[研究主张与证据地图](reviews/evidence-map.md)——C01–C07、支持范围、表面矛盾、证据缺口。
+- **设计下一项研究**：[Agent 后训练可证伪实验议程](../../research/agent-post-training-experiment-agenda.md)——E0–E5、数据/算法因素分离、成本和停止规则。
+
+建议按「先读综述 → 再看证据地图 → 最后看实验」使用；证据地图不会替代原论文，实验议程也不表示实验已经完成。
+
 ## 建议学习入口
 
 - [按顺序学习 SFT、RL 与 LLM Agent 后训练（7 步）](../../paths/agent-post-training.md)
@@ -27,6 +35,8 @@
 ## 本方向文档
 
 - [长篇综述：SFT、RLVR、混合优化与 Agent 后训练](reviews/sft-rl-co-training.md)
+- [证据地图：哪些主张被证实、哪里只是表面矛盾](reviews/evidence-map.md)
+- [可证伪实验议程：任务、预算、基线、停止规则](../../research/agent-post-training-experiment-agenda.md)
 - [共享术语：Agent 后训练](../../glossary/agent-training.md)
 - [原始论文卡片](../../papers/README.md)
 - [研究问题：真实演示轨迹与奖励设计](../../research/robot-trajectory-reward.md)

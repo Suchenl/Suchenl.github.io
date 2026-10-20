@@ -3,7 +3,7 @@
 > **正式阅读入口**：[个人主页 · 研究知识库](https://suchenl.github.io/research/) · **唯一可编辑内容源**：本仓库 `knowledge/`。此前的 `Suchenl/sus_research_review` 仓库仅保留历史快照，不再更新。
 
 > **定位**：以中文持续积累论文研究、技术概念、可证伪的研究判断与实验设计。  
-> **最近核对**：2026-10-19 · **全部内容可直接使用 Markdown 阅读和维护**。
+> **最近核对**：2026-10-20 · **全部内容可直接使用 Markdown 阅读和维护**。
 
 本仓库不要求把每个方向写成正式论文。最重要的是：**找得到、读得懂、可追溯、能更新、不会把猜想和论文结论混为一谈**。
 
@@ -14,6 +14,8 @@
 | 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
 | 按顺序学习 SFT、RL 与 Agent 后训练 | [7 步学习路线](paths/agent-post-training.md) |
 | 阅读第一篇综合综述：SFT × RL | [SFT、RL 与 Agent 后训练：协同范式和最新证据](topics/llm-agent-training/reviews/sft-rl-co-training.md) |
+| 对比不同研究主张及冲突的证据 | [SFT × RL × Agent：研究主张证据地图](topics/llm-agent-training/reviews/evidence-map.md) |
+| 将未解决问题变成可证伪实验 | [Agent 后训练实验议程](research/agent-post-training-experiment-agenda.md) |
 | 按论文查找独立解读 | [论文卡片索引](papers/README.md) |
 | 查定义、数学符号、术语区别 | [共享术语](glossary/README.md) |
 | 查看尚未得到验证的研究设想 | [研究问题](research/README.md) |
