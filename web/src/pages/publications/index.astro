@@ -39,15 +39,14 @@ import { SITE, AUTHOR } from '../../config';
           <div class="paper-box card">
             <div class="paper-img">
               <span class="badge">{p.venue}</span>
-              <button type="button" class="paper-zoom" data-full={p.image} data-alt={p.titleEn} aria-label={'放大论文图片：' + p.titleEn}>
+              <div class="paper-figure">
                 <img
                   src={p.image.replace(/\.png$/, '-thumb.jpg')}
                   alt={p.titleEn}
                   loading="lazy"
                   decoding="async"
                 />
-                <span class="paper-zoom-hint" aria-hidden="true">放大查看 ↗</span>
-              </button>
+                </div>
             </div>
             <div class="paper-text">
               <p>
@@ -66,6 +65,24 @@ import { SITE, AUTHOR } from '../../config';
                 </p>
               )}
             </div>
+            <details class="pub-abstract">
+              <summary><span data-l="zh">查看论文简介</span><span data-l="en">Paper at a glance</span><span class="pub-chevron" aria-hidden="true">⌄</span></summary>
+              <div class="pub-abstract-body">
+                {p.brief ? (
+                  <>
+                    {([
+                      ['研究动机','Motivation',p.brief.motivationZh,p.brief.motivationEn],
+                      ['核心方法','Approach',p.brief.methodZh,p.brief.methodEn],
+                      ['主要发现','Findings',p.brief.resultZh,p.brief.resultEn],
+                      ['证据边界','Limitations',p.brief.boundaryZh,p.brief.boundaryEn]
+                    ] as const).map(([zh,en,zhText,enText])=><div class="pub-brief-row"><strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong><p><span data-l="zh">{zhText}</span><span data-l="en">{enText}</span></p></div>)}
+                  </>
+                ) : <p>内容正在整理，请参考原论文。</p>}
+                <div class="pub-milestone"><strong><span data-l="zh">公开研究时间线</span><span data-l="en">Public timeline</span></strong>
+                  <p>{p.releasedYear ? p.releasedYear + ' · ' + p.venue : p.venue} <span data-l="zh">（发表或公开年份，不代表研究开始时间）</span><span data-l="en">(publication/release year, not research start date)</span></p>
+                </div>
+              </div>
+            </details>
           </div>
         ) : (
           <p class="other-pub">
@@ -80,11 +97,6 @@ import { SITE, AUTHOR } from '../../config';
     </div>
   ))}
 
-  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="查看论文大图" hidden tabindex="-1">
-    <button type="button" id="lightbox-close" class="lightbox-close" aria-label="关闭图片预览">×</button>
-    <img id="lightbox-img" src="" alt="" />
-    <p class="lightbox-tip">按 Esc 关闭 · 点击背景关闭</p>
-  </div>
 </Base>
 
 <style>
@@ -112,36 +124,10 @@ import { SITE, AUTHOR } from '../../config';
     aspect-ratio: 16 / 9;
     object-fit: contain;
     background: var(--surface-2);
-    cursor: zoom-in;
+    cursor: default;
     transition: filter 0.15s ease;
   }
-  .paper-zoom { position:relative;display:block;width:100%;padding:0;border:0;background:transparent;border-radius:8px;cursor:zoom-in;text-align:left; }
-  .paper-zoom:hover img { filter:brightness(1.04); }
-  .paper-zoom-hint { position:absolute;bottom:8px;right:8px;background:rgba(15,16,20,.76);color:#fff;padding:.2rem .55rem;border-radius:6px;font-size:.7rem;pointer-events:none; }
-  .paper-zoom:focus-visible { outline:3px solid var(--accent);outline-offset:4px; }
 
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4vh 4vw;
-    background: rgba(0, 0, 0, 0.82);
-    cursor: zoom-out;
-    backdrop-filter: blur(3px);
-  }
-  .lightbox[hidden] { display: none; }
-  .lightbox-close { position:absolute;right:clamp(.8rem,3vw,2rem);top:clamp(.8rem,3vw,2rem);width:48px;height:48px;cursor:pointer;font-size:2rem;border-radius:12px;border:1px solid rgba(255,255,255,.6);background:#24242d;color:white;z-index:1; }
-  .lightbox-close:focus-visible {outline:3px solid white;outline-offset:3px;}
-  .lightbox-tip {position:absolute;bottom:1rem;color:#fff;font-size:.8rem;text-align:center;}
-  .lightbox img {
-    max-width: 100%;
-    max-height: 92vh;
-    border-radius: 8px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  }
   .paper-text p { margin: 0.3rem 0; }
   .authors { font-size: 0.92rem; }
   .other-pub { margin: 0.9rem 0; }
@@ -171,38 +157,4 @@ import { SITE, AUTHOR } from '../../config';
   }
 </style>
 
-<script>
-  const box = document.getElementById('lightbox') as HTMLElement | null;
-  const boxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
-  const closeButton = document.getElementById('lightbox-close') as HTMLButtonElement | null;
-  let trigger: HTMLElement | null = null;
-  let previousOverflow = '';
-  function open(full: string, alt: string, button: HTMLElement) {
-    if (!box || !boxImg) return;
-    trigger = button;
-    previousOverflow = document.body.style.overflow;
-    boxImg.src = full; boxImg.alt = alt;
-    box.hidden = false;
-    document.body.style.overflow = 'hidden';
-    closeButton?.focus();
-  }
-  function close() {
-    if (!box || !boxImg || box.hidden) return;
-    box.hidden = true; boxImg.src = '';
-    document.body.style.overflow = previousOverflow;
-    trigger?.focus(); trigger = null;
-  }
-  document.querySelectorAll<HTMLButtonElement>('.paper-zoom').forEach(button=>{
-    button.addEventListener('click',()=>open(button.dataset.full || '',button.dataset.alt || '',button));
-  });
-  closeButton?.addEventListener('click',close);
-  box?.addEventListener('click',e=>{if(e.target===box) close();});
-  document.addEventListener('keydown',e=>{
-    if(!box || box.hidden) return;
-    if(e.key==='Escape'){e.preventDefault();close();}
-    if(e.key==='Tab'){
-      // Only the close button is focusable within the modal.
-      e.preventDefault();closeButton?.focus();
-    }
-  });
-</script>
+<style>.pub-abstract{grid-column:1/-1;border-top:1px solid var(--border)}.pub-abstract summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;min-height:44px;padding:.6rem 0;color:var(--accent-ink);font-size:.85rem;font-weight:700}.pub-chevron{margin-left:auto}.pub-abstract[open] .pub-chevron{transform:rotate(180deg)}.pub-abstract-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.3rem;padding:.6rem 0}.pub-brief-row strong,.pub-milestone strong{font-size:.77rem;color:var(--fg-muted)}.pub-brief-row p,.pub-milestone p{font-size:.85rem;line-height:1.75;margin:.3rem 0}.pub-milestone{grid-column:1/-1;padding-top:.7rem;border-top:1px solid var(--border)}@media(max-width:720px){.pub-abstract-body{grid-template-columns:1fr}}</style>

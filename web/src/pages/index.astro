@@ -4,12 +4,7 @@ import Bi from '../components/Bi.astro';
 import { AUTHOR, SITE } from '../config';
 import { NEWS, PUB_GROUPS } from '../data';
 
-const interests = [
-  { zh: '多模态生成与视频', en: 'Multimodal & Video Generation' },
-  { zh: '机器人与具身智能', en: 'Robotics & Embodied AI' },
-  { zh: '世界模型与 Agent', en: 'World Models & Agents' },
-  { zh: '强化学习', en: 'Reinforcement Learning' },
-];
+const researchFocus = {zh:'当前研究：视频生成与世界模型，以及具身智能与机器人 Agent。',en:'Current research: video generation, world models, and embodied AI / robot agents.'};
 const featured = PUB_GROUPS.flatMap(group => group.papers).filter(p => ['LAMIC', 'TAG-WM'].some(name => p.titleEn.startsWith(name)));
 const hub = [
   { emoji:'📚', href:'/research/', zh:'研究知识库', en:'Research Library', descZh:'文献综述 · 术语 · 学习路线 · 研究问题', descEn:'Surveys, concepts, reading paths, questions' },
@@ -137,11 +132,7 @@ const socials = [
         </p>
         <p>I'm happy to discuss research questions, open-source tools, and potential collaborations. Feel free to reach out by email.</p>
       </div>
-      <div class="chips">
-        {interests.map((i) => (
-          <span class="tag-chip"><span data-l="zh">{i.zh}</span><span data-l="en">{i.en}</span></span>
-        ))}
-      </div>
+      <p class="research-focus"><span data-l="zh">{researchFocus.zh}</span><span data-l="en">{researchFocus.en}</span></p>
     </section>
 
     <section class="section" id="news">
@@ -290,3 +281,5 @@ const socials = [
   .home-about-path p {margin:0;color:var(--fg-muted);}
   .home-about-path a {font-weight:750;}
 </style>
+
+<style>.research-focus{font-size:.9rem;color:var(--fg-muted);line-height:1.8;padding:.65rem .85rem;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0}</style>

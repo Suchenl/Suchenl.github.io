@@ -17,8 +17,8 @@ export const AUTHOR = {
   email: 'yz.chen@mail.ustc.edu.cn',
   taglineZh: '让 AI 理解、生成，并与世界交互',
   taglineEn: 'Teaching AI to understand, generate, and interact with the world',
-  interestsZh: '兴趣：多模态生成 · 多模态理解 · 机器人 · 仿真 · 游戏 · 强化学习',
-  interestsEn: 'Interests: multimodal generation · multimodal understanding · robotics · simulation · games · RL',
+  interestsZh: '研究方向：视频生成与世界模型 · 具身智能与机器人 Agent',
+  interestsEn: 'Research: video generation and world models · embodied AI and robot agents',
   links: {
     googlescholar: 'https://scholar.google.com/citations?hl=en&user=x63XNe0AAAAJ',
     github: 'https://github.com/Suchenl',

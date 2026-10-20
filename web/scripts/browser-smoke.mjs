@@ -24,12 +24,7 @@ try {
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
   await check('Publications '+width,async()=>{
    await navigate(page,'/publications/');await noOverflow(page);
-   const trigger=page.locator('.paper-zoom').first();await trigger.click();
-   assert(await page.locator('#lightbox').isVisible());
-   assert.equal(await page.evaluate(()=>document.activeElement?.id),'lightbox-close');
-   await page.keyboard.press('Escape');
-   assert(!(await page.locator('#lightbox').isVisible()));
-   assert(await trigger.evaluate(el=>el===document.activeElement));
+   const disclosure=page.locator('.pub-abstract').first();await disclosure.locator('summary').click();assert(await disclosure.locator('.pub-brief-row').count()===4);
   });
   await check('Blog filters '+width,async()=>{
    await navigate(page,'/blog/');await noOverflow(page);
@@ -51,11 +46,7 @@ try {
   await check('Long reading and draft '+width,async()=>{
    await navigate(page,'/research/topics/llm-agent-training/reviews/sft-rl-co-training/');
    await noOverflow(page);assert(await page.locator('.katex-display').count()>=4);
-   await page.locator('#rkd-personal-note summary').click();
-   await page.locator('#rkd-personal-input').fill('Sample question for browser check');
-   await page.reload({waitUntil:'domcontentloaded'});
-   await page.locator('#rkd-personal-note summary').click();
-   assert((await page.locator('#rkd-personal-input').inputValue()).includes('Sample question'));
+   assert.equal(await page.locator('#rkd-personal-note').count(),0);
   });
   await check('Learning route '+width,async()=>{
    await navigate(page,'/research/paths/agent-post-training/');await noOverflow(page);
@@ -65,16 +56,7 @@ try {
   });
   if(width===390){
    await check('Mobile menu',async()=>{await navigate(page,'/');await page.locator('#mobile-menu-toggle').click();assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'true');await page.keyboard.press('Escape');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');});
-   await check('Research backup',async()=>{
-    await navigate(page,'/research/');await page.locator('.lit-backup summary').click();
-    const pending=page.waitForEvent('download');await page.locator('#lit-backup-export').click();
-    const downloaded=await pending;const saved=await downloaded.path();assert(saved);
-    const data=JSON.parse(readFileSync(saved,'utf8'));assert.equal(data.format,'suchenl-research-backup');
-    assert(Object.keys(data.entries).some(key=>key.startsWith('research-personal-note-v1:')));
-    page.on('dialog',d=>d.accept());
-    await page.locator('#lit-backup-input').setInputFiles(saved);
-    await page.waitForFunction(()=>document.getElementById('lit-backup-status')?.textContent?.includes('导入成功'));
-   });
+   await check('No personal notebook UI',async()=>{await navigate(page,'/research/');assert.equal(await page.locator('.lit-backup').count(),0);});
   }
   assert.deepEqual(errors,[],'Runtime errors in '+width+'px');
   await context.close();
