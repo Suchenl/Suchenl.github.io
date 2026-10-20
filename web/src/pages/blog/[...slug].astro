@@ -243,6 +243,7 @@ const showUpdated = isUpdated(created, updated);
   .post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; }
 
   :global(html) { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { :global(html) { scroll-behavior: auto; } }
 
   .post-toc {
     margin: 0 0 2.4rem;

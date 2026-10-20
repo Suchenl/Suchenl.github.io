@@ -1,10 +1,11 @@
 const reader = document.getElementById('research-reader') as HTMLElement | null;
+const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
   if (reader) {
     // A research page can be visited directly or through any of the paper's classifications.
     const params = new URLSearchParams(window.location.search);
     const from = params.get('from');
     const back = document.getElementById('research-return') as HTMLAnchorElement | null;
-    const validFrom = from && /^(papers|reviews|glossary|ideas|cat:[^?#]+)$/.test(from);
+    const validFrom = from && /^(papers|paths|reviews|glossary|ideas|cat:[^?#]+)$/.test(from);
     if (back) {
       const ret = new URL('/research/',window.location.origin);
       if (validFrom && from !== 'papers') ret.searchParams.set('folder',from);
@@ -28,7 +29,7 @@ const reader = document.getElementById('research-reader') as HTMLElement | null;
     if (resume && storedSection && document.getElementById(storedSection)) {
       resume.hidden = false;
       resume.addEventListener('click', () => {
-        document.getElementById(storedSection)?.scrollIntoView({behavior:'smooth',block:'start'});
+        document.getElementById(storedSection)?.scrollIntoView({behavior:readerMotion,block:'start'});
       });
     }
     const stepBoxes = Array.from(reader.querySelectorAll<HTMLInputElement>('[data-learning-step]'));

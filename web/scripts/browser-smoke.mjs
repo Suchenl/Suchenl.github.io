@@ -17,7 +17,7 @@ try {
  assert(available,'Astro preview did not start');
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  for(const width of [320,390,1440]){
-  const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true});
+  const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true,colorScheme:width===390?'dark':'light',reducedMotion:width===390?'reduce':'no-preference'});
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);assert(await page.getByText('精选研究成果').count()>0);
@@ -34,6 +34,7 @@ try {
      return {loaded:outcomes.filter(Boolean).length,total:outcomes.length};
    });
    assert(imageHealth.total>=4 && imageHealth.loaded===imageHealth.total,'Broken publication thumbnail '+JSON.stringify(imageHealth));
+   assert.equal(await page.locator('.pub-source').count(),6,'All papers must disclose an auditable summary source');
    const disclosure=page.locator('.pub-abstract').first();await disclosure.locator('summary').click();assert.equal(await disclosure.locator('.pub-brief-row').count(),4);
    const noImageDisclosure=page.locator('.paper-no-image .pub-abstract').first();await noImageDisclosure.locator('summary').click();assert.equal(await noImageDisclosure.locator('.pub-brief-row').count(),4);
   });
@@ -42,6 +43,8 @@ try {
    assert.equal(await page.locator('.cat-filter').getAttribute('role'),'group');
    const button=page.locator('.cat-chip:not([disabled]):not([data-cat="all"])').first();
    if(await button.count()){await button.click();assert.equal(await button.getAttribute('aria-pressed'),'true');}
+   const articleLink=await page.locator('.post-link').first().getAttribute('href');assert(articleLink);
+   await navigate(page,articleLink);await noOverflow(page);assert(await page.locator('.post-body').count()===1,'Blog and Research should use shared reading styles');
   });
   await check('Research comparison '+width,async()=>{
    await navigate(page,'/research/');await noOverflow(page);
@@ -57,6 +60,8 @@ try {
   await check('Long reading and draft '+width,async()=>{
    await navigate(page,'/research/topics/llm-agent-training/reviews/sft-rl-co-training/');
    await noOverflow(page);assert(await page.locator('.katex-display').count()>=4);
+   assert.equal(await page.locator('.rkd-prose').count(),1);
+   if(width===390)assert(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),'Reduced motion profile must be active');
    assert.equal(await page.locator('#rkd-personal-note').count(),0);
   });
   await check('Learning route '+width,async()=>{

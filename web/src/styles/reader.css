@@ -28,3 +28,21 @@
   body{background:white;color:black;}
   :where(.post-body,.rkd-prose) pre {white-space:pre-wrap;overflow:visible;}
 }
+
+/* Shared accessibility conventions for both long-form readers. */
+:where(.post-body, .rkd-prose) :is(a, button, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+:where(.post-body, .rkd-prose) :is(pre, code, .katex-display) {
+  scrollbar-width: thin;
+}
+:where(.post-body, .rkd-prose) :is(pre, .katex-display):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.post-body), html:has(.rkd-prose) {scroll-behavior:auto!important;}
+  :where(.post-body, .rkd-prose) * {scroll-behavior:auto!important;}
+}
