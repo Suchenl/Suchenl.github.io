@@ -22,10 +22,11 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
     <div class="research-proj-grid">
       {researchHighlights.map(p=>(
         <article class="card research-proj">
-          {p.image && <a href={p.url} target="_blank" rel="noopener noreferrer"><img src={p.thumbnail || p.image} loading="lazy" decoding="async" alt={'方法示意：' + p.titleEn} /></a>}
-          <div><span class="featured-venue">{p.venue}</span><h3>{p.titleEn}</h3><p class="muted"><span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span></p>
-            <div class="proj-links"><a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="论文 ↗" en="Paper ↗" /></a>
-            {p.code && <a href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="代码 ↗" en="Code ↗" /></a>}</div>
+          
+          <div><span class="featured-venue">{p.venue}</span><h3>{p.titleEn.split(':')[0]}</h3>
+            {p.brief && <p class="muted"><span data-l="zh">{p.brief.methodZh}</span><span data-l="en">{p.brief.methodEn}</span></p>}
+            <div class="proj-links">{p.code && <a class="repo-link" href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="查看代码 ↗" en="Open code ↗" /></a>}
+            <a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="阅读论文 ↗" en="Read paper ↗" /></a></div>
           </div>
         </article>
       ))}
@@ -108,7 +109,6 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
   .proj-section>p {margin:.3rem 0 1rem;font-size:.85rem;}
   .research-proj-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
   .research-proj {display:flex;flex-direction:column;gap:.7rem;}
-  .research-proj img {display:block;width:100%;height:160px;object-fit:contain;background:var(--surface-2);border-radius:8px;}
   .research-proj h3 {font-size:1rem;line-height:1.5;margin:.35rem 0;}
   .research-proj p {font-size:.82rem;line-height:1.6;}
   .research-proj .proj-links {margin-top:.7rem;font-size:.85rem;}

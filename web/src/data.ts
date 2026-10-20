@@ -8,6 +8,7 @@ export interface Paper {
   authorsHtml: string;
   code?: string; // GitHub repo, e.g. "Suchenl/LAMIC"
   releasedYear?: number; // Public release/publication year, not research start date
+  briefSource?: { url: string; labelZh: string; labelEn: string }; // Auditable source of the short description
   brief?: { motivationZh:string; motivationEn:string; methodZh:string; methodEn:string; resultZh:string; resultEn:string; boundaryZh:string; boundaryEn:string };
 }
 
@@ -36,6 +37,7 @@ export const PUB_GROUPS: PubGroup[] = [
         code: 'Suchenl/LAMIC',
 
         releasedYear: 2026,
+        briefSource: { url: "https://ojs.aaai.org/index.php/AAAI/article/view/37311", labelZh: "AAAI 2026 官方摘要", labelEn: "AAAI 2026 proceedings abstract" },
         brief: {
           motivationZh: "单图参考扩散模型很难同时整合多个主体与明确空间布局。",
           motivationEn: "Single-reference diffusion models struggle to compose multiple entities under explicit spatial layouts.",
@@ -62,6 +64,7 @@ export const PUB_GROUPS: PubGroup[] = [
         authorsHtml: `${ME}, Zehua Ma, Han Fang, Hengyi Wang, Guanjie Wang, Weiming Zhang`,
 
         releasedYear: 2026,
+        briefSource: { url: "https://arxiv.org/abs/2604.15003", labelZh: "arXiv 预印本摘要", labelEn: "arXiv preprint abstract" },
         brief: {
           motivationZh: "图生视频生成会让图像取证痕迹随时间漂移，单帧检测难以追踪变化。",
           motivationEn: "Image-to-video synthesis moves forensic evidence over time, complicating frame-only detection.",
@@ -84,6 +87,7 @@ export const PUB_GROUPS: PubGroup[] = [
         code: 'Suchenl/TAG-WM',
 
         releasedYear: 2025,
+        briefSource: { url: "https://openaccess.thecvf.com/content/ICCV2025/html/Chen_TAG-WM_Tamper-Aware_Generative_Image_Watermarking_via_Diffusion_Inversion_Sensitivity_ICCV_2025_paper.html", labelZh: "ICCV 2025 官方摘要", labelEn: "ICCV 2025 open-access abstract" },
         brief: {
           motivationZh: "生成图片需要同时证明来源与定位后续恶意编辑，单一稳健水印难以兼顾两者。",
           motivationEn: "Generated images need both provenance verification and post-edit tamper localization.",
@@ -109,11 +113,12 @@ export const PUB_GROUPS: PubGroup[] = [
         authorsHtml: `${ME}`,
 
         releasedYear: 2026,
+        briefSource: { url: "/iclr2027/", labelZh: "公开分析页面及数据快照", labelEn: "Public analysis and data snapshot" },
         brief: {
           motivationZh: "面对投稿规模变化，需要可核对的学术数据了解研究热点与审稿生态。",
           motivationEn: "Changes in submission scale motivate an auditable overview of research trends and peer-review workload.",
-          methodZh: "对公开的 ICLR 2027 投稿条目进行统计、归类与分析。",
-          methodEn: "Statistical analysis and categorization of publicly available ICLR 2027 submissions.",
+          methodZh: "以 2026-10-08 的公开投稿快照为基础，开展主题分布、重复论文筛查及同行评审相关描述性分析。",
+          methodEn: "Descriptive analysis of the public 2026-10-08 ICLR 2027 submission snapshot, including topics and overlap audits.",
           resultZh: "研究页面报告覆盖 43,013 篇投稿的描述性统计。",
           resultEn: "The analysis reports descriptive statistics over 43,013 submissions.",
           boundaryZh: "这是投稿分布的描述性研究，不等于最终录用趋势或论文质量的因果证据。",
@@ -133,13 +138,14 @@ export const PUB_GROUPS: PubGroup[] = [
         authorsHtml: `${ME}*, Zetong Chen*, Yunuo An, Chenyang Lu, Xu Qiao`,
 
         releasedYear: 2025,
+        briefSource: { url: "https://www.sciencedirect.com/science/article/pii/S1746809425002101", labelZh: "Biomedical Signal Processing and Control 出版摘要", labelEn: "Biomedical Signal Processing and Control abstract" },
         brief: {
           motivationZh: "单用白细胞图像的高层语义，可能丢失诊断相关的形态信息。",
           motivationEn: "WBC classifiers may overlook diagnostically useful morphology when emphasizing high-level features.",
-          methodZh: "使用双分支、双注意力特征融合，结合形态属性提取与半监督训练。",
-          methodEn: "Dual-branch attention fusion of morphology and semantic features, including semi-supervised training.",
-          resultZh: "论文在六组白细胞图像数据集上报告分类效果。",
-          resultEn: "The paper reports classification accuracy across six WBC image datasets.",
+          methodZh: "使用双分支、双注意力特征融合，结合形态属性提取，并通过深度监督和半监督策略改进相关模块训练。",
+          methodEn: "Dual-branch fusion of morphological and semantic features, with deep-supervised and semi-supervised learning strategies.",
+          resultZh: "论文在六个公开白细胞图像数据集上分别报告分类准确率；这些指标不能直接跨临床条件外推。",
+          resultEn: "The paper reports accuracy on six public WBC image datasets, not clinical diagnostic outcomes.",
           boundaryZh: "离线图像分类精度不能直接视作真实临床诊断表现。",
           boundaryEn: "Image-classification benchmarks do not alone establish clinical effectiveness.",
         },      },
@@ -151,13 +157,14 @@ export const PUB_GROUPS: PubGroup[] = [
         authorsHtml: `Chongxuan Tian, ${ME}, Yelin Liu, Xin Wang, Qize Lv, Yunze Li, Jinlin Deng, Yifei Liu, Wei Li`,
 
         releasedYear: 2024,
+        briefSource: { url: "https://pubmed.ncbi.nlm.nih.gov/38964248/", labelZh: "PubMed 摘要", labelEn: "PubMed abstract" },
         brief: {
           motivationZh: "肾小球病理分类需要联合利用组织图像的空间结构与光谱信息。",
           motivationEn: "Glomerular classification can benefit from integrating spatial structures and hyperspectral signals.",
           methodZh: "结合卷积网络与 Vision Transformer，融合高光谱的空间和波段特征。",
           methodEn: "Combines CNN and Vision Transformer features from hyperspectral spatial/spectral signals.",
-          resultZh: "论文在其样本设置中报告约 94% 的平均分类准确率。",
-          resultEn: "The paper reports around 94% average classification accuracy in its study setting.",
+          resultZh: "论文报告其数据设置下 CVT 的平均分类准确率为 94%；仅用光谱特征的模型为 85.24%。",
+          resultEn: "The paper reports 94% mean accuracy for CVT versus 85.24% for the spectral-only model in its study.",
           boundaryZh: "小样本病理分类实验不等价于多中心临床验证。",
           boundaryEn: "Small-sample classification results do not constitute multicenter clinical validation.",
         },      },

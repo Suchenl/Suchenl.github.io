@@ -91,6 +91,15 @@ import { SITE, AUTHOR } from '../../config';
               ) : (
                 <p><Bi zh="简介正在整理，请参阅原论文。" en="Summary pending; please consult the original paper." /></p>
               )}
+              {paper.briefSource && (
+                <p class="pub-source">
+                  <span data-l="zh">核对依据：</span><span data-l="en">Summary source: </span>
+                  <a href={paper.briefSource.url} target={paper.briefSource.url.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
+                    <span data-l="zh">{paper.briefSource.labelZh} ↗</span>
+                    <span data-l="en">{paper.briefSource.labelEn} ↗</span>
+                  </a>
+                </p>
+              )}
             </div>
           </details>
         </article>
@@ -132,6 +141,8 @@ import { SITE, AUTHOR } from '../../config';
   .pub-brief-row {min-width:0;}
   .pub-brief-row strong {font-size:.78rem;color:var(--fg-muted);}
   .pub-brief-row p {font-size:.85rem;line-height:1.8;margin:.25rem 0;overflow-wrap:anywhere;}
+  .pub-source {grid-column:1/-1;font-size:.77rem;color:var(--fg-muted);margin:.35rem 0 0;}
+  .pub-source a {text-decoration:underline;text-underline-offset:3px;}
   @media(max-width:720px) {
     .paper-entry {grid-template-columns:minmax(0,1fr);padding:.95rem;}
     .paper-image {max-width:300px;}
