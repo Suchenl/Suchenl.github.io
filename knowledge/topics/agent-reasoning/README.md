@@ -17,4 +17,6 @@ categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工�
 - [DeepSeek-R1](../../papers/2025/deepseek-r1.md)：理解推理能力训练，不要把它等同于 Agent 跨轮 CoT 调度。
 - [Agent 后训练实验议程](../../research/agent-post-training-experiment-agenda.md)：学习如何做预算匹配和可执行的对照。
 
+**新增重点**：为什么同一轮生成时 CoT 天然在解码前缀里，跨工具轮之后却需要历史回填？请读[当前生成、跨轮回放与 KV Cache](reviews/cot-tool-use-and-thinking-scheduling.md#31-从同一次生成到跨轮请求的断点)，包括真实 Codex→GLM Bridge 的 SQLite 恢复方式及其局限。
+
 **重要结论**：思考开关、思考深度、历史 thinking 保留和是否真的学会按风险重想，是四个不同问题。新模型公开了接口不意味着公开了所有策略训练细节。

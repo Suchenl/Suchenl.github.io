@@ -69,3 +69,8 @@ RLVR 可以用离线真实轨迹构造**可验证预测任务**；但如果模�
 ## Reasoning Effort / Adaptive Thinking
 
 Reasoning effort 是模型/接口控制推理深度或成本的配置；Adaptive Thinking 是依据任务/上下文选择推理量或时机的策略或学习机制。GLM-5.3-Flash 强制开启推理，而 Qwen3.8-27B 可按请求关闭；调低 effort 不能直接等同于完全不推理。相关研究见 [RACE、CogRouter 与可证伪实验](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+
+
+## CoT 的跨工具轮恢复与 KV Cache 的区别
+
+在**同一轮解码**中，先前生成的推理 token 当然构成后续 token 的上下文；但收到工具反馈后发生的新请求，不会因为上一次用过 KV Cache 就自动包含旧 CoT。需要客户端或服务端显式保留消息、兼容的 reasoning item 或模型特定的 `reasoning_content`。OpenAI Responses 的 opaque/encrypted reasoning item 和本地 GLM 的明文推理**不等价**。vLLM Prefix Cache 只有在实际 token 前缀及缓存条件匹配时才可能跳过部分 Prefill，不能推导为“回填 CoT 必定省钱”。详见[CoT、Codex、GLM Bridge 的跨轮案例](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。

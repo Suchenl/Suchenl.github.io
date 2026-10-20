@@ -131,3 +131,10 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 - 严格区分 CoT token、API reasoning item、工具调用、显式 plan、执行器真实观测；不要把 `update_plan` 或人为定义的 `think()` 工具说成原生 CoT 本身。
 - Thinking 强制/可禁用、reasoning_effort 值和 preserved thinking 必须逐模型核对官方版本。GLM-5.3-Flash 不能关闭；Qwen3.8-27B 可用 chat template 关闭。不能套用同一套 effort 枚举。
 - “何时推理”研究要分清按轮推理量、跨轮推理覆盖、工具使用适应性与安全执行决定；论文摘要不能代替真实机器人任务成功证明。
+
+
+## CoT 与工具轮次回填的内容安全边界（2026-10-20）
+
+- Topic `topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md` 可以用**匿名化机制说明**介绍用户私有 local-workbench 的桥接方案，但**禁止发布私有日志、访问地址、密钥、部署路径或完整私有源码**。
+- 必须明确同一次解码的 KV Cache、跨请求的消息/推理重放、服务端 Prefix Cache 是三件事；不许说“CoT 回传必命中缓存”，也不能把 GLM 明文 `reasoning_content` 说成 OpenAI 加密 reasoning 的解密结果。
+- 任何代码实现事实只代表已经存在该分支，是否提高长程 Agent 成功率、降低延迟，应通过独立回归与真实负载验证，不能仅凭工具调用通了就宣称成功。

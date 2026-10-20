@@ -1,6 +1,9 @@
 # 更新记录
 
 ## 2026-10-20
+- 扩展《CoT 是工具调用吗》：对比同一轮自回归解码与外部工具完成后下一次请求，区分 KV Cache、消息历史与 reasoning state。核对自有私有 local-workbench 的 Bridge 源码，匿名化整理按 `call_id` 保存/恢复 GLM 明文推理的 SQLite 过程与待验收问题。
+- 明确 Responses opaque/encrypted reasoning item 不等于 GLM `reasoning_content`，补充 vLLM Prefix Cache 的精确 token 前缀、缓存淘汰等条件与真实指标监测要求；纠正“回填 CoT 一定命中缓存”“Harness 完全不能调度推理”等过强论断。
+
 - 新增《Agent 长程推理与工具调用》Topic 和详细 Q&A：区分 CoT、工具请求、显式计划与真实观测；逐项核对 Codex update_plan/Responses reasoning item、GLM-5.3-Flash 强制 Thinking 与跨轮保留、Qwen3.8-27B thinking 开关/effort/preserve_thinking；补 RACE/CogRouter/AdaReasoner/MOSAIC 研究及可证伪实验设计。该专题依据公开官方资料，不假设未披露的推理调度 RL 内部实现。
 
 - 新增《SFT × RL × Agent：研究主张与证据地图》，整理 C01–C07 七项可证伪主张、四种证据状态、三组常见表面冲突、指标口径和待核对清单。
