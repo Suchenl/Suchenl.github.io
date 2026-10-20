@@ -30,8 +30,12 @@ try {
    const experience=nav.locator('a[href="/work/"]');
    const expertise=nav.locator('a[href="/expertise/"]');
    const about=nav.locator('a[href="/about/"]');
+   assert.equal(await about.count(),0,'About should not remain a navigation item');
    assert.equal(await experience.count(),1,'Experience should be a main navigation item');
    assert.equal(await expertise.count(),1,'Expertise should be a main navigation item');
+   await navigate(page,'/');
+   assert.equal(await page.locator('a[href="/about/"]').count(),0,'Homepage must not link to the removed About page');
+   assert.equal(await page.locator('.home-profile-links a').count(),2,'Homepage offers both independent sections');
    await navigate(page,'/work/');
    assert.equal(await experience.getAttribute('aria-current'),'page');
    assert.equal(await about.getAttribute('aria-current'),null,'About must not stand in for Experience');

@@ -113,13 +113,16 @@ const socials = [
     </div>
   </section>
 
-  <div class="home-about-path">
-    <p><Bi zh="想了解我的研究经历或合作方向？" en="Interested in my background or research collaborations?" /></p>
-    <a href="/about/"><Bi zh="了解更多关于我 →" en="More about me →" /></a>
+  <div class="home-profile-path">
+    <p><Bi zh="了解我的研究经历与能力" en="Explore my experience and expertise" /></p>
+    <div class="home-profile-links">
+      <a href="/work/"><Bi zh="经历 →" en="Experience →" /></a>
+      <a href="/expertise/"><Bi zh="能力 →" en="Expertise →" /></a>
+    </div>
   </div>
   <div class="two-col">
-    <section class="section prose" id="about">
-      <Bi tag="h2" zh="👋 关于我" en="👋 About Me" />
+    <section class="section prose" id="profile">
+      <Bi tag="h2" zh="👋 个人简介" en="👋 Profile" />
       <div data-l="zh">
         <p>
           我是<a href="https://www.ustc.edu.cn/" target="_blank" rel="noopener noreferrer">中国科学技术大学</a>网络空间安全学院的二年级硕士研究生，
@@ -287,8 +290,9 @@ const socials = [
 </style>
 
 <style>
-  .home-about-path {display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;border-bottom:1px solid var(--border);padding:.4rem 0 1rem;font-size:.86rem;}
-  .home-about-path p {margin:0;color:var(--fg-muted);}
-  .home-about-path a {font-weight:750;}
+  .home-profile-path {display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;border-bottom:1px solid var(--border);padding:.4rem 0 1rem;font-size:.86rem;}
+  .home-profile-path p {margin:0;color:var(--fg-muted);}
+  .home-profile-links {display:flex;gap:1.1rem;flex-wrap:wrap;}
+  .home-profile-links a {font-weight:750;}
 </style>
 

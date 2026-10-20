@@ -61,5 +61,4 @@ export const NAV: { zh: string; en: string; href: string }[] = [
   { zh: '项目', en: 'Projects', href: '/projects/' },
   { zh: '经历', en: 'Experience', href: '/work/' },
   { zh: '能力', en: 'Expertise', href: '/expertise/' },
-  { zh: '关于', en: 'About', href: '/about/' },
 ];
