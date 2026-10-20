@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const origin='http://127.0.0.1:4321';
@@ -34,7 +33,7 @@ try {
      return {loaded:outcomes.filter(Boolean).length,total:outcomes.length};
    });
    assert(imageHealth.total>=4 && imageHealth.loaded===imageHealth.total,'Broken publication thumbnail '+JSON.stringify(imageHealth));
-   assert.equal(await page.locator('.pub-source').count(),6,'All papers must disclose an auditable summary source');
+   assert.equal(await page.locator('.pub-source').count(),await page.locator('.paper-entry').count(),'Every paper must disclose an auditable summary source');
    const disclosure=page.locator('.pub-abstract').first();await disclosure.locator('summary').click();assert.equal(await disclosure.locator('.pub-brief-row').count(),4);
    const noImageDisclosure=page.locator('.paper-no-image .pub-abstract').first();await noImageDisclosure.locator('summary').click();assert.equal(await noImageDisclosure.locator('.pub-brief-row').count(),4);
   });
@@ -57,7 +56,7 @@ try {
    await navigate(page,href);assert.equal(await page.locator('.compare-chip').count(),2);
    assert(await page.locator('.compare-table tr').count()>=6);await noOverflow(page);
   });
-  await check('Long reading and draft '+width,async()=>{
+  await check('Long-form Research reader '+width,async()=>{
    await navigate(page,'/research/topics/llm-agent-training/reviews/sft-rl-co-training/');
    await noOverflow(page);assert(await page.locator('.katex-display').count()>=4);
    assert.equal(await page.locator('.rkd-prose').count(),1);

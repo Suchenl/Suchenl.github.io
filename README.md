@@ -56,3 +56,10 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 - Project descriptions avoid “side projects” and “小项目”.
 
 - The owner's research areas and personal interests are author-controlled: restore/retain their original wording from Git history unless the owner explicitly requests a change. Do not rewrite them to match the latest research project.
+
+## 研究页面维护入口（2026-10）
+
+- [Research 前端架构](docs/RESEARCH_ARCHITECTURE.md)：Astro 页面、客户端脚本、共享阅读样式和知识图谱之间的职责边界。
+- [论文简介证据核对](docs/PAPER_BRIEF_AUDIT.md)：Publications 每篇简介的核对来源、结论边界及后续维护规则。
+- 检查顺序：`cd web && npm run build`，确认 GitHub Actions 的 [Browser UI smoke](https://github.com/Suchenl/Suchenl.github.io/actions/workflows/browser-smoke.yml) 通过。
+- Safari、VoiceOver 等真实平台需要单独验收；Chromium 的深色及减少动态效果模拟不等同于全设备通过。

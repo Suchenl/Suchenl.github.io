@@ -105,3 +105,11 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 - Publications 的框架图为静态缩略图，**不要添加遮挡图像的悬浮「放大查看」或图片弹窗**。每篇论文使用原生 details/summary 展开简明介绍：动机、方法、主要发现、证据边界。
 - **Publications 不设独立成果时间线**。页面按研究主题组织论文；每篇论文都可展开动机、方法、发现及局限。不得把公开/发表年份擅自用作研究经历的起止时间。
 - **个人研究方向、研究兴趣、履历陈述属于用户自主定义内容。严禁根据近期项目擅自重写。** 首页保留原始的「生成式 AI（AIGC）/计算机视觉/信息隐藏/AI 安全/AI + 医疗」研究标签，config.ts 保留原始个人兴趣文本；任何修改须先征得用户明确同意。Projects 不使用「小项目」或 side projects。
+
+
+## 十三、Research 拆分与论文证据规范（当前生效）
+
+- Research 的 Astro 页面已拆分出 `src/scripts/research-{library,reader}.ts` 和 `src/styles/research-{library,reader}.css`。保留清晰的 SSR / Client / CSS 边界，修测试时应根据拆分后的实际源文件检查，不要把交互重新塞进 .astro。
+- Blog 和 Research 共享 `web/src/styles/reader.css` 的长文与公式行为，需尊重系统的 `prefers-reduced-motion`、键盘焦点和深色偏好。
+- Publications 的简介字段必须提供 `briefSource`，表示已核对的公开来源，不得把作者报告当独立实验。参考 `docs/PAPER_BRIEF_AUDIT.md`。
+- Home 负责代表性成果、Publications 负责完整学术记录、Projects 负责公开可用的代码或工具；不得三处复制相同框架图与论文长标题。

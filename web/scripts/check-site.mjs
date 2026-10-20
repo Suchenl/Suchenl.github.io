@@ -23,7 +23,7 @@ check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'
 check(blog.includes('cat-filter') && blogHtml.includes('role="group"') && !blogHtml.includes('role="tablist"'),'blog filters accessible');
 check(pubs.includes('"@type":"ScholarlyArticle"') && pubs.includes('pub-abstract') && !pubs.includes('paper-zoom-hint'),'publication metadata and clean summary');
 check(!pubs.includes('pub-timeline') && !pubs.includes('研究成果时间线'),'no duplicate publication timeline');
-check((pubs.match(/class="pub-source"/g)||[]).length===6,'all public summaries include traceable reference links');
+check((pubs.match(/class="pub-source"/g)||[]).length===(pubs.match(/class="paper-entry/g)||[]).length,'all public summaries include traceable reference links');
 check((pubs.match(/class="pub-abstract"/g) || []).length === (pubs.match(/class="paper-entry/g) || []).length,'every publication provides a summary');
 check(home.includes('生成式 AI（AIGC）') && home.includes('AI + 医疗'),'original research tags restored');
 check(home.includes('兴趣：多模态生成') && home.includes('仿真 · 游戏'),'original interests restored');
