@@ -13,7 +13,7 @@ const papers=entries.map(e=>{
 const payload=JSON.stringify(papers).replace(/</g,'\\u003c');
 ---
 <Base title="论文方法对比" description="按论文简称快速选择，在手机和电脑上纵向阅读研究目标、训练信号、实验证据与局限。">
- <main class="compare-page">
+ <div class="compare-page">
   <nav class="compare-breadcrumb" aria-label="当前位置"><a href="/research/">Research</a><span aria-hidden="true">/</span><span>论文对比</span></nav>
   <header class="compare-intro">
    <div class="compare-eyebrow">RESEARCH / METHODS</div>
@@ -43,7 +43,7 @@ const payload=JSON.stringify(papers).replace(/</g,'\\u003c');
    <div id="compare-sections" class="compare-sections"></div>
   </section>
   <aside class="compare-disclaimer"><strong>怎样理解这些比较？</strong> 每篇论文的实验基准、数据、教师和训练成本可能不同。表中写的是作者报告的结果以及知识库编辑者的归纳，不能直接跨论文比较百分数。点论文名称可阅读全文与原始来源。</aside>
- </main>
+ </div>
  <script type="application/json" id="compare-data" set:html={payload}/>
 </Base>
 <script>

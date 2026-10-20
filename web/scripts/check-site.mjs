@@ -33,7 +33,10 @@ for (const match of pubs.matchAll(/src="(\/images\/frameworks\/[^"]+)"/g)) {
 check(projects.includes('公开研究实现') && projects.includes('开源工具与开发项目'),'project sections');
 check(!projects.includes('research-proj img') && !projects.includes('方法示意：'),'Projects implementation cards do not replicate publication figures');
 check(!research.includes('id="lit-backup-export"') && research.includes('id="lit-compare-link"'),'local backups and comparison entry');
-check(compare.includes('id="compare-pick"') && compare.includes('compare-table'),'comparison page');
+check(compare.includes('id="compare-search"') && compare.includes('id="compare-sections"') && !compare.includes('compare-table'),'responsive comparison reader');
+check(research.includes('id="research-items-json"') && research.includes('shortName'),'research short name searchable source');
+const r1=page('research/papers/2025/deepseek-r1');
+check(r1.includes('15.6%') && r1.includes('77.9%') && r1.includes('R1-Distill'),'R1 primary evidence and distillation');
 check(steps.includes('data-learning-step='),'guided learning steps');
 const robots=join(root,'robots.txt');
 check(existsSync(robots) && readFileSync(robots,'utf8').includes('sitemap-index.xml'),'robots.txt sitemap');

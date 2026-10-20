@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
+import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const origin='http://127.0.0.1:4321';
@@ -9,12 +10,13 @@ const pause=n=>new Promise(resolve=>setTimeout(resolve,n));
 let browser; let passed=0;
 const check=async(label,fn)=>{await fn();passed++;console.log('PASS '+label);};
 const navigate=async(page,route)=>{const r=await page.goto(origin+route,{waitUntil:'domcontentloaded'});assert(r?.ok(),'Failed to load '+route);};
-const noOverflow=async(page)=>{const [scroll,viewport]=await page.evaluate(()=>[document.documentElement.scrollWidth,innerWidth]);assert(scroll<=viewport+2,'Horizontal overflow '+scroll+' > '+viewport);};
+const noOverflow=async(page)=>{const info=await page.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:innerWidth,offenders:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+2).slice(0,6).map(e=>({tag:e.tagName,cls:String(e.className).slice(0,70),right:Math.round(e.getBoundingClientRect().right)}))}));assert(info.width<=info.viewport+2,'Horizontal overflow '+JSON.stringify(info));};
 try {
  let available=false;
  for(let attempt=0;attempt<90;attempt++){try{available=(await fetch(origin+'/')).ok;}catch{} if(available)break;await pause(350);}
  assert(available,'Astro preview did not start');
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ mkdirSync('visual-qa',{recursive:true});
  for(const width of [320,390,1440]){
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true,colorScheme:width===390?'dark':'light',reducedMotion:width===390?'reduce':'no-preference'});
   const page=await context.newPage();
@@ -53,8 +55,30 @@ try {
    await page.locator('.lit-compare-pick').nth(1).click();
    assert.equal(await page.locator('#lit-compare-link').getAttribute('aria-disabled'),'false');
    const href=await page.locator('#lit-compare-link').getAttribute('href');assert(href);
-   await navigate(page,href);assert.equal(await page.locator('.compare-chip').count(),2);
-   assert(await page.locator('.compare-table tr').count()>=6);await noOverflow(page);
+   await navigate(page,href);
+   assert.equal(await page.locator('.compare-selected').count(),2,'Selected papers');
+   assert.equal(await page.locator('.compare-dimension').count(),5,'Five readable dimensions');
+   assert.equal(await page.locator('.compare-evidence-card').count(),10,'Two cards per dimension');
+   await noOverflow(page);
+   await page.screenshot({path:'visual-qa/compare-'+width+'.png',fullPage:true});
+   await page.locator('#compare-search').fill('brIdGe');
+   assert((await page.locator('.compare-option-abbr').allTextContents()).some(x=>x.toLowerCase()==='bridge'),'Acronym search case insensitive');
+   await page.locator('.compare-option').first().click();
+   assert.equal(await page.locator('.compare-selected').count(),3);
+   await noOverflow(page);
+   if(width===1440)await page.screenshot({path:'visual-qa/compare-3papers-desktop.png',fullPage:true});
+  });
+  await check('Acronym search and R1 article '+width,async()=>{
+   await navigate(page,'/research/');
+   await page.locator('#lit-search').fill('r1-zero');
+   assert((await page.locator('.row-title').allTextContents()).some(t=>t.includes('DeepSeek-R1')),'Alias R1-Zero must search R1');
+   await page.locator('#lit-search').fill('BRIDGE');
+   assert((await page.locator('.lit-short-name').allTextContents()).some(t=>t==='BRIDGE'),'Canonical acronym searchable');
+   await navigate(page,'/research/papers/2025/deepseek-r1/');
+   assert.equal(await page.locator('.rkd-short-name').innerText(),'DeepSeek-R1');
+   assert((await page.getByText('804,745',{exact:false}).count())>0,'R1 data composition');
+   assert((await page.locator('.katex-display').count())>=2,'R1 mathematical display');
+   await noOverflow(page);
   });
   await check('Long-form Research reader '+width,async()=>{
    await navigate(page,'/research/topics/llm-agent-training/reviews/sft-rl-co-training/');
