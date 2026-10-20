@@ -133,7 +133,7 @@ const payload=JSON.stringify(papers).replace(/</g,'\\u003c');
  for(const id of params)if(items.some(p=>p.id===id)&&!chosen.includes(id)&&chosen.length<3)chosen.push(id);
  draw();
 </script>
-<style>
+<style is:global>
  .compare-page {max-width:1100px;margin:1.6rem auto 5rem;padding:0 .15rem;}
  .compare-breadcrumb {display:flex;align-items:center;gap:.65rem;font-size:.78rem;color:var(--fg-muted);margin-bottom:1.85rem;}
  .compare-breadcrumb a {color:var(--fg-muted);text-decoration:none;}

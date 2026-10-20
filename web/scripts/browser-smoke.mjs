@@ -60,6 +60,8 @@ try {
    assert.equal(await page.locator('.compare-dimension').count(),5,'Five readable dimensions');
    assert.equal(await page.locator('.compare-evidence-card').count(),10,'Two cards per dimension');
    await noOverflow(page);
+   await navigate(page,'/research/compare/?papers=papers/2025/deepseek-r1,papers/2026/relift');
+   assert.equal(await page.locator('.compare-selected').count(),2);
    await page.screenshot({path:'visual-qa/compare-'+width+'.png',fullPage:true});
    await page.locator('#compare-search').fill('brIdGe');
    assert((await page.locator('.compare-option-abbr').allTextContents()).some(x=>x.toLowerCase()==='bridge'),'Acronym search case insensitive');
