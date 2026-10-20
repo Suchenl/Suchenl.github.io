@@ -1,4 +1,5 @@
 ---
+shortName: "BRIDGE"
 related:
   - ref: papers/2026/relift
     type: compares

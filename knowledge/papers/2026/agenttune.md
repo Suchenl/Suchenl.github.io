@@ -1,4 +1,5 @@
 ---
+shortName: "AgentTune"
 title: "AgentTune: A Unified Training Lifecycle for Tool-Using LLM Agents"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]

@@ -1,4 +1,5 @@
 ---
+shortName: "AutoTool"
 title: "AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]

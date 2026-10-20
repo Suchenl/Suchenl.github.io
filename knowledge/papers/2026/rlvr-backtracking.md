@@ -1,4 +1,6 @@
 ---
+shortName: "RLVR Backtracking"
+aliases: ["Learning to Backtrack","Backtracking"]
 comparison:
   objective: "图搜索模型中，只模仿黄金最短路径的 SFT 与 RLVR 的回溯能力比较"
   training: "特定图搜索分布与监督数据约束下的理论分析"

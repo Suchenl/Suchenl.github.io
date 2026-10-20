@@ -1,4 +1,5 @@
 ---
+shortName: "TSRL"
 title: "TSRL: Trigger-based Supervised Reinforcement Learning for Continual Agent Training"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]

@@ -1,4 +1,5 @@
 ---
+shortName: "Echo-Memory"
 categories: ["世界模型/长期记忆"]
 summaryZh: "世界模型中的时序记忆及历史信息利用"
 title: "Echo-Memory: A Controlled Study of Memory in Action World Models"

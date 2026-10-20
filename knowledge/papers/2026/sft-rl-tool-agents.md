@@ -1,4 +1,6 @@
 ---
+shortName: "SFT vs RL · Tool Calling"
+aliases: ["Tool-Calling SFT/RL","SFT or RL for Tool-Calling Agents"]
 comparison:
   objective: "工具调用中分离数据集、规模与 SFT/GRPO 配方影响"
   training: "Qwen3 0.6B–32B 六档；LoRA-SFT、GRPO、SFT 后 GRPO"

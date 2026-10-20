@@ -1,4 +1,6 @@
 ---
+shortName: "RL Squeezes"
+aliases: ["SFT Expands"]
 title: "RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]

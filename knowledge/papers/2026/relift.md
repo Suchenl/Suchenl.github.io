@@ -1,4 +1,5 @@
 ---
+shortName: "ReLIFT"
 related:
   - ref: papers/2025/deepseek-r1
     type: compares

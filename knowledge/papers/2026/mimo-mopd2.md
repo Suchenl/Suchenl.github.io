@@ -1,4 +1,6 @@
 ---
+shortName: "MiMo MOPD2"
+aliases: ["MOPD2","MiMo-V2.6"]
 title: "MiMo-V2.6：MOPD2 与多教师在线策略蒸馏"
 year: 2026
 categories: ["强化学习与 Agent/蒸馏与能力融合"]

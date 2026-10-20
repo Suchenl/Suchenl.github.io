@@ -1,4 +1,5 @@
 ---
+shortName: "DYPO"
 title: "Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]

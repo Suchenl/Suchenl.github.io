@@ -1,4 +1,6 @@
 ---
+shortName: "UniRL"
+aliases: ["Hunyuan UniRL"]
 title: "UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]
