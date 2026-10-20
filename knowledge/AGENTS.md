@@ -97,3 +97,11 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 - comparison 文献卡片字段必须有原始证据。related 条目包含 ref、type、note，type 只接受 compares/extends/requires/questions/supports；不得将主题相似度自动视为正式引用或因果支持。
 - Research 本机学习笔记的 JSON 备份/恢复由读者主动操作，不得隐式上传；阅读勾选不等同于已读状态。
 - 变更后依次执行 Astro build 和站点静态校验、Chromium browser smoke，必要时对比 Lighthouse 指标。不以构建成功替代页面实际交互验收。
+
+
+## 2026-10-20 用户体验决策（以此为准）
+
+- **不再提供个人学习笔记输入、浏览器笔记备份/导入界面**。用户希望 Research 专注于阅读、综述、对比和术语，不把它做成个人笔记软件；勿按旧的功能清单恢复这些控件。
+- Publications 的框架图为静态缩略图，**不要添加遮挡图像的悬浮「放大查看」或图片弹窗**。每篇论文使用原生 details/summary 展开简明介绍：动机、方法、主要发现、证据边界。
+- Publications 额外按已公开发表/发布年份展示研究成果时间线；绝不能把公开年份写作课题启动年份，不制造内部研究经历日期。
+- 首页研究方向使用易理解的具体说明，不再用宽泛、语义重叠的标签填满区域。Projects 不使用“小项目”或 side projects 这样的自我贬低说法。

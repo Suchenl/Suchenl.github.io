@@ -47,3 +47,10 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 - Performance: .github/workflows/lighthouse.yml records laboratory metrics for Home, Research and Publications. Do not treat Lighthouse numbers as real-user Core Web Vitals.
 - Content policy: keep publication facts in web/src/data.ts, tool project facts in web/src/data/projects.ts, and research Markdown in knowledge/ as a single source of truth. Never automatically publish private repositories or user-local study notes.
 - Full UX review and limitations: docs/UX_AUDIT.md.
+
+## Current product decisions (2026-10-20)
+
+- Publications use unobstructed thumbnails and native expandable summaries, plus a public-release timeline; no hover-to-zoom image overlay.
+- Research **does not** include a personal learning-notebook editor or JSON notebook-backup interface. Do not reintroduce these based on historical documentation.
+- The homepage favors specific current research descriptions over overlapping generic tags.
+- Project descriptions avoid “side projects” and “小项目”.

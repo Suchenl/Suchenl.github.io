@@ -116,3 +116,10 @@
 - Browser UI smoke 使用 Chromium 的 390px 与 1440px 模拟视口，不等于 Safari、VoiceOver、真实触屏和 200% 缩放已全部通过。
 - Lighthouse workflow 以实验室环境测首页、Research、Publications 的性能/无障碍/SEO。单次分数不是实际用户 Core Web Vitals，报告保留 7 天。
 - npm ci 的安全审计结果应在计划依赖升级时复核；不得直接执行可能带来破坏性升级的 npm audit fix --force。
+
+
+## 最新 UX 决策：简洁阅读而非个人笔记工具
+
+按用户要求，2026-10-20 起取消 Research 私人学习笔记输入和备份控件。此前 UX 审查文件中有关该功能的记录仅保留为历史，不应再用作当前功能验收项。网页阅读章节续读、学习路线和研究对比属于独立功能，不应自动捆绑个人笔记。
+
+Publications 静态图不显示悬浮放大按钮；展开简介应通过原生 details/summary 实现，附已核实的动机、方法、发现、证据局限及公开年份。研究成果时间线是对公开发表的回顾，不代表用户个人研究开始日期。
