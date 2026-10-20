@@ -98,6 +98,24 @@ try {
    const toc=page.locator('[data-reading-toc]');assert.equal(await toc.count(),1,'Research has shared left TOC');
    if(width===1440){assert((await toc.boundingBox()).x < (await page.locator('.rkd-prose').boundingBox()).x,'Research TOC should be left');
     const first=page.locator('.reading-toc-link').first();await first.click();await page.waitForTimeout(300);assert.equal(await first.getAttribute('aria-current'),'location','Active section should update');
+    const current=page.locator('.reading-toc-location');assert((await current.textContent()).includes('阅读位置'),'Outline gives section progress');
+    // Scroll the DOCUMENT, rather than clicking a TOC item. The outline itself
+    // should follow the active section, without jumping the main reading page.
+    const items=toc.locator('.reading-toc-link');
+    const targetIndex=Math.min(10,(await items.count())-2);
+    if(targetIndex>2){
+      const anchor=await items.nth(targetIndex).getAttribute('href');
+      await page.evaluate(id=>{document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'});},anchor.slice(1));
+      await page.waitForTimeout(250);
+      assert.equal(await items.nth(targetIndex).getAttribute('aria-current'),'location','Current outline should follow document scrolling');
+      const geometry=await page.evaluate(()=>{
+       const nav=document.querySelector('.reading-toc-links'),a=document.querySelector('.reading-toc-link.is-current'),panel=document.querySelector('.reading-toc');
+       const nr=nav.getBoundingClientRect(),ar=a.getBoundingClientRect(),pr=panel.getBoundingClientRect();
+       return {visible:ar.top>=nr.top-2 && ar.bottom<=nr.bottom+2,sticky:pr.top>=70&&pr.top<130};
+      });
+      assert(geometry.visible,'Active outline item should be visible after scrolling '+JSON.stringify(geometry));
+      assert(geometry.sticky,'Outline should follow reading viewport '+JSON.stringify(geometry));
+    }
     await toc.locator('.reading-toc-close').click();assert.equal(await toc.locator('.reading-toc-toggle').getAttribute('aria-expanded'),'false');}
    else{await toc.locator('.reading-toc-toggle').click();assert(await toc.locator('.reading-toc-panel').isVisible());await page.keyboard.press('Escape');assert(!(await toc.locator('.reading-toc-panel').isVisible()));}
    if(width===390)assert(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),'Reduced motion profile must be active');
