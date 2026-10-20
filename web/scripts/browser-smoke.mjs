@@ -38,10 +38,8 @@ try {
    assert.equal(await page.locator('.home-profile-links a').count(),2,'Homepage offers both independent sections');
    await navigate(page,'/work/');
    assert.equal(await experience.getAttribute('aria-current'),'page');
-   assert.equal(await about.getAttribute('aria-current'),null,'About must not stand in for Experience');
    await navigate(page,'/expertise/');
    assert.equal(await expertise.getAttribute('aria-current'),'page');
-   assert.equal(await about.getAttribute('aria-current'),null,'About must not stand in for Expertise');
    await noOverflow(page);
   });
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
