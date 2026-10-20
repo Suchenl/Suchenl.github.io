@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const origin='http://127.0.0.1:4321';
-const server=spawn('npm',['run','preview','--','--host','127.0.0.1','--port','4321'],{stdio:'pipe'});
+const server=spawn('./node_modules/.bin/astro',['preview','--host','127.0.0.1','--port','4321'],{stdio:'pipe'});
 server.stderr.on('data',v=>process.stderr.write(String(v)));
 const pause=n=>new Promise(resolve=>setTimeout(resolve,n));
 let browser; let passed=0;
