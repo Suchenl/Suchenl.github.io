@@ -139,3 +139,10 @@
   .rkd-semantic-item>span {display:inline-block;color:var(--accent-ink);font-size:.73rem;font-weight:750;padding:.15rem .45rem;background:var(--accent-soft);border-radius:5px;margin-right:.35rem;}
   .rkd-semantic-item>a {font-size:.86rem;font-weight:720;overflow-wrap:anywhere;}
   .rkd-semantic-item p {font-size:.81rem;line-height:1.7;color:var(--fg-muted);margin:.4rem 0 0;}
+
+/* The common left outline now owns the chapter list in Research and Blog. */
+.rkd-layout.reading-with-toc{max-width:1100px;}
+.rkd-layout.reading-with-toc.rkd-no-toc{display:block;max-width:820px;}
+.focus-mode .rkd-layout.reading-with-toc{display:block;max-width:800px;margin-inline:auto;}
+.focus-mode .reading-toc{display:none!important;}
+@media(max-width:1000px){.rkd-layout.reading-with-toc{display:block;max-width:800px;margin-inline:auto;}}

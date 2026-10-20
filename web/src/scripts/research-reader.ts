@@ -84,9 +84,9 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
         if (note) note.textContent = '复制失败，请使用浏览器地址栏复制';
       }
     });
-    document.getElementById('rkd-top-outline')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
     const backTop = document.getElementById('rkd-back-top');
-    backTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    backTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior:readerMotion }));
     const progress = document.getElementById('reading-progress');
     let savedAt = 0;
     const readingHeadings = Array.from(reader.querySelectorAll<HTMLElement>('.rkd-prose h2[id], .rkd-prose h3[id]'));
@@ -117,22 +117,4 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
     window.addEventListener('scroll', updateProgress, { passive: true });
     window.addEventListener('resize', updateProgress);
     updateProgress();
-    const mobileToc = document.querySelector<HTMLDetailsElement>('.rkd-mobile-toc');
-    mobileToc?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mobileToc.open = false; }));
-    const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>('.rkd-outline nav a'));
-    const targetById = anchors.map(a => ({ anchor: a, target: document.getElementById(decodeURIComponent(a.hash.slice(1))) })).filter(x => x.target);
-    if (targetById.length) {
-      const updateActive = () => {
-        let active = targetById[0].anchor;
-        for (const x of targetById) {
-          if (x.target && x.target.getBoundingClientRect().top < 170) active = x.anchor;
-        }
-        anchors.forEach(a => {
-          a.classList.toggle('is-current', a === active);
-          if (a === active) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
-        });
-      };
-      window.addEventListener('scroll', updateActive, { passive: true });
-      updateActive();
-    }
   }

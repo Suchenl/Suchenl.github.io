@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ReadingToc from '../../components/ReadingToc.astro';
 import '../../styles/research-reader.css';
 import { getCollection, render } from 'astro:content';
 import { buildKnowledgeGraph, readingSteps } from '../../lib/research-graph';
@@ -112,16 +113,9 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
         {navShortcuts.map(h => <a href={'#' + h.slug}>{h.text}</a>)}
       </nav>
     )}
-    {canShowToc && (
-      <details class="rkd-mobile-toc">
-        <summary>本页目录 · {toc.length} 节</summary>
-        <nav aria-label="移动端文章目录">
-          {toc.map(h => <a class={h.depth === 3 ? 'rkd-toc-sub' : ''} href={'#' + h.slug}>{h.text}</a>)}
-        </nav>
-      </details>
-    )}
 
-    <div class:list={['rkd-layout', !canShowToc && 'rkd-no-toc']}>
+    <div class:list={['rkd-layout','reading-with-toc', !canShowToc && 'rkd-no-toc']}>
+      {canShowToc && <ReadingToc headings={toc} articleSelector=".rkd-prose" />}
       <article class="rkd-article" id="reader-article">
         <div class="rkd-prose">
           <Content />
@@ -227,17 +221,6 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
         </div>
       </article>
 
-      {canShowToc && (
-        <aside class="rkd-aside">
-          <div class="rkd-outline">
-            <div class="rkd-outline-title">本页目录</div>
-            <nav aria-label="文章目录">
-              {toc.map(h => <a class={h.depth === 3 ? 'rkd-toc-sub' : ''} href={'#' + h.slug}>{h.text}</a>)}
-            </nav>
-            <button type="button" class="rkd-top-shortcut" id="rkd-top-outline">↑ 回到顶部</button>
-          </div>
-        </aside>
-      )}
     </div>
     <button type="button" id="rkd-back-top" aria-label="回到顶部">↑</button>
   </div>
