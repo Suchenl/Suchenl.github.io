@@ -113,7 +113,7 @@ const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
           return;
         }
         if (!cfOn) loadGc();
-        else showCf('0', '0');
+        // Failed or absent counter data is unknown, not zero.
       });
   }
 </script>

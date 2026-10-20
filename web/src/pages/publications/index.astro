@@ -19,13 +19,15 @@ import { PUB_GROUPS } from '../../data';
           <div class="paper-box card">
             <div class="paper-img">
               <span class="badge">{p.venue}</span>
-              <img
-                src={p.image.replace(/\.png$/, '-thumb.jpg')}
-                data-full={p.image}
-                alt={p.titleEn}
-                loading="lazy"
-                decoding="async"
-              />
+              <button type="button" class="paper-zoom" data-full={p.image} data-alt={p.titleEn} aria-label={'放大论文图片：' + p.titleEn}>
+                <img
+                  src={p.image.replace(/\.png$/, '-thumb.jpg')}
+                  alt={p.titleEn}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="paper-zoom-hint" aria-hidden="true">放大查看 ↗</span>
+              </button>
             </div>
             <div class="paper-text">
               <p>
@@ -58,8 +60,10 @@ import { PUB_GROUPS } from '../../data';
     </div>
   ))}
 
-  <div id="lightbox" class="lightbox" hidden>
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="查看论文大图" hidden tabindex="-1">
+    <button type="button" id="lightbox-close" class="lightbox-close" aria-label="关闭图片预览">×</button>
     <img id="lightbox-img" src="" alt="" />
+    <p class="lightbox-tip">按 Esc 关闭 · 点击背景关闭</p>
   </div>
 </Base>
 
@@ -88,7 +92,10 @@ import { PUB_GROUPS } from '../../data';
     cursor: zoom-in;
     transition: filter 0.15s ease;
   }
-  .paper-img img:hover { filter: brightness(1.04); }
+  .paper-zoom { position:relative;display:block;width:100%;padding:0;border:0;background:transparent;border-radius:8px;cursor:zoom-in;text-align:left; }
+  .paper-zoom:hover img { filter:brightness(1.04); }
+  .paper-zoom-hint { position:absolute;bottom:8px;right:8px;background:rgba(15,16,20,.76);color:#fff;padding:.2rem .55rem;border-radius:6px;font-size:.7rem;pointer-events:none; }
+  .paper-zoom:focus-visible { outline:3px solid var(--accent);outline-offset:4px; }
 
   .lightbox {
     position: fixed;
@@ -103,6 +110,9 @@ import { PUB_GROUPS } from '../../data';
     backdrop-filter: blur(3px);
   }
   .lightbox[hidden] { display: none; }
+  .lightbox-close { position:absolute;right:clamp(.8rem,3vw,2rem);top:clamp(.8rem,3vw,2rem);width:48px;height:48px;cursor:pointer;font-size:2rem;border-radius:12px;border:1px solid rgba(255,255,255,.6);background:#24242d;color:white;z-index:1; }
+  .lightbox-close:focus-visible {outline:3px solid white;outline-offset:3px;}
+  .lightbox-tip {position:absolute;bottom:1rem;color:#fff;font-size:.8rem;text-align:center;}
   .lightbox img {
     max-width: 100%;
     max-height: 92vh;
@@ -141,26 +151,35 @@ import { PUB_GROUPS } from '../../data';
 <script>
   const box = document.getElementById('lightbox') as HTMLElement | null;
   const boxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
-
-  function open(full: string, alt: string) {
+  const closeButton = document.getElementById('lightbox-close') as HTMLButtonElement | null;
+  let trigger: HTMLElement | null = null;
+  let previousOverflow = '';
+  function open(full: string, alt: string, button: HTMLElement) {
     if (!box || !boxImg) return;
-    boxImg.src = full;
-    boxImg.alt = alt;
+    trigger = button;
+    previousOverflow = document.body.style.overflow;
+    boxImg.src = full; boxImg.alt = alt;
     box.hidden = false;
     document.body.style.overflow = 'hidden';
+    closeButton?.focus();
   }
   function close() {
-    if (!box || !boxImg) return;
-    box.hidden = true;
-    boxImg.src = '';
-    document.body.style.overflow = '';
+    if (!box || !boxImg || box.hidden) return;
+    box.hidden = true; boxImg.src = '';
+    document.body.style.overflow = previousOverflow;
+    trigger?.focus(); trigger = null;
   }
-
-  document.querySelectorAll<HTMLImageElement>('.paper-img img').forEach((img) => {
-    img.addEventListener('click', () => open(img.dataset.full || img.src, img.alt));
+  document.querySelectorAll<HTMLButtonElement>('.paper-zoom').forEach(button=>{
+    button.addEventListener('click',()=>open(button.dataset.full || '',button.dataset.alt || '',button));
   });
-  box?.addEventListener('click', close);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && box && !box.hidden) close();
+  closeButton?.addEventListener('click',close);
+  box?.addEventListener('click',e=>{if(e.target===box) close();});
+  document.addEventListener('keydown',e=>{
+    if(!box || box.hidden) return;
+    if(e.key==='Escape'){e.preventDefault();close();}
+    if(e.key==='Tab'){
+      // Only the close button is focusable within the modal.
+      e.preventDefault();closeButton?.focus();
+    }
   });
 </script>

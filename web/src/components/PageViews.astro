@@ -124,14 +124,15 @@ const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
         if (d && d.ok) {
           var hit = lookupPath(d.paths || {});
           if (hit) showCf(hit.pageviews || 0, hit.visits || 0);
-          else showCf(0, 0);
+          // Unknown page is not a page with zero visits.
+          else if (!cfOn) loadGc();
           return;
         }
         if (!cfOn) loadGc();
       })
       .catch(function () {
         if (!cfOn) loadGc();
-        else showCf(0, 0);
+        // No trustworthy per-page entry: keep the placeholder hidden.
       });
 
     setTimeout(function () {
