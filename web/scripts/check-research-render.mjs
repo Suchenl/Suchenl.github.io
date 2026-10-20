@@ -118,7 +118,8 @@ console.log('Pretraining topic, privacy exclusions and shared left TOC contract 
 const privateMarkers = [
   'local-workbench','model_bridge.py','model_bridge.log',
   'Open-Robot-Agent','UniRobo-Data','AgentHarness3D','VMem-Bench',
-  'ytech_milm_intern'
+  'ytech_milm_intern', 'cursor-agent-store', 'reasoning.sqlite',
+  'Codex→GLM Bridge 的 SQLite', 'Suchenl/local-workbench'
 ];
 const walkHtml = dir => fs.readdirSync(dir, {withFileTypes:true}).flatMap(entry => {
   const full = path.join(dir,entry.name);
