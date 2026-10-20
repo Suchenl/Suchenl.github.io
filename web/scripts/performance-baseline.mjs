@@ -29,6 +29,12 @@ try{
   const scores=Object.fromEntries(Object.entries(report.categories || {}).map(([k,c])=>[k,Math.round((c.score || 0)*100)]));
   const metrics=Object.fromEntries(['first-contentful-paint','largest-contentful-paint','cumulative-layout-shift','total-blocking-time'].map(k=>[k,report.audits?.[k]?.displayValue||'N/A']));
   console.log('LIGHTHOUSE',name,JSON.stringify({scores,metrics}));
+  const failures = ['accessibility','best-practices','seo'].flatMap(category =>
+    (report.categories?.[category]?.auditRefs || [])
+      .filter(ref => ref.weight > 0 && report.audits?.[ref.id]?.score != null && report.audits[ref.id].score < 1)
+      .map(ref => ({category,id:ref.id,title:report.audits[ref.id].title,score:report.audits[ref.id].score,detail:report.audits[ref.id].displayValue || ''}))
+  );
+  if(failures.length) console.log('LIGHTHOUSE_ISSUES',name,JSON.stringify(failures));
  }
  console.log('Lighthouse baseline generated (informational; scores not gated).');
 }catch(error){console.error('Lighthouse audit failed:',error);process.exitCode=1;}
