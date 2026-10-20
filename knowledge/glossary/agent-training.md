@@ -56,3 +56,16 @@ PPO 是带截断重要性比的策略优化方法；GRPO（Group Relative Policy
 ## 训练约束 vs 环境真实
 
 RLVR 可以用离线真实轨迹构造**可验证预测任务**；但如果模型提出未实际执行过的动作，不能直接把同一条轨迹的下一帧当成该动作的后果。奖励应分清几何代理指标与真实任务成功。
+
+
+## CoT / Thinking 与 Tool Calling
+
+**CoT** 是模型生成的推理内容，**Tool Calling** 是经由外部执行器真正调用工具的结构化请求。计划记录（如 `update_plan`）可以被包装成工具，但计划更新不等于任务动作已经发生。部分 API 的 `reasoning_content` / reasoning item 可以在工具结果回传时保留，具体依模型和 Harness 而定。详见 [长程 Agent 何时思考专题](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+
+## Interleaved Thinking / Preserved Thinking
+
+**Interleaved** 表示在多个工具调用之间允许继续推理；**Preserved** 表示历史 reasoning 项通过 API/Harness 回传可供后续上下文使用。它们不是一个概念，也不等于“始终每轮重新输出完整 CoT”。参考 [Thinking 状态与调用协议对照](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+
+## Reasoning Effort / Adaptive Thinking
+
+Reasoning effort 是模型/接口控制推理深度或成本的配置；Adaptive Thinking 是依据任务/上下文选择推理量或时机的策略或学习机制。GLM-5.3-Flash 强制开启推理，而 Qwen3.8-27B 可按请求关闭；调低 effort 不能直接等同于完全不推理。相关研究见 [RACE、CogRouter 与可证伪实验](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。

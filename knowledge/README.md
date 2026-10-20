@@ -13,6 +13,7 @@
 |---|---|
 | 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
 | 按顺序学习 SFT、RL 与 Agent 后训练 | [7 步学习路线](paths/agent-post-training.md) |
+| 弄清 CoT、工具调用及 Agent 何时思考 | [Agent 长程推理与工具调用](topics/agent-reasoning/README.md) |
 | 阅读第一篇综合综述：SFT × RL | [SFT、RL 与 Agent 后训练：协同范式和最新证据](topics/llm-agent-training/reviews/sft-rl-co-training.md) |
 | 对比不同研究主张及冲突的证据 | [SFT × RL × Agent：研究主张证据地图](topics/llm-agent-training/reviews/evidence-map.md) |
 | 将未解决问题变成可证伪实验 | [Agent 后训练实验议程](research/agent-post-training-experiment-agenda.md) |

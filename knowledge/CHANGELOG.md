@@ -1,6 +1,8 @@
 # 更新记录
 
 ## 2026-10-20
+- 新增《Agent 长程推理与工具调用》Topic 和详细 Q&A：区分 CoT、工具请求、显式计划与真实观测；逐项核对 Codex update_plan/Responses reasoning item、GLM-5.3-Flash 强制 Thinking 与跨轮保留、Qwen3.8-27B thinking 开关/effort/preserve_thinking；补 RACE/CogRouter/AdaReasoner/MOSAIC 研究及可证伪实验设计。该专题依据公开官方资料，不假设未披露的推理调度 RL 内部实现。
+
 - 新增《SFT × RL × Agent：研究主张与证据地图》，整理 C01–C07 七项可证伪主张、四种证据状态、三组常见表面冲突、指标口径和待核对清单。
 - 新增《Agent 后训练：从争议主张到可证伪实验》，给出 E0–E5、监督与 RL 信息来源/预算分离、真实工具与代理奖励有效性、失败恢复的 2×2 对照和停止规则；为研究提案，未声称已跑实验。
 - 将两篇内容接入 Research 主题入口、全局综述、七步学习路线的非必修延伸阅读、研究问题导航和维护规则；保留原有七步进度和个人研究方向。

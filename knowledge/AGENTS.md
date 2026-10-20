@@ -123,3 +123,11 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 - 不得默认「在项目仓库能看到 README」等于「完整训练代码/数据已开源」。每次推荐 follow 都要单独检查可复现材料和缺口。
 - 理论定理需陈述其特定训练数据与任务模型前提。尤其「黄金最短路径 SFT 无回溯监督」不等于「所有包含失败恢复数据的 SFT 都学不会回溯」。
 - 只有通过公开原论文或可复查的官方资料才能把论文摘要中的数值写进综述；页面不产生新的 benchmark 性能或医学临床效果宣称。
+
+
+## 新增 Topic：长程 Agent 思考与工具调用
+
+- 中文专题位于 `knowledge/topics/agent-reasoning/`，当前主文章为 `reviews/cot-tool-use-and-thinking-scheduling.md`。继续学习时优先修订这一篇，不要在 `papers/` 复制同一份 Q&A。
+- 严格区分 CoT token、API reasoning item、工具调用、显式 plan、执行器真实观测；不要把 `update_plan` 或人为定义的 `think()` 工具说成原生 CoT 本身。
+- Thinking 强制/可禁用、reasoning_effort 值和 preserved thinking 必须逐模型核对官方版本。GLM-5.3-Flash 不能关闭；Qwen3.8-27B 可用 chat template 关闭。不能套用同一套 effort 枚举。
+- “何时推理”研究要分清按轮推理量、跨轮推理覆盖、工具使用适应性与安全执行决定；论文摘要不能代替真实机器人任务成功证明。
