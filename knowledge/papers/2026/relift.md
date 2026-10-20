@@ -66,7 +66,7 @@ ReLIFT 的关键是通过**困难题所需的外部正确解**提供另一种训
 
 ## 7. 版本差异、可复现性和证据口径
 
-- **不要把 2025 v1 和 2026 正式版的实验均值混用**：[arXiv 2506.07527 的早期版本](https://arxiv.org/abs/2506.07527)摘要曾写六项基准平均超过 **+5.2 points**；最终 [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)报告的是 **+6.7 points**。不同版本的实验结果不能未经注明混写为同一张表。
+- **两处官方来源目前存在数字口径差异**：[arXiv v1](https://arxiv.org/abs/2506.07527v1)（2025-06）和 [arXiv v3 摘要](https://arxiv.org/abs/2506.07527)（2026-03）均写六项基准平均超过 **+5.2 points**；[ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)报告 **+6.7 points**。**尚未证明差异是同口径下的单纯性能提升**：需查模型、基线、数据和统计口径，不能未经核对将两者串成“版本更新使分数增加”。
 - [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)支持五项数学、一项 OOD 基准平均 +6.7 **points** 的作者报告，不能等同于相对提升 6.7%。
 - [官方训练仓库](https://github.com/TheRoadQaQ/ReLIFT)列有 ReLIFT/verl、数据准备、训练启动和评测脚本；README 宣传只需 13% 示范数据，**但不应将其误读为只需 13% GPU-hours**。实际复现仍要验证数据、模型版本与环境。
 - 机器人偏离示范后的状态可能根本没有可调用的可信专家；该任务并没有因为借鉴 ReLIFT 就自动解决。

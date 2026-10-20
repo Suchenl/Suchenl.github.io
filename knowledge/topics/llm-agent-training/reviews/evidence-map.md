@@ -90,7 +90,7 @@ categories: ["强化学习与 Agent", "强化学习与 Agent/SFT 与 RL 协同"]
 
 | 工作 | 原始来源可核实的结论 | 精确口径 / 尚待核对 |
 |---|---|---|
-| ReLIFT | [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)：六项基准平均 +6.7 **points** | 相对论文所选 RLVR 方法；早期 arXiv 版本曾报告 +5.2 points，不能混用 |
+| ReLIFT | [ICLR 2026 官方摘要](https://proceedings.iclr.cc/paper_files/paper/2026/hash/82c4ad0c3d3d4898a77be5df7b2ede3a-Abstract-Conference.html)：六项基准平均 +6.7 **points** | 相对论文所选 RLVR 方法；[arXiv v1（2025-06）](https://arxiv.org/abs/2506.07527v1) 与 [目前的 v3 摘要](https://arxiv.org/abs/2506.07527)仍写 +5.2 points；ICLR 会议摘要写 +6.7 points。**两套数字的基线及评价设置是否一致尚需核对**，不能直接假定只是版本改进 |
 | BRIDGE | [ICML 2026 官方摘要](https://proceedings.mlr.press/v306/chen26an.html)：多个数学推理基准平均绝对提升超过 3 **points** | 不是所有模型均 +3，也不是模型端到端工具成功率 |
 | DYPO | [ACL Findings 2026](https://aclanthology.org/2026.findings-acl.219/)：复杂推理 4.8%、OOD 13.3% | 官方摘要用百分号；是相对改善还是百分点须查看论文完整表格与基线 |
 | TSRL | [arXiv:2610.17726](https://arxiv.org/abs/2610.17726)：持续学习旧能力**最高**多保持 9.6 points | 不是三个基准的平均；仍需核对规模、顺序与错误条 |
@@ -119,7 +119,7 @@ categories: ["强化学习与 Agent", "强化学习与 Agent/SFT 与 RL 协同"]
 1. **DYPO**：4.8% 与 13.3% 的定义、对照、是否含多教师额外成本、门控和 GAL 的逐项消融。
 2. **TSRL**：困难状态阈值和标签来源、任务顺序、遗忘指标、相同专家预算的对照。
 3. **BRIDGE**：完整双层近似、纯 RL 辅助分支成本、同一 GPU-hours 的消融。
-4. **ReLIFT**：教师数据来源和过滤、演示占比 13% 的分母、正式版与早期版差异。
+4. **ReLIFT**：教师数据来源和过滤、演示占比 13% 的分母，以及为何 arXiv v1/v3 摘要与会议摘要的均值不同（包括基线和评测口径）。
 5. **工具调用对照**：评测是否执行真实工具，以及各方法总生成 token 和反馈预算。
 
 **下一步不是把所有未核实信息填成“强证据”**，而是逐篇关闭上面的待核对事项，同时保持事实与推测分开。具体优先实验和停止规则见[研究实验议程](../../../research/agent-post-training-experiment-agenda.md)。
