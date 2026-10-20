@@ -84,7 +84,7 @@ const socials = [
       {featured.map(p => (
         <article class="featured-paper card">
           {p.image && <a href={p.url} target="_blank" rel="noopener noreferrer" aria-label={'查看论文：' + p.titleEn}>
-            <img src={p.image.replace(/\.png$/, '-thumb.jpg')} loading="lazy" decoding="async" width="480" height="270" alt={'方法示意：' + p.titleEn} />
+            <img src={p.thumbnail || p.image} loading="lazy" decoding="async" width="480" height="270" alt={'方法示意：' + p.titleEn} />
           </a>}
           <div class="featured-paper-body">
             <span class="featured-venue">{p.venue}</span>

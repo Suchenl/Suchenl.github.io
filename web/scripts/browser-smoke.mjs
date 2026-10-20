@@ -20,11 +20,22 @@ try {
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true});
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);assert(await page.getByText('精选研究成果').count()>0);});
+  await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);assert(await page.getByText('精选研究成果').count()>0);
+   assert((await page.locator('.chips .tag-chip').count())===5,'Original research tags must remain');
+   assert((await page.locator('.hero-interests').textContent()).includes('多模态生成'),'Original interests must remain');});
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
   await check('Publications '+width,async()=>{
    await navigate(page,'/publications/');await noOverflow(page);
-   const disclosure=page.locator('.pub-abstract').first();await disclosure.locator('summary').click();assert(await disclosure.locator('.pub-brief-row').count()===4);
+   assert.equal(await page.locator('.pub-timeline').count(),0,'Redundant timeline must stay removed');
+   assert.equal(await page.locator('.paper-entry').count(),await page.locator('.pub-abstract').count(),'Every paper gets the same summary control');
+   assert((await page.locator('.paper-no-image').count())>=2,'Papers without figures must retain a card');
+   const imageHealth=await page.locator('.paper-image img').evaluateAll(async images=>{
+     const outcomes=await Promise.all(images.map(img=>img.decode().then(()=>img.naturalWidth>0).catch(()=>false)));
+     return {loaded:outcomes.filter(Boolean).length,total:outcomes.length};
+   });
+   assert(imageHealth.total>=4 && imageHealth.loaded===imageHealth.total,'Broken publication thumbnail '+JSON.stringify(imageHealth));
+   const disclosure=page.locator('.pub-abstract').first();await disclosure.locator('summary').click();assert.equal(await disclosure.locator('.pub-brief-row').count(),4);
+   const noImageDisclosure=page.locator('.paper-no-image .pub-abstract').first();await noImageDisclosure.locator('summary').click();assert.equal(await noImageDisclosure.locator('.pub-brief-row').count(),4);
   });
   await check('Blog filters '+width,async()=>{
    await navigate(page,'/blog/');await noOverflow(page);

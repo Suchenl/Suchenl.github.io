@@ -40,7 +40,7 @@ import { SITE, AUTHOR } from '../../config';
           {paper.image && (
             <div class="paper-image">
               <img
-                src={paper.image.replace(/\.png$/, '-thumb.jpg')}
+                src={paper.thumbnail || paper.image}
                 alt={'论文方法示意图：' + paper.titleZh}
                 width="440"
                 height="248"

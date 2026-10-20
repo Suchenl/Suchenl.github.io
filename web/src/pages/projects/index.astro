@@ -22,7 +22,7 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
     <div class="research-proj-grid">
       {researchHighlights.map(p=>(
         <article class="card research-proj">
-          {p.image && <a href={p.url} target="_blank" rel="noopener noreferrer"><img src={p.image.replace(/\.png$/, '-thumb.jpg')} loading="lazy" decoding="async" alt={'方法示意：' + p.titleEn} /></a>}
+          {p.image && <a href={p.url} target="_blank" rel="noopener noreferrer"><img src={p.thumbnail || p.image} loading="lazy" decoding="async" alt={'方法示意：' + p.titleEn} /></a>}
           <div><span class="featured-venue">{p.venue}</span><h3>{p.titleEn}</h3><p class="muted"><span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span></p>
             <div class="proj-links"><a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="论文 ↗" en="Paper ↗" /></a>
             {p.code && <a href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="代码 ↗" en="Code ↗" /></a>}</div>

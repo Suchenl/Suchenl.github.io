@@ -1,6 +1,7 @@
 export interface Paper {
   venue: string;
   image?: string;
+  thumbnail?: string; // Explicitly available thumbnail; otherwise use the full image.
   titleZh: string;
   titleEn: string;
   url: string;
@@ -26,6 +27,7 @@ export const PUB_GROUPS: PubGroup[] = [
       {
         venue: 'AAAI 2026',
         image: '/images/frameworks/LAMIC.png',
+        thumbnail: '/images/frameworks/LAMIC-thumb.jpg',
         titleZh: 'LAMIC：基于多模态扩散 Transformer 可扩展性的布局感知多图合成',
         titleEn:
           'LAMIC: Layout-Aware Multi-Image Composition via Scalability of Multimodal Diffusion Transformer',
@@ -53,6 +55,7 @@ export const PUB_GROUPS: PubGroup[] = [
       {
         venue: 'Preprint',
         image: '/images/frameworks/FlowOfTruth.png',
+        thumbnail: '/images/frameworks/FlowOfTruth-thumb.jpg',
         titleZh: 'Flow of Truth：面向图像到视频生成的主动式时序取证',
         titleEn: 'Flow of Truth: Proactive Temporal Forensics for Image-to-Video Generation',
         url: 'https://arxiv.org/abs/2604.15003',
@@ -72,6 +75,7 @@ export const PUB_GROUPS: PubGroup[] = [
       {
         venue: 'ICCV 2025',
         image: '/images/frameworks/TAG-WM.png',
+        thumbnail: '/images/frameworks/TAG-WM-thumb.jpg',
         titleZh: 'TAG-WM：基于扩散反演敏感性的篡改感知生成图像水印',
         titleEn:
           'TAG-WM: Tamper-Aware Generative Image Watermarking via Diffusion Inversion Sensitivity',

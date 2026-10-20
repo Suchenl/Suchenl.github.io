@@ -21,7 +21,14 @@ const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
 check(blog.includes('cat-filter') && blogHtml.includes('role="group"') && !blogHtml.includes('role="tablist"'),'blog filters accessible');
-check(pubs.includes('"@type":"ScholarlyArticle"') && pubs.includes('pub-abstract') && !pubs.includes('paper-zoom-hint'),'publication metadata and image modal');
+check(pubs.includes('"@type":"ScholarlyArticle"') && pubs.includes('pub-abstract') && !pubs.includes('paper-zoom-hint'),'publication metadata and clean summary');
+check(!pubs.includes('pub-timeline') && !pubs.includes('研究成果时间线'),'no duplicate publication timeline');
+check((pubs.match(/class="pub-abstract"/g) || []).length === (pubs.match(/class="paper-entry/g) || []).length,'every publication provides a summary');
+check(home.includes('生成式 AI（AIGC）') && home.includes('AI + 医疗'),'original research tags restored');
+check(home.includes('兴趣：多模态生成') && home.includes('仿真 · 游戏'),'original interests restored');
+for (const match of pubs.matchAll(/src="(\/images\/frameworks\/[^"]+)"/g)) {
+  check(existsSync(join(root, match[1].slice(1))), 'publication figure exists: ' + match[1]);
+}
 check(projects.includes('公开研究实现') && projects.includes('开源工具与开发项目'),'project sections');
 check(!research.includes('id="lit-backup-export"') && research.includes('id="lit-compare-link"'),'local backups and comparison entry');
 check(compare.includes('id="compare-pick"') && compare.includes('compare-table'),'comparison page');
