@@ -111,3 +111,22 @@ for(const phrase of privateNames)if(topic.includes(phrase))throw new Error('Priv
 const tocSource=fs.readFileSync('src/scripts/reading-toc.ts','utf8');
 for(const phrase of ['data-toc-target','aria-current','nav.scrollTo','site-reading-toc-collapsed'])if(!tocSource.includes(phrase))throw new Error('Left reading TOC contract missing: '+phrase);
 console.log('Pretraining topic, privacy exclusions and shared left TOC contract verified.');
+
+
+// A public page must never expose private repository names or implementation paths.
+// This scans all generated HTML, not only the initial Research topic.
+const privateMarkers = [
+  'local-workbench','model_bridge.py','model_bridge.log',
+  'Open-Robot-Agent','UniRobo-Data','AgentHarness3D','VMem-Bench',
+  'ytech_milm_intern'
+];
+const walkHtml = dir => fs.readdirSync(dir, {withFileTypes:true}).flatMap(entry => {
+  const full = path.join(dir,entry.name);
+  return entry.isDirectory() ? walkHtml(full) : entry.name.endsWith('.html') ? [full] : [];
+});
+for (const file of walkHtml('dist')) {
+  const html=fs.readFileSync(file,'utf8');
+  for (const sensitive of privateMarkers) if(html.includes(sensitive))
+    throw new Error('Private project marker leaked in public output: '+sensitive+' in '+file);
+}
+console.log('Generated public pages contain no named private repository markers.');

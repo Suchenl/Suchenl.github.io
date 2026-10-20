@@ -91,7 +91,7 @@ SFT、RLVR、OPD、离线 RL、RL 奖励模拟之间的训练信息源不同。*
 
 - 首页围绕当前研究方向和公开代表作品。论文数据在 web/src/data.ts 唯一维护；工具数据在 web/src/data/projects.ts 唯一维护。Projects 可读取论文数据，但禁止生成重复事实。
 - About 汇总经历、能力与合作入口；/work/ 与 /expertise/ 均保留历史 URL。导航重新整理时需检查键盘和移动端布局。
-- 未获允许不得公开私有研究仓库（含 Open-Robot-Agent、UniRobo-Data、VMem-Bench、AgentHarness3D）的源代码、截图、内部实验和指标。
+- 未获允许不得公开任何私人仓库的名称、代码、截图、部署细节、内部实验或指标；本规则无需列举具体仓库名称。
 - Publications 使用无图层遮挡的静态图片和原生可展开简介；不使用悬浮大图或 dialog。Blog 分类筛选是按钮组而不是伪 tab；未知统计不得当作 0。
 - comparison 文献卡片字段必须有原始证据。related 条目包含 ref、type、note，type 只接受 compares/extends/requires/questions/supports；不得将主题相似度自动视为正式引用或因果支持。
 - Research 不提供个人学习笔记和 JSON 笔记备份；本机阅读位置、字号和学习路线勾选不等同于已读状态。
