@@ -26,4 +26,4 @@ categories: ["大模型基础", "大模型基础/预训练"]
 6. **预训练评价**：perplexity、held-out loss、领域能力、污染检查与稳定性。
 7. **继续预训练（CPT）**：在现有 Base 上改变领域分布和知识能力，与 SFT 做受控比较。
 
-原始参考起点： [ybq《大模型预训练经验》（知乎）](https://zhuanlan.zhihu.com/p/718354385)。它是**工程经验分享而不是规范或可复现实验报告**。本专题将个人建议与论文/官方训练框架证据分开。
+原始参考起点：[ybq《LLM训练-pretrain》（知乎原文）](https://zhuanlan.zhihu.com/p/718354385)；[作者授权转载（火山引擎开发者社区）](https://developer.volcengine.com/articles/7451506255211790348)。这篇资料聚焦数据、训练与评估工程的实践经验，**不是规范或完整可复现实验报告**。另外参考 [DataTrove / FineWeb 实现](https://github.com/huggingface/datatrove/blob/main/examples/fineweb.py) 与 [Megatron Core 示例](https://github.com/NVIDIA/Megatron-LM/blob/main/docs/user-guide/training-examples.md)，逐项实践。本专题将个人建议与论文/官方训练框架证据分开。

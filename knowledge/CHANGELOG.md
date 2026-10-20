@@ -1,6 +1,8 @@
 # 更新记录
 
 ## 2026-10-20
+- 完善预训练专题来源：增加用户提供的知乎原文对应作者授权转载入口，并补 DataTrove/FineWeb 完整处理脚本、Megatron Core Quick Start 与 Training Examples，以及数据/算力/质量/训练阶段选择的自测问题。
+
 - 按用户要求移除公开 CoT Topic 中任何从私人仓库得到的实现片段、日志线索与特定私有路径，仅保留通用公开协议事实；新增公开主页禁止泄露私有内容的维护规则。
 - Blog 与 Research 使用同一套较大字号的左侧可收起章节目录；章节高亮与内部目录滚动同步，移动端左侧抽屉。
 - 新增「大模型预训练」Topic，列入用户指定的 ybq 知乎文章，并补充数据治理、Tokenization、Scaling Laws、分布式训练、Qwen3/DeepSeek-V3 官方资料与小规模实验建议。

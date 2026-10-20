@@ -157,6 +157,19 @@ $$
 | [Qwen3 官方说明](https://qwenlm.github.io/zh/blog/qwen3/) | 36T、分阶段预训练、PDF/合成数据 | 模型团队公开报告 |
 | [DeepSeek-V3 报告](https://arxiv.org/abs/2412.19437) | MoE 训练、FP8、稳定性与 H800 GPU-hours | 原始技术报告 |
 
+### 推荐的三份“真能照着代码学习”的参考
+
+- **[FineWeb 原始 DataTrove 处理脚本](https://github.com/huggingface/datatrove/blob/main/examples/fineweb.py)**：能看到正文提取、语言及启发式质量过滤、PII 处理、逐 dump 的 MinHash 去重、抽样与中间数据输出。学习时不要直接处理完整 FineWeb；先改成一个小公开数据分片，核验删除/保留的样本。
+- **[Megatron Core 官方 Quick Start](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/QuickStart.md)**：用小 GPU 设置走通并行 Transformer、最小训练迭代、分布式 Checkpoint 存取。它说明如何使用框架，不能视为复现了数十亿参数 LLM 的正式预训练。
+- **[Megatron-LM 官方 Training Examples](https://github.com/NVIDIA/Megatron-LM/blob/main/docs/user-guide/training-examples.md)**：从 mock-data 的最小训练循环到多 GPU 架构配方。尤其区分**验证训练框架能跑**和**验证模型质量达到目标**这两类验收。
+
+### 学完这一章以后，应该能自己回答
+
+1. **数据**：同一组清洗规则在中英、代码、公式等不同领域如何改变保留率？如何检查数据漏删与测试污染？
+2. **算力**：给定参数量、训练 token 数、吞吐量与有效 GPU 使用率，为什么训练预算估算不等于实际 GPU-hours？如何保存完整恢复所需状态？
+3. **质量**：模型训练 loss 降了，为什么领域评测、异常恢复或长上下文性能仍可能退化？
+4. **决策**：什么时候应先做 CPT，什么时候仅做 SFT 或 RL，而不是重新预训练一个 Base？
+
 **自测问题**：为什么 aggressive dedup 可能比跨 dump 去重效果差？为什么 $6ND$ 不能直接得到某配置的真实训练 GPU-hours？在模型成功率很低时，如何判定问题源于缺预训练知识、缺 SFT 的任务演示，还是错误的 verifier？
 
 ---
