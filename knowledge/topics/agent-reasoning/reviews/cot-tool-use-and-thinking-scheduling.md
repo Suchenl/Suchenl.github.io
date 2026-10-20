@@ -2,7 +2,7 @@
 title: "CoT 是工具调用吗？长程 Agent 何时思考、Codex/GLM/Qwen 如何实现"
 shortName: "When to Think"
 aliases: ["CoT", "Chain-of-Thought", "reasoning", "think tool", "interleaved thinking", "preserved thinking", "reasoning_effort", "Codex", "update_plan", "GLM-5.3-Flash", "Qwen3.8-27B", "RACE", "CogRouter", "adaptive thinking", "tool calling"]
-summaryZh: "区分 CoT、工具调用、计划、推理预算、跨轮 reasoning state；基于官方 API 和模型卡对照 Codex、GLM-5.3-Flash、Qwen3.8-27B，并总结何时重新推理的研究与可证伪实验。"
+summaryZh: "区分 CoT 与工具调用、同一轮 KV Cache 和跨工具轮推理回放；核对 Codex-to-GLM Bridge 的按 call_id 恢复机制、vLLM Prefix Cache 条件，以及 GLM/Qwen/Codex 的思考调度。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工具使用"]
 ---
 
@@ -41,6 +41,23 @@ user/task → model（可能生成 reasoning）
 
 官方参考：[OpenAI Function Calling](https://developers.openai.com/api/docs/guides/function-calling)、[Anthropic Thinking](https://platform.claude.com/docs/en/about-claude/models/extended-thinking-models)。
 
+
+### 1.1 「在上下文里」是两种完全不同的事情
+
+**同一次自回归生成**：模型先输出 `<think>...` 再输出工具调用时，后面的 token 可以条件化于前面的推理 token，KV Cache 通常负责缓存该次解码的注意力状态。它们不是“在同一次前向计算里一次性生成”，而是**多次前向、逐 token 继续生成**。此时不需要 Harness 再插入已生成的 CoT。
+
+**跨工具调用的新请求**：外部执行器完成任务并返回结果后，模型通常要启动新的推理请求。下一次请求看见什么，由**客户端发送的历史、服务端会话状态、推理状态回放协议**共同决定；前一次请求里生成过的 CoT 不意味着它自动属于下一次的逻辑上下文。
+
+区分三层数据：
+
+| 层次 | 存的是什么 | 是否自动进入下一轮输入？ |
+|---|---|---|
+| **KV Cache** | 某个 token 前缀计算得到的 K/V 张量 | **不保证**；可能被回收、淘汰或由 Prefix Cache 复用 |
+| **消息历史** | 角色、正文、tool_calls 和 tool_result | 由客户端或服务端对话状态维护 |
+| **Reasoning state** | GLM 明文 `reasoning_content`、Responses opaque/encrypted item 等 | 由对应 API 和 Harness 约定是否保留、如何回传 |
+
+所以“模型刚刚明明想过，为什么还要塞回去？”的答案是：**你说的是同一次解码；Bridge 要解决的是下一次请求有没有收到对应推理状态。**
+
 ## 2. 谁决定什么时候想、想多久？
 
 不是一个统一答案，至少存在三层控制权：
@@ -50,6 +67,15 @@ user/task → model（可能生成 reasoning）
 3. **Harness / 应用调度**：哪些工具开放、什么时候插入新观测、是否保留历史 reasoning、是否 compaction、是否规定先执行校验、每次调用能否调整 effort，及什么时候需要用户确认。
 
 推理 token 本身**是推理过程的一种外显形式**，不代表能完整观察模型所有内部计算；尤其闭源模型的 reasoning item 可能是加密的、不向用户展示原始内容。
+
+
+### Harness 能不能决定是否思考？
+
+对于**没有额外 THINK/ACT Router** 的常见 Agent loop，模型往往根据当前信息决定生成推理、工具调用或最终回答；工具错误和不确定性可能影响行为，但不能只凭 CoT 日志认定模型已通过某项 RL 奖励学会了最优元策略。
+
+**“Harness 没有调度器”只能作为某个具体实现的说明**，不能成为通用定律。Harness 能配置 thinking/effort、提示词、最大输出长度、工具与观测输入，还可以显式添加调度器、路由到其他模型、注入风险检查或在错误后强制重新观察。GLM-5.3-Flash 甚至强制 Thinking，不存在“首个 token 完全自由选择开启/关闭”的问题。
+
+**检验模型是否学会了“何时思考”**，需要对比相同任务中思考量、工具故障、真实成功率与成本，不能凭工具调用前出现了 `<think>` 作因果归因。
 
 ### 长程 Agent 特别需要分开三个问题
 
@@ -80,6 +106,68 @@ user/task → model（可能生成 reasoning）
 ```
 
 **关键细节**：公开 `update_plan` 机制证明“计划可以被显式外化”，并不意味着不调用 `update_plan` 的任务没有规划行为。
+
+
+### 3.1 从「同一次生成」到「跨轮请求」的断点
+
+```text
+请求 N：
+[系统/用户/历史] → 模型逐 token 生成 reasoning → tool_call(call_id)
+                                          │
+                              该请求里的解码 KV Cache
+                                          ↓
+                          Codex/Harness 执行工具
+                                          ↓
+请求 N+1：
+[历史 + 是否被保留的 reasoning state + tool_result] → 模型再次解码
+```
+
+模型**不会因为上次产生过 CoT，就把它永久写进参数**。有状态 Responses 可由服务端通过 `previous_response_id` 等维护历史，无状态 Responses 可由调用端回传完整的兼容 items（包括 opaque / encrypted reasoning）。如果提供方支持，某些旧 reasoning items 可在模型新上下文中继续使用；是否用到更早轮次还取决于具体模型与 `reasoning.context` 等配置，**不是所有历史 reasoning 都一定被全文渲染**。[OpenAI Reasoning 官方文档](https://developers.openai.com/api/docs/guides/reasoning)。
+
+注意 **KV Cache 不等于跨轮记忆**：请求结束后推理逻辑仍需有信息来源；物理 KV 块可能被重用，但重用计算不等于自动补进缺失的消息。
+
+### 3.2 本地 Codex → GLM Bridge 的实现（源码已核对）
+
+我检查了用户自有私有 `local-workbench` 仓库截至 2026-10-20 的 `model_bridge.py`。以下只记录其**可公开学习的机制**，不公开内部日志、私人路径、密钥或整个实现；`model_bridge.log` 的具体内容此次未单独核验。
+
+```text
+Codex app-server (Responses)       Bridge                     GLM / vLLM (Chat)
+reasoning item ───────────────────→ 跳过原始不兼容 item
+function_call(call_id,args) ──────→ 组装 assistant.tool_calls
+                                     查询 SQLite[call_id] ─────→ assistant.reasoning_content
+function_call_output ─────────────→ role=tool + tool_call_id ─→ tool result
+                                     
+GLM 返回 reasoning + tool_calls ─→ 适配为 Responses 事件
+                                    每个 call_id 保存对应明文 reasoning
+```
+
+真实源码的关键行为：
+
+1. **读流**：接受 `delta.reasoning` 或 `delta.reasoning_content`，组装本轮 GLM **明文推理字符串**。
+2. **保存**：只有工具调用轮次才将该次推理按各个 `call_id` 放入本地 SQLite；同一轮有多个工具时可能对应相同推理文本。
+3. **回填**：下一轮将 Responses `function_call` 重新变成 `assistant.tool_calls` 时，以 `call_id` 查库；查询命中则挂到 `assistant.reasoning_content`。
+4. **原始 item**：对于 `kind == "reasoning"`，直接跳过原始 Responses item；工具执行与权限控制仍由 Codex 负责，Bridge **不执行**工具。
+
+**重要区别**：本例恢复的是 GLM 自己生成的**明文 CoT**，绝不是“解密 OpenAI opaque/encrypted reasoning item”。Bridge 同时把这段明文包装成 Codex 可理解的 reasoning **summary 事件**，因此也不能宣称它和原生 OpenAI opaque reasoning item 在语义或内部状态上完全等价。
+
+**实现存在不等于实验已验收**：交接文档对这条回填路径仍留有真实模型验证事项。工具能成功运行，不保证数十轮之后的推理内容不被错配、遗漏、重复或被压缩策略改写。建议测试丢失 SQLite 记录、并行多工具的 `call_id`、会话重启、历史压缩以及是否按预期渲染 chat template。
+
+### 3.3 回填 CoT 会不会必然提高 Prefix Cache 命中率？
+
+**不会必然命中，更不能无条件推导为“省钱”。** [vLLM Automatic Prefix Caching](https://docs.vllm.ai/en/latest/design/prefix_caching/)复用的是**真实相同的 token 前缀对应的缓存块**，并非“语义接近的历史文本”。
+
+它至少依赖：
+
+- 服务端开启 Prefix Cache，之前缓存块没有被淘汰；
+- 前缀的 **token IDs 完全匹配**，包括 chat template、系统提示词、工具 schema、role 边界、`<think>` 标记及序列化顺序；
+- 模型、适配器/LoRA、cache salt、多模态输入哈希等相关缓存条件一致；
+- 具体实现按块缓存，末尾部分相同也不保证命中。
+
+**跨 Responses → Chat 格式的回填不保证前后 prompt token 完全相同**。保留推理有时可能增加有效共享前缀，但也会增大逻辑上下文、带来 token/存储/隐私成本。
+
+还有一个实际统计陷阱：当前 Bridge 将返回给 Codex 的 `input_tokens_details.cached_tokens` 固定填作 **0**。这只是适配层占位，**既不是服务端未命中的证明，也不能作为已命中的测量**。需要查看 vLLM 真正的 prefix cache 命中指标、实际 Prefill/TTFT 和总 wall time。对自部署 GPU，减少 Prefill 算力不一定产生按 token 计费的账单折扣。
+
+**建议做一组独立验证**：同任务同工具，用（A）不回填 CoT、（B）回填完整 CoT、（C）只回传简短显式计划进行对照；记录工具成功率、异常恢复率、错误重试、全程 token、TTFT、真实 cache hit、GPU 时间和隐私/磁盘占用。这样才知道回传推理是**有用的历史**还是**昂贵的噪声**。
 
 ## 4. GLM-5.3-Flash：默认且强制 Thinking，支持交错思考与历史保留
 
@@ -248,6 +336,10 @@ $$
 - **误区 6**：「思考越少，整个任务越快」→ 单轮 token 更少可能导致错误、重试、回滚，最终延迟反而增加。
 - **误区 7**：「模型说要调用工具就已经执行了」→ 错；必须由 Harness 解析、验证权限、真正执行并回报结果。
 - **误区 8**：「模型学会了何时思考，安全性就解决了」→ 错；机器人/浏览器的高风险动作还需要独立执行约束和审计。
+- **误区 9**：「刚才生成时有 KV Cache，下一轮就一定记得 CoT」→ 错；跨请求历史与缓存是两种机制。
+- **误区 10**：「Bridge 解密 OpenAI 的推理」→ 错；该案例从本地 GLM 明文 reasoning 流恢复字符串。
+- **误区 11**：「回填 CoT 一定触发 Prefix Cache 命中」→ 错；需满足 token 前缀、缓存块和服务器配置等条件。
+- **误区 12**：「Harness 根本不能决定什么时候想」→ 错；具体 Agent 可选择模型/预算/输入、提供事件触发重规划或单独的 THINK/ACT 调度器。
 
 ---
 
