@@ -11,12 +11,12 @@ const {headings,articleSelector}=Astro.props;
     </button>
     <div class="reading-toc-panel" id="reading-toc-panel">
       <div class="reading-toc-heading">
-        <div><strong>本页目录</strong><small>阅读时自动定位当前章节</small></div>
+        <div><strong>文章目录 <span class="reading-toc-count">· {headings.length} 节</span></strong><small class="reading-toc-location" aria-live="off">阅读位置 · 1 / {headings.length}</small></div>
         <button class="reading-toc-close" type="button" aria-label="收起目录">‹</button>
       </div>
       <nav class="reading-toc-links" aria-label="本页章节">
         {headings.map(h=>(
-          <a class:list={['reading-toc-link',h.depth===3 && 'reading-toc-level3']} href={'#'+h.slug} data-toc-target={h.slug}>
+          <a class:list={['reading-toc-link',h.depth===3 && 'reading-toc-level3']} href={'#'+h.slug} data-toc-target={h.slug} title={h.text}>
             {h.num && <span class="reading-toc-index" aria-hidden="true">{h.num}</span>}
             <span>{h.text}</span>
           </a>

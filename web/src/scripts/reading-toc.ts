@@ -5,6 +5,7 @@ document.querySelectorAll<HTMLElement>('[data-reading-toc]').forEach(toc=>{
   const toggle=toc.querySelector<HTMLButtonElement>('.reading-toc-toggle');
   const close=toc.querySelector<HTMLButtonElement>('.reading-toc-close');
   const links=[...toc.querySelectorAll<HTMLAnchorElement>('a[data-toc-target]')];
+  const location=toc.querySelector<HTMLElement>('.reading-toc-location');
   const article=document.querySelector<HTMLElement>(toc.dataset.articleSelector||'');
   if(!wrapper||!nav||!article||!links.length)return;
   const mobile=window.matchMedia('(max-width: 1000px)');
@@ -19,7 +20,7 @@ document.querySelectorAll<HTMLElement>('[data-reading-toc]').forEach(toc=>{
     toggle?.setAttribute('aria-label',next?'展开左侧目录':'收起左侧目录');
     if(!mobile.matches){try{localStorage.setItem(storageKey,next?'1':'0');}catch{}}
   };
-  const applyViewport=()=>setCollapsed(mobile.matches?true:collapsed);
+  const applyViewport=()=>{setCollapsed(mobile.matches?true:collapsed);schedule();};
   setCollapsed(mobile.matches?true:collapsed);
   toggle?.addEventListener('click',()=>setCollapsed(!toc.classList.contains('is-collapsed')));
   close?.addEventListener('click',()=>setCollapsed(true));
@@ -46,18 +47,25 @@ document.querySelectorAll<HTMLElement>('[data-reading-toc]').forEach(toc=>{
       else break;
     }
     links.forEach(a=>{
-      const yes=a===chosen.link;
-      a.classList.toggle('is-current',yes);
-      if(yes)a.setAttribute('aria-current','location');
+      const active=a===chosen.link;
+      a.classList.toggle('is-current',active);
+      if(active)a.setAttribute('aria-current','location');
       else a.removeAttribute('aria-current');
     });
-    // Scroll only the menu's internal scroller. Never move the main reading page.
-    const a=chosen.link;
-    const scrollTop=a.offsetTop-nav.offsetTop;
-    const min=nav.scrollTop+nav.clientHeight*0.25;
-    const max=nav.scrollTop+nav.clientHeight*0.7;
-    if(scrollTop<min||scrollTop>max)
-      nav.scrollTo({top:Math.max(0,scrollTop-nav.clientHeight*0.36),behavior:'auto'});
+    if(location)location.textContent='阅读位置 · '+(links.indexOf(chosen.link)+1)+' / '+links.length;
+    // Use viewport-relative positions: offsetTop is relative to an offset parent,
+    // which need not be the scrolling nav. Move only the outline's own scroller.
+    if(!toc.classList.contains('is-collapsed')){
+      const linkRect=chosen.link.getBoundingClientRect();
+      const navRect=nav.getBoundingClientRect();
+      const relativeTop=linkRect.top-navRect.top;
+      const safeTop=navRect.height*0.22;
+      const safeBottom=navRect.height*0.72;
+      if(relativeTop<safeTop||relativeTop>safeBottom){
+        const target=nav.scrollTop+relativeTop-navRect.height*0.4;
+        nav.scrollTo({top:Math.max(0,target),behavior:'auto'});
+      }
+    }
   };
   let requested=false;
   const schedule=()=>{

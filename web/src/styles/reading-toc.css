@@ -1,17 +1,18 @@
 /* Single shared left reading outline: readable, collapsible, follows the active section. */
-.reading-with-toc{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:clamp(1rem,2.5vw,2.1rem);align-items:start;min-width:0;}
+.reading-with-toc{display:grid;grid-template-columns:minmax(0,294px) minmax(0,1fr);gap:clamp(1rem,2.5vw,2.1rem);align-items:start;min-width:0;}
 .reading-with-toc.toc-collapsed{grid-template-columns:48px minmax(0,1fr);}
 .reading-toc{position:sticky;top:82px;min-width:0;align-self:start;z-index:21;}
 .reading-toc-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;max-height:calc(100vh - 100px);min-height:0;box-shadow:var(--shadow-sm);}
-.reading-toc-heading{display:flex;justify-content:space-between;align-items:center;padding:.85rem .85rem .65rem;gap:.4rem;border-bottom:1px solid var(--border);}
-.reading-toc-heading strong{display:block;font-size:.98rem;line-height:1.4;}
-.reading-toc-heading small{display:block;color:var(--fg-muted);font-size:.74rem;line-height:1.5;margin-top:.16rem;}
+.reading-toc-heading{display:flex;justify-content:space-between;align-items:center;padding:.98rem .92rem .85rem;gap:.4rem;border-bottom:1px solid var(--border);}
+.reading-toc-heading strong{display:block;font-size:1.05rem;line-height:1.45;letter-spacing:-.01em;}
+.reading-toc-count{color:var(--fg-muted);font-size:.82rem;font-weight:540;letter-spacing:0;}
+.reading-toc-heading small{display:block;color:var(--fg-muted);font-size:.82rem;line-height:1.6;margin-top:.22rem;font-variant-numeric:tabular-nums;}
 .reading-toc-close{border:0;background:var(--surface-2);color:var(--fg);border-radius:8px;min-width:36px;min-height:36px;font-size:1.4rem;cursor:pointer;}
-.reading-toc-links{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:.65rem .5rem .9rem;scrollbar-width:thin;flex:1;}
-.reading-toc-link{display:flex;gap:.4rem;align-items:baseline;border-left:3px solid transparent;border-radius:5px;padding:.55rem .58rem;color:var(--fg-muted);font-size:.92rem;line-height:1.55;overflow-wrap:anywhere;text-decoration:none;}
+.reading-toc-links{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:.65rem .55rem 1rem;scrollbar-width:thin;flex:1;}
+.reading-toc-link{display:flex;gap:.4rem;align-items:baseline;border-left:3px solid transparent;border-radius:5px;padding:.65rem .62rem;color:var(--fg);font-size:1rem;line-height:1.55;min-height:42px;overflow-wrap:anywhere;text-decoration:none;}
 .reading-toc-link:hover{color:var(--fg);background:var(--surface-2);}
 .reading-toc-link.is-current{color:var(--accent-ink);background:var(--accent-soft);font-weight:760;border-left-color:var(--accent);}
-.reading-toc-level3{padding-left:1.25rem;font-size:.86rem;}
+.reading-toc-level3{padding-left:1.27rem;font-size:.93rem;color:var(--fg-muted);border-left-width:2px;}
 .reading-toc-index{font-variant-numeric:tabular-nums;color:var(--fg-muted);font-size:.84em;flex-shrink:0;}
 .reading-toc-top{flex-shrink:0;text-align:left;border:0;border-top:1px solid var(--border);background:transparent;color:var(--fg-muted);padding:.75rem .9rem;font-size:.84rem;font-weight:650;cursor:pointer;}
 .reading-toc-top:hover{color:var(--accent-ink);}
@@ -28,9 +29,14 @@
  .reading-toc:not(.is-collapsed) .reading-toc-toggle{display:none;}
 }
 @media(min-width:1001px){
- .rkd-layout.reading-with-toc{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);}
+ .rkd-layout.reading-with-toc{display:grid;grid-template-columns:minmax(0,294px) minmax(0,1fr);}
  .rkd-layout.reading-with-toc.toc-collapsed{grid-template-columns:48px minmax(0,1fr);}
- .post-body-wrap.reading-with-toc{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);}
+ .post-body-wrap.reading-with-toc{display:grid;grid-template-columns:minmax(0,294px) minmax(0,1fr);}
  .post-body-wrap.reading-with-toc.toc-collapsed{grid-template-columns:48px minmax(0,1fr);}
 }
 @media print{.reading-toc{display:none!important}.reading-with-toc,.reading-with-toc.toc-collapsed{display:block!important;}}
+
+/* Scroll-tracking is done in the outline's own viewport; keep the rail visible while reading. */
+.reading-toc-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.reading-toc-link.is-current.reading-toc-level3{color:var(--accent-ink);}
+@media(max-width:1000px){.reading-toc{top:76px}.reading-toc-panel{height:calc(100dvh - 94px);max-height:calc(100dvh - 94px)}.reading-toc-links{padding-bottom:1.3rem}}
