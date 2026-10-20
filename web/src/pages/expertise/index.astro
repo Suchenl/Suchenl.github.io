@@ -129,7 +129,7 @@ const levelOrder: Level[] = ['proficient', 'advanced', 'growing', 'familiar'];
 
   .interest-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1rem;
   }
   .interest { padding: 1.1rem 1.3rem; display: flex; flex-direction: column; }

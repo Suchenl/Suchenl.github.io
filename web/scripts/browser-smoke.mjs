@@ -16,7 +16,7 @@ try {
  for(let attempt=0;attempt<90;attempt++){try{available=(await fetch(origin+'/')).ok;}catch{} if(available)break;await pause(350);}
  assert(available,'Astro preview did not start');
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
- for(const width of [390,1440]){
+ for(const width of [320,390,1440]){
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true});
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));

@@ -70,7 +70,7 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
 <style>
   .proj-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 1rem;
   }
   .proj { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; }
