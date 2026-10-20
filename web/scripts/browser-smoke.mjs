@@ -21,7 +21,8 @@ try {
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true,colorScheme:width===390?'dark':'light',reducedMotion:width===390?'reduce':'no-preference'});
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);assert(await page.getByText('精选研究成果').count()>0);
+  await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);
+   if(width<=390){assert.equal(await page.locator('#primary-navigation').isVisible(),false,'Mobile nav should start collapsed');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');}assert(await page.getByText('精选研究成果').count()>0);
    assert((await page.locator('.chips .tag-chip').count())===5,'Original research tags must remain');
    assert((await page.locator('.hero-interests').textContent()).includes('多模态生成'),'Original interests must remain');});
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
@@ -62,7 +63,7 @@ try {
    await noOverflow(page);
    await navigate(page,'/research/compare/?papers=papers/2025/deepseek-r1,papers/2026/relift');
    assert.equal(await page.locator('.compare-selected').count(),2);
-   assert.equal(await page.locator('#compare-results[hidden]').count(),0);
+   assert.equal(await page.locator('#compare-results[hidden]').count(),1,'No results panel when search is empty');
    await page.screenshot({path:'visual-qa/compare-'+width+'.png',fullPage:true});
    await page.locator('#compare-search').fill('brIdGe');
    assert((await page.locator('.compare-option-abbr').allTextContents()).some(x=>x.toLowerCase()==='bridge'),'Acronym search case insensitive');
