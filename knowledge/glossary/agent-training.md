@@ -16,6 +16,16 @@ Reinforcement Learning with Verifiable Rewards。模型自行采样输出，外�
 
 LLM 在一个问题或完整交互环境中，按策略输出回复、调用工具、接收反馈直至终止形成的样本。Agent Rollout 需要保存模型实际可见的消息、工具 schema、真实工具结果与策略版本。
 
+## 有效采样组（Group Informativeness）
+
+如果同题独立采样 $G$ 次，每条样本正确率为 $p$，奖励为二元正误，则：
+
+$
+P_{\mathrm{mixed}}=1-p^G-(1-p)^G.
+$
+
+它只是在这些假设下出现正负奖励差异的概率，不是对 RL 所有梯度项的严格非零概率判定。参见 [ReLIFT 例子](../papers/2026/relift.md) 与 [DAPO 的 Dynamic Sampling](../papers/2025/dapo.md)。
+
 ## PPO / GRPO
 
 PPO 是带截断重要性比的策略优化方法；GRPO（Group Relative Policy Optimization）利用同一问题多个采样的组内相对回报估计优势，常可避免额外训练独立 Critic。GRPO 的全错/全对组在常见纯组内奖励设定下优势趋近零，不能简单断言每组都有训练信号。其他 KL、长度惩罚等项可能仍有梯度。

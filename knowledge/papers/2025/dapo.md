@@ -20,10 +20,30 @@ status: untracked
 即使有准确可验证奖励，朴素大规模 GRPO 也可能遇到熵塌缩、全错或全对组浪费采样、长文本更新不稳定和超长截断惩罚误伤有效推理。
 
 ## 四个核心机制
-**Clip-Higher**：放宽比率裁剪的上边界以改善探索空间压缩问题。**Dynamic Sampling**：过滤全错或全对等无相对奖励差异的组，增加有效组的比例。**Token-Level Policy Gradient Loss**：减少长回答相对短回答的梯度尺度失衡。**Overlong Reward Shaping**：避免简单把截断的潜在正确推理当成同样严重错误。
+
+1. **Clip-Higher**：放宽重要性比裁剪上界，缓解正优势动作更新被过早限制的探索问题；也可能增加更新幅度与方差，并非越高越好。
+2. **Dynamic Sampling**：对于常见二元奖励与组内相对优势，将全对/全错组从训练更新中排除，增加保留组的有效信号比例；不保证以固定生成预算也能提高效率。
+3. **Token-Level Policy Gradient Loss**：按当前更新中所有有效输出 token 归一化，而非先平均每条回复再对回复求平均。两者对不同长度回复的**相对权重**不同。
+4. **Overlong Reward Shaping**：处理因长度上限截断造成的错误惩罚信号；不能替代正确性验证。
+
+### Token-level loss 的精确直觉
+
+记第 $i$ 条回复有效长度 $T_i$、每 token 损失 $\ell_{it}$。省略 PPO 裁剪和优势估计的简化示意为：
+
+$
+L_{\mathrm{sample}}=\frac1B\sum_{i=1}^B\frac1{T_i}\sum_{t=1}^{T_i}\ell_{it},
+\qquad
+L_{\mathrm{token}}=\frac{\sum_i\sum_{t=1}^{T_i}\ell_{it}}{\sum_iT_i}.
+$
+
+前者给予每条回复相同的总权重；后者让较长回复在总 token 损失中占更多份额。这既能改善特定长 CoT 训练问题，也会改变训练分布，不能将其描述为不影响目标的“纯工程优化”。
+
+### 被过滤的样本也花了计算
+
+报告 Dynamic Sampling 的效率时需要记录生成/验证的**全部**尝试、拒绝组数、最终保留组、总生成 token 与 GPU-hours，而不是仅看被保留样本的数量。若 Base 几乎不能答对，过滤无效组可能意味着大量无用的反复采样。
 
 ## 实验结论
-官方在 Qwen2.5-32B Base 和数学任务上报告 AIME 2024 得分约 50，且代码、训练记录、数据可取得。单一基准的结果不能外推到有昂贵仿真与多轮观察的机器人 Agent。
+[DAPO 官方项目页](https://dapo-sia.github.io/)报告 Qwen2.5-32B Base 在 AIME 2024 的约 50 分结果，公开 DAPO-Math-17k、验证器、训练脚本、模型等，并写明公开训练使用 128 张 H20 GPU。单一基准的结果不能外推到有昂贵仿真与多轮观察的机器人 Agent。
 
 ## 对 ORA
 比复制全功能算法更重要的是实际记录：有效组率、采样长度、KL/熵、奖励方差、rollout wall-time、环境失败与模型失败分离。若 Base 在目标任务的成功概率太低，Dynamic Sampling 只会反复采样，无法凭空解决探索问题。
