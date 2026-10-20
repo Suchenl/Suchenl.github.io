@@ -2,7 +2,7 @@
 import { SITE, NAV } from '../config';
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+  href === '/' ? path === '/' : href === '/about/' ? ['/about/','/work/','/expertise/'].some(prefix=>path.startsWith(prefix)) : path.startsWith(href);
 ---
 
 <header class="site-header">

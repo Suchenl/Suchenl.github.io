@@ -112,6 +112,10 @@ const socials = [
     </div>
   </section>
 
+  <div class="home-about-path">
+    <p><Bi zh="想了解我的研究经历或合作方向？" en="Interested in my background or research collaborations?" /></p>
+    <a href="/about/"><Bi zh="了解更多关于我 →" en="More about me →" /></a>
+  </div>
   <div class="two-col">
     <section class="section prose" id="about">
       <Bi tag="h2" zh="👋 关于我" en="👋 About Me" />
@@ -278,4 +282,10 @@ const socials = [
   .home-hub {margin-top:2.4rem;}
   .home-hub>h2 {font-size:1.32rem;margin-bottom:1.1rem;}
   @media(max-width:720px){.featured-grid{grid-template-columns:1fr;}.featured-paper img{height:auto;max-height:230px;}}
+</style>
+
+<style>
+  .home-about-path {display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;border-bottom:1px solid var(--border);padding:.4rem 0 1rem;font-size:.86rem;}
+  .home-about-path p {margin:0;color:var(--fg-muted);}
+  .home-about-path a {font-weight:750;}
 </style>

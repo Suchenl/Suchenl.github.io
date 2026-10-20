@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import { AUTHOR } from '../../config';
+---
+<Base title="关于我" description="研究方向、经历、成果与合作方式。">
+  <section class="about-hero">
+    <div>
+      <p class="about-eyebrow">ABOUT · YUZHUO CHEN</p>
+      <h1><Bi zh="关于我" en="About me" /></h1>
+      <p><Bi zh="我的研究关注多模态生成、世界模型与具身智能，希望让 AI 不仅能理解与生成内容，也能更可靠地与环境交互。" en="My interests span multimodal generation, world models and embodied AI, with a focus on AI systems that understand, generate and interact with their environment." /></p>
+      <div class="about-actions">
+        <a href={'mailto:'+AUTHOR.email}><Bi zh="邮件联系 →" en="Email me →" /></a>
+        <a href={AUTHOR.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a href={AUTHOR.links.googlescholar} target="_blank" rel="noopener noreferrer">Google Scholar ↗</a>
+      </div>
+    </div>
+  </section>
+  <div class="about-grid">
+    <a class="about-link card" href="/work/">
+      <span class="about-icon" aria-hidden="true">💼</span>
+      <h2><Bi zh="研究与实习经历" en="Experience" /></h2>
+      <p><Bi zh="教育背景、研究助理及实习经历，包括研究方向与具体工作。" en="Education, research and internship experience." /></p>
+      <span class="about-more"><Bi zh="查看经历 →" en="View experience →" /></span>
+    </a>
+    <a class="about-link card" href="/expertise/">
+      <span class="about-icon" aria-hidden="true">🧭</span>
+      <h2><Bi zh="研究兴趣与能力" en="Expertise" /></h2>
+      <p><Bi zh="基于实际成果的能力说明，以及正在探索的研究方向。" en="Evidence-based track record and current research interests." /></p>
+      <span class="about-more"><Bi zh="查看详情 →" en="Explore expertise →" /></span>
+    </a>
+    <a class="about-link card" href="/publications/">
+      <span class="about-icon" aria-hidden="true">📄</span>
+      <h2><Bi zh="论文与学术成果" en="Publications" /></h2>
+      <p><Bi zh="已公开的论文、代码、实验资料与研究文章。" en="Publications, released code and research resources." /></p>
+      <span class="about-more"><Bi zh="浏览成果 →" en="Browse work →" /></span>
+    </a>
+    <a class="about-link card" href="/research/">
+      <span class="about-icon" aria-hidden="true">📚</span>
+      <h2><Bi zh="研究知识库" en="Research library" /></h2>
+      <p><Bi zh="我持续维护的中文文献综述、论文解读、术语与学习路线。" en="My evolving research reading notes, surveys, glossary and learning paths." /></p>
+      <span class="about-more"><Bi zh="进入知识库 →" en="Enter library →" /></span>
+    </a>
+  </div>
+</Base>
+<style>
+  .about-hero{margin:2.2rem 0 2.3rem;max-width:800px;}
+  .about-eyebrow{font-size:.76rem;color:var(--accent-ink);font-weight:750;letter-spacing:.12em;}
+  .about-hero h1{font-size:clamp(1.85rem,3vw,2.5rem);margin:.4rem 0;}
+  .about-hero p:not(.about-eyebrow){color:var(--fg-muted);line-height:1.9;}
+  .about-actions{display:flex;flex-wrap:wrap;gap:1rem;font-size:.9rem;font-weight:700;}
+  .about-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0 4rem;}
+  .about-link{display:flex;flex-direction:column;gap:.35rem;color:var(--fg);text-decoration:none;transition:border-color .15s;}
+  .about-link:hover{border-color:var(--accent);color:var(--fg);}
+  .about-icon{font-size:1.45rem;}
+  .about-link h2{font-size:1.12rem;margin:.15rem 0;}
+  .about-link p{font-size:.88rem;color:var(--fg-muted);margin:.2rem 0 1rem;line-height:1.75;}
+  .about-more{font-size:.84rem;color:var(--accent-ink);font-weight:730;margin-top:auto;}
+  @media(max-width:640px){.about-grid{grid-template-columns:1fr;}.about-hero{margin-top:1.6rem;}}
+</style>
