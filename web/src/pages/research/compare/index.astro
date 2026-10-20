@@ -2,98 +2,203 @@
 import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
-const papers=(await getCollection('knowledge')).filter(e=>/^papers\/20\d{2}\//.test(e.id));
-const paperData=papers.map(e=>{
- const d=e.data as {
-  title?:string;summaryZh?:string;year?:number;categories?:string[];
-  comparison?: {objective?:string;training?:string;signal?:string;evidence?:string;limitation?:string};
- };
- return {id:e.id,href:'/research/'+e.id+'/',title:d.title || e.id.split('/').pop()!,
- year:d.year || Number(e.id.match(/20\d{2}/)?.[0]||0),summary:d.summaryZh || '',
- comparison:d.comparison || {},categories:d.categories || []};
-});
-const json=JSON.stringify(paperData).replace(/</g,'\\u003c');
+const entries=(await getCollection('knowledge')).filter(e=>/^papers\/20\d{2}\//.test(e.id));
+const papers=entries.map(e=>{
+ const d=e.data as {title?:string;shortName?:string;aliases?:string[];summaryZh?:string;year?:number;categories?:string[];
+ comparison?: {objective?:string;training?:string;signal?:string;evidence?:string;limitation?:string}};
+ return {id:e.id,href:'/research/'+e.id+'/',shortName:d.shortName || e.id.split('/').pop()!,
+ title:d.title || e.id,aliases:d.aliases || [],year:d.year || Number(e.id.match(/20\d{2}/)?.[0]||0),
+ summary:d.summaryZh || '',comparison:d.comparison || {},category:(d.categories || [])[0] || ''};
+}).sort((a,b)=>a.shortName.localeCompare(b.shortName,'zh'));
+const payload=JSON.stringify(papers).replace(/</g,'\\u003c');
 ---
-<Base title="论文横向比较" description="按研究目标、训练流程、监督信号、证据与局限对照论文，未标注的信息保持空白，不自动编造。">
-  <div class="compare-page">
-    <nav class="compare-back"><a href="/research/">← 返回研究知识库</a></nav>
-    <h1 class="page-title">论文横向比较</h1>
-    <p class="page-intro">对比 2–3 篇论文的研究目标、训练信号、实验证据与适用边界。字段来自维护过的研究卡片，没有整理的内容明确显示「待整理」。</p>
-    <div class="compare-tools">
-      <label for="compare-pick">选择论文（最多 3 篇）</label>
-      <select id="compare-pick"><option value="">添加一篇论文…</option>{paperData.map(p=><option value={p.id}>{p.title}</option>)}</select>
-      <button type="button" id="compare-copy">复制对比链接</button>
-      <span role="status" aria-live="polite" id="compare-status"></span>
-    </div>
-    <div id="compare-picked" class="compare-picked" aria-label="已选择的论文"></div>
-    <div class="compare-scroll" tabindex="0" aria-label="论文对比表格，可横向滚动">
-      <table class="compare-table" id="compare-table">
-        <caption>论文方法与证据对照</caption>
-        <tbody id="compare-body"></tbody>
-      </table>
-    </div>
-    <p class="compare-note">此页用于阅读和整理，不是论文作者的统一评测。不同论文的基准、数据和算力可能不同，不能直接横向比较数字的优劣。</p>
-  </div>
-  <script type="application/json" id="compare-data" set:html={json}></script>
+<Base title="论文方法对比" description="按论文简称快速选择，在手机和电脑上纵向阅读研究目标、训练信号、实验证据与局限。">
+ <main class="compare-page">
+  <nav class="compare-breadcrumb" aria-label="当前位置"><a href="/research/">Research</a><span aria-hidden="true">/</span><span>论文对比</span></nav>
+  <header class="compare-intro">
+   <div class="compare-eyebrow">RESEARCH / METHODS</div>
+   <h1>把论文放在同一问题下比较</h1>
+   <p>先选 2–3 篇论文，再按维度阅读。只展示有依据的比较字段；没有核对的部分会明确标记，而不是虚构指标或排出“最强算法”。</p>
+  </header>
+  <section class="compare-picker" aria-labelledby="compare-pick-heading">
+   <div class="compare-picker-top">
+    <div><h2 id="compare-pick-heading">选择论文 <span id="compare-count">0 / 3</span></h2><p>输入简称、英文标题或关键词，快速添加论文。</p></div>
+    <button type="button" id="compare-reset" class="compare-text-button" hidden>清空选择</button>
+   </div>
+   <div class="compare-searchbox">
+    <label for="compare-search" class="compare-sr-only">按论文简称或标题搜索</label>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+    <input id="compare-search" type="search" placeholder="例如 R1、BRIDGE、ReLIFT、DAPO…" autocomplete="off" aria-controls="compare-results"/>
+    <kbd aria-hidden="true">/</kbd>
+   </div>
+   <div id="compare-results" class="compare-search-results" aria-label="论文搜索结果"></div>
+   <div class="compare-selection" id="compare-selection" aria-label="已选择论文" aria-live="polite"></div>
+  </section>
+  <section class="compare-content" aria-labelledby="compare-content-title">
+   <div class="compare-content-heading">
+    <div><span class="compare-eyebrow">SIDE-BY-SIDE READING</span><h2 id="compare-content-title">逐项看清方法差异</h2></div>
+    <button id="compare-share" type="button" class="compare-copy" disabled>复制对比链接 <span aria-hidden="true">↗</span></button>
+   </div>
+   <p id="compare-feedback" class="compare-feedback" role="status" aria-live="polite"></p>
+   <div id="compare-sections" class="compare-sections"></div>
+  </section>
+  <aside class="compare-disclaimer"><strong>怎样理解这些比较？</strong> 每篇论文的实验基准、数据、教师和训练成本可能不同。表中写的是作者报告的结果以及知识库编辑者的归纳，不能直接跨论文比较百分数。点论文名称可阅读全文与原始来源。</aside>
+ </main>
+ <script type="application/json" id="compare-data" set:html={payload}/>
 </Base>
 <script>
-  type Paper={id:string;href:string;title:string;year:number;summary:string;comparison:Record<string,string>};
-  const all=JSON.parse(document.getElementById('compare-data')?.textContent || '[]') as Paper[];
-  const selected:string[]=[];
-  const pick=document.getElementById('compare-pick') as HTMLSelectElement;
-  const host=document.getElementById('compare-picked')!;
-  const body=document.getElementById('compare-body')!;
-  const status=document.getElementById('compare-status')!;
-  const safe=(text:string)=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-  const rows=[['研究目标','objective'],['训练流程','training'],['训练信号','signal'],['实验证据','evidence'],['局限与风险','limitation']];
-  function renderTable(){
-    const chosen=selected.map(id=>all.find(p=>p.id===id)).filter((x):x is Paper=>Boolean(x));
-    host.innerHTML=chosen.map(p=>'<div class="compare-chip"><span>'+safe(p.title)+'</span><button type="button" data-remove="'+safe(p.id)+'" aria-label="移除 '+safe(p.title)+'">×</button></div>').join('');
-    host.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(b=>b.addEventListener('click',()=>{
-      const i=selected.indexOf(b.dataset.remove || '');if(i>=0)selected.splice(i,1);renderTable();
-    }));
-    const header='<tr><th scope="col">比较维度</th>'+chosen.map(p=>'<th scope="col"><a href="'+safe(p.href)+'">'+safe(p.title)+'</a><small>'+p.year+'</small></th>').join('')+'</tr>';
-    const fields=rows.map(([label,key])=>'<tr><th scope="row">'+label+'</th>'+chosen.map(p=>
-      '<td>'+safe(p.comparison[key] || '待整理；请查看论文笔记及原文核对')+'</td>').join('')+'</tr>').join('');
-    body.innerHTML=chosen.length ? header+fields : '<tr><td>请从上方选择 2–3 篇论文，开始方法对照。</td></tr>';
-    const url=new URL(location.href);
-    if(selected.length)url.searchParams.set('papers',selected.join(',')); else url.searchParams.delete('papers');
-    history.replaceState(null,'',url.pathname+url.search);
-    status.textContent=chosen.length>0 ? '已选择 '+chosen.length+' / 3 篇' : '未选择论文';
-    pick.disabled=selected.length>=3;pick.value='';
+ type P={id:string;href:string;shortName:string;title:string;aliases:string[];year:number;summary:string;category:string;comparison:Record<string,string>};
+ const items=JSON.parse(document.getElementById('compare-data')?.textContent||'[]') as P[];
+ const chosen:string[]=[];
+ const input=document.getElementById('compare-search') as HTMLInputElement;
+ const matches=document.getElementById('compare-results')!;
+ const selection=document.getElementById('compare-selection')!;
+ const resultHost=document.getElementById('compare-sections')!;
+ const count=document.getElementById('compare-count')!;
+ const message=document.getElementById('compare-feedback')!;
+ const share=document.getElementById('compare-share') as HTMLButtonElement;
+ const reset=document.getElementById('compare-reset') as HTMLButtonElement;
+ const dimensions=[
+  {id:'objective',no:'01',name:'研究目标',hint:'两篇工作究竟想解决什么问题？'},
+  {id:'training',no:'02',name:'训练流程',hint:'哪些训练步骤、模型与资源发生了变化？'},
+  {id:'signal',no:'03',name:'学习信号',hint:'模型获得的是演示、奖励、教师还是环境反馈？'},
+  {id:'evidence',no:'04',name:'实验证据',hint:'作者在哪种任务和指标上报告了效果？'},
+  {id:'limitation',no:'05',name:'局限与边界',hint:'结论不能被外推到哪里？'}
+ ] as const;
+ const escape=(s:string)=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]!));
+ const normalize=(s:string)=>s.normalize('NFKC').trim().toLocaleLowerCase();
+ const ids=()=>chosen.map(id=>items.find(p=>p.id===id)).filter((x):x is P=>Boolean(x));
+ function renderSearch(){
+  const q=normalize(input.value);
+  const found=items.filter(p=>!chosen.includes(p.id)&&(!q||[p.shortName,p.title,p.summary,p.category,...p.aliases].some(v=>normalize(v).includes(q))))
+    .sort((a,b)=>{
+      const aa=normalize(a.shortName),bb=normalize(b.shortName);
+      const aScore=aa===q?0:aa.startsWith(q)?1:normalize(a.title).includes(q)?2:3;
+      const bScore=bb===q?0:bb.startsWith(q)?1:normalize(b.title).includes(q)?2:3;
+      return aScore-bScore||a.shortName.localeCompare(b.shortName,'zh');
+    }).slice(0,9);
+  if(chosen.length>=3){matches.innerHTML='<p class="compare-search-hint">最多选择 3 篇；先从下方取消一篇。</p>';return;}
+  matches.innerHTML=found.length?found.map(p=>
+   '<button type="button" class="compare-option" data-add="'+escape(p.id)+'"><span class="compare-option-abbr">'+escape(p.shortName)+'</span><span class="compare-option-meta"><strong>'+escape(p.title)+'</strong><small>'+escape(p.summary||p.category)+'</small></span><span class="compare-option-plus" aria-label="添加">＋</span></button>'
+  ).join(''):'<p class="compare-search-hint">没有找到对应论文。请尝试简称或标题中的其他关键词。</p>';
+  matches.querySelectorAll<HTMLButtonElement>('[data-add]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.add||'';if(!chosen.includes(id)&&chosen.length<3&&items.some(p=>p.id===id))chosen.push(id);
+    input.value='';draw();input.focus();
+  }));
+ }
+ function draw(){
+  const current=ids();
+  count.textContent=current.length+' / 3';
+  reset.hidden=current.length===0;
+  share.disabled=current.length<2;
+  selection.innerHTML=current.length?current.map((p,i)=>
+   '<div class="compare-selected"><span class="compare-selected-index">'+String(i+1).padStart(2,'0')+'</span><div><strong>'+escape(p.shortName)+'</strong><span>'+escape(p.year+' · '+(p.summary||p.title))+'</span></div><button type="button" data-remove="'+escape(p.id)+'" aria-label="移除 '+escape(p.shortName)+'">×</button></div>'
+  ).join(''):'<div class="compare-selection-empty">还没有选择论文。建议先搜索 <strong>DeepSeek-R1</strong>、<strong>ReLIFT</strong> 或 <strong>BRIDGE</strong>。</div>';
+  selection.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(button=>button.addEventListener('click',()=>{
+    const n=chosen.indexOf(button.dataset.remove||'');if(n>=0)chosen.splice(n,1);draw();
+  }));
+  if(current.length<2){
+   resultHost.innerHTML='<div class="compare-empty"><span class="compare-empty-icon" aria-hidden="true">↔</span><strong>至少选择两篇论文</strong><p>选择后，研究目标、方法、训练信号与证据会自动排成一组组易读的卡片。</p></div>';
+   message.textContent='';
+  }else{
+   resultHost.innerHTML=dimensions.map(d=>
+    '<section class="compare-dimension" aria-labelledby="dim-'+d.id+'"><div class="compare-dimension-heading"><span class="compare-dimension-no">'+d.no+'</span><div><h3 id="dim-'+d.id+'">'+d.name+'</h3><p>'+d.hint+'</p></div></div><div class="compare-dimension-grid">'+current.map(p=>{
+      const value=p.comparison[d.id];
+      return '<article class="compare-evidence-card"><div class="compare-evidence-name"><span>'+escape(p.shortName)+'</span><a href="'+escape(p.href)+'" aria-label="阅读全文：'+escape(p.shortName)+'">阅读全文 ↗</a></div>'+
+       (value?'<p>'+escape(value)+'</p>':'<p class="compare-pending">这篇的该项尚未核对，请先阅读原论文。</p>')+'</article>';
+    }).join('')+'</div></section>'
+   ).join('');
+   message.textContent='正在对照 '+current.map(x=>x.shortName).join('、')+'。';
   }
-  pick.addEventListener('change',()=>{
-    const id=pick.value;
-    if(id&&all.some(p=>p.id===id)&&!selected.includes(id)&&selected.length<3)selected.push(id);
-    renderTable();
-  });
-  document.getElementById('compare-copy')!.addEventListener('click',async()=>{
-    try{await navigator.clipboard.writeText(location.href);status.textContent='对比链接已复制';}
-    catch{status.textContent='复制失败，请使用浏览器地址栏';}
-  });
-  const param=new URLSearchParams(location.search).get('papers')||'';
-  for(const id of param.split(',').slice(0,3)){if(all.some(p=>p.id===id)&&!selected.includes(id))selected.push(id);}
-  renderTable();
+  const u=new URL(location.href);
+  if(chosen.length)u.searchParams.set('papers',chosen.join(','));else u.searchParams.delete('papers');
+  history.replaceState(null,'',u.pathname+u.search+u.hash);
+  renderSearch();
+ }
+ input.addEventListener('input',renderSearch);
+ reset.addEventListener('click',()=>{chosen.splice(0);draw();input.focus();});
+ share.addEventListener('click',async()=>{if(chosen.length<2)return;try{await navigator.clipboard.writeText(location.href);message.textContent='对比链接已复制。';}catch{message.textContent='无法自动复制，请直接复制浏览器地址栏链接。';}});
+ document.addEventListener('keydown',event=>{
+  if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA'].includes((event.target as HTMLElement)?.tagName||'')){
+   event.preventDefault();input.focus();
+  }
+ });
+ window.addEventListener('popstate',()=>{
+  chosen.splice(0);
+  const saved=(new URLSearchParams(location.search).get('papers')||'').split(',').filter(id=>items.some(p=>p.id===id));
+  for(const id of saved)if(chosen.length<3&&!chosen.includes(id))chosen.push(id);
+  draw();
+ });
+ const params=(new URLSearchParams(location.search).get('papers')||'').split(',');
+ for(const id of params)if(items.some(p=>p.id===id)&&!chosen.includes(id)&&chosen.length<3)chosen.push(id);
+ draw();
 </script>
 <style>
-  .compare-page{margin:2rem auto 5rem;max-width:1100px;}
-  .compare-back{font-size:.85rem;margin-bottom:1rem;}
-  .compare-tools{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;padding:1rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
-  .compare-tools label{font-weight:700;font-size:.85rem;}
-  .compare-tools select{flex:1;min-width:min(300px,100%);max-width:100%;min-height:44px;padding:.45rem;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--fg);}
-  .compare-tools button{min-height:44px;padding:.5rem .8rem;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);color:var(--fg);cursor:pointer;}
-  #compare-status{color:var(--fg-muted);font-size:.75rem;}
-  .compare-picked{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0;}
-  .compare-chip{display:flex;gap:.5rem;align-items:center;padding:.4rem .6rem;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:.8rem;max-width:100%;}
-  .compare-chip span{overflow-wrap:anywhere;}
-  .compare-chip button{border:0;background:transparent;font:inherit;font-size:1rem;cursor:pointer;color:inherit;min-width:30px;min-height:30px;}
-  .compare-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
-  .compare-table{border-collapse:collapse;min-width:680px;width:100%;font-size:.88rem;line-height:1.7;}
-  .compare-table caption{text-align:left;padding:.75rem 1rem;color:var(--fg-muted);font-size:.8rem;}
-  .compare-table th,.compare-table td{padding:1rem;text-align:left;vertical-align:top;border-top:1px solid var(--border);min-width:185px;}
-  .compare-table th:first-child{position:sticky;left:0;z-index:1;background:var(--surface-2);min-width:112px;width:112px;}
-  .compare-table thead th{background:var(--surface-2);}
-  .compare-table th a{font-weight:750;}
-  .compare-table th small{display:block;font-weight:400;color:var(--fg-muted);}
-  .compare-note{font-size:.83rem;color:var(--fg-muted);line-height:1.7;}
+ .compare-page {max-width:1100px;margin:1.6rem auto 5rem;padding:0 .15rem;}
+ .compare-breadcrumb {display:flex;align-items:center;gap:.65rem;font-size:.78rem;color:var(--fg-muted);margin-bottom:1.85rem;}
+ .compare-breadcrumb a {color:var(--fg-muted);text-decoration:none;}
+ .compare-breadcrumb a:hover{text-decoration:underline;}
+ .compare-intro {max-width:760px;margin-bottom:2rem;}
+ .compare-eyebrow{display:block;color:var(--accent-ink);font-size:.69rem;font-weight:800;letter-spacing:.14em;margin-bottom:.6rem;}
+ .compare-intro h1 {font-size:clamp(1.65rem,3.2vw,2.25rem);letter-spacing:-.035em;line-height:1.25;margin:0 0 .85rem;color:var(--fg);}
+ .compare-intro p{font-size:.92rem;line-height:1.85;margin:0;color:var(--fg-muted);max-width:68ch;}
+ .compare-picker{padding:1.35rem;background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:2.15rem;box-shadow:0 3px 14px rgba(0,0,0,.025);}
+ .compare-picker-top{display:flex;align-items:center;justify-content:space-between;gap:.65rem;margin-bottom:1rem;}
+ .compare-picker h2{margin:0;font-size:1.02rem;font-weight:780;}
+ .compare-picker h2 span{font-weight:500;color:var(--fg-muted);font-size:.8rem;margin-left:.4rem;}
+ .compare-picker-top p{font-size:.76rem;color:var(--fg-muted);margin:.2rem 0 0;}
+ .compare-text-button{background:transparent;border:0;color:var(--accent-ink);cursor:pointer;font-size:.79rem;font-weight:720;min-height:36px;padding:0 .2rem;}
+ .compare-searchbox{position:relative;display:flex;align-items:center;color:var(--fg-muted);background:var(--surface-2);border:1px solid var(--border-strong);border-radius:10px;padding:0 .85rem;min-height:46px;}
+ .compare-searchbox:focus-within{outline:2px solid var(--accent);outline-offset:2px;}
+ .compare-searchbox input{width:100%;min-width:0;flex:1;padding:.8rem .65rem;border:0;outline:0;background:transparent;color:var(--fg);font:inherit;font-size:.87rem;}
+ .compare-searchbox kbd{font-size:.7rem;padding:.1rem .35rem;background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+ .compare-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+ .compare-search-results{max-height:247px;overflow:auto;border:1px solid var(--border);border-radius:10px;margin:.55rem 0 0;}
+ .compare-option{display:flex;text-align:left;align-items:center;width:100%;gap:.85rem;min-width:0;border:0;border-bottom:1px solid var(--border);padding:.62rem .8rem;background:var(--surface);color:var(--fg);cursor:pointer;min-height:54px;}
+ .compare-option:last-child{border-bottom:0;}
+ .compare-option:hover,.compare-option:focus-visible{background:var(--surface-2);}
+ .compare-option:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
+ .compare-option-abbr{flex:0 0 144px;font-size:.84rem;font-weight:800;overflow-wrap:anywhere;color:var(--fg);}
+ .compare-option-meta{min-width:0;flex:1;}
+ .compare-option-meta strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:450;font-size:.76rem;color:var(--fg-muted);}
+ .compare-option-meta small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.71rem;color:var(--fg-muted);opacity:.8;}
+ .compare-option-plus{flex:none;font-weight:700;color:var(--accent-ink);font-size:1.1rem;}
+ .compare-search-hint{padding:.85rem;font-size:.79rem;color:var(--fg-muted);margin:0;}
+ .compare-selection{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:1rem;}
+ .compare-selected{flex:1 1 225px;min-width:0;max-width:100%;display:flex;gap:.65rem;align-items:center;padding:.75rem .8rem;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);}
+ .compare-selected-index{font-size:.7rem;font-weight:800;color:var(--accent-ink);align-self:flex-start;padding-top:.15rem;}
+ .compare-selected>div{flex:1;min-width:0;}
+ .compare-selected strong{display:block;font-size:.85rem;overflow-wrap:anywhere;}
+ .compare-selected>div>span{font-size:.71rem;color:var(--fg-muted);display:block;line-height:1.5;margin-top:.17rem;}
+ .compare-selected button{flex:none;width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:var(--surface);font-size:1.2rem;color:var(--fg-muted);cursor:pointer;}
+ .compare-selected button:hover{color:var(--fg);border-color:var(--accent);}
+ .compare-selection-empty{color:var(--fg-muted);font-size:.79rem;line-height:1.6;}
+ .compare-content-heading{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-bottom:.95rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+ .compare-content-heading h2{font-size:1.25rem;margin:0;line-height:1.4;}
+ .compare-copy{border:1px solid var(--border-strong);padding:.57rem .85rem;border-radius:8px;color:var(--fg);background:var(--surface);font-size:.79rem;font-weight:700;min-height:40px;cursor:pointer;}
+ .compare-copy:disabled{cursor:not-allowed;opacity:.44;}
+ .compare-feedback{font-size:.76rem;color:var(--fg-muted);margin:.1rem 0;}
+ .compare-empty{padding:3.5rem 1rem;text-align:center;color:var(--fg-muted);}
+ .compare-empty-icon{display:block;font-size:2rem;color:var(--accent-ink);font-weight:300;margin-bottom:.35rem;}
+ .compare-empty strong{display:block;font-size:.93rem;color:var(--fg);}
+ .compare-empty p{font-size:.81rem;margin:.45rem auto;max-width:400px;line-height:1.7;}
+ .compare-dimension{padding:1.45rem 0 1.6rem;border-bottom:1px solid var(--border);}
+ .compare-dimension-heading{display:flex;gap:.8rem;align-items:start;margin:0 0 .9rem;}
+ .compare-dimension-no{font:700 .77rem/1.8 ui-monospace,monospace;color:var(--accent-ink);min-width:22px;}
+ .compare-dimension-heading h3{font-size:1rem;margin:0 0 .14rem;line-height:1.5;}
+ .compare-dimension-heading p{color:var(--fg-muted);font-size:.76rem;margin:0;line-height:1.55;}
+ .compare-dimension-grid{display:grid;grid-template-columns:repeat(var(--compare-columns,2),minmax(0,1fr));gap:.7rem;}
+ .compare-evidence-card{padding:1rem 1.05rem;border:1px solid var(--border);border-radius:11px;background:var(--surface);min-width:0;}
+ .compare-evidence-name{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;border-bottom:1px solid var(--border);padding-bottom:.65rem;margin-bottom:.7rem;}
+ .compare-evidence-name span{font-weight:800;font-size:.82rem;overflow-wrap:anywhere;}
+ .compare-evidence-name a{flex:none;font-size:.72rem;text-decoration:none;color:var(--accent-ink);font-weight:680;}
+ .compare-evidence-name a:hover{text-decoration:underline;}
+ .compare-evidence-card p{font-size:.84rem;line-height:1.8;margin:0;overflow-wrap:anywhere;}
+ .compare-pending{color:var(--fg-muted);font-style:italic;}
+ .compare-disclaimer{font-size:.8rem;line-height:1.8;margin:1.7rem 0;color:var(--fg-muted);border-left:3px solid var(--accent);padding:.65rem 1rem;background:var(--surface-2);border-radius:0 8px 8px 0;}
+ .compare-disclaimer strong{color:var(--fg);}
+ @media(min-width:800px){.compare-dimension-grid:has(> :nth-child(3)){--compare-columns:3;}}
+ @media(max-width:700px){.compare-page{margin-top:1rem;}.compare-picker{padding:.95rem;}.compare-option-abbr{flex-basis:108px;}.compare-option-meta strong{font-size:.71rem;}.compare-dimension-grid{grid-template-columns:minmax(0,1fr)}.compare-selected{flex-basis:100%;}.compare-intro{margin-bottom:1.4rem;}.compare-dimension{padding:1.2rem 0;}.compare-evidence-card{padding:.9rem;}}
+ @media(max-width:350px){.compare-option-abbr{flex-basis:88px;font-size:.77rem;}.compare-searchbox kbd{display:none;}}
+ @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;}}
 </style>
