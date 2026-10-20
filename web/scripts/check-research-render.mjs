@@ -56,8 +56,8 @@ for (const text of ['id="main-content"','href="#main-content"','aria-current','i
   const source = text === 'id="main-content"' || text === 'href="#main-content"' ? fs.readFileSync('src/layouts/Base.astro','utf8') : headerSource;
   if (!source.includes(text)) throw new Error('Missing global accessibility feature: ' + text);
 }
-if (!readerSource.includes("mobileToc.open = false") || !readerSource.includes('id="research-return"')) {
-  throw new Error('Reading navigation contract regressed');
+if (!readerSource.includes('id="research-return"') || !fs.readFileSync('src/components/ReadingToc.astro','utf8').includes('data-reading-toc')) {
+  throw new Error('Shared left reading navigation contract regressed');
 }
 if (!base.includes('id="lit-tree"') || !base.includes('id="lit-search"')) {
   throw new Error('Research explorer output incomplete');
@@ -99,3 +99,15 @@ console.log('Knowledge graph, seven-step learning path, term deep links, and rec
 
 
 
+
+// Pretraining should ship from public references; private bridge implementation must not be included.
+for (const slug of ['topics/pretraining/README','topics/pretraining/reviews/pretraining-engineering-roadmap']) {
+ const file=path.join('dist','research',slug,'index.html');
+ if(!existsSync(file))throw new Error('Pretraining topic missing: '+slug);
+}
+const privateNames=['local-workbench','model_bridge.py','model_bridge.log','ytech_milm'];
+const topic=readFileSync(path.join('dist','research','topics','agent-reasoning','reviews','cot-tool-use-and-thinking-scheduling','index.html'),'utf8');
+for(const phrase of privateNames)if(topic.includes(phrase))throw new Error('Private implementation reference exposed: '+phrase);
+const tocSource=fs.readFileSync('src/scripts/reading-toc.ts','utf8');
+for(const phrase of ['data-toc-target','aria-current','nav.scrollTo','site-reading-toc-collapsed'])if(!tocSource.includes(phrase))throw new Error('Left reading TOC contract missing: '+phrase);
+console.log('Pretraining topic, privacy exclusions and shared left TOC contract verified.');

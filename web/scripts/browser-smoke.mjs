@@ -47,6 +47,11 @@ try {
    if(await button.count()){await button.click();assert.equal(await button.getAttribute('aria-pressed'),'true');}
    const articleLink=await page.locator('.post-link').first().getAttribute('href');assert(articleLink);
    await navigate(page,articleLink);await noOverflow(page);assert(await page.locator('.post-body').count()===1,'Blog and Research should use shared reading styles');
+   if(await page.locator('[data-reading-toc]').count()){
+    const aside=page.locator('[data-reading-toc]');const btn=aside.locator('.reading-toc-toggle');
+    if(width===1440){assert((await aside.boundingBox()).x < (await page.locator('.post-body').boundingBox()).x,'Blog left TOC must precede article');await aside.locator('.reading-toc-close').click();assert.equal(await btn.getAttribute('aria-expanded'),'false');await btn.click();assert.equal(await btn.getAttribute('aria-expanded'),'true');}
+    else{assert(await btn.isVisible(),'Mobile left TOC toggle must be visible');await btn.click();assert(await aside.locator('.reading-toc-panel').isVisible());await aside.locator('.reading-toc-close').click();}
+   }
   });
   await check('Research comparison '+width,async()=>{
    await navigate(page,'/research/');await noOverflow(page);
@@ -90,8 +95,20 @@ try {
    await navigate(page,'/research/topics/llm-agent-training/reviews/sft-rl-co-training/');
    await noOverflow(page);assert(await page.locator('.katex-display').count()>=4);
    assert.equal(await page.locator('.rkd-prose').count(),1);
+   const toc=page.locator('[data-reading-toc]');assert.equal(await toc.count(),1,'Research has shared left TOC');
+   if(width===1440){assert((await toc.boundingBox()).x < (await page.locator('.rkd-prose').boundingBox()).x,'Research TOC should be left');
+    const first=page.locator('.reading-toc-link').first();await first.click();await page.waitForTimeout(300);assert.equal(await first.getAttribute('aria-current'),'location','Active section should update');
+    await toc.locator('.reading-toc-close').click();assert.equal(await toc.locator('.reading-toc-toggle').getAttribute('aria-expanded'),'false');}
+   else{await toc.locator('.reading-toc-toggle').click();assert(await toc.locator('.reading-toc-panel').isVisible());await page.keyboard.press('Escape');assert(!(await toc.locator('.reading-toc-panel').isVisible()));}
    if(width===390)assert(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),'Reduced motion profile must be active');
    assert.equal(await page.locator('#rkd-personal-note').count(),0);
+  });
+  await check('Pretraining topic and privacy '+width,async()=>{
+   await navigate(page,'/research/topics/pretraining/reviews/pretraining-engineering-roadmap/');await noOverflow(page);
+   assert(await page.getByText('预训练工程完整路线',{exact:false}).count()>0);
+   await navigate(page,'/research/topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling/');
+   const txt=await page.locator('.rkd-prose').innerText();
+   for(const secret of ['local-workbench','model_bridge.py','model_bridge.log'])assert(!txt.includes(secret),'Public topic exposes private workbench details: '+secret);
   });
   await check('Learning route '+width,async()=>{
    await navigate(page,'/research/paths/agent-post-training/');await noOverflow(page);

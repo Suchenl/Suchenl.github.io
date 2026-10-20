@@ -2,6 +2,7 @@
 
 | 研究方向 | 主题综述 | 研究状态 |
 |---|---|---|
+| 大模型预训练 | [预训练工程与训练稳定性](pretraining/README.md) | 数据、Tokenizer、分布式、Scaling Laws、继续预训练 |
 | LLM/多模态 Agent 后训练 | [SFT、RL 与协同优化](llm-agent-training/README.md) | 后训练方法、可证伪实验与证据地图 |
 | 长程 Agent 思考与工具调用 | [CoT、Codex、GLM/Qwen 与动态思考调度](agent-reasoning/README.md) | 已核对官方 API；训练时机机制仍有未公开部分 |
 

@@ -12,6 +12,7 @@
 | 我想做什么 | 从哪里开始 |
 |---|---|
 | 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
+| 系统学习预训练工程与继续预训练 | [Pretraining 专题](topics/pretraining/README.md) |
 | 按顺序学习 SFT、RL 与 Agent 后训练 | [7 步学习路线](paths/agent-post-training.md) |
 | 弄清 CoT、工具调用及 Agent 何时思考 | [Agent 长程推理与工具调用](topics/agent-reasoning/README.md) |
 | 阅读第一篇综合综述：SFT × RL | [SFT、RL 与 Agent 后训练：协同范式和最新证据](topics/llm-agent-training/reviews/sft-rl-co-training.md) |

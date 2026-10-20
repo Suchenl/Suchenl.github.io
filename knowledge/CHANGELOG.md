@@ -1,6 +1,10 @@
 # 更新记录
 
 ## 2026-10-20
+- 按用户要求移除公开 CoT Topic 中任何从私人仓库得到的实现片段、日志线索与特定私有路径，仅保留通用公开协议事实；新增公开主页禁止泄露私有内容的维护规则。
+- Blog 与 Research 使用同一套较大字号的左侧可收起章节目录；章节高亮与内部目录滚动同步，移动端左侧抽屉。
+- 新增「大模型预训练」Topic，列入用户指定的 ybq 知乎文章，并补充数据治理、Tokenization、Scaling Laws、分布式训练、Qwen3/DeepSeek-V3 官方资料与小规模实验建议。
+
 - 完善 CoT 专题中的跨工具轮次上下文说明；移除私人仓库的实现细节，仅保留公开 API 协议与通用推理状态回放原理。
 - 明确 Responses opaque/encrypted reasoning item 不等于 GLM `reasoning_content`，补充 vLLM Prefix Cache 的精确 token 前缀、缓存淘汰等条件与真实指标监测要求；纠正“回填 CoT 一定命中缓存”“Harness 完全不能调度推理”等过强论断。
 
