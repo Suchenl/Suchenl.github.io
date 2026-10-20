@@ -33,127 +33,111 @@ import { SITE, AUTHOR } from '../../config';
   </p>
 
   {PUB_GROUPS.map((group) => (
-    <div class="pub-group">
+    <section class="pub-group" aria-label={group.zh}>
       <h2><span data-l="zh">{group.zh}</span><span data-l="en">{group.en}</span></h2>
-      {group.papers.map((p) => (
-        p.image ? (
-          <div class="paper-box card">
-            <div class="paper-img">
-              <span class="badge">{p.venue}</span>
-              <div class="paper-figure">
-                <img
-                  src={p.image.replace(/\.png$/, '-thumb.jpg')}
-                  alt={p.titleEn}
-                  loading="lazy"
-                  decoding="async"
-                />
-                </div>
+      {group.papers.map((paper) => (
+        <article class:list={['paper-entry', 'card', !paper.image && 'paper-no-image']}>
+          {paper.image && (
+            <div class="paper-image">
+              <img
+                src={paper.image.replace(/\.png$/, '-thumb.jpg')}
+                alt={'论文方法示意图：' + paper.titleZh}
+                width="440"
+                height="248"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
-            <div class="paper-text">
-              <p>
-                <span class="muted">[{p.venue}]</span>
-                <a href={p.url} target="_blank" rel="noopener">
-                  <span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span>
+          )}
+          <div class="paper-information">
+            <div class="paper-venue">{paper.venue}</div>
+            <h3>
+              <a href={paper.url} target="_blank" rel="noopener noreferrer">
+                <span data-l="zh">{paper.titleZh}</span>
+                <span data-l="en">{paper.titleEn}</span>
+              </a>
+            </h3>
+            <p class="authors" set:html={paper.authorsHtml} />
+            {paper.code && (
+              <div class="paper-links">
+                <a class="repo-link" href={'https://github.com/' + paper.code} target="_blank" rel="noopener noreferrer">
+                  <span data-l="zh">查看代码 ↗</span><span data-l="en">Code ↗</span>
                 </a>
-              </p>
-              <p class="authors" set:html={p.authorsHtml} />
-              {p.code && (
-                <p class="paper-links">
-                  <a class="repo-link" href={`https://github.com/${p.code}`} target="_blank" rel="noopener">
-                    <span data-l="zh">代码</span><span data-l="en">Code</span>
-                  </a>
-                  <Stars repo={p.code} />
-                </p>
+                <Stars repo={paper.code} />
+              </div>
+            )}
+          </div>
+          <details class="pub-abstract">
+            <summary>
+              <span data-l="zh">研究简介：动机、方法与发现</span>
+              <span data-l="en">Research summary: motivation, method, findings</span>
+              <span class="pub-chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="pub-abstract-body">
+              {paper.brief ? (
+                <>
+                  {([
+                    ['研究动机','Motivation',paper.brief.motivationZh,paper.brief.motivationEn],
+                    ['核心方法','Approach',paper.brief.methodZh,paper.brief.methodEn],
+                    ['主要发现','Findings',paper.brief.resultZh,paper.brief.resultEn],
+                    ['局限与边界','Limitations',paper.brief.boundaryZh,paper.brief.boundaryEn]
+                  ] as const).map(([zh,en,zhText,enText]) => (
+                    <div class="pub-brief-row">
+                      <strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong>
+                      <p><span data-l="zh">{zhText}</span><span data-l="en">{enText}</span></p>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <p><Bi zh="简介正在整理，请参阅原论文。" en="Summary pending; please consult the original paper." /></p>
               )}
             </div>
-            <details class="pub-abstract">
-              <summary><span data-l="zh">查看论文简介</span><span data-l="en">Paper at a glance</span><span class="pub-chevron" aria-hidden="true">⌄</span></summary>
-              <div class="pub-abstract-body">
-                {p.brief ? (
-                  <>
-                    {([
-                      ['研究动机','Motivation',p.brief.motivationZh,p.brief.motivationEn],
-                      ['核心方法','Approach',p.brief.methodZh,p.brief.methodEn],
-                      ['主要发现','Findings',p.brief.resultZh,p.brief.resultEn],
-                      ['证据边界','Limitations',p.brief.boundaryZh,p.brief.boundaryEn]
-                    ] as const).map(([zh,en,zhText,enText])=><div class="pub-brief-row"><strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong><p><span data-l="zh">{zhText}</span><span data-l="en">{enText}</span></p></div>)}
-                  </>
-                ) : <p>内容正在整理，请参考原论文。</p>}
-                </div>
-            </details>
-          </div>
-        ) : (
-          <p class="other-pub">
-            <span class="muted">[{p.venue}]</span>
-            <a href={p.url} target="_blank" rel="noopener">
-              <span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span>
-            </a><br />
-            <span class="authors" set:html={p.authorsHtml} />
-          </p>
-        )
+          </details>
+        </article>
       ))}
-    </div>
+    </section>
   ))}
-
 </Base>
-
 <style>
-  .paper-box {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 1.2rem;
-    align-items: center;
-    margin-bottom: 1.2rem;
+  .pub-group {margin:1.8rem 0 2.5rem;}
+  .pub-group h2 {font-size:1.25rem;line-height:1.45;margin:0 0 1rem;}
+  .paper-entry {
+    display:grid;
+    grid-template-columns:minmax(0, 220px) minmax(0, 1fr);
+    align-items:center;
+    column-gap:1.2rem;
+    row-gap:.85rem;
+    margin:0 0 1rem;
+    padding:1.15rem 1.2rem;
+    min-width:0;
   }
-  .paper-img { position: relative; }
-  .paper-img .badge {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    font-size: 0.62rem;
-    padding: 0.16em 0.55em;
-    opacity: 0.94;
-    z-index: 1;
+  .paper-image {width:100%;min-width:0;}
+  .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:var(--surface-2);}
+  .paper-information {min-width:0;}
+  .paper-no-image .paper-information {grid-column:1/-1;}
+  .paper-venue {color:var(--fg-muted);font-size:.74rem;font-weight:760;margin-bottom:.38rem;}
+  .paper-information h3 {font-size:1rem;line-height:1.55;margin:0 0 .35rem;overflow-wrap:anywhere;}
+  .paper-information h3 a {color:var(--fg);text-decoration:none;}
+  .paper-information h3 a:hover {color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;}
+  .paper-information .authors {font-size:.85rem;line-height:1.7;color:var(--fg-muted);margin:.35rem 0;}
+  .paper-links {display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin-top:.7rem;font-size:.81rem;}
+  .repo-link {display:inline-flex;align-items:center;font-weight:720;color:var(--accent-ink);background:var(--accent-soft);padding:.35rem .7rem;border:1px solid transparent;border-radius:7px;}
+  .repo-link:hover {border-color:var(--accent);text-decoration:none;}
+  .pub-abstract {grid-column:1/-1;border-top:1px solid var(--border);min-width:0;}
+  .pub-abstract summary {min-height:44px;display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.55rem 0;font-size:.84rem;font-weight:680;color:var(--accent-ink);line-height:1.55;}
+  .pub-abstract summary:focus-visible {outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;}
+  .pub-chevron {margin-left:auto;transition:transform .15s ease;}
+  .pub-abstract[open] .pub-chevron {transform:rotate(180deg);}
+  .pub-abstract-body {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.2rem;padding:.8rem 0 .2rem;}
+  .pub-brief-row {min-width:0;}
+  .pub-brief-row strong {font-size:.78rem;color:var(--fg-muted);}
+  .pub-brief-row p {font-size:.85rem;line-height:1.8;margin:.25rem 0;overflow-wrap:anywhere;}
+  @media(max-width:720px) {
+    .paper-entry {grid-template-columns:minmax(0,1fr);padding:.95rem;}
+    .paper-image {max-width:300px;}
+    .paper-information,.paper-no-image .paper-information {grid-column:1;}
+    .pub-abstract {grid-column:1;}
+    .pub-abstract-body {grid-template-columns:minmax(0,1fr);}
   }
-  .paper-img img {
-    border-radius: 8px;
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    background: var(--surface-2);
-    cursor: default;
-    transition: filter 0.15s ease;
-  }
-
-  .paper-text p { margin: 0.3rem 0; }
-  .authors { font-size: 0.92rem; }
-  .other-pub { margin: 0.9rem 0; }
-
-  .paper-links {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: 0.5rem !important;
-  }
-  .repo-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3em;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--accent-ink);
-    background: var(--accent-soft);
-    padding: 0.2em 0.75em;
-    border-radius: 999px;
-    border: 1px solid transparent;
-  }
-  .repo-link:hover { text-decoration: none; border-color: var(--accent); }
-
-  @media (max-width: 720px) {
-    .paper-box { grid-template-columns: 1fr; }
-  }
+  @media(prefers-reduced-motion:reduce) {.pub-chevron{transition:none;}}
 </style>
-
-<style>.pub-abstract{grid-column:1/-1;border-top:1px solid var(--border)}.pub-abstract summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;min-height:44px;padding:.6rem 0;color:var(--accent-ink);font-size:.85rem;font-weight:700}.pub-chevron{margin-left:auto}.pub-abstract[open] .pub-chevron{transform:rotate(180deg)}.pub-abstract-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.3rem;padding:.6rem 0}.pub-brief-row strong,.pub-brief-row strong{font-size:.77rem;color:var(--fg-muted)}.pub-brief-row p,.pub-brief-row p{font-size:.85rem;line-height:1.75;margin:.3rem 0}@media(max-width:720px){.pub-abstract-body{grid-template-columns:1fr}}</style>
-
