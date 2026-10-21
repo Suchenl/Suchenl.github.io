@@ -8,23 +8,23 @@ const questions = await getPublicQuestions();
 
 <Base title="好奇的问题与探索" description="我在研究过程中不断追问的问题：已有文献、判断边界以及可证伪的实验。">
   <header class="questions-header">
-    <p class="questions-eyebrow">OPEN QUESTIONS · CURIOSITY-DRIVEN RESEARCH</p>
+    <p class="questions-eyebrow">QUESTIONS & INTERESTS · CURIOSITY-DRIVEN EXPLORATION</p>
     <h1 class="page-title"><Bi zh="我好奇的问题与探索" en="Questions & Explorations" /></h1>
-    <p class="questions-intro"><Bi zh="这里记录尚未完全回答的问题：为什么好奇、已有工作解决到哪里、还需要验证什么。它们不是已完成实验或已证实结论。" en="Research questions, the prior work that informs them, and what remains to test. These notes are not completed experiments or established claims." /></p>
+    <p class="questions-intro"><Bi zh="这里记录我持续好奇的技术兴趣与研究问题：已有工作走到哪里、不同路线怎样权衡，以及我更认可什么。兴趣综述不意味着原创声明，研究设想也不是已验证结论。" en="Technical interests and research questions: prior work, trade-offs, and current perspectives. An interest survey is not a novelty claim, and proposed ideas are not established findings." /></p>
   </header>
   <section class="question-list" aria-label="公开的研究问题">
     {questions.map((q, i) => (
       <article class="question-entry card">
         <div class="question-top">
           <span class="question-num">QUESTION {String(i + 1).padStart(2, '0')}</span>
-          <span class="question-state"><Bi zh="持续探索" en="Exploring" /></span>
+          <span class="question-state">{q.kind === 'interest' ? <Bi zh="兴趣专题" en="Interest survey" /> : <Bi zh="持续探索" en="Exploring" />}</span>
           <time datetime={q.date}>{q.date}</time>
         </div>
         <h2><a href={q.href}><span data-l="zh">{q.titleZh}</span><span data-l="en">{q.titleEn}</span></a></h2>
         <p><span data-l="zh">{q.summaryZh}</span><span data-l="en">{q.summaryEn}</span></p>
         <div class="question-bottom">
-          <span><Bi zh="研究疑问 · 不是结论" en="Open question · not a finding" /></span>
-          <a href={q.href}><Bi zh="阅读问题、文献与实验构想 →" en="Read evidence and experiments →" /></a>
+          <span>{q.kind === 'interest' ? <Bi zh="技术路线综述 · 个人判断" en="Technical survey · personal perspective" /> : <Bi zh="研究疑问 · 不是结论" en="Open question · not a finding" />}</span>
+          <a href={q.href}>{q.kind === 'interest' ? <Bi zh="阅读技术路线、文献与思考 →" en="Read survey and perspectives →" /> : <Bi zh="阅读问题、文献与实验构想 →" en="Read evidence and experiments →" />}</a>
         </div>
       </article>
     ))}
