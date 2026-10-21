@@ -2,6 +2,7 @@
 
 这里记录我们的**假设**，不把它们归类为“已被论文证明”。只有明确设置 `publicQuestion: true` 的条目会被展示在公开的「问题与探索」栏目中；不要把私人研究资料标记为公开。
 
+- [一个 Agent 是如何组织推理、工具调用与跨轮状态的？](how-agent-reasoning-tools-and-state-work.md)：基础兴趣问答，跨 Claude / Responses / Codex 与开源 Agent 对照模型 API、Harness、事件、工具执行及上下文回放。
 - [如何让模型学会自适应推理](how-models-learn-adaptive-reasoning.md)：兴趣综述，系统梳理 Think/NoThink、混合推理、跨轮推理、动态规划及交互式 RL，并深入讨论我更认可的闭环、成本敏感学习路线；不是原创科学问题声明。
 - [不同数据集动作采样频率是否引入策略偏置？](action-sampling-frequency-bias.md)：区分物理时间、动作语义、现有多频率研究与可证伪实验。
 - [Agent 后训练：从证据矛盾到可证伪实验](agent-post-training-experiment-agenda.md)：先 E0 核对验证器，再分离数据/算法贡献、触发监督、失败恢复及代理奖励有效性。
