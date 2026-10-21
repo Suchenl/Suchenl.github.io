@@ -53,7 +53,7 @@ related:
 | [$\pi_0$](https://arxiv.org/abs/2410.24164) | RSS 2025 | VLM 条件表示 + Flow Matching 连续动作生成 | 动作生成路径由控制任务组织 | 连续动作无需逐维转成普通语言 Token |
 | [OpenVLA-OFT](https://openvla-oft.github.io/) | RSS 2025 | 连续动作表示、L1 回归、并行预测与 Action Chunking | 动作接口和训练配置规定 | 验证直接回归的实用性；性能提升不能全部归因于 Head |
 | [$\pi_{0.5}$](https://www.pi.website/blog/pi05) | 2025 | 高层自回归子任务文本 + 低层 Flow Matching Action Expert | 高层→低层的分层推理流程 | 语言决策与连续控制已在同一 VLA 中结合；仍不是任意位置的自由数值切换 |
-| [Beyond Language Modeling](https://arxiv.org/abs/2603.03276) | ICML 2026 | 共享 Transformer；文本 CE + 视觉 Flow Matching | 预测 <BOI> 触发程序进入 Flow；完成后程序插入 <EOI> | **切换机制最明确**；论文附录 B 可以核对训练和推理细节 |
+| [Beyond Language Modeling](https://arxiv.org/abs/2603.03276) | ICML 2026 | 共享 Transformer；文本 CE + 视觉 Flow Matching | 预测 `<BOI>` 触发程序进入 Flow；完成后程序插入 `<EOI>` | **切换机制最明确**；论文附录 B 可以核对训练和推理细节 |
 | [When Do Discrete Actions Make Good Continuous Controllers?](https://arxiv.org/abs/2610.20429) | 2026-10 | 受控比较离散/连续、单步回归/迭代 Flow 四种动作预测器 | 主要比较预测参数化，并非自主路由 | 在其设置下离散动作可匹敌甚至超过连续动作；分布因子化错误比量化精度更关键 |
 
 **如何解读这张表：** 前几项回答“能否表示/生成连续值”，中间几项回答“怎样用于机器人动作”，而最后一个问题——**由 Agent 在真实交互中学习何时选择哪种输出机制**——并未被这些工作共同、完整地解决。不能将“具有两个 Head”直接写成“模型已学会自主选择 Head”。
@@ -87,7 +87,7 @@ xVal 的实验主要针对科学数值数据、采用为此修改并训练的模
 
 其混合序列包含文本和带有边界标记的视觉 Latents，例如：
 
-> 文本 → <BOI> → 一帧连续视觉 Latents → <EOI> → 后续文本
+> 文本 → `<BOI>` → 一帧连续视觉 Latents → `<EOI>` → 后续文本
 
 训练时视觉区域和文本区域是**已知的**，不需要模型凭空猜一个未知的监督标签。文中使用两类损失：
 
@@ -97,18 +97,18 @@ $$
 +\lambda_{\mathrm{flow}}\mathcal L_{\mathrm{FM}}.
 $$
 
-文本位置的 Hidden State 投影到词表 Head，并对下一 Token 计算 CE；<BOI> 与 <EOI> 之间的视觉位置投影到连续速度场 Head，学习 Flow Matching。视觉 Patch 在同一帧内可双向注意，跨帧/跨文本边界保持相应的因果约束。**训练时路由是根据样本的位置/模态掩码明确规定的**，不是一场两个 Head 的无监督竞争。
+文本位置的 Hidden State 投影到词表 Head，并对下一 Token 计算 CE；`<BOI>` 与 `<EOI>` 之间的视觉位置投影到连续速度场 Head，学习 Flow Matching。视觉 Patch 在同一帧内可双向注意，跨帧/跨文本边界保持相应的因果约束。**训练时路由是根据样本的位置/模态掩码明确规定的**，不是一场两个 Head 的无监督竞争。
 
 ### 4.2 推理：模型预测触发标记，程序执行生成模式切换
 
 论文 [附录 B：Modal-switching inference algorithm](https://arxiv.org/html/2603.03276v1) 的流程可以直观写为：
 
 1. **Text mode：** Token Head 按自回归方式产生语言；
-2. **触发：** Token Head 预测到 <BOI>，推理程序暂停文本采样；
+2. **触发：** Token Head 预测到 `<BOI>`，推理程序暂停文本采样；
 3. **Flow mode：** 程序向上下文插入噪声视觉 Latents，在同一条件上下文中通过 Flow Head 迭代更新；
-4. **返回：** 视觉生成完成后，程序插入 <EOI> 并恢复文本预测。
+4. **返回：** 视觉生成完成后，程序插入 `<EOI>` 并恢复文本预测。
 
-论文示例使用 25 步 Euler 采样。**生成图片结束的条件及 <EOI> 的插入不是模型在任意时刻自由选择的行为，而是采样程序实现的一部分。**
+论文示例使用 25 步 Euler 采样。**生成图片结束的条件及 `<EOI>` 的插入不是模型在任意时刻自由选择的行为，而是采样程序实现的一部分。**
 
 ### 4.3 这与真正的自主路由还差什么？
 
@@ -120,7 +120,7 @@ $$
 
 ### 4.4 BLIP3-o 和这篇有什么本质区别？
 
-[BLIP3-o](https://arxiv.org/abs/2505.09568) 更像是在已有 VLM 上组织一个条件视觉生成模块，重点研究视觉特征空间、训练顺序以及理解能力是否保留；**它的图像生成任务接口**与 Beyond Language Modeling 通过混合序列、<BOI> 和采样程序进行切换的设计不应混为一谈。
+[BLIP3-o](https://arxiv.org/abs/2505.09568) 更像是在已有 VLM 上组织一个条件视觉生成模块，重点研究视觉特征空间、训练顺序以及理解能力是否保留；**它的图像生成任务接口**与 Beyond Language Modeling 通过混合序列、`<BOI>` 和采样程序进行切换的设计不应混为一谈。
 
 对研究兴趣而言，**要学习现成 VLM + 连续生成模块看 BLIP3-o；要学习输出阶段如何从 AR Token 进入 Flow，再回到 AR，看 Beyond Language Modeling 的第 2 节和附录 B。**
 
@@ -153,7 +153,7 @@ $$
 | 方案 | 模型学到了什么 | 优点 | 核心限制 |
 |---|---|---|---|
 | **A. Schema 决定** | 学习连续字段的值；Harness 按字段类型选 Head | 简单、可校验、利于研究消融 | 模型并未真正选择表示方式 |
-| **B. Special Token 决定** | Token Head 学会输出 [NUM]、<ACTION> 等触发标记，Handler 激活对应 Head | 与 xVal / Transfusion 机制接近，可混合语言与连续值 | 仍依赖样本格式及明确的切换语义 |
+| **B. Special Token 决定** | Token Head 学会输出 [NUM]、`<ACTION>` 等触发标记，Handler 激活对应 Head | 与 xVal / Transfusion 机制接近，可混合语言与连续值 | 仍依赖样本格式及明确的切换语义 |
 | **C. Learned Router 决定** | 增加路由策略，在若干等价表达/计算模式之间选择 | 研究自主性与成本—精度权衡 | 训练标签、信用分配、可比性和错路由风险更复杂 |
 
 **我倾向的工程起点是 B + A：** 模型通过标记提出连续值，Harness 按工具 Schema 验证类型、单位、坐标系、维度与限幅。它不需要再引入一个单独的 Router 网络，也不会将安全/执行约束交给一个未经验证的浮点 Head。
