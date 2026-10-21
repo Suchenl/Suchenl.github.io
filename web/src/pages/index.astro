@@ -114,19 +114,19 @@ const socials = [
         <h3><a href={q.href}><span data-l="zh">{q.titleZh}</span><span data-l="en">{q.titleEn}</span></a></h3>
         <p class="home-question-summary"><span data-l="zh">{q.summaryZh}</span><span data-l="en">{q.summaryEn}</span></p>
         {q.evidence.length > 0 && (
-          <div class="home-question-evidence" aria-label="核查过的官方采集及控制频率依据">
-            <span class="question-evidence-label"><Bi zh="官方来源" en="Official sources" /></span>
-            {q.evidence.slice(0, 6).map(e => (
+          <div class="home-question-evidence" aria-label="代表性官方数据或模型预训练频率依据">
+            <span class="question-evidence-label"><Bi zh="代表性来源 · 频率" en="Representative sources · frequencies" /></span>
+            {q.evidence.slice(0, 8).map(e => (
               <a class="question-evidence-chip" href={e.source} target="_blank" rel="noopener noreferrer" title={e.name + ' · ' + e.rate}>
                 <span class="qev-name">{e.name}</span>
                 <strong class="qev-rate">{e.rate}</strong>
                 <span aria-hidden="true">↗</span>
               </a>
             ))}
-            {q.evidence.length > 6 && (
+            {q.evidence.length >= 8 && (
               <span class="question-evidence-label">
-                <span data-l="zh">共 {q.evidence.length} 组数据源，完整对照及证据说明见正文</span>
-                <span data-l="en">{q.evidence.length} source-checked cases; see full research note</span>
+                <span data-l="zh">完整数据集对照、不同时间尺度的证据口径见正文</span>
+                <span data-l="en">See the full source and temporal-scale comparison</span>
               </span>
             )}
           </div>
