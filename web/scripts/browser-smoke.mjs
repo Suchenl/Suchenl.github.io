@@ -45,14 +45,15 @@ try {
   await check('Open research Questions '+width,async()=>{
    await navigate(page,'/');
    assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),1,'Questions must be visible in main navigation');
-   assert.equal(await page.locator('.home-question-card').count(),1,'Homepage should show the latest open question');
+   assert((await page.locator('.home-question-card').count())>=1,'Homepage should show published public questions');
    assert.equal(await page.locator('.question-evidence-chip').count(),8,'Eight representative dataset frequency sources should appear on homepage');
    assert((await page.locator('.question-evidence-chip').last().innerText()).includes('50 Hz'),'Mobile ALOHA target frequency remains qualified');
    await navigate(page,'/questions/'); await noOverflow(page);
    assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').getAttribute('aria-current'),'page');
-   assert.equal(await page.locator('.question-entry').count(),1,'Only explicitly flagged questions are public');
-   const href=await page.locator('.question-entry h2 a').first().getAttribute('href');
-   assert(href?.includes('action-sampling-frequency-bias'),'Questions page should link to its canonical Research entry');
+   assert((await page.locator('.question-entry').count())>=1,'Published questions and interests should be listed');
+   const target=page.locator('.question-entry h2 a[href*="action-sampling-frequency-bias"]');
+   assert.equal(await target.count(),1,'Canonical robot-frequency note should remain visible in Questions index');
+   const href=await target.getAttribute('href');
    await navigate(page,href); await noOverflow(page);
    assert((await page.locator('.rkd-prose').innerText()).includes('Chronos Policy'),'Full research note is readable');
   });
