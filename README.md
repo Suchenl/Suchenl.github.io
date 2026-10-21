@@ -9,7 +9,8 @@ Live at <https://suchenl.github.io/>.
 
 The site source lives in [`web/`](./web):
 
-- `web/src/pages/` — published routes (home, blog, publications, work, unified research)
+- `web/src/pages/` — published routes (home, blog, publications, work, Questions & Explorations, unified research)
+- `/questions/` — curated index of explicitly public open research questions, drawing from canonical `knowledge/research/*.md` notes
 - `web/src/archived/expertise/index.astro` — preserved, unpublished Expertise page source; move back into `src/pages/expertise/` to restore it
 - `web/src/data/expertise.ts` — preserved Expertise dataset (not publicly rendered)
 - `web/src/content/` — blog content (the paper library lives only under knowledge/)
@@ -69,3 +70,7 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 ## Unpublished Expertise page (2026-10-21)
 
 The owner chose to remove the subjective skill-rating page from the public site while keeping its complete source and data in Git. The saved page lives at `web/src/archived/expertise/index.astro`, outside Astro's `src/pages/` directory. The corresponding `web/src/data/expertise.ts` has not been changed. Do not link to `/expertise/` or republish it unless the owner explicitly asks to restore it. The homepage and the main navigation link directly to Experience instead.
+
+## Questions & Explorations (2026-10-21)
+
+The homepage highlights the latest question, and `/questions/` lists owner-approved research questions. Add a Markdown entry under `knowledge/research/` with `publicQuestion: true`, `title`, `questionTitleEn`, `summaryZh`, `questionSummaryEn`, and `questionDate`. Its full content remains in the Research Library at `/research/research/<slug>/`. Do not duplicate the note as a separate blog post or publish private repositories, experiments, or undisclosed project details. Distinguish literature-backed results from unverified hypotheses.
