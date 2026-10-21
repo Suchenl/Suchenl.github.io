@@ -120,4 +120,6 @@ Thinking + 工具调用的**中间结果续接**需要保留对应的思考块�
 
 **一次工具往返的本质**是：模型生成 `tool_use` → Harness 执行 → 返回 `tool_result` → 模型可以继续 `thinking`。并非把 Thinking 包装成一个工具。更不能把“减少显式 CoT Token”直接解释为“任务质量更高”。
 
+完整跨框架实现对比：[一个 Agent 是如何组织推理、工具调用与跨轮状态的？](../research/how-agent-reasoning-tools-and-state-work.md)。
+
 延伸阅读：[何时思考、CoT 与工具调用专题](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md) · [如何让模型学会自适应推理](../research/how-models-learn-adaptive-reasoning.md) · [Agent 后训练术语](agent-training.md)。
