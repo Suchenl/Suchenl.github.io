@@ -60,15 +60,15 @@ RLVR 可以用离线真实轨迹构造**可验证预测任务**；但如果模�
 
 ## CoT / Thinking 与 Tool Calling
 
-**CoT** 是模型生成的推理内容，**Tool Calling** 是经由外部执行器真正调用工具的结构化请求。计划记录（如 `update_plan`）可以被包装成工具，但计划更新不等于任务动作已经发生。部分 API 的 `reasoning_content` / reasoning item 可以在工具结果回传时保留，具体依模型和 Harness 而定。详见 [长程 Agent 何时思考专题](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+CoT 是模型生成的推理内容，Tool Calling 是需要外部执行器/平台处理的结构化工具请求；`thinking` 不是 `tool_use`，可选的 `update_plan` 工具也不是原生 CoT。详细协议、消息角色和执行边界统一见 [Thinking 与工具调用协议术语](thinking-tool-protocol.md)，研究背景见 [长程 Agent 何时思考专题](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
 
 ## Interleaved Thinking / Preserved Thinking
 
-**Interleaved** 表示在多个工具调用之间允许继续推理；**Preserved** 表示历史 reasoning 项通过 API/Harness 回传可供后续上下文使用。它们不是一个概念，也不等于“始终每轮重新输出完整 CoT”。参考 [Thinking 状态与调用协议对照](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+**Interleaved** 表示可以在工具结果之后继续生成 Thinking，**Preserved** 表示历史推理是否按对应协议在后续请求中保留；与是否通过 HTTP Beta Header 启用属于不同维度。准确定义、Signature 回放和模型版本兼容条件见 [Thinking 与工具调用协议术语](thinking-tool-protocol.md)。
 
 ## Reasoning Effort / Adaptive Thinking
 
-Reasoning effort 是模型/接口控制推理深度或成本的配置；Adaptive Thinking 是依据任务/上下文选择推理量或时机的策略或学习机制。GLM-5.3-Flash 强制开启推理，而 Qwen3.8-27B 可按请求关闭；调低 effort 不能直接等同于完全不推理。相关研究见 [RACE、CogRouter 与可证伪实验](../topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md)。
+Effort 是模型接口对推理强度的软控制；Adaptive Thinking 允许模型按上下文分配推理，**不等于 Interleaved Thinking**，也不代表所有模型都能关闭 Thinking。接口术语见 [Thinking 与工具调用协议术语](thinking-tool-protocol.md)；学习算法与研究路线见 [如何让模型学会自适应推理](../research/how-models-learn-adaptive-reasoning.md)。
 
 
 ## CoT 的跨工具轮恢复与 KV Cache 的区别
