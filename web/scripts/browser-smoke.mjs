@@ -42,6 +42,18 @@ try {
     assert.equal(response?.status(),404,'Expertise must not be a published page');
    }
   });
+  await check('Open research Questions '+width,async()=>{
+   await navigate(page,'/');
+   assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),1,'Questions must be visible in main navigation');
+   assert.equal(await page.locator('.home-question-card').count(),1,'Homepage should show the latest open question');
+   await navigate(page,'/questions/'); await noOverflow(page);
+   assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').getAttribute('aria-current'),'page');
+   assert.equal(await page.locator('.question-entry').count(),1,'Only explicitly flagged questions are public');
+   const href=await page.locator('.question-entry h2 a').first().getAttribute('href');
+   assert(href?.includes('action-sampling-frequency-bias'),'Questions page should link to its canonical Research entry');
+   await navigate(page,href); await noOverflow(page);
+   assert((await page.locator('.rkd-prose').innerText()).includes('Chronos Policy'),'Full research note is readable');
+  });
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
   await check('Publications '+width,async()=>{
    await navigate(page,'/publications/');await noOverflow(page);
