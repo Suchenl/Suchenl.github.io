@@ -46,7 +46,7 @@ try {
    await navigate(page,'/');
    assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),1,'Questions must be visible in main navigation');
    assert.equal(await page.locator('.home-question-card').count(),1,'Homepage should show the latest open question');
-   assert.equal(await page.locator('.question-evidence-chip').count(),4,'Dataset frequency evidence links should appear on homepage');
+   assert.equal(await page.locator('.question-evidence-chip').count(),6,'Six representative dataset frequency sources should appear on homepage');
    assert((await page.locator('.question-evidence-chip').last().innerText()).includes('50 Hz'),'Mobile ALOHA target frequency remains qualified');
    await navigate(page,'/questions/'); await noOverflow(page);
    assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').getAttribute('aria-current'),'page');
