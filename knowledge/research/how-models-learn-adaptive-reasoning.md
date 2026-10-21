@@ -5,8 +5,8 @@ publicQuestion: true
 questionKind: "interest"
 questionDate: "2026-10-21"
 categories: ["强化学习与 Agent", "推理模型与推理时计算"]
-summaryZh: "为什么自适应推理决定 Agent 在固定在线时长与 Token 预算下的有效产出、机器人部署时延？梳理推理模式与交互式规划路线，并探讨一个待验证的假设：推理机会的约束能否促进参数化直觉与更高价值的行动前规划，而不仅是压缩 CoT。"
-questionSummaryEn: "Why adaptive reasoning matters for verified work per time/token budget and robot response latency; surveys prior approaches and examines the unproven hypothesis that scarce deliberation opportunities can cultivate parametric intuition and more valuable planning."
+summaryZh: "为什么自适应推理影响 Agent 的固定预算有效产出与机器人在线时延？梳理 SFT、成本敏感 RL、步骤级信用分配、反应—规划切换的最新研究；区分真正学会思考时机与仅减少 CoT，并讨论有限推理机会能否促进参数化直觉的待验证假设。"
+questionSummaryEn: "A critical survey of SFT, cost-aware RL, reasoning credit assignment, adaptive planning and robot latency. Tests the distinction between shorter CoT and genuinely learned, transferable parametric intuition."
 ---
 
 # 如何让模型学会自适应推理
@@ -95,76 +95,127 @@ $$
 
 官方文档：[Thinking](https://platform.claude.com/docs/en/build-with-claude/thinking) · [Steering thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking) · [Extended / interleaved thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)。
 
-## 3. 技术路线如何演进？
+## 3. 技术路线如何演进？从 SFT 到真正的推理决策 RL
 
-### 路线 A：固定模板、手写条件与推理预算
+理解这条技术线，先问三个问题：**谁决定何时思考？训练更新谁的参数？什么奖励最终影响这个决策？** “用 RL 训练了模型”未必意味着“RL 直接奖励了正确的思考时机”，也不等于“统一模型获得了参数化直觉”。
 
-最早的 ReAct 风格通过 Thought–Action–Observation 交替组织 Agent。它提供了可解释的交互接口，但**不意味着今天所有 Agent 每轮都必须产生 CoT**。在工程实现中，可以用“每 N 步重新规划”“失败后重新规划”“高不确定性时加大预算”等启发式规则。优点是简单、成本可控、可解释；缺点是阈值难跨任务迁移，环境变化和动作风险未必能由单个统计量识别。
+### 路线 A：提示词、固定规则与人工预算
 
-参考：[ReAct](https://arxiv.org/abs/2210.03629)（2022/ICLR 2023）；[A Survey of Adaptive and Controllable Test-Time Compute](https://arxiv.org/abs/2507.02076)（2025）。
+早期 [ReAct](https://arxiv.org/abs/2210.03629) 用 Thought–Action–Observation 组织交互，但并不意味着现代 Agent 每次工具调用前都必须生成显式 CoT。固定每 N 步规划、出错后重新推理、按长度截断 CoT，或人工分配 effort 都是有价值的简单基线。
 
-### 路线 B：SFT / 蒸馏教模型选择 Think 与 NoThink
+它们**没有学习计算价值本身**，却可能因成本低、可解释而优于复杂调度器，应该保留为对照，而不能作为落后技术随意剔除。
 
-通过构建有推理、无推理、短推理的数据，使模型从输入模式中学习选择。通常可做轻量冷启动，甚至将模式作为首个输出 Token。但如果标签来自教师的偏好、长度、难度代理或单步答案一致性，模型可能只学会**对常见题型套用模式**，不一定具有可靠的跨轮决策价值判断。
+### 路线 B：SFT 与蒸馏——让模型知道“短想、长想、直接行动”长什么样
 
-例子：[KAT-V1 / Kwai-AutoThink](https://arxiv.org/abs/2507.08297)（2025）使用混合模式数据、知识蒸馏、初始化与后续 RL。KAT 并非只有 SFT，但很好地体现了此路线从数据到训练的完整闭环。
+训练数据包含 NoThink/Think、Short/Long、不同深度计划、老师提供的理想工具轨迹。SFT 把这些行为模式和格式教给模型，解决冷启动；[ConPress](https://arxiv.org/abs/2602.01472) 则利用多题上下文压力获得简洁且正确的推理数据，再通过**自监督 SFT（不使用 RL）**让单题推理也变短。
 
-### 路线 C：通过 RL 学会是否推理、推理多长
+**关键局限**：模型可能只是在模仿示范中的推理长度、任务难度偏好或特定格式；不能直接证明它已学会“这次额外思考能提高多少未来任务回报”。但新近的 CogRouter、Learning When to Plan 等研究仍依赖不同形式的 SFT 冷启动，不能误以为 RL 已全面替代 SFT。
 
-这是**已经存在、而且相当成熟的一条路线**：
+### 路线 C：直接用 RL 学习 Think/NoThink 与推理预算
 
-- [AdaptThink: Reasoning Models Can Learn When to Think](https://arxiv.org/abs/2505.13417)（2025）：用带约束的 RL 让模型在 Thinking 与 NoThinking 间选择，采用 importance sampling 防止模式探索失衡；在公开实验中的小模型数学任务上减少平均输出长度。
-- [AdaCoT: Pareto-Optimal Adaptive Chain-of-Thought Triggering via Reinforcement Learning](https://arxiv.org/abs/2505.11896)（2025）：围绕任务表现与 CoT 调用成本优化 Pareto 权衡，用 selective loss masking 缓解触发模式坍缩。
-- [Think Only When You Need with Large Hybrid-Reasoning Models](https://arxiv.org/abs/2505.14631)（2025）：Hybrid Fine-Tuning 后进行在线 Hybrid Group Policy Optimization，让模型从任务反馈中学习使用哪种推理模式。
-- [KAT-V1](https://arxiv.org/abs/2507.08297)（2025）：混合数据、冷启动与 Step-SRPO 结合，强调模式选择和回答表现的联合学习。
-- [Learning When to Think: Adaptive Reasoning for Test-Time Compute Allocation](https://arxiv.org/abs/2608.20256)（2026）：直接在输出开头选择 NoThink / Short / Long，用 GRPO 加模式相关的长度激励与上限训练，不需要独立 router；主要在数学任务中验证。
-- [Adaptive Test-Time Compute Allocation via Constrained Policy Optimization](https://arxiv.org/abs/2604.14853)（2026）：把问题表示为准确率—预算约束，在离线阶段求解各样本的计算配置，再学习轻量选择器；更像带预算的路由而非闭环自我调整。
+这里已经**明确有针对推理成本、模式选择的 RL 设计**，不是仅在最后给答案一个 0/1 奖励：
 
-**这条路线解决了很多“单个问题该思考多久”的问题。** 不能把“用 GRPO 训练 Think/NoThink”重新命名就声称是新研究。但单轮数学题的最优推理模式不等于长时 Agent 中每一步的最优思考时机。
+- [AdaptThink](https://arxiv.org/abs/2505.13417)（2025）：约束 RL，让模型决定是否使用长 CoT，并处理模式探索失衡；主要是单轮推理任务，不能外推为已经学会机器人闭环直觉。
+- [AdaCoT](https://arxiv.org/abs/2505.11896)（2025）：围绕答案性能与触发 CoT 的成本做 Pareto 优化，关注统一惩罚带来的退化。
+- [Thinkless](https://arxiv.org/abs/2505.13379)（2025）：`<short>` / `<think>` 两个控制 Token；Decoupled GRPO 将**模式 Token 的优化**与**答案生成的优化**分开，缓解一味切换到单个模式。源码：[VainF/Thinkless](https://github.com/VainF/Thinkless)。
+- [Think Only When You Need with Large Hybrid-Reasoning Models](https://arxiv.org/abs/2505.14631)（2025）：Hybrid Fine-Tuning + 在线 Hybrid Group Policy Optimization（HGPO）。
+- [KAT-V1](https://arxiv.org/abs/2507.08297)（2025）：混合模式的蒸馏、冷启动与后续 RL；并非单纯的 SFT 路线。
+- [Learning When to Think](https://arxiv.org/abs/2608.20256)（2026）：通过 NoThink/Short/Long 模式与 GRPO 长度相关激励学习选择，侧重数学问题。
+- [Adaptive Test-Time Compute Allocation via Constrained Policy Optimization](https://arxiv.org/abs/2604.14853)（2026）：以准确率—预算约束学习每题的计算配置，更偏预算分配或路由，不等于闭环的重规划。
 
-### 路线 D：跨轮推理复用与冗余删除
+**这些工作已经回答了一部分“简单题不必每次深思考”**。但测试的是回答正确率和推理输出成本居多，较少直接衡量整个 Agent 的执行延迟、异常恢复以及多步工作吞吐。
 
-[RACE: When Should Agents Think? Adaptive Reasoning via Cross-Turn Estimation](https://arxiv.org/abs/2610.12061)（2026）试图从历史推理覆盖后续动作的角度删掉冗余 CoT。其 LoGiC 检查的是**在固定原轨迹中删去推理后，原始动作的条件 log-likelihood 是否明显下降**，据此合成 SFT 数据，并结合在线 GRPO 训练。
+### 路线 D：奖励“哪里多想有用”，而不再对所有 Token 一刀切
 
-它的实际价值是降低推理 Token，尤其适合重复工具操作。但不能把原始 Action 的似然稳定直接等同于“这段推理对最终成功无影响”：
+[CARE — *To Think or Not to Think: Allocating Reasoning Where It Helps*](https://arxiv.org/abs/2609.29664)（2026-09）指出，把题目难度等同于延长 CoT 的价值并不可靠；增量推理收益可能主要集中在**部分可解**的题目。CARE 在 GRPO 的一组在线采样答案中，将推理长度较短的一半与较长的一半比较正确率，再按比较结果给长度奖励确定方向。
 
-1. 删除后的 Agent 未必沿原始动作轨迹运行，后续 Observation 可能分叉。
-2. 推理可能只在少见异常状态下体现价值，成功轨迹无法充分说明。
-3. 节省 Token 可以来自**每轮推理变短**，不全是“跳过推理轮次”。
+用**便于理解的示意**而非作者全部实现细节表示：
 
-我认可**跨轮知识不需要机械重复**；对“以原动作 likelihood 判定推理价值”，我保留明显的怀疑。更应该比较从相同状态分别使用 Think / NoThink 出发的独立闭环结果。
+$$
+d(q)=\operatorname{sign}\!\left(
+\overline{\mathrm{correct}}_{\mathrm{long},q}
+-\overline{\mathrm{correct}}_{\mathrm{short},q}
+\right),\qquad
+r_i \approx r_{\mathrm{correct},i}+ d(q)\frac{L_i}{L_{\max}} .
+$$
 
-### 路线 E：让 Agent 在环境交互中决定什么时候规划
+- 长组正确率更高：鼓励增加长度；短组更高：鼓励缩短；两组相同：长度激励为中性。
+- 作者报告在所测数学推理基准上，Pass@1 最多提升约 **4 个百分点**，推理长度最多降低约 **37%**；这是**论文所报特定设置的结果，不是所有模型/任务的保证**。
+- **重要的证据边界**：同题短/长回答的正确率差异仍是在线采样中的**相关性代理**，而非对长度本身的随机化因果干预；它既未验证多步工具 Agent，也未直接验证机器人在线任务的参数化直觉。
 
-这条路线和我的兴趣最接近，但同样已有明确先例：
+CARE 是“给推理行为更精细的 RL 信号”的实在例子，同时也说明：**有奖励 ≠ 奖励已准确测量一次思考的真实价值**。
 
-**[Learning When to Plan: Efficiently Allocating Test-Time Compute for LLM Agents](https://arxiv.org/abs/2509.03581)**（2025）已经提出：规划、继续执行，以及何时重规划，应考虑规划带来的未来任务收益、计算成本和计划漂移（plan drift）。它先通过 SFT 教给模型多样化的规划行为，再用交互式 RL 优化任务回报与规划成本。在 Crafter 等环境中，比固定频率规划更有效。**因此“通过 RL 学何时重新规划”本身并不是新点。**
+### 路线 E：让 LLM Agent 在多轮任务中学习认知深度及跨轮推理复用
 
-**[When to Plan: Learning to Select Between Reactive Control and Deliberative Planning](https://arxiv.org/abs/2607.16421)**（2026；2026-10 修订）进一步以 RL 训练 meta-policy，在 reactive controller 与不同计算深度的 planner 之间选择，优化考虑行动与规划时间的任务回报。在若干导航与操作环境中，它优于固定计算策略。但它还依赖专门的 meta-policy 与手工设计的状态/不确定性特征，作者也指出高维视觉表示与泛化问题。
+**[CogRouter — Think Fast and Slow: Step-Level Cognitive Depth Adaptation for LLM Agents](https://arxiv.org/abs/2602.12662)**（2026）将推理分成四档，从较直觉的响应到更完整的规划。其 CoSFT 教会不同模式；CoPO 在 RL 中为**每个步骤**分配不同 Advantage，利用各深度模式下**原动作的平均 Log-Probability / confidence** 重新加权，而非把全轨迹成功奖励机械地同等归到所有步骤。
 
-这两个工作已经覆盖了**计划失效、反应控制与重规划、计算成本的联合权衡**。真正想向前推进，必须面对更开放的工具 Agent、视觉观察、状态估计、错误恢复和复杂风险，而不是只提出“再规划的触发器”。
+论文报告在 ALFWorld、ScienceWorld 两个基准中，Qwen2.5-7B 平均成功率 **82.3%**，比对应 GRPO 基线少使用 **62%** 的轨迹 Token；其对照还显示，常规 GRPO/GiGPO 容易过度集中于最高推理档位，**更具体的信用分配确实很重要**。[原文公式、消融及表格](https://arxiv.org/html/2602.12662v1)。
 
-### 路线 F：动态分配搜索、验证和采样预算
+但 CoPO 的步骤级依据仍是“多大推理程度更支持**原始动作**”，并没有对每一种模式独立执行真实环境后续分支；即使前一条轨迹成功，也不能保证此代理等价于新策略的反事实收益。四档推理本身是**人工预定义**的，不意味着模型自主发现一切认知结构。
 
-不是所有额外计算都必须变成更长的 CoT。[Adaptive Test-Time Reasoning via Reward-Guided Dual-Phase Search](https://arxiv.org/abs/2509.25420)（2025）把规划与执行区分，在搜索中通过奖励反馈动态分配计算。[What If We Allocate Test-Time Compute Adaptively?](https://arxiv.org/abs/2602.01070)（2026）讨论训练免、模块化验证下的自适应推理预算。
+**[RACE — When Should Agents Think?](https://arxiv.org/abs/2610.12061)**（2026-10）从另一角度处理多轮重复思考：LoGiC 逐步删去部分历史 Thinking，检查**当前及随后参考动作的条件似然**是否显著退化，用于构建训练信号，再以 SFT 和 Agentic RL 让模型学习跳过冗余推理。它不是简单对每个动作看一次 likelihood，也**没有直接用重新执行的反事实环境成功率定义全部删减信号**。
 
-重要启发：真正的元决策可能是“多想一会儿”“看一次环境”“运行一个测试”“验证一个候选”“直接执行”之间的选择，而不只是生成多少 Thinking Token。
+**两者共同推动了“跨轮/步骤级推理信用分配”，但都没有把 Action Likelihood 自动等同于决策的真实价值。**
 
-## 4. 一张表看清代表工作和证据边界
+### 路线 F：在环境交互中学习“什么时候规划、规划多远、何时直接行动”
 
-| 工作 | 自适应对象 | 主要学习信号/机制 | 目前不能直接推出的结论 |
+这条路线**已有多个直接先例**：
+
+- [Learning When to Plan: Efficiently Allocating Test-Time Compute for LLM Agents](https://arxiv.org/abs/2509.03581)（2025）：先用多样规划轨迹做 SFT，再在 Crafter 等长程环境通过 RL 优化任务回报与规划开销；学习何时规划、何时执行，而非每轮强制 Think。
+- [SR²AM — Efficient Agentic Reasoning Through Self-Regulated Simulative Planning](https://arxiv.org/abs/2605.22138)（2026）：在**同一 LLM 的结构化推理阶段**区分 System I（反应行动）、System II（前瞻模拟/规划）和 System III（自调节何时/多深规划）；提供不同数据构建方式并采用 SFT→RL。论文报告 RL 后**平均规划跨度 +22.8%，规划频率仅 +2.0%**。这是“更远规划而非更频繁规划”的有趣证据；但不能把规划跨度变化直接归因于专门的“跨度奖励”，也不能将内部三个推理阶段说成三个独立网络。评测任务覆盖数学、科学、表格与网络信息查找，**不是物理机器人闭环**。
+- [When to Plan: Learning to Select Between Reactive Control and Deliberative Planning](https://arxiv.org/abs/2607.16421)（2026；[RLC 2026/RLJ](https://rlj.cs.umass.edu/2026/papers/Paper94.html)）：训练 Meta-Policy 在 Reactive Policy 与更慢 Planner 之间做计算决策，并利用响应不确定性。其训练实验还展示了**随着 Reactive Policy 改善，系统可以减少 Planner 调用**。但这是反应控制器 + Planner + Meta-Policy 的**分立组件**，不能说一个通用 LLM 已经靠少写 CoT 获得了参数化机器人直觉。
+
+这些方法与“有限思考机会可能提高规划价值”的研究兴趣最接近。**它们支持学习决策时计算分配的可行性，却没有直接验证“训练时限制 CoT 次数，是使统一模型获得可迁移快速行动能力的因果机制”。**
+
+### 路线 G：资源感知的机器人推理调度与工具/搜索预算
+
+[RARRL — When Should a Robot Think? Resource-Aware Reasoning via Reinforcement Learning for Embodied Robotic Decision-Making](https://arxiv.org/abs/2603.16673)（2026；8 月更新）明确将推理耗时与资源视为高层 Agent 编排决策的因素：何时调用推理、使用何种角色、投入多大预算。论文所述环境使用源于 ALFRED 的经验延迟配置，目标是改善成功率和延迟。**RL 主要针对高层编排，不是对整个语言模型的全部权重进行“直觉内化”训练；仿真/经验延迟结果也不等同于实体机器人硬实时验证。**
+
+此外，[Adaptive Test-Time Reasoning via Reward-Guided Dual-Phase Search](https://arxiv.org/abs/2509.25420)（2025）和 [What If We Allocate Test-Time Compute Adaptively?](https://arxiv.org/abs/2602.01070)（2026）关注规划、验证、搜索或采样预算。重要的决策不止是“多生成 CoT”，还包括“再观察一次”“调用验证器”“执行测试”“直接行动”之间的机会成本。
+
+## 4. 对比的不仅是论文名称，更是“RL 奖励到底给了谁”
+
+### 4.1 五种训练信号：不能都叫成“直接奖励思考价值”
+
+| 训练信号 | 代表 | 模型真正收到什么 | 仍然没有证明什么 |
 | --- | --- | --- | --- |
-| AdaptThink（2025） | Think / NoThink | 约束 RL、模式采样 | 已学会长时环境中的重规划 |
-| AdaCoT（2025） | CoT 触发率与成本 | PPO、Pareto 权衡、SLM | 所有工具场景都能泛化 |
-| Hybrid-Reasoning Models（2025） | 混合推理模式 | HFT + 在线 HGPO | 显式推理次数等于决策质量 |
-| KAT-V1（2025） | 自动选择推理模式 | 数据合成、蒸馏、Step-SRPO | 公开了任何闭源模型的内部训练流程 |
-| Learning When to Plan（2025） | 跨轮规划/重规划 | SFT 初始化 + 环境 RL + 成本 | 已解决开放工具、视觉、机器人场景 |
-| Adaptive Compute via CPO（2026） | 每题计算预算 | 拉格朗日约束 + 模式选择器 | 无需状态反馈的路由器能处理计划失效 |
-| When to Plan（2026） | Reactive 与规划深度选择 | 元策略 RL | 手工元特征自动迁移到任意 Agent |
-| Learning When to Think（2026） | NoThink / Short / Long | GRPO + 模式成本约束 | 数学题的 mode selection 等于跨轮元推理 |
-| RACE（2026） | 跨轮删除 CoT | 参考动作 likelihood + SFT/GRPO | 似然不变等于反事实任务价值不变 |
+| **SFT 标签与蒸馏** | ConPress、CogRouter/CoSFT、Learning When to Plan 的冷启动 | 教师给定的模式、简洁推理或规划轨迹 | 模型独立学会了选择计算时机 |
+| **终局任务回报 + 计算成本** | Learning When to Plan、部分混合推理 RL | 成功任务带来回报，规划 Token/耗时有代价 | 每个 Thinking 节点的真实边际贡献已被准确归因 |
+| **显式推理模式 / 长度奖励** | AdaptThink、Thinkless、AdaCoT、CARE | Think/NoThink、控制 Token 或按条件改变长度偏好 | 减少语言 CoT 会引起动作技能参数化 |
+| **步骤级代理与置信度重加权** | CogRouter/CoPO、RACE/LoGiC | 推理模式与原动作概率/似然的关系，辅以任务 RL | 原动作更可预测等于独立闭环更成功 |
+| **独立元策略 / 推理服务调度** | When to Plan、RARRL | 元策略学习何时使用 Reactive/Planner/Verifier 及预算 | 原生 LLM 本体的行动参数已经学会无需外部 Planner |
 
-文献里的“成本”也各不相同：有的是输出 Token，有的是调用频次或规划深度，有的是包含环境步数和计算开销的回报。**跨论文不能只比较节省比例，而不比较基线、成功率、评估协议与端到端成本。**
+**把 RL 奖励拆成三层更准确：**
+1. **Outcome Reward**：任务到底成没成功？
+2. **Cost Shaping / Budget Constraint**：完成它花了多少 Token、规划次数、实际时延？
+3. **Reasoning Credit Assignment**：是哪一次思考让某个后续决策更好？这里最难，常用 confidence / action likelihood / sampled accuracy 近似，而非昂贵的真实环境反事实分支。
+
+一个概念化的成本敏感目标是
+
+$$
+J(\pi)=\mathbb E\!\left[R_{\mathrm{task}}
+-\lambda_{\mathrm{tokens}}C_{\mathrm{tokens}}
+-\lambda_{\mathrm{latency}}C_{\mathrm{wall}}
+-\lambda_{\mathrm{tools}}C_{\mathrm{tools}}\right].
+$$
+
+它并不要求人为写出每一段 CoT 的“正确推理”标签；只要策略能控制何时 Think，RL 就可能学习其价值。但**终局奖励并不会自动解决步骤级 Credit Assignment**，使用固定 $-\lambda C$ 也不等于计算了额外推理的因果收益。
+
+### 4.2 哪些工作对我的兴趣最有证据价值？
+
+| 论文 | 学到的自适应对象 | 代表证据 | 对“直觉内化”假设的边界 |
+| --- | --- | --- | --- |
+| [Thinkless](https://arxiv.org/abs/2505.13379)（2025） | 控制短/长推理的 Token | DeGRPO 分开学习模式与答案 | 主要是单题推理选择 |
+| [AdaptThink](https://arxiv.org/abs/2505.13417)（2025） | 是否触发详细 CoT | 有成本意识的模式 RL | 非闭环机器人动作 |
+| [CARE](https://arxiv.org/abs/2609.29664)（2026） | 长度奖励的方向 | 长/短在线采样正确率；数学任务 | 仍是长度—正确率相关性 |
+| [CogRouter](https://arxiv.org/abs/2602.12662)（2026） | 每步四档认知深度 | CoSFT+CoPO、步骤级置信度 | 原始 Action Confidence Proxy |
+| [RACE](https://arxiv.org/abs/2610.12061)（2026） | 跨工具轮推理冗余 | LoGiC+SFT+Agentic RL | 参考轨迹似然不等于环境反事实 |
+| [Learning When to Plan](https://arxiv.org/abs/2509.03581)（2025） | 是否规划与何时重规划 | SFT→环境 RL、规划成本 | Crafter 等环境，不是通用视觉机器人 |
+| [SR²AM](https://arxiv.org/abs/2605.22138)（2026） | 反应/规划/规划自调节 | 规划跨度 +22.8%，频率 +2.0% | 结构化 CoT 并非动作参数化直觉 |
+| [When to Plan](https://arxiv.org/abs/2607.16421)（2026） | Reactive 与 Planner 选择 | Reactive 改善后更少规划 | 外部分立策略，不是统一 LLM |
+| [RARRL](https://arxiv.org/abs/2603.16673)（2026） | 机器人高层推理预算/调用 | 资源感知的高层 RL 编排 | 非实体机器人通用低层控制 |
+
+跨论文数字只在各自的模型、数据集与评价协议中有效；**不能把 Token 节省、任务成功、Planner 调用次数与机器人真实延迟混成一条排行榜。** 也不能把 arXiv 摘要中的宣称一律视为已独立复现。
 
 ## 5. 我更认可的路线：闭环学习的自适应推理
 
@@ -201,7 +252,26 @@ $$
 
 这个目标不直接告诉模型何时该 Think；它只让额外计算在**实际帮助完成任务**时值得付费。这与 Learning When to Plan 的成本敏感 RL 思路一脉相承，并非从零提出。
 
-### 5.2 我理想中的学习流程
+### 5.2 新研究对“奖励 Thinking”的启发：从压缩 Token 到边际决策价值
+
+与其问“RL 有没有给思考奖励”，更有用的是区分 **Outcome Reward、Cost Shaping 和 Reasoning Credit**。前两种能促使策略学习节省计算；但没有优质的信用分配，RL 容易塌缩成永远深思考、永远 NoThink，或只追求表面上的短输出。
+
+CogRouter 的 CoPO 用原动作 Log-Probability 改善步骤级 Advantage；CARE 用长短采样的相对正确率，决定长度奖励正负；RACE 用删除部分 CoT 后参考动作似然是否退化，识别可省略的推理；SR²AM 则展示任务反馈训练后规划跨度可以增长，而规划次数基本不变。这些都比固定长度惩罚更有信息量，但 **Proxy 并不等价于真实 Value of Computation（VoC）**。
+
+理想化地，对于相同可恢复历史 $h_t$，比较**独立运行后续环境**得到的结果：
+
+$
+\mathrm{VoC}(h_t) \approx
+\mathbb E[R_{\mathrm{future}}\mid h_t,\mathrm{THINK}]
+-\mathbb E[R_{\mathrm{future}}\mid h_t,\mathrm{ACT}]
+-\lambda C_{\mathrm{think}}.
+$
+
+其中 ACT 也可能主动观察或采取安全受约束的直接行动；为比较准确，应控制动作/环境随机性、工具状态和预算条件。**这不是声称已解决的奖励函数或免费的在线计算**：真实反事实 Rollout 很昂贵，通常只能在可重置模拟环境、少量关键状态或离线训练时估计。部署时更现实的是让模型利用这些经验**参数化地预测**何时值得花计算。
+
+一个合理的学习现象是：常见动作逐渐由快速行为策略稳定完成，而遇到困难状态时仍能调动深推理；不能把“推理调用更少”本身当成这个现象的证明。
+
+### 5.3 我理想中的学习流程
 
 **阶段一：提供行为覆盖，而非人为定义“正确触发器”。** 在安全可重复的环境中采样多种轨迹：无需重新规划的顺利执行、工具失败、环境变化、计划漂移、主动观察、短推理和深推理。可使用 SFT 做最低限度的格式与行动能力冷启动，避免初期 RL 只学会无效调用。
 
@@ -211,7 +281,7 @@ $$
 
 **阶段四：测试泛化，而非只看平均省钱。** 在未见任务、长轨迹、外部干扰、状态延迟、失败工具和不同风险场景中测试；尤其检查模型是否在“看似简单但错误很贵”的时候也盲目跳过推理。
 
-### 5.3 为什么我不想把手写触发规则当最终答案？
+### 5.4 为什么我不想把手写触发规则当最终答案？
 
 人写的规则可以作为强基线、安全兜底或冷启动，但未必能反映任务实际价值：
 
@@ -222,7 +292,7 @@ $$
 
 因此，与其指定 $\text{uncertainty}>c$ 才触发 THINK，我更希望通过任务反馈学习**哪个时刻、哪种附加计算、在什么成本下真正改善了结果**。但这只是更值得尝试的方向；强启发式或独立 router 也可能在相同预算下表现一样好。
 
-### 5.4 真正困难的不是写出奖励公式
+### 5.5 真正困难的不是写出奖励公式
 
 1. **归因困难**：一次重新规划是否有价值，可能要在十几步后才能看到；终局奖励稀疏，会导致元动作的信用分配很难。
 2. **模式坍缩**：若惩罚计算过强，模型可能永远不思考；过弱则永远深推理。需要预算扫描、策略熵/探索控制和真实成功率验证。
@@ -242,17 +312,18 @@ $$
 1. 永不显式推理 / 每轮显式推理 / 固定间隔推理。
 2. 简单规则（错误触发、状态变化、uncertainty、预算阈值）与固定推理深度。
 3. 独立 mode/router 模型（按预算监督）和纯 SFT 的模式标签学习。
-4. AdaptThink/KAT 风格的模式 RL、Learning When to Plan 风格的交互 RL，以及 RACE 风格的跨轮筛选（若能复现）。
-5. 同一个 Agent 联合学习**行动 + 是否观察/推理/重新规划**；每个组件单独做消融。
+4. AdaptThink/Thinkless 模式 RL、CARE 长度奖励、CogRouter/CoPO 步骤级信用分配、RACE 跨轮筛选，以及 Learning When to Plan/SR²AM 的交互规划 RL（按可复现条件取舍）。
+5. 独立调度器（When to Plan / RARRL 风格）与统一 Agent 内生决策分别测试；同一个 Agent 联合学习**行动 + 是否观察/推理/重新规划**，并单独做消融。
+6. 在推理阶段按相同预算截断 CoT 的模型，必须与**训练阶段经历预算约束并实际更新参数的模型**严格区分。
 
-在**相同总计算预算、训练数据量、环境交互次数和工具成本**下汇报；若不能完全匹配，必须明确列出差额，而不只对齐训练 step。
+在**相同总训练计算预算、数据量、环境交互次数和工具成本**下汇报；若不能完全匹配，必须明确列出差额，而不只对齐训练 step。测试时则固定**在线端到端时长与 Token 预算**，报告成功率和达到质量门槛的任务吞吐，避免更快但更差的策略被误认为效率提升。
 
 ### 关键指标
 
 - **固定预算内有效产出**：相同总在线时间和 Token 上限内，达到预设质量门槛的完成任务数；不能用生成字数代替产出。
 - **机器人在线价值**：高层决策延迟分布、观测到动作的年龄、控制反馈滞后、任务耗时、碰撞/拒绝执行率（在安全执行约束不变的前提下）。
 - **直接行动与内化检验**：在取消原轨迹/Skill 提示、跨任务与状态扰动后，短/无显式 CoT 的成功率是否提升；必须和仅推理时压缩的模型对比。
-- **规划机会分配**：重要阶段前的规划质量、计划保持有效的步数、异常时重新规划的恰当性；不以“单次 CoT 变长”代替规划质量。
+- **规划机会分配**：重要阶段前的规划质量、计划保持有效的步数/跨度、异常时重新规划的恰当性、规划频率；不以“单次 CoT 变长”代替规划质量。
 - **主要结果**：独立未见任务的闭环成功率 / 任务回报。
 - **效率**：Thinking Token、实际推理延迟、Prefill、工具调用次数、端到端耗时及预算超标率。
 - **鲁棒性**：状态扰动、动作失败、错误恢复、不可逆错误率、错误地跳过必要推理的比例。
@@ -271,26 +342,35 @@ $$
 
 若学习策略不能显著超越简单的“失败后重规划”或“固定间隔规划”，在同成本下也不能提高成功率/恢复能力，那么更复杂的元学习就不值得继续投入。
 
-## 7. 我的当前判断与阅读优先级
+## 7. 当前判断与阅读优先级
 
-**结论一：自适应推理已经是成熟研究方向。** 尤其单轮 Think/NoThink 和混合推理训练，2025 年就有多条公开路线；Claude 的产品接口证明这种行为也具有实际应用价值，但不揭示内部算法。
+**结论一：自适应推理早已不只是 SFT。** AdaptThink、Thinkless、CogRouter、CARE、RACE 和 Learning When to Plan 等分别把模式、预算、跨步信用分配或环境回报放进 RL。尤其 **CogRouter 已明确揭示普通轨迹级 GRPO 可能塌缩为无差别深思考；CARE 表明固定惩罚长推理并不合理**。说“RL 根本没有对思考施加训练信号”是不准确的。
 
-**结论二：只减少 Thinking Token 不是我最关心的目标。** 成功率保持不变的成本压缩是有用的系统优化，但它并不自动证明 Agent 真正理解了什么时候思考有价值。
+**结论二：奖励一次 Thinking 的真实价值，仍远未被充分解决。** 目前奖励常是“成功率 - 推理成本”、采样正确率差异、原动作概率或独立元策略的收益。这些都可能有效，但“输出更短”“当前动作更可预测”不保证反事实长期收益；很多工作尚未使用**相同初态下的独立闭环后续轨迹**估计新一次推理是否真正值得。
 
-**结论三：我最认可“在线环境反馈 + 成本敏感元决策 + 闭环检验”。** 但 Learning When to Plan（2025）和 When to Plan（2026）已经覆盖核心思想；值得继续学习的是它们在环境反馈、信用分配、计划漂移和 compute-aware policy 上的具体设计，以及它们未解决的泛化边界。
+**结论三：我仍更关心经验能否内化为参数化直觉。** When to Plan 以 Reactive 与 Planner 的分立系统展示了反应策略增强后可以减少规划，SR²AM 展示规划跨度增加而频率增幅有限。二者支持“训练应重视计算分配和可靠执行”，却都不能证明**仅通过限制统一 LLM 的 Thinking 次数**就能形成可迁移的状态—行动直觉。这个假设需要同权重、同训练预算、无 Skills 提示及未见任务泛化的对照实验证明。
 
-推荐阅读顺序：
+**结论四：固定时间与 Token 预算下的有效产出，以及真实机器人时延，是部署价值的核心；** 单一平均 CoT 长度不是最终指标。RARRL 提醒我们外部元策略也可能有应用价值；内生元决策是否更好，应通过真实成本与相同环境结果比较，而不是凭架构品味定优劣。
 
-| 优先级 | 文献 | 重点读什么 |
+### 阅读顺序与明确的精读对象
+
+| 优先级 | 论文 | 我重点学什么？ |
 | --- | --- | --- |
-| **精读** | [Learning When to Plan](https://arxiv.org/abs/2509.03581) | 理论框架、Plan Drift、SFT→RL、规划成本与策略收益 |
-| **精读** | [When to Plan: Reactive vs Deliberative](https://arxiv.org/abs/2607.16421) | Meta-policy、成本敏感的 RL、手工特征与消融 |
-| **精读** | [RACE](https://arxiv.org/abs/2610.12061) | LoGiC 的具体概率代理、真正做过与没做过的反事实 |
-| **细读** | [AdaptThink](https://arxiv.org/abs/2505.13417) · [Hybrid-Reasoning Models](https://arxiv.org/abs/2505.14631) | 从在线奖励学 Think/NoThink；模式坍缩与训练配方 |
-| **细读** | [KAT-V1](https://arxiv.org/abs/2507.08297) · [AdaCoT](https://arxiv.org/abs/2505.11896) | 冷启动数据、模式监督、选择性 loss、成本约束 |
-| **了解** | [Learning When to Think](https://arxiv.org/abs/2608.20256) · [Compute Allocation via CPO](https://arxiv.org/abs/2604.14853) | 三档深度、首 Token 选择与预算路由 |
+| **精读** | [Learning When to Plan](https://arxiv.org/abs/2509.03581) | SFT 冷启动到交互 RL、规划价值、成本与 Plan Drift；和固定策略的消融 |
+| **精读** | [CogRouter](https://arxiv.org/abs/2602.12662) | 四档模式、CoPO **步骤级 Advantage** 公式、Action Confidence Proxy 的合理性和失败边界 |
+| **精读** | [SR²AM](https://arxiv.org/abs/2605.22138) | System I/II/III 到底是何种可训练结构、SFT→RL、规划跨度/频率变化与消融 |
+| **精读** | [When to Plan](https://arxiv.org/abs/2607.16421) | Reactive Policy/Planner/Meta-Policy 的训练分工、模仿规划后的直觉式直接行动与迁移边界 |
+| **精读** | [RACE](https://arxiv.org/abs/2610.12061) | LoGiC 的跨轮删除条件、训练信号、它和真实后续环境价值之间的差距 |
+| **细读** | [CARE](https://arxiv.org/abs/2609.29664) · [Thinkless](https://arxiv.org/abs/2505.13379) | “何时应多想”的长度奖励方向；模式 Token 与答案 Loss 怎样解耦 |
+| **细读** | [RARRL](https://arxiv.org/abs/2603.16673) | 时延/资源进入 RL、外部调度器与 LLM 本体训练的区别、模拟部署可推广性 |
+| **细读** | [AdaptThink](https://arxiv.org/abs/2505.13417) · [AdaCoT](https://arxiv.org/abs/2505.11896) · [KAT-V1](https://arxiv.org/abs/2507.08297) | RL 的成本项、模式坍缩、冷启动数据与训练配方 |
+| **了解** | [ConPress](https://arxiv.org/abs/2602.01472) · [Learning When to Think](https://arxiv.org/abs/2608.20256) · [Compute Allocation via CPO](https://arxiv.org/abs/2604.14853) | SFT 推理压缩与 RL 选择究竟有何不同 |
 
-最后保留一个开放判断：在大型通用 Agent 中，**学会何时思考**可能不只是输出路由问题，而是具有“行动—观察—推理—验证”多种操作的长期决策问题。我对此持续感兴趣，但并不把它误称为尚未被研究的全新主张。
+### 仍没有得到充分证明的关键判断
+
+我想检验的不是“用某个奖励减少 CoT”，而是：**模型能否把曾经依赖长推理才能完成的操作，经过训练转化为快速可靠的参数化行为，并把节省出的计算用于真正关键的规划与验证？**
+
+只有同时证明**无原历史/Skill 上下文时更强的直接行动、关键时刻更准确的推理选择，以及相同在线成本下更多成功任务**，才有力支持这一判断。现有工作正在靠近，但不应把它写成已经被证明的科研结论。
 
 ## 参考资料（原始论文与官方文档）
 
@@ -311,3 +391,10 @@ $$
 15. [Scaling Competence, Shrinking Reasoning: Cognitive Signatures in Language Model Learning](https://www.microsoft.com/en-us/research/publication/scaling-competence-shrinking-reasoning-cognitive-signatures-in-language-model-learning/)（2025，相关性观察，不证明因果）。
 16. [ConPress: Learning Efficient Reasoning from Multi-Question Contextual Pressure](https://proceedings.mlr.press/v306/deng26m.html)（ICML 2026）。
 17. [波士顿大学研究揭秘：为什么大脑“练得越多，想得越少”？](https://news.qq.com/rain/a/20250611A02V0N00)（腾讯新闻转载科普，2025；仅作生物自动化现象的直观类比，不作 LLM 机制证据）。
+18. [Thinkless: LLM Learns When to Think](https://arxiv.org/abs/2505.13379)（2025；[代码](https://github.com/VainF/Thinkless)）。
+19. [Think Fast and Slow: Step-Level Cognitive Depth Adaptation for LLM Agents / CogRouter](https://arxiv.org/abs/2602.12662)（2026；[可直接阅读的 HTML 论文](https://arxiv.org/html/2602.12662v1)、[源码](https://github.com/rhyang2021/CogRouter)）。
+20. [Efficient Agentic Reasoning Through Self-Regulated Simulative Planning / SR²AM](https://arxiv.org/abs/2605.22138)（2026）。
+21. [To Think or Not to Think: Allocating Reasoning Where It Helps / CARE](https://arxiv.org/abs/2609.29664)（2026）。
+22. [When Should a Robot Think? Resource-Aware Reasoning via Reinforcement Learning for Embodied Robotic Decision-Making / RARRL](https://arxiv.org/abs/2603.16673)（2026）。
+23. [ConPress: Learning Efficient Reasoning from Multi-Question Contextual Pressure](https://arxiv.org/abs/2602.01472)（2026；SFT、不使用 RL）。
+24. [CogRouter 的论文原文：Step-Level Advantage / CoPO](https://arxiv.org/html/2602.12662v1)；[When to Plan 在 RLC 2026 / RLJ 的论文页面](https://rlj.cs.umass.edu/2026/papers/Paper94.html)。
