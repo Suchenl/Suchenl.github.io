@@ -13,6 +13,8 @@ function page(route){
 }
 const home=page('');
 const blog=page('blog');
+const questions=page('questions');
+const questionDetail=page('research/research/action-sampling-frequency-bias');
 const pubs=page('publications');
 const projects=page('projects');
 const research=page('research');
@@ -20,6 +22,10 @@ const compare=page('research/compare');
 const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
+check(home.includes('href="/questions/"') && home.includes('home-question-card'),'homepage question teaser and link');
+check(questions.includes('action-sampling-frequency-bias') && questions.includes('question-entry'),'public Questions index');
+check(questionDetail.includes('Chronos Policy') && questionDetail.includes('Offline Reinforcement Learning at Multiple Frequencies'),'question note has relevant literature');
+check(readFileSync('src/config.ts','utf8').includes("href: '/questions/'"),'Questions main navigation');
 check(!existsSync(join(root,'about','index.html')),'standalone About route removed');
 check(!home.includes('href="/about/"') && !home.includes('href="/about"'),'no stale About links');
 check(home.includes('href="/work/"') && !home.includes('href="/expertise/"'),'Experience entry remains; Expertise is not linked from homepage');
