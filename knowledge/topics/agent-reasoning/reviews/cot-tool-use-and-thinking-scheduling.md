@@ -14,6 +14,8 @@ categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工�
 >
 > 这里主要依据各模型官方模型卡、官方 API 文档、Codex 开源提示词及 RACE / CogRouter 论文**公开摘要**。未公开的内部 RL 配方和实际训练数据不会被推测成事实。
 
+跨 Claude、OpenAI Responses/Codex 和开源 Agent 的**整体 API—Harness—Execution 分层对照**见[一个 Agent 是如何组织推理、工具调用与跨轮状态的？](../../../research/how-agent-reasoning-tools-and-state-work.md)。本篇着重模型推理调度与状态保留。
+
 ## 1. 先区分四件容易混为一谈的事情
 
 | 机制 | 具体是什么 | 是否调用外部工具？ | 是否改变外部状态？ |
