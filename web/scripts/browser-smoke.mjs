@@ -25,22 +25,22 @@ try {
    if(width<=390){assert.equal(await page.locator('#primary-navigation').isVisible(),false,'Mobile nav should start collapsed');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');}assert(await page.getByText('精选研究成果').count()>0);
    assert((await page.locator('.chips .tag-chip').count())===5,'Original research tags must remain');
    assert((await page.locator('.hero-interests').textContent()).includes('多模态生成'),'Original interests must remain');});
-  await check('Independent Experience and Expertise navigation '+width,async()=>{
+  await check('Experience navigation and unpublished Expertise '+width,async()=>{
    const nav=page.locator('#primary-navigation');
    const experience=nav.locator('a[href="/work/"]');
-   const expertise=nav.locator('a[href="/expertise/"]');
-   const about=nav.locator('a[href="/about/"]');
-   assert.equal(await about.count(),0,'About should not remain a navigation item');
+   assert.equal(await nav.locator('a[href="/about/"]').count(),0,'About should not remain a navigation item');
    assert.equal(await experience.count(),1,'Experience should be a main navigation item');
-   assert.equal(await expertise.count(),1,'Expertise should be a main navigation item');
+   assert.equal(await nav.locator('a[href="/expertise/"]').count(),0,'Expertise should not remain in main navigation');
    await navigate(page,'/');
-   assert.equal(await page.locator('a[href="/about/"]').count(),0,'Homepage must not link to the removed About page');
-   assert.equal(await page.locator('.home-profile-links a').count(),2,'Homepage offers both independent sections');
+   assert.equal(await page.locator('a[href="/expertise/"]').count(),0,'Homepage must not link to hidden Expertise');
+   assert.equal(await page.locator('.home-profile-path > a[href="/work/"]').count(),1,'Homepage retains Experience link');
    await navigate(page,'/work/');
    assert.equal(await experience.getAttribute('aria-current'),'page');
-   await navigate(page,'/expertise/');
-   assert.equal(await expertise.getAttribute('aria-current'),'page');
    await noOverflow(page);
+   if(width===1440){
+    const response=await page.goto(origin+'/expertise/',{waitUntil:'domcontentloaded'});
+    assert.equal(response?.status(),404,'Expertise must not be a published page');
+   }
   });
   await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
   await check('Publications '+width,async()=>{

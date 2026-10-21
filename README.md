@@ -9,13 +9,15 @@ Live at <https://suchenl.github.io/>.
 
 The site source lives in [`web/`](./web):
 
-- `web/src/pages/` — routes (home, blog, publications, work, expertise, unified research)
+- `web/src/pages/` — published routes (home, blog, publications, work, unified research)
+- `web/src/archived/expertise/index.astro` — preserved, unpublished Expertise page source; move back into `src/pages/expertise/` to restore it
+- `web/src/data/expertise.ts` — preserved Expertise dataset (not publicly rendered)
 - `web/src/content/` — blog content (the paper library lives only under knowledge/)
 - `knowledge/` — canonical Chinese-first research library: paper metadata, detailed notes, topic reviews, glossary, hypotheses, AI maintenance rules (rendered at `/research/`)
 - `web/src/pages/research/` — one Research UI combining the former Reading folder tree and deep research pages
 - `/reading/` — legacy URL redirected to `/research/`
 - `web/src/config.ts` — site metadata, navigation, bilingual (中文/EN) strings
-- `web/src/data/` — structured data (publications, expertise)
+- `web/src/data/` — structured data (publications and retained Expertise data)
 - `web/public/` — static assets (images, favicons)
 
 ## Local development
@@ -63,3 +65,7 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 - [论文简介证据核对](docs/PAPER_BRIEF_AUDIT.md)：Publications 每篇简介的核对来源、结论边界及后续维护规则。
 - 检查顺序：`cd web && npm run build`，确认 GitHub Actions 的 [Browser UI smoke](https://github.com/Suchenl/Suchenl.github.io/actions/workflows/browser-smoke.yml) 通过。
 - Safari、VoiceOver 等真实平台需要单独验收；Chromium 的深色及减少动态效果模拟不等同于全设备通过。
+
+## Unpublished Expertise page (2026-10-21)
+
+The owner chose to remove the subjective skill-rating page from the public site while keeping its complete source and data in Git. The saved page lives at `web/src/archived/expertise/index.astro`, outside Astro's `src/pages/` directory. The corresponding `web/src/data/expertise.ts` has not been changed. Do not link to `/expertise/` or republish it unless the owner explicitly asks to restore it. The homepage and the main navigation link directly to Experience instead.
