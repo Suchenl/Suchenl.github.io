@@ -6,17 +6,17 @@ import { getPublicQuestions } from '../../lib/public-questions';
 const questions = await getPublicQuestions();
 ---
 
-<Base title="好奇的问题与探索" description="我在研究过程中不断追问的问题：已有文献、判断边界以及可证伪的实验。">
+<Base title="好奇的问题与探索" description="技术兴趣与研究问题：文献证据、路线对比、个人判断和仍值得探索的方向。">
   <header class="questions-header">
     <p class="questions-eyebrow">QUESTIONS & INTERESTS · CURIOSITY-DRIVEN EXPLORATION</p>
     <h1 class="page-title"><Bi zh="我好奇的问题与探索" en="Questions & Explorations" /></h1>
     <p class="questions-intro"><Bi zh="这里记录我持续好奇的技术兴趣与研究问题：已有工作走到哪里、不同路线怎样权衡，以及我更认可什么。兴趣综述不意味着原创声明，研究设想也不是已验证结论。" en="Technical interests and research questions: prior work, trade-offs, and current perspectives. An interest survey is not a novelty claim, and proposed ideas are not established findings." /></p>
   </header>
-  <section class="question-list" aria-label="公开的研究问题">
+  <section class="question-list" aria-label="公开的研究兴趣与问题">
     {questions.map((q, i) => (
       <article class="question-entry card">
         <div class="question-top">
-          <span class="question-num">QUESTION {String(i + 1).padStart(2, '0')}</span>
+          <span class="question-num">{q.kind === 'interest' ? 'INTEREST' : 'QUESTION'} {String(i + 1).padStart(2, '0')}</span>
           <span class="question-state">{q.kind === 'interest' ? <Bi zh="兴趣专题" en="Interest survey" /> : <Bi zh="持续探索" en="Exploring" />}</span>
           <time datetime={q.date}>{q.date}</time>
         </div>
