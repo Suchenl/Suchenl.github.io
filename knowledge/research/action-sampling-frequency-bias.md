@@ -60,14 +60,14 @@ questionSummaryEn: "An audit of 10 real and simulated robot data sources or coll
 | --- | --- | ---: | --- | --- |
 | **BridgeData V2**（WidowX 250） | 真实机器人 | **5 Hz** | 遥操作控制频率，标称每步 **200 ms** | [项目页 · System Setup](https://bridgedata-v2.github.io/) |
 | **FurnitureBench**（Franka 家具组装） | 真实机器人 | **10 Hz** | 策略输出末端相对位姿与夹爪命令的频率；不同于底层更高频的力矩控制 | [官方系统说明](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) |
-| **Diffusion Policy 实物 UR5** | 真实采集程序 | **默认 10 Hz** | 录制脚本可调的 \`--frequency\` 参数；决定观测与目标执行的安排，不保证所有公开轨迹均如此 | [\`demo_real_robot.py\`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
-| **DROID**（Franka） | 真实机器人 | **15 Hz** | RobotEnv 中 \`control_hz=15\` 的采集端控制配置，标称每步约 **66.7 ms** | [\`droid/robot_env.py\`](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) |
-| **LIBERO**（Franka） | 仿真示范 | **20 Hz** | 原始示范采集和重放转换脚本均采用 \`control_freq=20\`；不代表所有二次加工版本都保持此配置 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
-| **RoboCasa**（厨房） | 仿真环境 | **默认 20 Hz** | 环境构造器的 \`control_freq=20\`，描述**仿真时间**中的动作间隔；可配置 | [\`kitchen.py\`](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) |
+| **Diffusion Policy 实物 UR5** | 真实采集程序 | **默认 10 Hz** | 录制脚本可调的 `--frequency` 参数；决定观测与目标执行的安排，不保证所有公开轨迹均如此 | [`demo_real_robot.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
+| **DROID**（Franka） | 真实机器人 | **15 Hz** | RobotEnv 中 `control_hz=15` 的采集端控制配置，标称每步约 **66.7 ms** | [`droid/robot_env.py`](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) |
+| **LIBERO**（Franka） | 仿真示范 | **20 Hz** | 原始示范采集和重放转换脚本均采用 `control_freq=20`；不代表所有二次加工版本都保持此配置 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
+| **RoboCasa**（厨房） | 仿真环境 | **默认 20 Hz** | 环境构造器的 `control_freq=20`，描述**仿真时间**中的动作间隔；可配置 | [`kitchen.py`](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) |
 | **CALVIN**（Franka） | 仿真基准 | **30 Hz** | 官方声明的连续动作控制频率，支持绝对末端目标或相对末端位移 | [官方 README · Action Space](https://github.com/mees/calvin) |
-| **AgiBot World**（多本体） | 真实机器人数据 / 训练管线 | **30 Hz** | 官方说明数据按 30 Hz 采集；GO-1 预训练默认 \`ctrl_freq=30\`，不能推定所有再处理版本同频 | [官方仓库](https://github.com/OpenDriveLab/AgiBot-World) · [GO-1 默认配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) |
-| **Mobile ALOHA**（移动双臂） | 真实机器人 | **目标 50 Hz** | 录制代码设 \`FPS=50\`、\`DT=0.02\`；并记录实际循环耗时。**50 Hz 是目标而非每段轨迹的实测保证** | [常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) |
-| **PushT**（二维推物体） | 仿真示范 | **默认 10 Hz** | 官方 \`demo_pusht.py\` 的可调 \`--control_hz=10\`，控制录制循环，不等同于实物机械臂速率 | [\`demo_pusht.py\`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
+| **AgiBot World**（多本体） | 真实机器人数据 / 训练管线 | **30 Hz** | 官方说明数据按 30 Hz 采集；GO-1 预训练默认 `ctrl_freq=30`，不能推定所有再处理版本同频 | [官方仓库](https://github.com/OpenDriveLab/AgiBot-World) · [GO-1 默认配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) |
+| **Mobile ALOHA**（移动双臂） | 真实机器人 | **目标 50 Hz** | 录制代码设 `FPS=50`、`DT=0.02`；并记录实际循环耗时。**50 Hz 是目标而非每段轨迹的实测保证** | [常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) |
+| **PushT**（二维推物体） | 仿真示范 | **默认 10 Hz** | 官方 `demo_pusht.py` 的可调 `--control_hz=10`，控制录制循环，不等同于实物机械臂速率 | [`demo_pusht.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
 
 这 10 组配置覆盖了 **5、10、15、20、30、目标 50 Hz** 六种典型时间尺度。以标称间隔比较，5 Hz 的单步 **200 ms** 与 50 Hz 的 **20 ms** 相差十倍；**但只有动作标签都指相同类型的物理量、覆盖相同定义的执行窗口时，才可以直接比较动作尺度**。记录频率、策略推理频率、低层伺服频率和相机帧率不能互换。
 
@@ -92,13 +92,13 @@ questionSummaryEn: "An audit of 10 real and simulated robot data sources or coll
 
 | 案例 | 容易误读的数字 | 真实含义与判断依据 |
 | --- | --- | --- |
-| **RoboTwin** | \`save_freq=15\` | 不是 **15 Hz**。[实际 \`take_dense_action\` 代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)按 \`control_idx % save_freq == 0\` 保存图像，表示**每 15 个内部控制步骤存一次观测**；要知道 Hz 还需仿真时间步。 |
-| **RoboMIND 社区 LeRobot 转换版** | 视频 \`FPS=30\` | [转换版数据卡](https://huggingface.co/datasets/Traly/RoboMIND-lerobot)的写入帧率不等于各原始本体的动作采集率；需对照[原始数据卡](https://huggingface.co/datasets/x-humanoid-robomind/RoboMIND/blob/main/README.md)及时间戳。 |
-| **GO-1 在 LIBERO 微调** | \`ctrl_freq=10\`、\`action_chunk_size=10\` | [微调配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_sft_libero.py)对应特定训练/评测管线，不应覆盖上表**原始 LIBERO 示范采集 20 Hz** 的事实。 |
+| **RoboTwin** | `save_freq=15` | 不是 **15 Hz**。[实际 `take_dense_action` 代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)按 `control_idx % save_freq == 0` 保存图像，表示**每 15 个内部控制步骤存一次观测**；要知道 Hz 还需仿真时间步。 |
+| **RoboMIND 社区 LeRobot 转换版** | 视频 `FPS=30` | [转换版数据卡](https://huggingface.co/datasets/Traly/RoboMIND-lerobot)的写入帧率不等于各原始本体的动作采集率；需对照[原始数据卡](https://huggingface.co/datasets/x-humanoid-robomind/RoboMIND/blob/main/README.md)及时间戳。 |
+| **GO-1 在 LIBERO 微调** | `ctrl_freq=10`、`action_chunk_size=10` | [微调配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_sft_libero.py)对应特定训练/评测管线，不应覆盖上表**原始 LIBERO 示范采集 20 Hz** 的事实。 |
 | **RT-1 / RT-1-X / SimplerEnv** | **3 Hz** | [RT-1 项目页](https://robotics-transformer1.github.io/)、[OXE 推理说明](https://github.com/google-deepmind/open_x_embodiment)与[评测配置](https://github.com/simpler-env/SimplerEnv/blob/main/simpler_env/evaluation/maniskill2_evaluator.py)涉及**策略执行或评测频率**，不能外推为全体训练轨迹的原始采集率。 |
 | **Open X-Embodiment (OXE)** | “统一 10 Hz” | OXE 是多数据集集合，来源及动作空间不一；没有依据给整个集合标一个通用的原始动作采集率。见[原论文](https://arxiv.org/html/2310.08864v9)。 |
 
-**比较这些资料的正确方法**：优先追溯同一具体数据版本的 \`timestamp\`、\`action\` 语义、环境 \`control_freq\`、低层控制器与模型实际消费的 action chunk 时长。单看 \`FPS\` 或变量名 \`save_freq\` 不够。
+**比较这些资料的正确方法**：优先追溯同一具体数据版本的 `timestamp`、`action` 语义、环境 `control_freq`、低层控制器与模型实际消费的 action chunk 时长。单看 `FPS` 或变量名 `save_freq` 不够。
 
 ## 2. 数据格式统一，为什么仍可能有问题？
 
