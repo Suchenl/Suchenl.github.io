@@ -18,7 +18,7 @@ HTTP Header 是请求携带的**协议元数据**，不是模型输入中的 Pro
 anthropic-beta: interleaved-thinking-2025-05-14
 ~~~
 
-Python SDK 可以通过 `betas=["interleaved-thinking-2025-05-14"]` 封装这个 Header。其作用是为**旧版手动 Extended Thinking** 启用交错推理，并不意味着模型增加了一个名为 thinking 的工具。
+Python SDK 在旧模式下应通过 `client.beta.messages.create(..., betas=["interleaved-thinking-2025-05-14"])` 封装这个 Header；**不要把 `betas` 直接传给普通的 `client.messages.create`**。其作用是为**旧版手动 Extended Thinking** 启用交错推理，并不意味着模型增加了一个名为 thinking 的工具。
 
 版本差异：Claude Opus 4.5 / Sonnet 4.5 和更早部分 Claude 4 模型在手动模式下要求这个 Header；较新的支持 Adaptive Thinking 的型号（包括 Claude Opus 5.5）无需它；有些 API 即使接受该 Header，也会忽略它。**Header 被接受 ≠ Header 在该模型上实际生效**。
 
