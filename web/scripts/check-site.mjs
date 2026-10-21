@@ -15,6 +15,7 @@ const home=page('');
 const blog=page('blog');
 const questions=page('questions');
 const questionDetail=page('research/research/action-sampling-frequency-bias');
+const numberContinuityDetail=page('research/research/do-tokenizers-preserve-numerical-continuity');
 const pubs=page('publications');
 const projects=page('projects');
 const research=page('research');
@@ -23,11 +24,29 @@ const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
 check(home.includes('href="/questions/"') && home.includes('home-question-card'),'homepage question teaser and link');
-check((home.match(/class="question-evidence-chip"/g)||[]).length === 8,'eight representative frequency references on homepage');
-check(home.includes('完整数据集对照') && questionDetail.includes('RoboTwin') && questionDetail.includes('control_idx') && questionDetail.includes('FurnitureBench'),'unified source-backed survey and RoboTwin rate-vs-interval correction available');
-check(questionDetail.includes('30 组') && questionDetail.includes('46 个') && questionDetail.includes('UCSD Kitchen') && questionDetail.includes('GR00T N1'),'full current research compares 30 sources and 46 RDT pretraining sources');
-check(!questionDetail.includes('扩展核查') && !questionDetail.includes('新增的真实') && !questionDetail.includes('原先四个'),'reader should not expose editorial update history');
-check(home.includes('目标 50 Hz') && home.includes('UCSD Kitchen') && home.includes('RT-1') && home.includes('BridgeData V2'),'homepage illustrates the range while qualifying the nominal 50 Hz target');
+// Only the two most recent questions appear on the homepage. Older
+// questions must remain discoverable via /questions/ and their canonical
+// Research pages, rather than being permanently pinned on the homepage.
+check(home.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
+  'new numerical-continuity question appears in homepage latest teasers');
+check(questions.includes('/research/research/action-sampling-frequency-bias/') &&
+      questions.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
+  'older and new research questions remain in the complete Questions index');
+check(questionDetail.includes('RoboTwin') && questionDetail.includes('control_idx') &&
+      questionDetail.includes('FurnitureBench'),
+  'frequency research preserves RoboTwin rate-vs-interval correction');
+check(questionDetail.includes('30 组') && questionDetail.includes('46 个') &&
+      questionDetail.includes('UCSD Kitchen') && questionDetail.includes('GR00T N1'),
+  'full current research compares 30 sources and 46 RDT pretraining sources');
+check(!questionDetail.includes('扩展核查') && !questionDetail.includes('新增的真实') &&
+      !questionDetail.includes('原先四个'),
+  'reader should not expose editorial update history');
+check(questionDetail.includes('目标 50 Hz') && questionDetail.includes('UCSD Kitchen') &&
+      questionDetail.includes('RT-1') && questionDetail.includes('BridgeData V2'),
+  'frequency research preserves original source-backed rate range');
+check(numberContinuityDetail.includes('xVal') && numberContinuityDetail.includes('BitTokens') &&
+      numberContinuityDetail.includes('ActionPiece') && numberContinuityDetail.includes('ProAct'),
+  'numerical continuity study renders VLM and VLA source-backed comparisons');
 check(questionDetail.includes('RH20T') && questionDetail.includes('Open X-Embodiment') && questionDetail.includes('尚未验证'),'research note separates audited facts and hypotheses');
 check(questions.includes('action-sampling-frequency-bias') && questions.includes('question-entry'),'public Questions index');
 check(questionDetail.includes('Chronos Policy') && questionDetail.includes('Offline Reinforcement Learning at Multiple Frequencies'),'question note has relevant literature');
