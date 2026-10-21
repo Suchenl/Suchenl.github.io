@@ -116,13 +116,19 @@ const socials = [
         {q.evidence.length > 0 && (
           <div class="home-question-evidence" aria-label="核查过的官方采集及控制频率依据">
             <span class="question-evidence-label"><Bi zh="官方来源" en="Official sources" /></span>
-            {q.evidence.map(e => (
+            {q.evidence.slice(0, 6).map(e => (
               <a class="question-evidence-chip" href={e.source} target="_blank" rel="noopener noreferrer" title={e.name + ' · ' + e.rate}>
                 <span class="qev-name">{e.name}</span>
                 <strong class="qev-rate">{e.rate}</strong>
                 <span aria-hidden="true">↗</span>
               </a>
             ))}
+            {q.evidence.length > 6 && (
+              <span class="question-evidence-label">
+                <span data-l="zh">等 {q.evidence.length} 组已核查来源，更多数据集及证据分级见全文</span>
+                <span data-l="en">{q.evidence.length} source-checked cases; see full research note</span>
+              </span>
+            )}
           </div>
         )}
         <a class="question-more" href={q.href}><Bi zh="查看文献和可验证实验 →" en="Explore evidence and experiments →" /></a>
