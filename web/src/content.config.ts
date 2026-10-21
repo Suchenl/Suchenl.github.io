@@ -41,6 +41,7 @@ const knowledge = defineCollection({
     aliases: z.array(z.string()).optional(),
     summaryZh: z.string().optional(),
     publicQuestion: z.boolean().optional(),
+    questionKind: z.enum(['question', 'interest']).optional(),
     questionTitleEn: z.string().optional(),
     questionSummaryEn: z.string().optional(),
     questionDate: z.string().optional(),
