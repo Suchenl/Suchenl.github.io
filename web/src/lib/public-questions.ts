@@ -13,7 +13,8 @@ export async function getPublicQuestions() {
       summaryZh: entry.data.summaryZh || '',
       summaryEn: entry.data.questionSummaryEn || entry.data.summaryZh || '',
       date: entry.data.questionDate || '',
+      kind: entry.data.questionKind === 'interest' ? 'interest' : 'question',
       evidence: entry.data.questionEvidence || [],
     }))
-    .sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 }
