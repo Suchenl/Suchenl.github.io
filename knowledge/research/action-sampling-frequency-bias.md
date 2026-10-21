@@ -1,57 +1,170 @@
 ---
-title: "不同数据集的动作采样频率，会让机器人策略学到数据集偏置吗？"
-questionTitleEn: "Do different action sampling rates teach robot policies dataset-specific shortcuts?"
+title: "不同机器人数据集的动作采样频率，是否会引入数据集偏置？"
+questionTitleEn: "Do heterogeneous robot action rates induce dataset-specific shortcuts?"
 publicQuestion: true
 questionDate: "2026-10-21"
 categories: ["机器人与具身智能", "数据混合与策略学习"]
-summaryZh: "跨数据集混训时，5 Hz 与 20 Hz 的动作是否携带不同时间尺度，使模型记住数据采样习惯而非可迁移的控制规律？采集阶段统一频率后，这个问题还存在吗？"
-questionSummaryEn: "Can mixing 5 Hz and 20 Hz robot actions teach sampling conventions rather than transferable control? Would standardized data collection remove the issue?"
+summaryZh: "已核实 BridgeData V2（5 Hz）、DROID（15 Hz）、AgiBot World（30 Hz）与 Mobile ALOHA（目标 50 Hz）采用不同采集/控制频率；RH20T 内部也存在 10–200 Hz 多模态采样。频率异构是真实存在的，但它是否导致 VLA 学到数据集捷径，仍需控制动作语义、时间戳与训练采样后的实验验证。"
+questionSummaryEn: "Verified differences include BridgeData V2 (5 Hz), DROID (15 Hz), AgiBot World (30 Hz), and Mobile ALOHA (nominal 50 Hz), plus 10–200 Hz streams within RH20T. Frequency heterogeneity is real; dataset-specific policy shortcuts remain an untested causal claim."
 ---
 
-# 不同数据集的动作采样频率，会让机器人策略学到数据集偏置吗？
+# 不同机器人数据集的动作采样频率，是否会引入数据集偏置？
 
-> **状态：公开的个人研究疑问，尚无自行完成的实验或新方法。** 首次记录：2026-10-21。文献中已有直接相关研究，以下是问题拆解与待验证判断，而不是声称发现了新的偏置。
+> **证据更新：2026-10-21。** 本文是已公开资料的调研与个人研究问题，而非我们自己采集或训练得到的实验发现。主要核查了数据集项目页、原始采集代码、官方训练配置和论文。**结论分三层：频率不同（证实）→ 由此可能产生训练分布差异（机制上合理）→ 策略真的学到了不可迁移的“数据集身份”捷径（尚未验证）。**
 
-## 问题从哪里来？
+## 先给结论
 
-不同机器人数据集的动作控制频率可能相差很大，例如 5 Hz 和 20 Hz。如果在统一模型中直接混训，策略学到的是物理运动规律，还是隐含的“这个数据集每个动作应该走多远、持续多久”的习惯？
+1. **不同数据集的控制/动作记录频率确实不同。** 四个具有直接来源的数据源横跨 **5、15、30、目标 50 Hz**。但这四个数字各自对应的是*项目声明的控制频率、采集代码配置或目标采集速率*，不是我们重新下载全量数据后用时间戳测得的实际频率分布。
+2. **同一个数据集内部的传感模态也可能不同频。** RH20T 的相机和关节状态约 10 Hz、末端位姿和六轴力/力矩 100 Hz，部分触觉 200 Hz；这与“动作频率不同”是有关但不同的问题。
+3. **已有研究直接讨论了多频率训练。** Burns 等研究不同控制频率的离线 RL；2026 年 Chronos Policy 显式建模物理时间；还有 HiPolicy 面向多频率动作块。不过它们没有自动证明“某个跨数据集 VLA 已经学会 dataset shortcut”。
+4. **数据采集标准化是最应该先考虑的修复。** 若能统一动作含义、执行时长、时间戳与下游控制接口，采样率引入的主要歧义可以在数据侧排除；如果混入历史异构数据，仅用插值或把元数据 FPS 设成相同数字并不足够。
 
-需要先明确，**采样频率不是唯一变量**：控制命令的语义（目标位置、相对增量、速度、力矩）、底层控制器、传感器时钟、延迟和数据混合比例，都可能共同影响学习结果。
+## 1. 我核查到了哪些公开数据集？
 
-- **步长偏置**：若标签是每步末端位移，近似匀速下 `Δx ≈ v · Δt`；5 Hz 每步 200 ms，20 Hz 每步 50 ms，相同速度对应的位移增量可相差四倍。若标签是速度而不是位移增量，则不能直接套用这一推导。
-- **动作块时间跨度**：长度同为 16 steps 的 action chunk，5 Hz 对应 3.2 秒，20 Hz 只对应 0.8 秒。模型仅凭 step 位置不一定知道真实的物理时间。
-- **数据权重偏置**：如果按 timestep 等概率采样，相同物理时长下高频轨迹贡献的训练样本更多。这是数据采样权重问题，与动作语义问题需要分开控制。
+下面的频率按**证据所指向的实际含义**记录，避免把相机 FPS、机器人内部伺服频率、动作记录频率、训练重采样频率混成同一个概念。
 
-因此，核心假设应限定为：**在本体、任务、动作语义与样本预算可比时，忽略物理时间的模型是否容易学习无法跨采样频率迁移的捷径？**
+### A. 跨数据集：动作或采集控制循环确实不同
 
-## 是否已有研究？
+| 数据集 | 核查到的频率 | 频率含义及对应时间间隔 | 最直接的官方证据 | 核查结论 |
+| --- | ---: | --- | --- | --- |
+| **BridgeData V2**（WidowX 250） | **5 Hz** | 官方声明的遥操作控制频率，标称 200 ms/step | [原始项目页 · System Setup](https://bridgedata-v2.github.io/) | **明确确认** |
+| **DROID**（Franka） | **15 Hz** | 采集端 RobotEnv 的 **control_hz = 15**，标称约 66.7 ms/step | [官方代码 · droid/robot_env.py](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) | **明确确认配置值**，非全量轨迹实际间隔审计 |
+| **AgiBot World**（多本体） | **30 Hz** | 作者明确称 AgiBot World 数据以 30 Hz 采集；GO-1 预训练将控制频率输入和 chunk size 设为 30，标称约 33.3 ms/step | [官方仓库 · GO-1 训练说明](https://github.com/OpenDriveLab/AgiBot-World#3-start-fine-tuning) · [配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) | **明确确认官方声明** |
+| **Mobile ALOHA**（双臂移动操作） | **目标 50 Hz** | 采集代码设 **FPS = 50, DT = 0.02**，目标 20 ms/step | [官方采集常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [官方录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) | **明确确认目标值**；不能假设每条轨迹都稳定 50 Hz |
 
-**有，且不能把这个现象包装成无人提出的新问题。**
+**重要限定：** Mobile ALOHA 的采集代码显式记录每步耗时、输出实际平均频率，且当所测频率过低（代码阈值为 30）时要求重新采集。因此，这一行应写“**50 Hz 目标**”，不能写成“我们测得原始所有动作都恰好 50 Hz”。DROID 的 15 Hz 同样是公开控制配置，而非本文重新统计的每条轨迹分布。
 
-1. **Burns et al., [Offline Reinforcement Learning at Multiple Frequencies](https://proceedings.mlr.press/v205/burns23a.html)**（CoRL 2022；PMLR 2023）：直接研究不同控制频率的离线数据混合，指出 Q 值传播速度随时间离散化变化，并按离散步长调整 N-step return 来稳定训练。**研究对象是离线 RL 的价值学习，不直接等同于 VLA / BC 的数据集捷径。**
-2. **Wang et al., [Chronos Policy: Learning Robot Policies on Physical Time](https://arxiv.org/abs/2610.13929)**（2026-10-09）：将观测采集时间和动作期望执行时间显式注入策略，通过 time-aware RoPE 与训练时的时间随机化处理多速率、异步传感和延迟。**与“只按 step 序列隐含时间”的问题高度相关，但还不能直接推断其已消除数据源身份偏置。**
-3. **Zhang et al., [HiPolicy: Hierarchical Multi-Frequency Action Chunking for Policy Learning](https://arxiv.org/abs/2604.06067)**（2026）：联合建模高低频动作块，处理长时域规划与精细闭环控制的权衡。**相关但问题侧重点不同。**
-4. **[Open X-Embodiment](https://robotic-transformer-x.github.io/) / [OpenVLA](https://openvla.github.io/)**：说明大规模策略确实需要混用不同来源的数据。OpenVLA 官方微调实践建议对不使用 action chunking 的配置采用约 5–10 Hz 的动作数据，也提醒高频数据可能带来困难；这是工程经验，不是控制变量的频率去偏证明。
+**直接证据已经足够回答最初的第一问：** 对这四个项目，不同频率不是纯粹想象。相邻两个极端的**标称单步间隔**从 200 ms 到 20 ms，相差十倍。不过数据集频率不同并不意味着它们的每个动作标签具有可直接比较的位移或速度语义。
 
-## 如果采集时就统一频率，问题会不会消失？
+### B. 数据集内部：多模态采样本来就可能不同频
 
-**如果从头构建一个严格统一的数据体系，频率差异造成的那部分歧义当然可以在数据侧避免，没必要强行发明新模型。** 但统一标称 Hz 只是充分规范的一部分；还要统一动作表示、控制器执行方式、时钟和延迟，并使训练与部署的物理时间语义一致。
+[RH20T 官方 Data Details](https://rh20t.github.io/) 给出了同一数据集的分模态速率：
 
-对已有异构数据，简单重采样仍有边界：
+| RH20T 数据模态 | 官方标注频率 |
+| --- | ---: |
+| RGB / 深度 / 红外图像、关节角、关节力矩、夹爪宽度 | **10 Hz** |
+| 夹爪笛卡尔位姿、六维力/力矩 | **100 Hz** |
+| 音频 | **30 Hz**（按官网表格原样记录，不把它解释成音频原始波形采样率） |
+| 指尖触觉（只在指定配置提供） | **200 Hz** |
 
-- 高频降采样可能丢掉接触、纠错等短时间事件；低频插值不能恢复未记录的真实反馈。
-- 标称频率相同，实际动作 hold 时间、异步传感、相机延迟也可能不同。
-- 即便频率相同，动作尺度、操作者速度和任务分布仍可能携带数据源特征。
+这不是说 RH20T 的“动作策略以 200 Hz 输出”：表格只说明**特定传感或状态通道的记录速率**。真正训练时究竟如何对齐观测与目标动作，仍须查看所使用的具体数据转换流程。
 
-所以这更像一个 **先检验数据契约，再讨论模型是否需要“物理时间感知”** 的问题。
+[RoboMIND 官方仓库](https://github.com/x-humanoid-robomind/x-humanoid-robomind.github.io) 还说明，**模拟数据**中相机与机械臂数据的采集频率比约为 **1:4**；由于这条描述没有直接给出绝对 Hz，这里只记录比例，不把第三方目录中的“30 Hz”无条件当作全本体、全版本的统一动作频率。
 
-## 一个最小、可证伪的实验
+### C. 必须单独标注的两个频率例子：不能误当原始数据的动作 FPS
 
-1. 用同一机器人、同一批具有真实时间戳的原始高频轨迹，构造 20 / 10 / 5 Hz 版本；固定任务划分、真实轨迹总时长和训练预算，防止数据源本身成为混杂因素。
-2. 使用相同模型与动作语义对照：**直接混合**、**统一时间间隔并重标动作目标**、**显式输入 Δt / 动作执行时间**。控制每组 action chunk 对应的真实时间跨度。
-3. 在已见和未见的频率上评估闭环成功率、时间尺度误差、轨迹平滑性与速度，而不仅是离线动作 loss；可加时间戳随机化消融。
-4. **证伪条件**：控制上述变量后，如果频率差异不再影响跨频率泛化，就不应该声称存在独立于数据处理的“采样频率偏置”。
+- **GO-1 在 LIBERO 微调采用 10 Hz 参数。** AgiBot World 的[官方说明](https://github.com/OpenDriveLab/AgiBot-World)把预训练数据 30 Hz 与 LIBERO 微调 10 Hz 并列；[LIBERO 微调配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_sft_libero.py)里也确实设置 `ctrl_freq=10`、`action_chunk_size=10`。**这是对特定数据版本与训练/评估管线的描述，不能由此推断所有原始 LIBERO、所有重打包版本均为 10 Hz。** 同名 benchmark 的控制器内部步长、已发布训练轨迹 FPS 和算法选择的动作步长要分开核对。
+- **RT-1 官方展示以 3 Hz 执行动作。** [RT-1 项目页](https://robotics-transformer1.github.io/)写的是闭环**策略执行频率**；不要拿它和上表的所有**数据记录**配置直接并列，来声称每个来源都以 3 Hz 采集。
 
-## 当前判断
+这里没有把来自聚合目录的“Open X-Embodiment = 10 Hz”当作事实：**OXE 是许多来源的聚合体，不能被概括成一个单独的统一采集频率。**
 
-> 不同频率很可能是一类重要的数据异质性，但**“频率不同会学到偏置”是待检验的具体机制，不是现成的实验结论**。研究价值取决于：统一数据采集 / 重采样以后是否仍有可测量的残余问题，以及残余问题是否确实需要超越 Chronos 等既有时间感知方法。
+## 2. 数据格式统一，为什么仍可能有问题？
+
+[Open X-Embodiment 原始论文 · IV-A](https://arxiv.org/html/2310.08864v9)是非常关键的证据。作者把异构数据转换成粗粒度对齐的 7 维末端动作表示，对**每个数据集分别进行动作归一化**，但明确保留了不同来源的控制坐标系，以及**绝对/相对位置或速度**等动作定义。作者指出，同样的动作向量可能在不同机器人上产生很不一样的运动。
+
+因此需要把下列四种差异分开：
+
+| 差异 | 举例 | 为什么普通归一化不能直接消除 |
+| --- | --- | --- |
+| **动作语义差异** | 末端相对位移 vs 末端速度 vs 关节绝对目标 | 数值相近不等于相同的物理命令，必须做单位与控制接口转换 |
+| **物理时间差异** | 5 Hz 的一步 200 ms；50 Hz 的一步 20 ms | 仅保留第几个 token，可能丢失真实执行时间 |
+| **动作块跨度差异** | 16-step chunk 在 5 Hz 为 3.2 s，在 50 Hz 为 0.32 s | 同一 chunk length 并不代表同一预见/执行时间 |
+| **样本贡献差异** | 固定物理时长下，高频轨迹可能包含更多 step | **仅当训练按 step 而非按 episode / 数据源重加权抽样**时才直接导致样本数偏置 |
+
+[Octo 的官方代码](https://github.com/octo-models/octo/blob/main/octo/data/dataset.py)还提供了很有意思的对照：它在整理输入时显式生成索引形式的 `timestep`，保存 `dataset_name`，并处理归一化/动作块；[官方推理接口](https://github.com/octo-models/octo/blob/main/octo/model/octo_model.py)允许选择对应数据集的反归一化统计。**这说明工程管线已经认真处理动作范围与来源差异；但仅从这些接口本身，还不能证明模型能理解任意两个 action steps 之间的真实物理时间。** 更不能由代码结构推断某个模型已经发生了频率捷径学习。
+
+### 一个容易误用的公式
+
+如果动作标签是**两次观察之间的相对位移**，且运动近似匀速，那么：
+
+$$
+\Delta p \approx v\,\Delta t,\qquad \Delta t=1/f.
+$$
+
+因此相同速度下，5 Hz 和 20 Hz 的相邻位移标签有可能相差四倍。但这一推理**不适用于把动作标签直接定义为 m/s 的速度命令**，也不必适用于“每步给定同一个绝对关节目标、由低层控制器持续追踪”的情况。
+
+所以，真正值得审计的不是单独一个 `fps`，而是 **(数据时间戳、动作定义、命令覆盖的物理时间、控制器接口、训练重采样变换)** 这个整体契约。
+
+## 3. 已有工作做到了哪一步？
+
+| 工作 | 直接研究的问题 | 已有实证/方法 | 不能替它声称的事情 |
+| --- | --- | --- | --- |
+| **[Burns et al., Offline Reinforcement Learning at Multiple Frequencies](https://proceedings.mlr.press/v205/burns23a.html)**（CoRL 2022，PMLR 2023） | 不同控制频率的离线 RL 数据混合 | 指出 Q 值传播速率随时间离散化不同；按步长调整 N-step return，在三个模拟机器人任务中比直接混合更稳、更好 | 不能推出 VLA 的 BC loss 或模型确实学了“数据集 ID” |
+| **[Chronos Policy: Learning Robot Policies on Physical Time](https://arxiv.org/abs/2610.13929)**（2026-10） | 物理时刻与 token 顺序不一致；多率传感、延迟与动作执行时序 | 给观测采集时刻和动作执行时刻编码，采用 time-aware RoPE / 时间随机化；在动态与多模态任务中验证时序鲁棒性 | 不应把其“多率鲁棒”直接解释为已消除所有跨数据集的 dataset shortcut |
+| **[HiPolicy: Hierarchical Multi-Frequency Action Chunking for Policy Learning](https://arxiv.org/abs/2604.06067)**（2026-04） | 固定动作块频率难同时满足长时规划和精细反馈 | 多频率 action chunk 的联合建模和自适应执行 | 核心不是多数据集采样协议造成的身份偏置 |
+| **[GO-1 / AgiBot World 官方代码](https://github.com/OpenDriveLab/AgiBot-World)** | 不同预训练/微调数据的时间尺度 | 训练配置明确区分 30 Hz 与 10 Hz，部署输入也包含 `ctrl_freqs` | 不能当作“统一频率无必要”或者其去偏效果已完成消融 |
+
+从学术定位看，**“多频率数据给学习带来困难”已经是有人提出并解决过一部分的研究问题**。如果要形成新的主张，必须明确超越已有工作所解决的时间尺度、异步感知和价值传播问题。
+
+## 4. “采集时统一频率，这个问题就不存在了”对吗？
+
+**在受控的新数据采集体系中，很大程度上是对的。** 如果相同动作语义、控制器实际执行时长、观测时间戳、同步策略、训练/部署目标时间尺度都被固定，混用不同*标称控制频率*所导致的额外歧义可以直接避免。此时无需硬把数据工程问题升级成模型论文。
+
+但现实的数据混合通常遇到三个边界：
+
+1. **历史数据不能重采**。5 Hz 轨迹通过插值生成 50 Hz 的“动作/图像”，并不能恢复缺失的接触与反馈；把 50 Hz 降为 5 Hz 则可能丢失控制关键事件。
+2. **相机与机器人控制本来可能不同频**。RH20T 和 RoboMIND 的官方材料已经提供了实例。仅统一相机 FPS 或仅重打包 LeRobot 并不证明动作时间语义已统一。
+3. **同频也有不同动作空间**。例如速度命令与绝对目标之间的区别，或者视觉采集到动作执行的延迟，都不是“都改成 10 Hz”就自然消失的。
+
+[LeRobot 官方数据格式](https://github.com/huggingface/lerobot/blob/main/docs/source/lerobot-dataset-v3.mdx)包含 `meta/info.json` 的 FPS、逐样本 `timestamp` 与分 episode 索引；[实现](https://github.com/huggingface/lerobot/blob/main/src/lerobot/datasets/lerobot_dataset.py)还定义时间戳与名义 FPS 一致性的容差检查。**所以调查数据侧首先应计算真实的 Δt 分布，而不是相信某个文件名中的 10Hz 或 30Hz。**
+
+## 5. 下一步应当怎样验证？按最省成本的顺序
+
+### E0：不训练任何模型，先做公开数据契约审计
+
+对每个拟混入的数据源，提取并审计：
+
+| 字段 | 需要确认 |
+| --- | --- |
+| `source / revision / episode` | 来源、版本、轨迹标识，防止跨版本混淆 |
+| `declared_fps` 与 `timestamp` | 标称频率与实测相邻时间间隔分布（median、p5/p95、掉帧/重复率） |
+| `action_type / units / frame` | 绝对目标、相对增量、速度等；位置单位、坐标系 |
+| `target_duration / delay` | 每个动作保持多久、何时生效，是否可观测 |
+| `camera_time / robot_time` | 视觉、状态、触觉是否同步，有无独立时钟 |
+| `chunk_horizon_seconds` | K 个动作覆盖的**真实秒数**，不是只记录 K |
+| `sampling_weight` | 按 dataset、episode 还是 timestep 采样，是否高频数据被重复加权 |
+
+**审计判据**：至少找到两个真实数据源，即使统一了动作单位和坐标，仍呈现不一致的物理时间跨度；并确定这些差异有没有已被训练转换器重采样、重标或显式标注。**本文尚未完成原始轨迹级的全量审计；前面的表是项目声明与源码配置核验。**
+
+### E1：同源轨迹的反事实频率消融（先不要跨不同机器人混杂）
+
+从**同一机器人、同一批原始高频轨迹**构造 50/25/10 Hz 等版本（只允许降低原始采样率，不虚构高频中间反馈），保持任务、轨迹总物理时长、训练帧预算和训练/验证划分一致。分别尝试：
+
+- **Baseline A：** 原始混频 step 序列、固定 K-step chunk，且不提供 Δt；
+- **Baseline B：** 重采样到统一物理时间间隔，**重标每个动作所对应的时间窗口**，不仅仅复制/丢弃帧；
+- **Baseline C：** 允许多频率，但输入 Δt 和动作目标执行时间，并与 Chronos 类时间感知机制对照；
+- **Baseline D：** 在相同数据下只更改 episode-balanced / time-balanced sampling，隔离高频数据权重因素。
+
+不要只比较单步 BC loss：必须评估**闭环任务成功率、动作速度/幅度、接触事件遗漏、时延敏感性、未见频率下的迁移**。对每一条轨迹按 episode 分组划分训练/验证，不能让同一条高频轨迹的两个重采样版本分别泄露到训练和测试。
+
+### E2：何时可以说“学到了数据集偏置”？
+
+一个分类器能从动作大小预测数据集来源，**只说明可区分**，不说明策略依赖这种捷径。更强的证据是：当任务、观测与物理状态基本不变，仅改变动作表示中的频率/时间元信息，模型出现系统性动作尺度偏移、闭环退化；且这些效应**不能由机器人本体、控制器、任务分布或采样权重解释**。
+
+若统一时间跨度与动作定义后性能已恢复，最合理的结论应是**数据标准化问题**。若残余退化稳定存在，再讨论时间感知策略方法是否带来超出前人工作的独立收益。
+
+## 6. 证据审计和个人判断
+
+| 主张 | 当前证据等级 |
+| --- | --- |
+| 不同来源确实采用不同的控制 / 采集配置（5/15/30/目标50 Hz） | **已核实官方来源** |
+| 同一数据集内的不同模态记录频率可能差别很大（RH20T、RoboMIND 模拟数据） | **已核实官方来源** |
+| 仅做统一数据格式或动作数值归一化，不保证控制与物理时间语义完全一致 | **论文明确说明 + 机制分析** |
+| 多频率混合在离线 RL 中确实带来优化困难，并有现有解决方案 | **已有相关论文实验** |
+| 某个具体跨数据集 VLA 因为 Hz 差异而记住来源身份、损害真实闭环任务成功率 | **目前尚无本文直接核实的受控实证** |
+| 采集时统一时钟、动作语义和执行时长能否完全解决所有跨源泛化问题 | **不能；其它异质性仍在** |
+
+**当前判断**：你提出的前半句有坚实的现实基础——公开机器人数据集确实异构，且有些连同一数据集的多模态频率都不一致。后半句（“模型学到的是数据集偏置”）仍然是需要设计实验的假设。**先规范数据采集、转换与时间戳；只有这些手段不足以解决闭环泛化时，才值得研究额外的时间感知模型。**
+
+### 主要原始证据入口
+
+- BridgeData V2：[官网 System Setup](https://bridgedata-v2.github.io/)。
+- DROID：[官方采集代码 `RobotEnv.control_hz`](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py)。
+- AgiBot World：[官方 GO-1 使用说明](https://github.com/OpenDriveLab/AgiBot-World)和[预训练频率默认配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py)。
+- Mobile ALOHA：[官方采集常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py)、[含执行耗时记录的采集循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py)。
+- RH20T：[官网多模态频率表](https://rh20t.github.io/)。
+- RoboMIND：[官方数据仓库的模态采集说明](https://github.com/x-humanoid-robomind/x-humanoid-robomind.github.io)。
+- OXE：[原论文 IV-A 数据对齐与动作语义](https://arxiv.org/html/2310.08864v9)。
+- Octo：[训练数据处理代码](https://github.com/octo-models/octo/blob/main/octo/data/dataset.py)及[分数据集反归一化接口](https://github.com/octo-models/octo/blob/main/octo/model/octo_model.py)。
+- LeRobot：[官方数据格式](https://github.com/huggingface/lerobot/blob/main/docs/source/lerobot-dataset-v3.mdx)。
+- 直接相关研究：[Burns et al.](https://proceedings.mlr.press/v205/burns23a.html) · [Chronos Policy](https://arxiv.org/abs/2610.13929) · [HiPolicy](https://arxiv.org/abs/2604.06067)。
