@@ -75,24 +75,24 @@ questionSummaryEn: "An audit of 10 real and simulated robot data sources or coll
 | 数据来源 | 官方标称或默认值 | 数值代表什么 | 官方证据 |
 | --- | ---: | --- | --- |
 | **FurnitureBench**（真实 Franka 家具组装） | **10 Hz** | 视觉策略每秒 10 次输出末端**相对位姿 + 夹爪命令**。底层 OSC 的高频关节力矩控制并不是策略数据 FPS | [官方系统介绍](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) · [论文](https://clvrai.github.io/furniture-bench/) |
-| **Diffusion Policy 实物 UR5 示范采集** | **默认 10 Hz** | [\`demo_real_robot.py\`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) 的可调 \`--frequency\` 参数默认 10；用 \`dt=1/frequency\` 规划观测、目标位姿和未来执行时刻 | [采集循环](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
+| **Diffusion Policy 实物 UR5 示范采集** | **默认 10 Hz** | [`demo_real_robot.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) 的可调 `--frequency` 参数默认 10；用 `dt=1/frequency` 规划观测、目标位姿和未来执行时刻 | [采集循环](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
 
 **新增的仿真示范/环境（需与真实世界硬件时钟区分）**
 
 | 数据来源 | 官方标称或默认值 | 数值代表什么 | 官方证据 |
 | --- | ---: | --- | --- |
-| **LIBERO**（Franka 仿真） | **20 Hz** | 原始示范采集与重放转换脚本都设 \`control_freq=20\`，典型 OSC 末端增量动作 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
-| **RoboCasa**（仿真厨房） | **环境默认 20 Hz** | 环境构造器 \`control_freq=20\` 定义每次动作间的**仿真时间**，可修改；不是对已发布全部 HDF5 / LeRobot 数据的逐轨迹实测 | [环境源码](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) · [数据文档](https://robocasa.ai/docs/build/html/use_cases/creating_datasets.html) |
+| **LIBERO**（Franka 仿真） | **20 Hz** | 原始示范采集与重放转换脚本都设 `control_freq=20`，典型 OSC 末端增量动作 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
+| **RoboCasa**（仿真厨房） | **环境默认 20 Hz** | 环境构造器 `control_freq=20` 定义每次动作间的**仿真时间**，可修改；不是对已发布全部 HDF5 / LeRobot 数据的逐轨迹实测 | [环境源码](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) · [数据文档](https://robocasa.ai/docs/build/html/use_cases/creating_datasets.html) |
 | **CALVIN**（Franka 仿真） | **30 Hz** | 官方明确说明连续策略动作的 30 Hz；支持**绝对笛卡尔目标**与**相对位移**两类 action space | [官方 README · Action Space](https://github.com/mees/calvin) |
-| **PushT 仿真示范**（二维推物体） | **默认 10 Hz** | 官方 \`demo_pusht.py\` 的 \`--control_hz=10\` 且以 \`clock.tick(control_hz)\` 调节录制循环；可修改，不能等同于实物机械臂的采集速率 | [示范采集程序](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
+| **PushT 仿真示范**（二维推物体） | **默认 10 Hz** | 官方 `demo_pusht.py` 的 `--control_hz=10` 且以 `clock.tick(control_hz)` 调节录制循环；可修改，不能等同于实物机械臂的采集速率 | [示范采集程序](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
 
 **证据等级与计数说明：** “10 组”指 **4 个先前核查的机器人数据集/项目 + 上述 6 组数据源或示范采集管线**，不是说我们已经下载十份原始轨迹并统计了真实采样间隔。RoboCasa 的数据列是*环境默认配置*，Diffusion Policy 的两个新条目是*采集程序默认值*；仿真的“每步经过 50 ms”也不保证机器会在真实墙上时钟 50 ms 内运行。经过重采样/再打包的训练版本可能采用不同动作时间尺度。
 
 ### A3. 容易被误读成数据集 Hz 的三个案例
 
-1. **RoboTwin \`save_freq=15\` 不等于 15 Hz。** [官方配置教程](https://github.com/Tengbo-Yu/robotwin/blob/main/CONFIG_TUTORIAL.md)称其为保存频率，但[实际执行代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)在 \`take_dense_action\` 中使用 **\`control_idx % save_freq == 0\`** 来触发 \`_take_picture()\`。所以这里的 **15 是每 15 个内部控制步骤保存一次观测**；没有底层步长和模拟时间信息时，绝不能直接列成“RoboTwin 数据集 15 Hz”。
+1. **RoboTwin `save_freq=15` 不等于 15 Hz。** [官方配置教程](https://github.com/Tengbo-Yu/robotwin/blob/main/CONFIG_TUTORIAL.md)称其为保存频率，但[实际执行代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)在 `take_dense_action` 中使用 **`control_idx % save_freq == 0`** 来触发 `_take_picture()`。所以这里的 **15 是每 15 个内部控制步骤保存一次观测**；没有底层步长和模拟时间信息时，绝不能直接列成“RoboTwin 数据集 15 Hz”。
 2. **社区转换版 RoboMIND 的 30 FPS 不等于所有原始动作均 30 Hz。** [社区 RoboMIND → LeRobot 数据卡](https://huggingface.co/datasets/Traly/RoboMIND-lerobot)标注视频 FPS 为 30，但[官方 RoboMIND 数据卡](https://huggingface.co/datasets/x-humanoid-robomind/RoboMIND/blob/main/README.md)同时涵盖多本体，并指出模拟数据中相机与机械臂采集频率约 **1:4**。转换后视频写入帧率、原始图像记录与动作执行时间要分别审计。
-3. **RT-1-X / SimplerEnv 的 3 Hz 通常表示推理/部署或模拟评测协议。** [OXE 官方 README](https://github.com/google-deepmind/open_x_embodiment)在 RT-1-X 推理说明中采用 3 Hz 假设；[SimplerEnv 评测源码](https://github.com/simpler-env/SimplerEnv/blob/main/simpler_env/evaluation/maniskill2_evaluator.py)默认 \`control_freq=3\`。不能反推出 OXE 的所有训练来源都以 3 Hz 采集。
+3. **RT-1-X / SimplerEnv 的 3 Hz 通常表示推理/部署或模拟评测协议。** [OXE 官方 README](https://github.com/google-deepmind/open_x_embodiment)在 RT-1-X 推理说明中采用 3 Hz 假设；[SimplerEnv 评测源码](https://github.com/simpler-env/SimplerEnv/blob/main/simpler_env/evaluation/maniskill2_evaluator.py)默认 `control_freq=3`。不能反推出 OXE 的所有训练来源都以 3 Hz 采集。
 
 
 ### B. 数据集内部：多模态采样本来就可能不同频
