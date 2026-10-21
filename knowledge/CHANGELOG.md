@@ -1,5 +1,10 @@
 # 更新记录
 
+## 2026-10-21
+
+- 在「问题与探索」新增公开研究问题《目前的 Tokenizer，是否天然具备数值连续性？》：系统区分文本数字、连续视觉特征、离散几何坐标、离散 Action Codebook 与连续动作 Head；核对 xVal、BitTokens、Pix2Seq、SpatialVLM、Metric-Bench、OpenVLA、FAST、X-Tokenizer、ActionPiece、ProAct、π₀ 与 OpenVLA-OFT 等公开原始资料。提出数值专用编码、物理几何保持、粗意图加连续残差、多频率跨本体动作编码、策略可预测性等待验证路线，附可复现实验与公开来源。新条目由 Research Markdown 的 `publicQuestion: true` 自动出现在首页精选与独立问题列表，无需重复维护页面内容。
+
+
 ## 2026-10-20
 - 完善预训练专题来源：增加用户提供的知乎原文对应作者授权转载入口，并补 DataTrove/FineWeb 完整处理脚本、Megatron Core Quick Start 与 Training Examples，以及数据/算力/质量/训练阶段选择的自测问题。
 
