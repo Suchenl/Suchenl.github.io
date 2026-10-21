@@ -4,9 +4,15 @@ questionTitleEn: "Do heterogeneous robot action rates induce dataset-specific sh
 publicQuestion: true
 questionDate: "2026-10-21"
 questionEvidence:
+  - name: "UCSD Kitchen (OXE)"
+    rate: "2 Hz"
+    source: "https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json"
+  - name: "RT-1 / Fractal (OXE)"
+    rate: "3 Hz"
+    source: "https://arxiv.org/html/2503.14734"
   - name: "BridgeData V2"
     rate: "5 Hz"
-    source: "https://bridgedata-v2.github.io/"
+    source: "https://rail-berkeley.github.io/bridgedata/"
   - name: "FurnitureBench"
     rate: "10 Hz"
     source: "https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html"
@@ -21,22 +27,10 @@ questionEvidence:
     source: "https://github.com/mees/calvin"
   - name: "Mobile ALOHA"
     rate: "目标 50 Hz"
-    source: "https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py"
-  - name: "AgiBot World"
-    rate: "30 Hz"
-    source: "https://github.com/OpenDriveLab/AgiBot-World"
-  - name: "Diffusion Policy 实物 UR5"
-    rate: "默认 10 Hz"
-    source: "https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py"
-  - name: "RoboCasa"
-    rate: "默认 20 Hz"
-    source: "https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py"
-  - name: "PushT 仿真"
-    rate: "默认 10 Hz"
-    source: "https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py"
+    source: "https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py"
 categories: ["机器人与具身智能", "数据混合与策略学习"]
-summaryZh: "核查 10 组真实或仿真机器人数据源与采集程序：官方控制/采集配置涵盖 5、10、15、20、30、目标 50 Hz。另发现 RoboTwin 的 save_freq=15 不是 15 Hz。跨源频率异构已确认，但是否直接导致 VLA 学到数据集捷径，仍需要控制变量实验。"
-questionSummaryEn: "An audit of 10 real and simulated robot data sources or collection pipelines finds nominal 5, 10, 15, 20, 30, and target 50 Hz rates. RoboTwin's save_freq=15 is a frame interval, not 15 Hz. Learned dataset shortcuts remain unproven."
+summaryZh: "综合核查 30 组公开机器人数据源与采集管线、RDT-1B 的 46 个预训练数据源，以及 GR00T N1 的预训练 FPS：各来源配置覆盖 2–50 Hz，但与原始轨迹实测 Hz 不等价。异构混训确实存在，模型是否因此学到数据集捷径仍待控制实验。"
+questionSummaryEn: "Reviewing 30 public robot data sources and pipelines, RDT-1B's 46 active pretraining sources and GR00T N1's per-source FPS reveals 2–50 Hz configurations. These are not necessarily original measured action rates; learned dataset shortcuts remain unproven."
 ---
 
 # 不同机器人数据集的动作采样频率，是否会引入数据集偏置？
@@ -45,35 +39,78 @@ questionSummaryEn: "An audit of 10 real and simulated robot data sources or coll
 
 ## 先给结论
 
-1. **不同数据集和采集管线的控制/动作时间尺度确实不同。** 对照 **10 组**真实机器人、仿真环境与录制程序，官方标称/默认设置覆盖 **5、10、15、20、30、目标 50 Hz**。这些数字对应项目声明、控制配置或目标采集速率，不是逐轨迹实测分布。
+1. **数据源频率异构确实存在，且出现在实际混合预训练管线中。** 对照 30 组公开来源及 RDT-1B 的 46 个预训练数据源，配置覆盖 **2、3、5、10、15、20、30、目标 50 Hz**。GR00T N1 也提供了跨数据源 FPS 表。**配置和训练帧率不等于对原始轨迹逐帧实测。**
 2. **同一个数据集内部的传感模态也可能不同频。** RH20T 的相机和关节状态约 10 Hz、末端位姿和六轴力/力矩 100 Hz，部分触觉 200 Hz；这与“动作频率不同”是有关但不同的问题。
 3. **已有研究直接讨论了多频率训练。** Burns 等研究不同控制频率的离线 RL；2026 年 Chronos Policy 显式建模物理时间；还有 HiPolicy 面向多频率动作块。不过它们没有自动证明“某个跨数据集 VLA 已经学会 dataset shortcut”。
 4. **数据采集标准化是最应该先考虑的修复。** 若能统一动作含义、执行时长、时间戳与下游控制接口，采样率引入的主要歧义可以在数据侧排除；如果混入历史异构数据，仅用插值或把元数据 FPS 设成相同数字并不足够。
 
-## 1. 数据集的采样与控制频率：官方证据对照
+## 1. 机器人数据频率：数据集与预训练管线的完整证据
 
-以下 10 组覆盖**真实机器人数据集、示范采集程序和仿真任务**。采用同一张表是为了便于比较；“5 Hz”“默认 10 Hz”“目标 50 Hz”并不是同一种证据，必须连同**对象、动作语义和时间基准**一起看。所有数值来自项目说明或源码配置，**并非下载各数据集后对每条轨迹时间戳的实测统计**。
+表中统一整理 **30 组真实机器人数据源、仿真基准及示范采集管线**。请务必同时阅读“该数字的具体含义”：官方采集控制率、仿真动作频率、录制程序默认值、预训练数据 FPS、模型为数据源登记的 Hz **不是等价概念**。所有数据为公开源码、论文或项目说明的核对结果，**尚未对各原始轨迹逐帧计算时间戳分布**。
 
-### 1.1 十组数据源与控制时间尺度
+### 1.1 数据源对照表
 
-| 数据集 / 采集管线 | 场景 | 官方频率 / 配置 | 具体代表什么 | 一手证据 |
+| 机器人数据源 / 采集管线 | 类别 | Hz | 该数字的具体含义 | 来源 |
 | --- | --- | ---: | --- | --- |
-| **BridgeData V2**（WidowX 250） | 真实机器人 | **5 Hz** | 遥操作控制频率，标称每步 **200 ms** | [项目页 · System Setup](https://bridgedata-v2.github.io/) |
-| **FurnitureBench**（Franka 家具组装） | 真实机器人 | **10 Hz** | 策略输出末端相对位姿与夹爪命令的频率；不同于底层更高频的力矩控制 | [官方系统说明](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) |
-| **Diffusion Policy 实物 UR5** | 真实采集程序 | **默认 10 Hz** | 录制脚本可调的 `--frequency` 参数；决定观测与目标执行的安排，不保证所有公开轨迹均如此 | [`demo_real_robot.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
-| **DROID**（Franka） | 真实机器人 | **15 Hz** | RobotEnv 中 `control_hz=15` 的采集端控制配置，标称每步约 **66.7 ms** | [`droid/robot_env.py`](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) |
-| **LIBERO**（Franka） | 仿真示范 | **20 Hz** | 原始示范采集和重放转换脚本均采用 `control_freq=20`；不代表所有二次加工版本都保持此配置 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
-| **RoboCasa**（厨房） | 仿真环境 | **默认 20 Hz** | 环境构造器的 `control_freq=20`，描述**仿真时间**中的动作间隔；可配置 | [`kitchen.py`](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) |
-| **CALVIN**（Franka） | 仿真基准 | **30 Hz** | 官方声明的连续动作控制频率，支持绝对末端目标或相对末端位移 | [官方 README · Action Space](https://github.com/mees/calvin) |
-| **AgiBot World**（多本体） | 真实机器人数据 / 训练管线 | **30 Hz** | 官方说明数据按 30 Hz 采集；GO-1 预训练默认 `ctrl_freq=30`，不能推定所有再处理版本同频 | [官方仓库](https://github.com/OpenDriveLab/AgiBot-World) · [GO-1 默认配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) |
-| **Mobile ALOHA**（移动双臂） | 真实机器人 | **目标 50 Hz** | 录制代码设 `FPS=50`、`DT=0.02`；并记录实际循环耗时。**50 Hz 是目标而非每段轨迹的实测保证** | [常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) |
-| **PushT**（二维推物体） | 仿真示范 | **默认 10 Hz** | 官方 `demo_pusht.py` 的可调 `--control_hz=10`，控制录制循环，不等同于实物机械臂速率 | [`demo_pusht.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
+| **UCSD Kitchen (OXE)** | 仿真/演示源 | **2 Hz** | RDT 预训练来源的配置 Hz，不是原始时间戳实测 | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **RT-1 / Fractal (OXE)** | 真实机器人 | **3 Hz** | GR00T 的训练 FPS；RDT 的 Fractal 配置也是 3 Hz | [GR00T / RDT](https://arxiv.org/html/2503.14734) |
+| **NYU Door Opening (OXE)** | 真实机器人数据 | **3 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **BridgeData V2** | 真实机器人 | **5 Hz** | 官方遥操作控制频率，每步约 200 ms | [官网](https://rail-berkeley.github.io/bridgedata/) |
+| **RoboSet (OXE)** | 真实机器人数据 | **5 Hz** | GR00T 预训练 FPS；RDT 对应来源也设 5 Hz | [GR00T / RDT](https://arxiv.org/html/2503.14734) |
+| **Berkeley AUTOLAB UR5 (OXE)** | 真实机器人数据 | **5 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **FurnitureBench** | 真实机器人 | **10 Hz** | 策略动作频率；与更高频的底层力矩控制不同 | [官方文档](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) |
+| **Diffusion Policy 实物 UR5** | 采集程序 | **默认 10 Hz** | 录制脚本可配置的频率默认值 | [官方代码](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
+| **Language Table (OXE)** | 真实机器人数据 | **10 Hz** | GR00T 预训练 FPS；RDT 也配置为 10 Hz | [GR00T / RDT](https://arxiv.org/html/2503.14734) |
+| **Jaco Play (OXE)** | 真实机器人数据 | **10 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Berkeley Cable Routing (OXE)** | 真实机器人数据 | **10 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **BC-Z (OXE)** | 真实机器人数据 | **10 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **UTokyo xArm Bimanual (OXE)** | 真实机器人数据 | **10 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **PushT** | 仿真录制程序 | **默认 10 Hz** | 示范录制的控制循环默认值 | [官方代码](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
+| **DROID** | 真实机器人 | **15 Hz** | 官方 RobotEnv 控制频率，GR00T / RDT 也报告 15 Hz | [官方代码](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) |
+| **TACO-Play (OXE)** | 真实机器人数据 | **15 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **LIBERO** | 仿真演示 | **20 Hz** | 原始示范收集脚本设置的环境控制频率 | [官方代码](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) |
+| **RoboCasa** | 仿真环境 | **默认 20 Hz** | 厨房环境的默认仿真动作控制频率 | [官方代码](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) |
+| **MUTEX (OXE)** | 真实机器人数据 | **20 Hz** | GR00T 预训练 FPS；RDT 也登记为 20 Hz | [GR00T / RDT](https://arxiv.org/html/2503.14734) |
+| **Plex (OXE)** | 真实机器人数据 | **20 Hz** | GR00T 预训练 FPS | [GR00T](https://arxiv.org/html/2503.14734) |
+| **GR-1 Teleop** | 真实人形机器人 | **20 Hz** | GR00T 作者自行采集预训练语料的 FPS | [GR00T](https://arxiv.org/html/2503.14734) |
+| **VIOLA (OXE)** | 真实机器人数据 | **20 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Austin SIRIUS (OXE)** | 真实机器人数据 | **20 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Austin SAILOR (OXE)** | 真实机器人数据 | **20 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Stanford KUKA Multimodal (OXE)** | 真实机器人数据 | **20 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **CALVIN** | 仿真基准 | **30 Hz** | 官方声明的连续策略动作控制频率 | [官方文档](https://github.com/mees/calvin) |
+| **AgiBot World / Agibot-Alpha** | 真实机器人 | **30 Hz** | 官方采集/训练配置；GR00T 预训练也报告 30 FPS | [官方配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) |
+| **TOTO (OXE)** | 真实机器人数据 | **30 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Berkeley RPT (OXE)** | 真实机器人数据 | **30 Hz** | RDT 预训练来源的配置 Hz | [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) |
+| **Mobile ALOHA** | 真实机器人 | **目标 50 Hz** | 采集目标 FPS 50，代码记录实际每步时间，不是全量实测保证 | [采集代码](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) |
 
-这 10 组配置覆盖了 **5、10、15、20、30、目标 50 Hz** 六种典型时间尺度。以标称间隔比较，5 Hz 的单步 **200 ms** 与 50 Hz 的 **20 ms** 相差十倍；**但只有动作标签都指相同类型的物理量、覆盖相同定义的执行窗口时，才可以直接比较动作尺度**。记录频率、策略推理频率、低层伺服频率和相机帧率不能互换。
+**证据口径：** “RDT”是 [RDT-1B 官方仓库频率配置](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) 对特定数据源登记的训练侧控制频率，不等同于原始采集实测值；“GR00T”是 [GR00T N1 正式论文附录 Table 7](https://arxiv.org/html/2503.14734) 报告的预训练 FPS，而不是对该数据源机器人底层控制器的重新测量。其他各行按项目、采集代码或环境配置解释。**同一频率标签下的绝对位姿、相对位移、速度命令也不能自动当成相同物理动作。**
 
-具体限制包括：Mobile ALOHA 会检测每步实际执行耗时、频率过低时要求重录；DROID 的 15 Hz 是程序配置而非逐轨迹计量；RoboCasa / PushT 的默认值可以修改；仿真时间步并不要求与真实墙上时钟一一对应。**实际训练使用的任何重采样版本，都需要重新检查对应的数据文件与转换代码。**
+这份对照的频率包括 **2、3、5、10、15、20、30、目标 50 Hz**。从标称间隔看，2 Hz 是 500 ms/step，50 Hz 是 20 ms/step；但前者是训练频率配置，后者是录制目标，**不能把两端简单解释成实际物理控制间隔已相差 25 倍**。尤其 Mobile ALOHA 代码会监测实际循环耗时，RoboCasa / PushT 的参数允许覆盖，仿真时间与真实墙上时间也不是同一指标。
 
-### 1.2 同一数据集内部也可能不同步
+### 1.2 基础模型确实在混合多频率来源
+
+**RDT-1B**：联合核对[官方预训练数据列表](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/pretrain_datasets.json)、[逐数据源频率配置](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json)及[数据源采样权重](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/pretrain_sample_weights.json)，得到其 **46 个列入预训练的数据源**具有如下八档频率。这里统计的是**数据源个数**，而非按训练帧、轨迹时长或采样权重加权的比例。
+
+| 训练配置频率 | 来源数 | 典型来源 |
+| ---: | ---: | --- |
+| **2 Hz** | 1 | UCSD Kitchen |
+| **3 Hz** | 3 | Fractal / RT-1、NYU Door Opening |
+| **5 Hz** | 6 | BridgeData V2、RoboSet、Berkeley AUTOLAB UR5 |
+| **10 Hz** | 19 | Language Table、Jaco Play、BC-Z、FurnitureBench |
+| **15 Hz** | 2 | DROID、TACO-Play |
+| **20 Hz** | 8 | MUTEX、VIOLA、Austin SIRIUS |
+| **30 Hz** | 5 | CALVIN、TOTO、Berkeley RPT、Dobb-E |
+| **50 Hz** | 2 | Mobile ALOHA、Static ALOHA |
+| **合计** | **46** | **八档配置** |
+
+频率配置表中还有未列入该 46 项预训练清单的其他注册项，部分值为 1 Hz 或 66.6 Hz；**不能将注册过的项目直接当作实际参与预训练的项目**。同时 [RDT 数据加载器](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/data/vla_dataset.py)对数据源进行独立加权采样，意味着“高频数据每秒有更多帧”**不必然**使其自动获得更高训练权重。这是训练框架已经处理的一项重要差异，仍无法据此判断其物理时间泛化效果。
+
+**GR00T N1**：[作者论文附录 Table 7](https://arxiv.org/html/2503.14734)同时列出 RT-1 (3 FPS)、Bridge-v2 和 RoboSet (5)、Language Table (10)、DROID (15)、MUTEX / Plex / GR-1 Teleop (20)、AgiBot-Alpha (30)。这是真正的**同一机器人基础模型混合不同 FPS 来源**的论文证据，但论文并未通过严格控制本体、任务和标签时间尺度的实验，证明模型因此学会“数据集身份捷径”。
+
+**同名数据源也可能因为转换而有不同频率。** 例如 GR00T N1 论文把 RH20T-Robot 预训练材料列为 **20 FPS**；[RH20T 官网](https://rh20t.github.io/)报告不同原始模态为 **10 / 100 / 200 Hz**；RDT 频率注册表则给 RH20T 登记 **10 Hz**，但该项**不在上述 46 项预训练清单中**。三者记录的是**不同版本、阶段或模态的时间语义**，不是互相推翻的数据错误。
+
+### 1.3 同一数据集内部也可能不同步
+
 
 [RH20T 官方 Data Details](https://rh20t.github.io/)列出了不同模态的记录频率：
 
@@ -88,7 +125,7 @@ questionSummaryEn: "An audit of 10 real and simulated robot data sources or coll
 
 因此，混合数据时需要分别回答两问：**不同数据源的动作步长是否一致？单个数据源内部观测与动作是否时间对齐？** 这是两个相关但不同的偏置来源。
 
-### 1.3 不能直接当作原始动作采样率的配置
+### 1.4 不能直接当作原始动作采样率的配置
 
 | 案例 | 容易误读的数字 | 真实含义与判断依据 |
 | --- | --- | --- |
@@ -189,7 +226,7 @@ $$
 
 | 主张 | 当前证据等级 |
 | --- | --- |
-| 已核查 10 组真实/仿真数据源及采集管线的标称/默认值涵盖 5/10/15/20/30/目标50 Hz | **已核实官方项目或代码；尚非逐帧实测** |
+| 30 组来源与 RDT-1B 的 46 个预训练来源在配置层覆盖 2–50 Hz | **已核实官方项目或代码；尚非逐帧实测** |
 | RoboTwin 的 save_freq=15 是存储步长；RoboMIND 转换版视频 FPS 不必等于原始动作频率 | **源码/数据卡直接交叉核对** |
 | 同一数据集内的不同模态记录频率可能差别很大（RH20T、RoboMIND 模拟数据） | **已核实官方来源** |
 | 仅做统一数据格式或动作数值归一化，不保证控制与物理时间语义完全一致 | **论文明确说明 + 机制分析** |
@@ -216,4 +253,6 @@ $$
 - OXE：[原论文 IV-A 数据对齐与动作语义](https://arxiv.org/html/2310.08864v9)。
 - Octo：[训练数据处理代码](https://github.com/octo-models/octo/blob/main/octo/data/dataset.py)及[分数据集反归一化接口](https://github.com/octo-models/octo/blob/main/octo/model/octo_model.py)。
 - LeRobot：[官方数据格式](https://github.com/huggingface/lerobot/blob/main/docs/source/lerobot-dataset-v3.mdx)。
+- RDT-1B：[来源频率配置](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/dataset_control_freq.json) · [预训练数据列表](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/pretrain_datasets.json) · [来源采样权重](https://github.com/thu-ml/RoboticsDiffusionTransformer/blob/main/configs/pretrain_sample_weights.json)。
+- GR00T N1：[论文附录 Table 7](https://arxiv.org/html/2503.14734)。
 - 直接相关研究：[Burns et al.](https://proceedings.mlr.press/v205/burns23a.html) · [Chronos Policy](https://arxiv.org/abs/2610.13929) · [HiPolicy](https://arxiv.org/abs/2604.06067)。
