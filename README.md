@@ -49,6 +49,8 @@ Research content is browsed at `/research/` and maintained as Markdown under `kn
 - Browser QA: .github/workflows/browser-smoke.yml tests desktop/mobile Chromium, modal focus, category filters, comparison, learning progress and local data backup.
 - Performance: .github/workflows/lighthouse.yml records laboratory metrics for Home, Research and Publications. Do not treat Lighthouse numbers as real-user Core Web Vitals.
 - Content policy: keep publication facts in web/src/data.ts, tool project facts in web/src/data/projects.ts, and research Markdown in knowledge/ as a single source of truth. Never automatically publish private repositories or user-local study notes.
+- Reader-facing research and homepage content must always be an integrated current-state reference: consolidate every new dataset or result into the canonical tables and sections; do not publish incremental "newly added", "previous four", "extended research" or patch/changelog paragraphs. Preserve dates only for source-verification context; Git commits retain change history.
+
 - Full UX review and limitations: docs/UX_AUDIT.md.
 
 ## Current product decisions (2026-10-20)
