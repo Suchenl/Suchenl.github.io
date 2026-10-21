@@ -21,7 +21,7 @@ questionSummaryEn: "A literature-based overview of adaptive reasoning, from hybr
 
 注意，这一主题**已经有大量前作**，不是待人首次提出的空白。较新的 Claude 产品能力也表明，按需推理并非一定需要外部固定 Think–Act 模板；但闭源产品公开了接口行为，并没有公开完整训练配方。
 
-正式定义与 API 消息示例：[Thinking 与工具调用协议术语](../glossary/thinking-tool-protocol.md)。
+正式定义与 API 消息示例：[Thinking 与工具调用协议术语](../glossary/thinking-tool-protocol.md)。各大模型 API 与开源 Agent Harness 如何实际执行和回填工具，见[一个 Agent 是如何组织推理、工具调用与跨轮状态的？](how-agent-reasoning-tools-and-state-work.md)。
 
 ## 2. 先分清五个常被混淆的概念
 
