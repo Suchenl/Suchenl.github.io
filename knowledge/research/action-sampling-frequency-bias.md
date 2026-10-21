@@ -3,6 +3,19 @@ title: "不同机器人数据集的动作采样频率，是否会引入数据集
 questionTitleEn: "Do heterogeneous robot action rates induce dataset-specific shortcuts?"
 publicQuestion: true
 questionDate: "2026-10-21"
+questionEvidence:
+  - name: "BridgeData V2"
+    rate: "5 Hz"
+    source: "https://bridgedata-v2.github.io/"
+  - name: "DROID"
+    rate: "15 Hz"
+    source: "https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py"
+  - name: "AgiBot World"
+    rate: "30 Hz"
+    source: "https://github.com/OpenDriveLab/AgiBot-World"
+  - name: "Mobile ALOHA"
+    rate: "目标 50 Hz"
+    source: "https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py"
 categories: ["机器人与具身智能", "数据混合与策略学习"]
 summaryZh: "已核实 BridgeData V2（5 Hz）、DROID（15 Hz）、AgiBot World（30 Hz）与 Mobile ALOHA（目标 50 Hz）采用不同采集/控制频率；RH20T 内部也存在 10–200 Hz 多模态采样。频率异构是真实存在的，但它是否导致 VLA 学到数据集捷径，仍需控制动作语义、时间戳与训练采样后的实验验证。"
 questionSummaryEn: "Verified differences include BridgeData V2 (5 Hz), DROID (15 Hz), AgiBot World (30 Hz), and Mobile ALOHA (nominal 50 Hz), plus 10–200 Hz streams within RH20T. Frequency heterogeneity is real; dataset-specific policy shortcuts remain an untested causal claim."

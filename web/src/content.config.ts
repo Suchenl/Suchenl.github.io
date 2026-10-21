@@ -44,6 +44,7 @@ const knowledge = defineCollection({
     questionTitleEn: z.string().optional(),
     questionSummaryEn: z.string().optional(),
     questionDate: z.string().optional(),
+    questionEvidence: z.array(z.object({ name: z.string(), rate: z.string(), source: z.string().url() })).optional(),
     categories: z.array(z.string()).optional(),
     status: z.enum(['untracked','to-read','reading','read']).optional(),
     comparison: z.object({
