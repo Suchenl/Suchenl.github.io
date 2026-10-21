@@ -5,21 +5,72 @@ publicQuestion: true
 questionKind: "interest"
 questionDate: "2026-10-21"
 categories: ["强化学习与 Agent", "推理模型与推理时计算"]
-summaryZh: "从固定 CoT、条件化 Thinking、推理长度与预算分配，到跨轮推理和闭环 Agent 的元决策：梳理代表研究、证据与局限。个人更认可让模型在真实交互反馈下学习何时继续行动、何时观察、何时重新思考，并以任务收益与实际成本共同衡量，而非长期依赖人工阈值。"
-questionSummaryEn: "A literature-based overview of adaptive reasoning, from hybrid thinking and compute budgets to cross-turn reasoning and interactive metareasoning. The approach I find most compelling is learning when to act, observe, or rethink from closed-loop outcomes and real costs."
+summaryZh: "为什么自适应推理决定 Agent 在固定在线时长与 Token 预算下的有效产出、机器人部署时延？梳理推理模式与交互式规划路线，并探讨一个待验证的假设：推理机会的约束能否促进参数化直觉与更高价值的行动前规划，而不仅是压缩 CoT。"
+questionSummaryEn: "Why adaptive reasoning matters for verified work per time/token budget and robot response latency; surveys prior approaches and examines the unproven hypothesis that scarce deliberation opportunities can cultivate parametric intuition and more valuable planning."
 ---
 
 # 如何让模型学会自适应推理
 
 > **兴趣综述 · 2026-10-21。** 这是我对一条技术路线的兴趣、阅读整理与个人判断，**不是声称提出了一个无人研究的科学问题，也不是已经完成的实验或方法**。文中的“已有证据”来自公开论文和官方文档；“我更认可的方向”是研究品味与后续实验构想，并非被证明最优的方案。
 
-## 1. 我为什么对这个方向感兴趣？
+## 1. 为什么这个问题重要？
 
-一个高效的 Agent 不应该把“做动作之前写一大段 CoT”当作硬性流程，也不应该为了减少 Token 而永远不重新思考。对于任务明确、执行顺利的时刻，继续行动可能更好；对于状态突变、工具失败、信息不足、计划失效的时刻，重新推理可能避免代价高昂的错误。
+**自适应推理的目标不是让模型少思考，而是让模型学会最高效地思考。** 高效不等于牺牲性能，更不等于在单次回答里机械地少输出几个 Thinking Token。我更关心的是：**在相同的在线时长与 Token 消耗预算下，Agent 能否完成更多有质量、可验证的任务？** 如果一次推理能解决后续一连串决策，减少重复思考就能把有限的计算与时间让给真正困难的状态、更多任务或必要的验证。
 
-我想理解的，不只是**怎么少生成 Thinking Token**，而是模型能否形成一种随状态变化的元认知能力：知道何时调用更多计算、何时停止思考、何时检查环境，以及何时修正既有策略。
+### 1.1 推理效率应该按有效产出衡量，而非只数 CoT Token
 
-注意，这一主题**已经有大量前作**，不是待人首次提出的空白。较新的 Claude 产品能力也表明，按需推理并非一定需要外部固定 Think–Act 模板；但闭源产品公开了接口行为，并没有公开完整训练配方。
+一轮复杂 Agent 的时间至少包含输入 Prefill、推理和动作生成、工具执行、环境响应、等待与失败重试。把某一步的 CoT 砍掉，可能降低本轮延迟；但若导致操作出错、重试增多甚至任务失败，全程反而更慢。因此我更认可在**固定的端到端预算**下比较策略，而不是只看平均推理长度：
+
+$$
+\max_{\pi}\ \mathbb E\!\left[N_{\mathrm{verified}}(\pi;B_{\mathrm{time}},B_{\mathrm{tokens}})\right],
+\qquad
+\text{s.t.}\ T_{\mathrm{wall}}\le B_{\mathrm{time}},\;
+N_{\mathrm{tokens}}\le B_{\mathrm{tokens}}.
+$$
+
+这里 $N_{\mathrm{verified}}$ 是**满足质量门槛的完成任务数**，而不是文字输出数量；真实部署还应单独约束安全、错误率与任务成功率。一个很自然的目标是改善**任务完成率—端到端延迟—Token/计算开销**的 Pareto 前沿：同成本完成更多任务，或同样的任务质量花费更少成本。
+
+对于数学题，额外思考可能提升正确率；对于工具 Agent，额外思考可能防止错误调用，也可能只是重复上一轮计划。关键是让模型自己知道何时新的 deliberation 值得付出代价。
+
+### 1.2 机器人尤其需要把推理速度视为应用价值的一部分
+
+机器人不是离线问答：**机器人和环境在持续变化。** 如果高层决策依赖 VLM/LLM，而它每次生成动作前都需要漫长的语言 CoT，就会增加闭环延迟，使相机观测变旧、动作反馈滞后、接触状态变化后才做出决策。即使离线任务成功率不错，在线执行频率和响应时间仍可能限制部署价值。
+
+当然，不应要求语言模型接管电机控制器的每一个高频伺服周期。合理的系统通常需要低层控制维持稳定与安全，高层 Agent 在合适的**决策时间尺度**上做观察、规划和工具动作。但**高层决策时间同样是实际约束**：简单、熟练、低风险的局部操作应尽可能迅速地执行；只有在环境突变、结果与预期不符或关键不可逆操作前，才值得花额外时间分析、检查和重规划。
+
+这使自适应推理不只是推理成本优化，还影响 Agent 的任务吞吐、交互流畅性和机器人在真实世界中的可用性。**最低 Token 不必然是最优策略；恰当时机的额外推理可能换来更高的整体效率。**
+
+### 1.3 我的假设：有限推理机会，可能反而促进更强的直觉与规划
+
+我有一个更进一步、**尚待验证**的假设：如果训练中不允许模型依赖每一步漫长的 CoT，而是在保证任务反馈真实、允许关键时刻重新思考的条件下，限制不必要的显式推理次数，模型可能被迫学习两种互补的能力。
+
+**其一：将反复获得的经验转化为参数化直觉（parametric intuition）。** 熟练动作不再需要每次从头展开一遍语言推理，而是从当前观测和目标中快速产生适当的行动。例如，机器人在大量成功/失败的交互反馈后，能够直觉式地识别普通移动、对准、夹爪开合等常见操作，而将显式推理留给新任务、异常反馈和高风险状态。这里的“直觉”不是宣称模型真的拥有人的无意识，而是指**通过训练形成的、无需长显式 CoT 仍能泛化的状态—行动能力**。
+
+**其二：因为推理机会有代价，模型可能学会更珍惜重要的思考节点，从而在行动前做更有效的规划。** 当不能每一步都用一段新 CoT 修补上一段草率计划时，它可能更愿意在任务阶段切换、重要工具操作、风险判断前组织一个能够支撑后续执行的方案。理想结果不是一味提前多想，而是**少量高价值规划 + 多步可靠执行 + 必要时及时重规划**。
+
+这让我联想到人类技能学习中的从费力思考到熟练自动化的现象。你可以从[这篇科普：《为什么大脑“练得越多，想得越少”？》](https://news.qq.com/rain/a/20250611A02V0N00)获得直观启发；但它只是**生物学习的类比**，不能证明语言模型必然存在同样神经机制或训练规律。更贴近“思考的成本是否值得”的原始研究是 [Jensen et al., *A recurrent network model of planning explains hippocampal replay and human behavior*（Nature Neuroscience, 2024）](https://www.nature.com/articles/s41593-024-01675-7)：其模型允许学习何时花时间进行内部规划。它也**不能直接证明限制 LLM CoT 会产生参数化直觉**。
+
+目前与假设相近、但证据仍不充分的模型研究包括：
+
+- [*Scaling Competence, Shrinking Reasoning*（2025）](https://www.microsoft.com/en-us/research/publication/scaling-competence-shrinking-reasoning-cognitive-signatures-in-language-model-learning/)：观察到某些任务微调过程中，模型能力增长后显式推理长度反而下降，提示推理可能是学习脚手架，而非每次执行都必需。**但观察到变短，不等于证明“限制次数导致内化”。**
+- [*ConPress*（ICML 2026）](https://proceedings.mlr.press/v306/deng26m.html)：通过多问题的上下文压力诱发更短而正确的推理，再用这些样本训练模型，在数学基准上压缩推理长度且保持竞争力。**但这不是机器人闭环直觉或长程规划能力的证明。**
+- [*Learning When to Plan*（2025）](https://arxiv.org/abs/2509.03581)：通过环境奖励及规划成本训练何时继续行动、何时重新规划。它更接近“珍惜推理机会”的交互式视角，说明**学习规划时机本身已有先例**。
+
+**这里必须区分“限制推理”与“学会直觉”：** 如果只在推理阶段压低 Token 上限、关闭 Thinking 或写一条“不要思考”的 Prompt，而**没有更新模型权重**，它并不会因此把新经验写进参数。想验证参数化直觉，需要在 SFT、蒸馏或交互式 RL 等**真正更新参数**的训练过程中，让模型从反馈中学会何时直接行动、何时思考，并验证这种能力在不加载原经验文本的情况下仍然存在。预算太紧也可能只教会模型盲目行动和掩盖推理，而非真正熟练。
+
+### 1.4 参数化直觉与外部 Skills：我更关心能力本身如何增长
+
+这一假设还有一个长期意义：**Agent 的经验应该只作为越来越长的 Context / 外部 SKILL.md 累积，还是应该有一部分逐步沉淀到模型参数，使模型真正变得更熟练？**
+
+- **外部 Skills、Memory 和 Context** 适合存放可随时更新、可审计的规则，特定项目知识、操作手册、脚本与少见例外；Skills 通常按需加载，**并不等于每次都把全部 SKILL.md 塞进 Context**。
+- **参数化直觉** 则可能把跨任务反复出现、已经验证的动作规律、错误修正和条件判断整合进权重，使常见决策无需反复查手册、读完整执行历史或展开长 CoT。
+- **两者应当互补**：会变化的事实、权限、安全约束、稀有细节未必适合固化进参数；适合训练内化的应是可迁移、稳定、频繁使用的能力，而不是一味要求模型记住所有经验。
+
+我倾向于认为，**把经过检验的经验从外部文本逐渐转化为可迁移的参数化行为能力，可能是“硅基智能”继续跃升的重要路径之一**。但这里的“跃升”是研究愿景，不是已被证明的机制，更不能把一次 CoT 压缩等同于真正学会新技能。真正令人期待的系统应当在训练中逐渐**把慢而可靠的思考变成快而可靠的直觉**，同时保留面对陌生任务时再次深入思考的能力。
+
+**可以证伪的关键预测**是：与单纯在推理时截短 CoT 相比，经过有反馈的预算约束训练后，模型在相同成功率、相同在线总时间与 Token 预算下，应能完成更多任务，并且在**无历史原文/无 Skill 提示、状态扰动和未见变体**中保持更强的直接行动与规划能力；如果这些改进只出现在相似训练轨迹上、或只因隐藏 CoT 而看起来更短，那就不能称为经验内化。
+
+这条兴趣路线已有大量前作，并不是无人提出的问题。我的重点是追问它们究竟获得了**推理压缩、计算分配能力，还是可迁移的参数化熟练度**。
 
 正式定义与 API 消息示例：[Thinking 与工具调用协议术语](../glossary/thinking-tool-protocol.md)。各大模型 API 与开源 Agent Harness 如何实际执行和回填工具，见[一个 Agent 是如何组织推理、工具调用与跨轮状态的？](how-agent-reasoning-tools-and-state-work.md)。
 
@@ -121,6 +172,8 @@ questionSummaryEn: "A literature-based overview of adaptive reasoning, from hybr
 
 我更倾向于让**同一个 Agent 通过环境反馈学习元决策**，而不是在部署时长期依赖固定的 uncertainty、likelihood 或 Token 数阈值。元决策应把继续执行、获取新观测、重新规划及不同深度的推理放在同一个权衡空间里。
 
+与第 1 节的假设相呼应，我不仅希望模型**在线时更会分配推理**，也希望长期训练后它对熟悉状态形成更可靠的**参数化直接行动能力**；因此需要同时检测策略选择与参数内化，而不是把原先要花的 CoT 偷偷挪到隐藏步骤或外部 Skill 中。
+
 ### 5.1 目标是决策价值，而不是还原原始动作
 
 令历史 $h_t=(o_{\le t},a_{<t},g)$ 包括观测、动作与目标。一个概念化的元行动集合为：
@@ -196,11 +249,21 @@ $$
 
 ### 关键指标
 
+- **固定预算内有效产出**：相同总在线时间和 Token 上限内，达到预设质量门槛的完成任务数；不能用生成字数代替产出。
+- **机器人在线价值**：高层决策延迟分布、观测到动作的年龄、控制反馈滞后、任务耗时、碰撞/拒绝执行率（在安全执行约束不变的前提下）。
+- **直接行动与内化检验**：在取消原轨迹/Skill 提示、跨任务与状态扰动后，短/无显式 CoT 的成功率是否提升；必须和仅推理时压缩的模型对比。
+- **规划机会分配**：重要阶段前的规划质量、计划保持有效的步数、异常时重新规划的恰当性；不以“单次 CoT 变长”代替规划质量。
 - **主要结果**：独立未见任务的闭环成功率 / 任务回报。
 - **效率**：Thinking Token、实际推理延迟、Prefill、工具调用次数、端到端耗时及预算超标率。
 - **鲁棒性**：状态扰动、动作失败、错误恢复、不可逆错误率、错误地跳过必要推理的比例。
 - **决策解释**：在什么状态选择了 ACT / OBSERVE / THINK / REPLAN？是否真的随风险和计划失效改变？
 - **统计可信度**：多个随机种子、置信区间，比较成功率—实际成本的 Pareto 前沿。
+
+### 检验“限制推理是否促进直觉”的最小实验
+
+同一个 Base Model、同一环境与训练数据，至少区分 **A：不限推理的常规训练**、**B：只在推理时截断/禁用 CoT（不更新参数）**、**C：在相同训练算力与环境交互预算下，通过 SFT/RL 将有限推理机会和最终任务反馈联合优化**。可加入 **D：不更新参数但使用外部 Skill/Memory**，以及 **E：外部经验 + 参数化训练** 作为对照。
+
+训练结束后，在**统一的测试 Token 与在线时间预算**下，比较独立未见任务、相似但未见动作组合、环境突变和机器人错误恢复：C 是否比 B 更能可靠地直接行动？重要操作前的规划与后续成功是否实际提高？移除外部 Skills 及原始轨迹上下文后收益是否仍存在？如果没有，就说明“机会受限促成参数化直觉”的假设尚未得到支持，不能用推理长度下降代替论证。
 
 ### 最值得做的反事实对照
 
@@ -244,3 +307,7 @@ $$
 11. [Learning When to Think](https://arxiv.org/abs/2608.20256)（2026）。
 12. [RACE: When Should Agents Think?](https://arxiv.org/abs/2610.12061)（2026）。
 13. [Anthropic — Thinking](https://platform.claude.com/docs/en/build-with-claude/thinking)；[Adaptive Thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)；[Extended / Interleaved Thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)（官方产品文档，版本会更新）。
+14. [Jensen et al., A recurrent network model of planning explains hippocampal replay and human behavior](https://www.nature.com/articles/s41593-024-01675-7)（Nature Neuroscience, 2024）。
+15. [Scaling Competence, Shrinking Reasoning: Cognitive Signatures in Language Model Learning](https://www.microsoft.com/en-us/research/publication/scaling-competence-shrinking-reasoning-cognitive-signatures-in-language-model-learning/)（2025，相关性观察，不证明因果）。
+16. [ConPress: Learning Efficient Reasoning from Multi-Question Contextual Pressure](https://proceedings.mlr.press/v306/deng26m.html)（ICML 2026）。
+17. [波士顿大学研究揭秘：为什么大脑“练得越多，想得越少”？](https://news.qq.com/rain/a/20250611A02V0N00)（腾讯新闻转载科普，2025；仅作生物自动化现象的直观类比，不作 LLM 机制证据）。
