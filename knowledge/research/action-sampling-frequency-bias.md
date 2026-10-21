@@ -35,87 +35,70 @@ questionEvidence:
     rate: "默认 10 Hz"
     source: "https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py"
 categories: ["机器人与具身智能", "数据混合与策略学习"]
-summaryZh: "扩展核查 10 组真实或仿真机器人数据源与采集程序：官方控制/采集配置涵盖 5、10、15、20、30、目标 50 Hz。另发现 RoboTwin 的 save_freq=15 不是 15 Hz。跨源频率异构已确认，但是否直接导致 VLA 学到数据集捷径，仍需要控制变量实验。"
+summaryZh: "核查 10 组真实或仿真机器人数据源与采集程序：官方控制/采集配置涵盖 5、10、15、20、30、目标 50 Hz。另发现 RoboTwin 的 save_freq=15 不是 15 Hz。跨源频率异构已确认，但是否直接导致 VLA 学到数据集捷径，仍需要控制变量实验。"
 questionSummaryEn: "An audit of 10 real and simulated robot data sources or collection pipelines finds nominal 5, 10, 15, 20, 30, and target 50 Hz rates. RoboTwin's save_freq=15 is a frame interval, not 15 Hz. Learned dataset shortcuts remain unproven."
 ---
 
 # 不同机器人数据集的动作采样频率，是否会引入数据集偏置？
 
-> **证据更新：2026-10-21；扩展至 10 组机器人数据源/采集管线。** 本文是已公开资料的调研与个人研究问题，而非我们自己采集或训练得到的实验发现。主要核查了数据集项目页、原始采集代码、官方训练配置和论文。**结论分三层：频率不同（证实）→ 由此可能产生训练分布差异（机制上合理）→ 策略真的学到了不可迁移的“数据集身份”捷径（尚未验证）。**
+> **资料核查日期：2026-10-21。** 本文是已公开资料的调研与个人研究问题，而非我们自己采集或训练得到的实验发现。主要核查了数据集项目页、原始采集代码、官方训练配置和论文。**结论分三层：频率不同（证实）→ 由此可能产生训练分布差异（机制上合理）→ 策略真的学到了不可迁移的“数据集身份”捷径（尚未验证）。**
 
 ## 先给结论
 
-1. **不同数据集的控制/动作记录频率确实不同。** 在原有四个真实机器人来源之外，又核查 FurnitureBench、实物 UR5 录制、LIBERO、RoboCasa、CALVIN、PushT 仿真，合计 **10 组**，覆盖 **5、10、15、20、30、目标 50 Hz**。但这些数字各自对应的是*项目声明的控制频率、采集代码配置或目标采集速率*，不是我们重新下载全量数据后用时间戳测得的实际频率分布。
+1. **不同数据集和采集管线的控制/动作时间尺度确实不同。** 对照 **10 组**真实机器人、仿真环境与录制程序，官方标称/默认设置覆盖 **5、10、15、20、30、目标 50 Hz**。这些数字对应项目声明、控制配置或目标采集速率，不是逐轨迹实测分布。
 2. **同一个数据集内部的传感模态也可能不同频。** RH20T 的相机和关节状态约 10 Hz、末端位姿和六轴力/力矩 100 Hz，部分触觉 200 Hz；这与“动作频率不同”是有关但不同的问题。
 3. **已有研究直接讨论了多频率训练。** Burns 等研究不同控制频率的离线 RL；2026 年 Chronos Policy 显式建模物理时间；还有 HiPolicy 面向多频率动作块。不过它们没有自动证明“某个跨数据集 VLA 已经学会 dataset shortcut”。
 4. **数据采集标准化是最应该先考虑的修复。** 若能统一动作含义、执行时长、时间戳与下游控制接口，采样率引入的主要歧义可以在数据侧排除；如果混入历史异构数据，仅用插值或把元数据 FPS 设成相同数字并不足够。
 
-## 1. 我核查到了哪些公开数据集？
+## 1. 数据集的采样与控制频率：官方证据对照
 
-下面的频率按**证据所指向的实际含义**记录，避免把相机 FPS、机器人内部伺服频率、动作记录频率、训练重采样频率混成同一个概念。
+以下 10 组覆盖**真实机器人数据集、示范采集程序和仿真任务**。采用同一张表是为了便于比较；“5 Hz”“默认 10 Hz”“目标 50 Hz”并不是同一种证据，必须连同**对象、动作语义和时间基准**一起看。所有数值来自项目说明或源码配置，**并非下载各数据集后对每条轨迹时间戳的实测统计**。
 
-### A. 跨数据集：动作或采集控制循环确实不同
+### 1.1 十组数据源与控制时间尺度
 
-| 数据集 | 核查到的频率 | 频率含义及对应时间间隔 | 最直接的官方证据 | 核查结论 |
-| --- | ---: | --- | --- | --- |
-| **BridgeData V2**（WidowX 250） | **5 Hz** | 官方声明的遥操作控制频率，标称 200 ms/step | [原始项目页 · System Setup](https://bridgedata-v2.github.io/) | **明确确认** |
-| **DROID**（Franka） | **15 Hz** | 采集端 RobotEnv 的 **control_hz = 15**，标称约 66.7 ms/step | [官方代码 · droid/robot_env.py](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) | **明确确认配置值**，非全量轨迹实际间隔审计 |
-| **AgiBot World**（多本体） | **30 Hz** | 作者明确称 AgiBot World 数据以 30 Hz 采集；GO-1 预训练将控制频率输入和 chunk size 设为 30，标称约 33.3 ms/step | [官方仓库 · GO-1 训练说明](https://github.com/OpenDriveLab/AgiBot-World#3-start-fine-tuning) · [配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) | **明确确认官方声明** |
-| **Mobile ALOHA**（双臂移动操作） | **目标 50 Hz** | 采集代码设 **FPS = 50, DT = 0.02**，目标 20 ms/step | [官方采集常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [官方录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) | **明确确认目标值**；不能假设每条轨迹都稳定 50 Hz |
+| 数据集 / 采集管线 | 场景 | 官方频率 / 配置 | 具体代表什么 | 一手证据 |
+| --- | --- | ---: | --- | --- |
+| **BridgeData V2**（WidowX 250） | 真实机器人 | **5 Hz** | 遥操作控制频率，标称每步 **200 ms** | [项目页 · System Setup](https://bridgedata-v2.github.io/) |
+| **FurnitureBench**（Franka 家具组装） | 真实机器人 | **10 Hz** | 策略输出末端相对位姿与夹爪命令的频率；不同于底层更高频的力矩控制 | [官方系统说明](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) |
+| **Diffusion Policy 实物 UR5** | 真实采集程序 | **默认 10 Hz** | 录制脚本可调的 \`--frequency\` 参数；决定观测与目标执行的安排，不保证所有公开轨迹均如此 | [\`demo_real_robot.py\`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
+| **DROID**（Franka） | 真实机器人 | **15 Hz** | RobotEnv 中 \`control_hz=15\` 的采集端控制配置，标称每步约 **66.7 ms** | [\`droid/robot_env.py\`](https://github.com/droid-dataset/droid/blob/main/droid/robot_env.py) |
+| **LIBERO**（Franka） | 仿真示范 | **20 Hz** | 原始示范采集和重放转换脚本均采用 \`control_freq=20\`；不代表所有二次加工版本都保持此配置 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
+| **RoboCasa**（厨房） | 仿真环境 | **默认 20 Hz** | 环境构造器的 \`control_freq=20\`，描述**仿真时间**中的动作间隔；可配置 | [\`kitchen.py\`](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) |
+| **CALVIN**（Franka） | 仿真基准 | **30 Hz** | 官方声明的连续动作控制频率，支持绝对末端目标或相对末端位移 | [官方 README · Action Space](https://github.com/mees/calvin) |
+| **AgiBot World**（多本体） | 真实机器人数据 / 训练管线 | **30 Hz** | 官方说明数据按 30 Hz 采集；GO-1 预训练默认 \`ctrl_freq=30\`，不能推定所有再处理版本同频 | [官方仓库](https://github.com/OpenDriveLab/AgiBot-World) · [GO-1 默认配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_base_cfg.py) |
+| **Mobile ALOHA**（移动双臂） | 真实机器人 | **目标 50 Hz** | 录制代码设 \`FPS=50\`、\`DT=0.02\`；并记录实际循环耗时。**50 Hz 是目标而非每段轨迹的实测保证** | [常量](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/constants.py) · [录制循环](https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py) |
+| **PushT**（二维推物体） | 仿真示范 | **默认 10 Hz** | 官方 \`demo_pusht.py\` 的可调 \`--control_hz=10\`，控制录制循环，不等同于实物机械臂速率 | [\`demo_pusht.py\`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
 
-**重要限定：** Mobile ALOHA 的采集代码显式记录每步耗时、输出实际平均频率，且当所测频率过低（代码阈值为 30）时要求重新采集。因此，这一行应写“**50 Hz 目标**”，不能写成“我们测得原始所有动作都恰好 50 Hz”。DROID 的 15 Hz 同样是公开控制配置，而非本文重新统计的每条轨迹分布。
+这 10 组配置覆盖了 **5、10、15、20、30、目标 50 Hz** 六种典型时间尺度。以标称间隔比较，5 Hz 的单步 **200 ms** 与 50 Hz 的 **20 ms** 相差十倍；**但只有动作标签都指相同类型的物理量、覆盖相同定义的执行窗口时，才可以直接比较动作尺度**。记录频率、策略推理频率、低层伺服频率和相机帧率不能互换。
 
-**直接证据已经足够回答最初的第一问：** 原先四个真实机器人项目的不同频率不是纯粹想象；下文还补充了六组官方来源的实物与仿真采集管线。相邻两个极端的**标称单步间隔**从 200 ms 到 20 ms，相差十倍。不过数据集频率不同并不意味着它们的每个动作标签具有可直接比较的位移或速度语义。
+具体限制包括：Mobile ALOHA 会检测每步实际执行耗时、频率过低时要求重录；DROID 的 15 Hz 是程序配置而非逐轨迹计量；RoboCasa / PushT 的默认值可以修改；仿真时间步并不要求与真实墙上时钟一一对应。**实际训练使用的任何重采样版本，都需要重新检查对应的数据文件与转换代码。**
 
+### 1.2 同一数据集内部也可能不同步
 
-### A2. 扩展核查：六组新的真实/仿真数据源与采集管线
+[RH20T 官方 Data Details](https://rh20t.github.io/)列出了不同模态的记录频率：
 
-**新增的真实机器人数据源/采集程序**
-
-| 数据来源 | 官方标称或默认值 | 数值代表什么 | 官方证据 |
-| --- | ---: | --- | --- |
-| **FurnitureBench**（真实 Franka 家具组装） | **10 Hz** | 视觉策略每秒 10 次输出末端**相对位姿 + 夹爪命令**。底层 OSC 的高频关节力矩控制并不是策略数据 FPS | [官方系统介绍](https://clvrai.github.io/furniture-bench/docs/getting_started/furniturebench_overview.html) · [论文](https://clvrai.github.io/furniture-bench/) |
-| **Diffusion Policy 实物 UR5 示范采集** | **默认 10 Hz** | [`demo_real_robot.py`](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) 的可调 `--frequency` 参数默认 10；用 `dt=1/frequency` 规划观测、目标位姿和未来执行时刻 | [采集循环](https://github.com/real-stanford/diffusion_policy/blob/main/demo_real_robot.py) |
-
-**新增的仿真示范/环境（需与真实世界硬件时钟区分）**
-
-| 数据来源 | 官方标称或默认值 | 数值代表什么 | 官方证据 |
-| --- | ---: | --- | --- |
-| **LIBERO**（Franka 仿真） | **20 Hz** | 原始示范采集与重放转换脚本都设 `control_freq=20`，典型 OSC 末端增量动作 | [采集脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/libero_100_collect_demonstrations.py) · [转换脚本](https://github.com/Lifelong-Robot-Learning/LIBERO/blob/master/scripts/create_dataset.py) |
-| **RoboCasa**（仿真厨房） | **环境默认 20 Hz** | 环境构造器 `control_freq=20` 定义每次动作间的**仿真时间**，可修改；不是对已发布全部 HDF5 / LeRobot 数据的逐轨迹实测 | [环境源码](https://github.com/robocasa/robocasa/blob/main/robocasa/environments/kitchen/kitchen.py) · [数据文档](https://robocasa.ai/docs/build/html/use_cases/creating_datasets.html) |
-| **CALVIN**（Franka 仿真） | **30 Hz** | 官方明确说明连续策略动作的 30 Hz；支持**绝对笛卡尔目标**与**相对位移**两类 action space | [官方 README · Action Space](https://github.com/mees/calvin) |
-| **PushT 仿真示范**（二维推物体） | **默认 10 Hz** | 官方 `demo_pusht.py` 的 `--control_hz=10` 且以 `clock.tick(control_hz)` 调节录制循环；可修改，不能等同于实物机械臂的采集速率 | [示范采集程序](https://github.com/real-stanford/diffusion_policy/blob/main/demo_pusht.py) |
-
-**证据等级与计数说明：** “10 组”指 **4 个先前核查的机器人数据集/项目 + 上述 6 组数据源或示范采集管线**，不是说我们已经下载十份原始轨迹并统计了真实采样间隔。RoboCasa 的数据列是*环境默认配置*，Diffusion Policy 的两个新条目是*采集程序默认值*；仿真的“每步经过 50 ms”也不保证机器会在真实墙上时钟 50 ms 内运行。经过重采样/再打包的训练版本可能采用不同动作时间尺度。
-
-### A3. 容易被误读成数据集 Hz 的三个案例
-
-1. **RoboTwin `save_freq=15` 不等于 15 Hz。** [官方配置教程](https://github.com/Tengbo-Yu/robotwin/blob/main/CONFIG_TUTORIAL.md)称其为保存频率，但[实际执行代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)在 `take_dense_action` 中使用 **`control_idx % save_freq == 0`** 来触发 `_take_picture()`。所以这里的 **15 是每 15 个内部控制步骤保存一次观测**；没有底层步长和模拟时间信息时，绝不能直接列成“RoboTwin 数据集 15 Hz”。
-2. **社区转换版 RoboMIND 的 30 FPS 不等于所有原始动作均 30 Hz。** [社区 RoboMIND → LeRobot 数据卡](https://huggingface.co/datasets/Traly/RoboMIND-lerobot)标注视频 FPS 为 30，但[官方 RoboMIND 数据卡](https://huggingface.co/datasets/x-humanoid-robomind/RoboMIND/blob/main/README.md)同时涵盖多本体，并指出模拟数据中相机与机械臂采集频率约 **1:4**。转换后视频写入帧率、原始图像记录与动作执行时间要分别审计。
-3. **RT-1-X / SimplerEnv 的 3 Hz 通常表示推理/部署或模拟评测协议。** [OXE 官方 README](https://github.com/google-deepmind/open_x_embodiment)在 RT-1-X 推理说明中采用 3 Hz 假设；[SimplerEnv 评测源码](https://github.com/simpler-env/SimplerEnv/blob/main/simpler_env/evaluation/maniskill2_evaluator.py)默认 `control_freq=3`。不能反推出 OXE 的所有训练来源都以 3 Hz 采集。
-
-
-### B. 数据集内部：多模态采样本来就可能不同频
-
-[RH20T 官方 Data Details](https://rh20t.github.io/) 给出了同一数据集的分模态速率：
-
-| RH20T 数据模态 | 官方标注频率 |
+| RH20T 模态 | 官方标注频率 |
 | --- | ---: |
 | RGB / 深度 / 红外图像、关节角、关节力矩、夹爪宽度 | **10 Hz** |
-| 夹爪笛卡尔位姿、六维力/力矩 | **100 Hz** |
-| 音频 | **30 Hz**（按官网表格原样记录，不把它解释成音频原始波形采样率） |
-| 指尖触觉（只在指定配置提供） | **200 Hz** |
+| 末端笛卡尔位姿、六维力/力矩 | **100 Hz** |
+| 音频 | **30 Hz**（沿用官网表格，**不**解释为原始音频波形采样率） |
+| 指尖触觉（特定配置） | **200 Hz** |
 
-这不是说 RH20T 的“动作策略以 200 Hz 输出”：表格只说明**特定传感或状态通道的记录速率**。真正训练时究竟如何对齐观测与目标动作，仍须查看所使用的具体数据转换流程。
+这些是**传感与状态通道**的记录频率，而不是“策略以 200 Hz 输出动作”。[RoboMIND 官方数据说明](https://github.com/x-humanoid-robomind/x-humanoid-robomind.github.io)则指出，其仿真数据中相机与机械臂采集频率约为 **1:4**，但没有足够依据把该比例换算成所有本体通用的绝对 Hz。
 
-[RoboMIND 官方仓库](https://github.com/x-humanoid-robomind/x-humanoid-robomind.github.io) 还说明，**模拟数据**中相机与机械臂数据的采集频率比约为 **1:4**；由于这条描述没有直接给出绝对 Hz，这里只记录比例，不把第三方目录中的“30 Hz”无条件当作全本体、全版本的统一动作频率。
+因此，混合数据时需要分别回答两问：**不同数据源的动作步长是否一致？单个数据源内部观测与动作是否时间对齐？** 这是两个相关但不同的偏置来源。
 
-### C. 必须单独标注的两个频率例子：不能误当原始数据的动作 FPS
+### 1.3 不能直接当作原始动作采样率的配置
 
-- **GO-1 在 LIBERO 微调采用 10 Hz 参数。** AgiBot World 的[官方说明](https://github.com/OpenDriveLab/AgiBot-World)把预训练数据 30 Hz 与 LIBERO 微调 10 Hz 并列；[LIBERO 微调配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_sft_libero.py)里也确实设置 `ctrl_freq=10`、`action_chunk_size=10`。**这是对特定数据版本与训练/评估管线的描述，不能由此推断所有原始 LIBERO、所有重打包版本均为 10 Hz。** 同名 benchmark 的控制器内部步长、已发布训练轨迹 FPS 和算法选择的动作步长要分开核对。
-- **RT-1 官方展示以 3 Hz 执行动作。** [RT-1 项目页](https://robotics-transformer1.github.io/)写的是闭环**策略执行频率**；不要拿它和上表的所有**数据记录**配置直接并列，来声称每个来源都以 3 Hz 采集。
+| 案例 | 容易误读的数字 | 真实含义与判断依据 |
+| --- | --- | --- |
+| **RoboTwin** | \`save_freq=15\` | 不是 **15 Hz**。[实际 \`take_dense_action\` 代码](https://github.com/RoboTwin-Platform/RoboTwin/blob/main/envs/_base_task.py)按 \`control_idx % save_freq == 0\` 保存图像，表示**每 15 个内部控制步骤存一次观测**；要知道 Hz 还需仿真时间步。 |
+| **RoboMIND 社区 LeRobot 转换版** | 视频 \`FPS=30\` | [转换版数据卡](https://huggingface.co/datasets/Traly/RoboMIND-lerobot)的写入帧率不等于各原始本体的动作采集率；需对照[原始数据卡](https://huggingface.co/datasets/x-humanoid-robomind/RoboMIND/blob/main/README.md)及时间戳。 |
+| **GO-1 在 LIBERO 微调** | \`ctrl_freq=10\`、\`action_chunk_size=10\` | [微调配置](https://github.com/OpenDriveLab/AgiBot-World/blob/main/go1/configs/go1_sft_libero.py)对应特定训练/评测管线，不应覆盖上表**原始 LIBERO 示范采集 20 Hz** 的事实。 |
+| **RT-1 / RT-1-X / SimplerEnv** | **3 Hz** | [RT-1 项目页](https://robotics-transformer1.github.io/)、[OXE 推理说明](https://github.com/google-deepmind/open_x_embodiment)与[评测配置](https://github.com/simpler-env/SimplerEnv/blob/main/simpler_env/evaluation/maniskill2_evaluator.py)涉及**策略执行或评测频率**，不能外推为全体训练轨迹的原始采集率。 |
+| **Open X-Embodiment (OXE)** | “统一 10 Hz” | OXE 是多数据集集合，来源及动作空间不一；没有依据给整个集合标一个通用的原始动作采集率。见[原论文](https://arxiv.org/html/2310.08864v9)。 |
 
-这里没有把来自聚合目录的“Open X-Embodiment = 10 Hz”当作事实：**OXE 是许多来源的聚合体，不能被概括成一个单独的统一采集频率。**
+**比较这些资料的正确方法**：优先追溯同一具体数据版本的 \`timestamp\`、\`action\` 语义、环境 \`control_freq\`、低层控制器与模型实际消费的 action chunk 时长。单看 \`FPS\` 或变量名 \`save_freq\` 不够。
 
 ## 2. 数据格式统一，为什么仍可能有问题？
 
@@ -202,7 +185,7 @@ $$
 
 若统一时间跨度与动作定义后性能已恢复，最合理的结论应是**数据标准化问题**。若残余退化稳定存在，再讨论时间感知策略方法是否带来超出前人工作的独立收益。
 
-## 6. 证据审计和个人判断
+## 6. 证据等级与个人判断
 
 | 主张 | 当前证据等级 |
 | --- | --- |
