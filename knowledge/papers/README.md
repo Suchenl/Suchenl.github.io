@@ -8,6 +8,7 @@
 
 | 论文 | 发表状态 | 关键问题 |
 |---|---|---|
+| [SuperMimic：可微分世界模型与视觉想象策略学习](2026/supermimic.md) | CoRL 2026 Oral | 共享人形动力学、BPTT 想象策略优化与视觉世界模型的独立增益 |
 | [TSRL：触发式 SFT + RL](2026/tsrl.md) | arXiv 预印本（2026-10-13） | RL 主导，难状态才注入专家监督，减少遗忘 |
 | [AgentTune](2026/agenttune.md) | arXiv 预印本（2026-10-09） | 统一 Agent 轨迹、训练与评测的 EventLog |
 | [UniRL（腾讯混元）](2026/unirl-hunyuan.md) | 官方开源框架（2026-10） | 同一训练设施支持 SFT、Agentic、异步 RL 等入口 |
