@@ -382,9 +382,7 @@ Figure 3(b,c) 是另一个重要实验。
 
 ### 3.4 真实机器人实验是否有说服力？
 
-![SuperMimic 原论文 Figure 2 的机器人运动控制训练图示](https://paper-assets.alphaxiv.org/paper-figures/01a15c79-28c0-71d3-ae30-12c333cf6c32/01a15cb9-d7f5-7246-8d27-519ef5de7735.jpg)
-
-*真实机器人完整可视化请参见[官方项目页的 Real Unitree G1 视频](https://supermimic.github.io/#real-robot)及[论文 Figure 6](https://arxiv.org/pdf/2610.28480#page=8)。此处不是用 Figure 2 代替 Figure 6 的证据。*
+*真实机器人原始画面请直接观看[官方项目页 Real Unitree G1 演示](https://supermimic.github.io/#real-robot)及[论文 Figure 6（PDF 第 8 页）](https://arxiv.org/pdf/2610.28480#page=8)。原聊天里的两张机器人动态图像搜索结果未附可回溯的原图 URL，无法保证保存相同画面，因此不采用无来源替图。*
 
 Figure 6 展示了真实 G1 上的跳跃、侧向翻滚、90° 翻转及原地 360° 翻转。
 
@@ -676,6 +674,50 @@ Figure 2 和 §3.3 解释未来预测如何真正训练策略；Figure 5 验证�
 最后一个部分尤其值得你关注，因为我们最终想研究的并不只是训练一套会模仿人类动作的低层控制器，而是让机器人能够根据新的视觉任务目标，学会新的行动策略。
 
 ---
+
+## 附：聊天原解读的两张可编辑 Mermaid 流程图
+
+图像文件采用 SVG 静态渲染，以保证 Astro 和 GitHub 均能看到图；下面完整保留原先输出的流程结构，便于将来修改或重新绘制。
+
+### 原图 1：SuperMimic 训练循环
+
+~~~mermaid
+flowchart TD
+    A["当前策略 π"] --> B["MuJoCo 仿真执行"]
+    B --> C["Replay Buffer<br/>真实仿真状态与动作"]
+    C --> D["训练可微分 World Model"]
+    C --> E["采样初始状态"]
+    D --> F["固定 World Model 参数"]
+    E --> F
+    F --> G["想象未来 32 步"]
+    G --> H["预测未来奖励与终止概率"]
+    H --> I["BPTT：未来奖励梯度回传到策略"]
+    H --> J["Critic：估计更长期收益"]
+    I --> K["更新 Actor"]
+    J --> K
+    K --> A
+    classDef blue fill:#dceafa,stroke:#4381c1,color:#173b68
+    classDef green fill:#dcf4e5,stroke:#388765,color:#174d34
+    class D,F blue
+    class G,H,I,J green
+~~~
+
+### 原图 2：视觉想象策略学习研究设想
+
+~~~mermaid
+flowchart TD
+    A["真实 RGB + 机器人状态 + 任务"] --> B["多模态状态编码"]
+    B --> C["结构化状态<br/>物体 / 几何 / 接触 / 本体"]
+    C --> D["Action-conditioned<br/>可微分动力学模型"]
+    D --> E["想象未来结构化状态"]
+    E --> F["任务价值 / 成功奖励"]
+    F --> G["优化策略 Actor"]
+    C --> H["视觉未来预测"]
+    H --> I["语义与视觉一致性监督"]
+    I --> D
+    classDef focus fill:#e0efff,stroke:#3d82c1,color:#174773
+    class D,E,F,G focus
+~~~
 
 ## 资料、图片与版本说明
 
