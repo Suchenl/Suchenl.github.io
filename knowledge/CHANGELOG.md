@@ -1,5 +1,9 @@
 # 更新记录
 
+## 2026-10-22
+
+- 新增 [SuperMimic 论文深度解读](papers/2026/supermimic.md)：完整记录共享可微分 World Model、8 步动力学训练、32 步 BPTT 策略优化、Critic、自适应想象与 VPP2 / 视觉未来预测的差异、作者消融数据、方法缺陷和 A–E 可证伪验证实验。包含四张仓库内 SVG 图表和原论文 Figure 1、Figure 2、Figure 5(b) 图片，均注明图片来源与实际保存方式。未将动态图片搜索中的通用机器人图片冒充为论文实拍。
+
 ## 2026-10-21
 
 - 在「问题与探索」新增公开研究问题《目前的 Tokenizer，是否天然具备数值连续性？》：系统区分文本数字、连续视觉特征、离散几何坐标、离散 Action Codebook 与连续动作 Head；核对 xVal、BitTokens、Pix2Seq、SpatialVLM、Metric-Bench、OpenVLA、FAST、X-Tokenizer、ActionPiece、ProAct、π₀ 与 OpenVLA-OFT 等公开原始资料。提出数值专用编码、物理几何保持、粗意图加连续残差、多频率跨本体动作编码、策略可预测性等待验证路线，附可复现实验与公开来源。新条目由 Research Markdown 的 `publicQuestion: true` 自动出现在首页精选与独立问题列表，无需重复维护页面内容。
