@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 730" role="img" aria-labelledby="fig-title fig-desc">
+<title id="fig-title">梯度可达不等于梯度有用：历史动作恢复实验与 SuperMimic</title>
+<desc id="fig-desc">三列对比。几何可微渲染通过 RGB Alpha 损失有效恢复动作，误差比为 0.171 和 0.296；预训练 H3 的训练损失虽可反传，误差比约 0.995 和 0.980；SuperMimic 使用状态世界模型与任务奖励训练 Actor。不同实验预算不可直接比较。</desc>
+<defs><style>text{font-family:Arial,"Noto Sans CJK SC","Microsoft YaHei",sans-serif}</style><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#64748b"/></marker><marker id="arrow-back" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#9c6b3f"/></marker></defs>
+<rect width="1200" height="730" rx="18" fill="#f7fafc"/>
+<text x="50" y="53" text-anchor="start" font-size="29" font-weight="750" fill="#132339" opacity="1">Gradient Connected ≠ Gradient Useful</text>
+<text x="50" y="82" text-anchor="start" font-size="16" font-weight="500" fill="#52667c" opacity="1">一条可微计算图，何时才能产生真正改善机器人动作的梯度？</text>
+<rect x="50" y="117" width="340" height="490" rx="17" fill="#ffffff" stroke="#91c1e8" stroke-width="1.8"/>
+<rect x="66" y="134" width="308" height="35" rx="10" fill="#eef7ff" stroke="none" stroke-width="0"/>
+<text x="79" y="156" text-anchor="start" font-size="13" font-weight="750" fill="#176caa" opacity="1">01  GEOMETRY</text>
+<text x="72" y="206" text-anchor="start" font-size="23" font-weight="750" fill="#182b3c" opacity="1">直接视觉损失</text>
+<text x="72" y="234" text-anchor="start" font-size="15" font-weight="500" fill="#65778a" opacity="1">FK / 可微渲染</text>
+<rect x="110" y="264" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="237.5" y="291" text-anchor="middle" font-size="15" font-weight="500" fill="#273748" opacity="1">扰动关节  q* + δ</text>
+<path d="M237.5 307 L237.5 329" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="110" y="330" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="237.5" y="357" text-anchor="middle" font-size="14" font-weight="500" fill="#273748" opacity="1">机器人 FK / nvdiffrast</text>
+<path d="M237.5 373 L237.5 395" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="110" y="396" width="255" height="43" rx="9" fill="#eef7ff" stroke="#91c1e8" stroke-width="1.4"/>
+<text x="237.5" y="423" text-anchor="middle" font-size="15" font-weight="650" fill="#273748" opacity="1">RGB + 0.25 × Alpha 损失</text>
+<path d="M110 396 H85 V280 H108" fill="none" stroke="#9c6b3f" stroke-width="2.2" stroke-dasharray="6 5" stroke-linecap="round" marker-end="url(#arrow-back)"/>
+<text x="79" y="434" text-anchor="start" font-size="14" font-weight="650" fill="#8b5c32" opacity="1">梯度反传至关节 q</text>
+<rect x="69" y="451" width="302" height="38" rx="8" fill="#eef7ff" stroke="#91c1e8" stroke-width="1"/>
+<text x="220" y="475" text-anchor="middle" font-size="15" font-weight="700" fill="#116644" opacity="1">有用：关节误差明显下降</text>
+<text x="74" y="518" text-anchor="start" font-size="13" font-weight="500" fill="#65778a" opacity="1">最终关节 RMSE / 初始 RMSE</text>
+<text x="76" y="544" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">G1（单帧）</text>
+<text x="363" y="544" text-anchor="end" font-size="17" font-weight="750" fill="#176caa" opacity="1">0.171</text>
+<text x="76" y="571" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">G3a（8 帧）</text>
+<text x="363" y="571" text-anchor="end" font-size="17" font-weight="750" fill="#176caa" opacity="1">0.296</text>
+<text x="74" y="593" text-anchor="start" font-size="12" font-weight="500" fill="#64748b" opacity="1">局部恢复；不含视频大模型</text>
+<rect x="430" y="117" width="340" height="490" rx="17" fill="#ffffff" stroke="#f0b6ac" stroke-width="1.8"/>
+<rect x="446" y="134" width="308" height="35" rx="10" fill="#fff2f1" stroke="none" stroke-width="0"/>
+<text x="459" y="156" text-anchor="start" font-size="13" font-weight="750" fill="#b74c3f" opacity="1">02  VIDEO PRIOR</text>
+<text x="452" y="206" text-anchor="start" font-size="23" font-weight="750" fill="#182b3c" opacity="1">H3 训练损失</text>
+<text x="452" y="234" text-anchor="start" font-size="15" font-weight="500" fill="#65778a" opacity="1">Ref2VA / FL2VA SDEdit</text>
+<rect x="490" y="264" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="617.5" y="291" text-anchor="middle" font-size="15" font-weight="500" fill="#273748" opacity="1">扰动关节  q* + δ</text>
+<path d="M617.5 307 L617.5 329" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="490" y="330" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="617.5" y="357" text-anchor="middle" font-size="14" font-weight="500" fill="#273748" opacity="1">FK → H3 视觉条件 / Latent</text>
+<path d="M617.5 373 L617.5 395" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="490" y="396" width="255" height="43" rx="9" fill="#fff2f1" stroke="#f0b6ac" stroke-width="1.4"/>
+<text x="617.5" y="423" text-anchor="middle" font-size="15" font-weight="650" fill="#273748" opacity="1">冻结 H3 的训练 v-loss</text>
+<path d="M490 396 H465 V280 H488" fill="none" stroke="#9c6b3f" stroke-width="2.2" stroke-dasharray="6 5" stroke-linecap="round" marker-end="url(#arrow-back)"/>
+<text x="459" y="434" text-anchor="start" font-size="14" font-weight="650" fill="#8b5c32" opacity="1">梯度反传至关节 q</text>
+<rect x="449" y="451" width="302" height="38" rx="8" fill="#fff2f1" stroke="#f0b6ac" stroke-width="1"/>
+<text x="600" y="475" text-anchor="middle" font-size="15" font-weight="700" fill="#ad3535" opacity="1">无效：梯度存在，但难以恢复</text>
+<text x="454" y="518" text-anchor="start" font-size="13" font-weight="500" fill="#65778a" opacity="1">最终关节 RMSE / 初始 RMSE</text>
+<text x="456" y="544" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">G3b（最佳 t）</text>
+<text x="743" y="544" text-anchor="end" font-size="17" font-weight="750" fill="#b74c3f" opacity="1">0.995</text>
+<text x="456" y="571" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">G3c（最佳 t）</text>
+<text x="743" y="571" text-anchor="end" font-size="17" font-weight="750" fill="#b74c3f" opacity="1">0.980</text>
+<text x="454" y="593" text-anchor="start" font-size="12" font-weight="500" fill="#64748b" opacity="1">每个噪声点仅优化 8 步</text>
+<rect x="810" y="117" width="340" height="490" rx="17" fill="#ffffff" stroke="#91d5c4" stroke-width="1.8"/>
+<rect x="826" y="134" width="308" height="35" rx="10" fill="#e9f9f4" stroke="none" stroke-width="0"/>
+<text x="839" y="156" text-anchor="start" font-size="13" font-weight="750" fill="#16816f" opacity="1">03  SUPERMIMIC</text>
+<text x="832" y="206" text-anchor="start" font-size="23" font-weight="750" fill="#182b3c" opacity="1">任务奖励梯度</text>
+<text x="832" y="234" text-anchor="start" font-size="15" font-weight="500" fill="#65778a" opacity="1">状态世界模型 / Actor BPTT</text>
+<rect x="870" y="264" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="997.5" y="291" text-anchor="middle" font-size="15" font-weight="500" fill="#273748" opacity="1">策略 Actor 产生动作</text>
+<path d="M997.5 307 L997.5 329" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="870" y="330" width="255" height="43" rx="9" fill="#fff" stroke="#ced9e5" stroke-width="1.4"/>
+<text x="997.5" y="357" text-anchor="middle" font-size="14" font-weight="500" fill="#273748" opacity="1">可微状态动力学：想象未来</text>
+<path d="M997.5 373 L997.5 395" stroke="#64748b" stroke-width="2.4" stroke-linecap="round" fill="none"  marker-end="url(#arrow)"/>
+<rect x="870" y="396" width="255" height="43" rx="9" fill="#e9f9f4" stroke="#91d5c4" stroke-width="1.4"/>
+<text x="997.5" y="423" text-anchor="middle" font-size="15" font-weight="650" fill="#273748" opacity="1">累计奖励 + Critic</text>
+<path d="M870 396 H845 V280 H868" fill="none" stroke="#9c6b3f" stroke-width="2.2" stroke-dasharray="6 5" stroke-linecap="round" marker-end="url(#arrow-back)"/>
+<text x="839" y="434" text-anchor="start" font-size="14" font-weight="650" fill="#8b5c32" opacity="1">奖励梯度反传至 Actor</text>
+<rect x="829" y="451" width="302" height="38" rx="8" fill="#e9f9f4" stroke="#91d5c4" stroke-width="1"/>
+<text x="980" y="475" text-anchor="middle" font-size="15" font-weight="700" fill="#116644" opacity="1">论文证据：策略学习得到提升</text>
+<text x="834" y="518" text-anchor="start" font-size="13" font-weight="500" fill="#65778a" opacity="1">优化对象 / 目标</text>
+<text x="836" y="544" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">优化变量</text>
+<text x="1123" y="544" text-anchor="end" font-size="17" font-weight="750" fill="#16816f" opacity="1">Actor 参数</text>
+<text x="836" y="571" text-anchor="start" font-size="15" font-weight="500" fill="#314459" opacity="1">目标函数</text>
+<text x="1123" y="571" text-anchor="end" font-size="17" font-weight="750" fill="#16816f" opacity="1">累计任务回报</text>
+<text x="834" y="593" text-anchor="start" font-size="12" font-weight="500" fill="#64748b" opacity="1">不生成未来 RGB 视频</text>
+<rect x="50" y="631" width="1100" height="64" rx="12" fill="#eaf0f7" stroke="#d4dfe9" stroke-width="1.3"/>
+<text x="72" y="656" text-anchor="start" font-size="16" font-weight="750" fill="#194a74" opacity="1">关键区分</text>
+<text x="174" y="656" text-anchor="start" font-size="16" font-weight="650" fill="#263e54" opacity="1">“图通了”只能证明梯度可达；控制收益还取决于优化目标与真实任务后果是否对齐。</text>
+<text x="72" y="682" text-anchor="start" font-size="12" font-weight="500" fill="#5c6f84" opacity="1">注：左两列是历史单案例动作恢复实验，优化步数和目标不同；右列是论文报告的 Actor 学习机制，三列不是等预算性能比较。</text>
+</svg>
