@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 406" role="img" aria-labelledby="title desc">
+<title id="title">视频证据检索：单次精准定位与重复搜索的概念示意</title>
+<desc id="desc">背景灰色代表完整视频时间轴，橙色区间代表真正支持问题回答的证据，蓝色区间代表搜索裁剪；第一行精准命中证据，第二行多次检索包含无关时间段。仅为理解视频工具搜索奖励的概念图，并非真实论文实验曲线。</desc>
+<defs><style>text{font-family:Arial,"Noto Sans CJK SC","Microsoft YaHei",sans-serif}</style></defs>
+<rect x="0" y="0" width="1050" height="406" rx="20" fill="#F8FAFC"/>
+<text x="48" y="51" fill="#1f344b" font-size="24" font-weight="750">视频证据检索：找到答案，还是反复试探？</text>
+<text x="48" y="81" fill="#63758b" font-size="14">来自聊天里的灰 / 橙 / 蓝时间窗示意；用于解释时序证据搜索的效率差异</text>
+<rect x="48" y="112" width="953" height="108" rx="14" fill="white" stroke="#d5dee9"/>
+<rect x="48" y="240" width="953" height="108" rx="14" fill="white" stroke="#d5dee9"/>
+<text x="68" y="142" fill="#1e3f5f" font-size="16" font-weight="700">路径 A：精准搜索</text>
+<text x="68" y="270" fill="#1e3f5f" font-size="16" font-weight="700">路径 B：多次搜索</text>
+<text x="68" y="164" fill="#66788c" font-size="12">一次裁剪 100–110 s → 回答</text>
+<text x="68" y="292" fill="#66788c" font-size="12">反复裁剪，部分落在无关区间</text>
+<rect x="260" y="158" width="700" height="27" rx="6" fill="#d9e0e7"/>
+<rect x="260" y="286" width="700" height="27" rx="6" fill="#d9e0e7"/>
+<rect x="610" y="151" width="35" height="41" rx="3" fill="#D97742"/>
+<rect x="610" y="279" width="35" height="41" rx="3" fill="#D97742"/>
+<rect x="610" y="158" width="35" height="27" rx="2" fill="#26885B" fill-opacity=".58" stroke="#1E704C" stroke-width="2"/>
+<rect x="330" y="284" width="122" height="31" rx="4" fill="#5091CE" fill-opacity=".50" stroke="#387bb9" stroke-width="1.5"/>
+<rect x="559" y="284" width="101" height="31" rx="4" fill="#5091CE" fill-opacity=".50" stroke="#387bb9" stroke-width="1.5"/>
+<rect x="740" y="284" width="124" height="31" rx="4" fill="#5091CE" fill-opacity=".50" stroke="#387bb9" stroke-width="1.5"/>
+<text x="960" y="205" text-anchor="end" font-size="13" font-weight="700" fill="#26885B">区间 IoU = 1.0</text>
+<text x="960" y="332" text-anchor="end" font-size="13" fill="#63758b">检索次数更多、无关区域更多</text>
+<text x="260" y="202" fill="#94A3B8" font-size="11">0 s</text>
+<text x="610" y="202" fill="#94A3B8" font-size="11">100 s</text>
+<text x="959" y="202" fill="#94A3B8" font-size="11" text-anchor="end">200 s</text>
+<text x="260" y="330" fill="#94A3B8" font-size="11">0 s</text>
+<text x="610" y="330" fill="#94A3B8" font-size="11">100 s</text>
+<text x="959" y="330" fill="#94A3B8" font-size="11" text-anchor="end">200 s</text>
+<rect x="48" y="369" width="15" height="13" rx="3" fill="#D97742"/>
+<text x="71" y="380" font-size="13" fill="#485c73">真实证据区间</text>
+<rect x="230" y="369" width="15" height="13" rx="3" fill="#5091CE"/>
+<text x="253" y="380" font-size="13" fill="#485c73">搜索片段</text>
+<rect x="377" y="369" width="15" height="13" rx="3" fill="#26885B"/>
+<text x="400" y="380" font-size="13" fill="#485c73">精准命中</text>
+<text x="1000" y="380" font-size="12" text-anchor="end" fill="#728296">概念示意，非真实论文测量结果</text>
+</svg>
