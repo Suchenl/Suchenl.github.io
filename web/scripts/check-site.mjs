@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 const root='dist';
 let failures=0;
@@ -16,6 +16,14 @@ const blog=page('blog');
 const questions=page('questions');
 const questionDetail=page('research/research/action-sampling-frequency-bias');
 const numberContinuityDetail=page('research/research/do-tokenizers-preserve-numerical-continuity');
+const supermimic=page('research/papers/2026/supermimic');
+check(supermimic.includes('SuperMimic') && supermimic.includes('katex-display') &&
+      supermimic.includes('/research/supermimic/training-loop.svg') &&
+      supermimic.includes('/research/supermimic/failure-counts.svg'),
+  'SuperMimic paper renders math and local research figures');
+for (const filename of ['training-loop.svg','visual-policy-proposal.svg','failure-counts.svg','rollout-speed.svg']) {
+  check(existsSync(join(root,'research','supermimic',filename)), 'SuperMimic visual asset '+filename);
+}
 const pubs=page('publications');
 const projects=page('projects');
 const research=page('research');
@@ -24,11 +32,25 @@ const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
 check(home.includes('href="/questions/"') && home.includes('home-question-card'),'homepage question teaser and link');
-// Only the two most recent questions appear on the homepage. Older
-// questions must remain discoverable via /questions/ and their canonical
-// Research pages, rather than being permanently pinned on the homepage.
-check(home.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
-  'new numerical-continuity question appears in homepage latest teasers');
+// Check against the current source data, not a hard-coded question that may
+// legitimately fall outside the homepage's latest-three window.
+const publicQuestions = readdirSync('../knowledge/research')
+  .filter(name => name.endsWith('.md'))
+  .map(name => {
+    const source = readFileSync(join('..', 'knowledge', 'research', name), 'utf8');
+    const fm = source.match(/^---\s*\n([\s\S]*?)\n---/m)?.[1] || '';
+    return {
+      id: 'research/' + name.replace(/\.md$/, ''),
+      date: fm.match(/^questionDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1] || '',
+      isPublic: /^publicQuestion:\s*true\s*$/m.test(fm),
+    };
+  })
+  .filter(entry => entry.isPublic)
+  .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+const latestThree = publicQuestions.slice(0, 3);
+check(latestThree.length === 3 &&
+  latestThree.every(q => home.includes('href="/research/' + q.id + '/"')),
+  'homepage teasers match the three newest public questions');
 check(questions.includes('/research/research/action-sampling-frequency-bias/') &&
       questions.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
   'older and new research questions remain in the complete Questions index');
