@@ -517,6 +517,10 @@ $$
 
 实验使用 RoboTwin 的 **ALOHA-AgileX** 双臂机器人与相机标定，局部动作来自 `lift_pot` 演示。机器人几何首先经解析/可微 FK、逐连杆刚性变换和 `nvdiffrast` 生成 RGB 与 Alpha；夹爪自由度在优化中被冻结，因为其图像敏感性较弱。以下 G0、G1、G3 是**当时的实验阶段编号**，G1 并非 SuperMimic 使用的 Unitree G1 本体。
 
+![灰蓝色与橙色的视觉梯度反传计算图：从关节经可微渲染与冻结的视频模型到训练损失](/research/supermimic/gradient-backprop-sketch.svg)
+
+*这张简化的灰蓝／橙色计算图保留了早期聊天中的构图：橙色虚线表示反向传播。它描绘的是后续 H3 梯度试验的计算路径，不代表 G0/G1/G3a 的直接像素损失经过视频模型。*
+
 我把实验分成了两个层次：
 
 - **几何视觉梯度：G0、G1、G3a。** 直接优化渲染图像的 $L_{\mathrm{pixel}}=\mathrm{SmoothL1}(RGB)+0.25\,\mathrm{SmoothL1}(\alpha)$，梯度经过可微渲染与 FK 回到 $q$；这里**没有**大型视频模型。G1 的单帧真实机器人资产实验和 G3a 的 8 帧视频实验都能明显恢复被扰动的关节。
@@ -525,6 +529,8 @@ $$
 ![梯度可达不等于梯度有用：历史动作恢复实验与 SuperMimic 的三个梯度目标](/research/supermimic/gradient-usefulness.svg)
 
 *图：左侧是几何视觉损失的动作恢复，中央是 H3 训练损失的负结果，右侧是 SuperMimic 的状态预测与任务回报驱动的 Actor 优化。三列问题定义不同，**不能将数值作等预算性能排名**。*
+
+这张三路径对照图也保留了一份[最早的三栏构图 SVG](/research/supermimic/gradient-comparison-original.svg)，供查看与复用；正文采用当前更易阅读的正式版，不在同一处重复渲染两张近似图。
 
 | 实验 | 反传目标与优化内容 | 关节误差比：最终 / 初始 | 实验结论 |
 |---|---|---:|---|
@@ -827,5 +833,5 @@ flowchart TD
 
 - **核验日期**：2026-10-22。首次 arXiv 提交：2026-10-20；CoRL 2026 Oral 由原文和 Berkeley 研究团队公开资料确认。
 - **原始证据**：[arXiv HTML](https://arxiv.org/abs/2610.28480)；[19 页论文 PDF](https://arxiv.org/pdf/2610.28480)；[官方项目主页](https://supermimic.github.io/)；[UC Berkeley 发表信息](https://hybrid-robotics.berkeley.edu/publications/)。
-- **图像说明**：原论文 Figure 1、Figure 2、Figure 5(b) 通过论文图像服务链接嵌入，版权归属原作者；五张 SVG 为本文整理重绘，保存在网站仓库内。动作示意优先采用可追溯的论文图像，真实机器人动作则链接至作者官方演示；不以无来源图片充当实验依据。
+- **图像说明**：原论文 Figure 1、Figure 2、Figure 5(b) 通过论文图像服务链接嵌入，版权归属原作者；正文现有六张 SVG 为本文整理重绘，另存一份旧聊天三栏图备选稿，保存在网站仓库内。[研究图示索引](https://github.com/Suchenl/Suchenl.github.io/blob/main/knowledge/FIGURES.md)记录图源、用途和修改方式。动作示意优先采用可追溯的论文图像，真实机器人动作则链接至作者官方演示；不以无来源图片充当实验依据。
 - **事实与推论边界**：第一至第三节梳理论文作者报告；第四至第七节有关 VPP2、视觉世界模型、跨任务外推及实验设计的判断属于本文分析，并非 SuperMimic 作者的实证结论。第 4.4 节展示的 G0/G1/G3a/G3b/G3c 是作者本人 2026 年 9 月所做局部机制试验的历史结果，未作为独立同行验证，也不是与 SuperMimic 等预算的性能比较；其余论文图表数值来自各自注明的来源。私人实验仓库和内部运行环境不公开引用。
