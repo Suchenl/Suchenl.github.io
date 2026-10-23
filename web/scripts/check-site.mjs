@@ -21,11 +21,16 @@ check(supermimic.includes('SuperMimic') && supermimic.includes('katex-display') 
       supermimic.includes('/research/supermimic/training-loop.svg') &&
       supermimic.includes('/research/supermimic/failure-counts.svg') &&
       supermimic.includes('/research/supermimic/gradient-usefulness.svg') &&
+      supermimic.includes('/research/supermimic/gradient-backprop-sketch.svg') &&
+      supermimic.includes('/research/supermimic/gradient-comparison-original.svg') &&
       supermimic.includes('Gradient Usefulness') &&
       supermimic.includes('G3a') && supermimic.includes('G3b'),
   'SuperMimic paper renders math and local research figures');
-for (const filename of ['training-loop.svg','visual-policy-proposal.svg','failure-counts.svg','rollout-speed.svg','gradient-usefulness.svg']) {
+for (const filename of ['training-loop.svg','visual-policy-proposal.svg','failure-counts.svg','rollout-speed.svg','gradient-usefulness.svg','gradient-backprop-sketch.svg','gradient-comparison-original.svg']) {
   check(existsSync(join(root,'research','supermimic',filename)), 'SuperMimic visual asset '+filename);
+}
+for (const filename of ['temporal-evidence-search.svg','reference-assessment-vs-2afc.svg']) {
+  check(existsSync(join(root,'research','figures',filename)), 'Recovered research illustration '+filename);
 }
 const pubs=page('publications');
 const projects=page('projects');
