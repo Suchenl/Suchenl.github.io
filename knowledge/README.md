@@ -23,6 +23,7 @@
 | 查看尚未得到验证的研究设想 | [研究问题](research/README.md) |
 | 为知识库提交修改、要求 AI 维护 | [维护规范](CONTRIBUTING.md) · [AI 工作规范](AGENTS.md) |
 | 查看本次修订具体加了什么 | [更新记录](CHANGELOG.md) |
+| 找到已保存的可编辑研究 SVG 图示 | [SVG 图示索引](FIGURES.md) |
 
 ## 目录与职责
 
@@ -42,6 +43,7 @@ paths/                       少量精选的有序学习路线；只引用已有
 research/                    作者自己的假设、设计、反例与待验证问题
 templates/                   新增条目的简洁 Markdown 模板
 scripts/                     本地一致性自检；无收费 Actions 依赖
+FIGURES.md                   可编辑研究 SVG 及聊天图示回收索引
 CHANGELOG.md                 逐次更新摘要
 ```
 
