@@ -675,6 +675,54 @@ Figure 2 和 §3.3 解释未来预测如何真正训练策略；Figure 5 验证�
 
 ---
 
+
+## 八、社区非官方复现与实证核查（2026-10-23）
+
+> **证据分级**：以下是对第三方公开仓库 README、实验日志和实现目录的检查，**并非本知识库独立重训验证**。按「报告完整动作评测」「实现/移植但未证实收敛」「任务变体」区分。公开仓库引用或迁移了其他非官方实现时，不可视为另一份完全独立的从零复现。状态是截至 **2026-10-23** 的快照，非自动更新排行榜。
+
+### 8.1 有量化结果的 LAFAN1 复现
+
+| 非官方仓库 | 方法与平台 | 仓库维护者报告的结果 | 结论边界 |
+|---|---|---|---|
+| [zita-ch/supermimic_vibed](https://github.com/zita-ch/supermimic_vibed) | Isaac Lab 3 kit-less + Newton / MuJoCo-Warp；从论文快速重写 | 1×RTX PRO 6000，40 条 LAFAN1；**0.824 @ 1.24 h（1/40 失败）**，**0.829 @ 1.47 h（0/40 失败）** | 最直接的学习与运行起点，但作者明确承认 AI 辅助快速编写、代码未经全面审查，且额外根部朝向观测、BF16、自碰撞等与原文配置不同 |
+| [CuboiLeo/SuperMimic-Reproduced](https://github.com/CuboiLeo/SuperMimic-Reproduced) | mjlab + MuJoCo Warp；从零实现数据、World Model、BPTT、评测 | 1×RTX 5090，论文 93 维本体观测的 e2：**0.56 @ 1.8 h、9/40 失败**；添加相对锚点观测的 e3：**0.824 @ 1.66 h、5/40 失败**，**0.904 @ 3.3 h、3/40 失败** | **最值得研究复现忠实度**；额外观测的高分**不是相同输入条件的论文复现** |
+| [Motphys/Uni-SuperMimic](https://github.com/Motphys/Uni-SuperMimic) | UniLab（mjwarp / MuJoCo / Motrix）；README 明确参考 zita-ch，为下游适配 | 40 条 LAFAN1、4096 环境；mjwarp 上 checkpoint 12000 的宏平均 **0.827227、0/40 失败**；帧加权 **0.829952** | 适合学习跨框架复现，但不能和 zita-ch 当作两项完全独立算法证据；其它后端成绩不能凭 mjwarp 结果推断 |
+| [dhmbb2/supermimic_vibe](https://github.com/dhmbb2/supermimic_vibe) | mjlab / MuJoCo Warp；实现 PPO-Sim、PPO-WM、Critic / Horizon 消融 | 1×RTX A6000，**0.833 @ 1.34 h（1/40 失败）**，**0.910 @ 3.19 h（0/40 失败）**；另有世界模型加速和 Critic 等对照 | **最值得研究机制**；其 PPO-WM 对照只部分复现，不能把论文 64× imagined-steps 收益当作该仓库的验证结论 |
+
+**直接查看证据，而不是只看项目宣传：**
+
+- **zita-ch**：[逐时训练里程碑](https://github.com/zita-ch/supermimic_vibed/blob/main/MILESTONES.md) · [训练曲线](https://github.com/zita-ch/supermimic_vibed/blob/main/results/success_curve.png) · [LAFAN1 追踪动图](https://github.com/zita-ch/supermimic_vibed/blob/main/results/supermimic_lafan1_highlight.gif)。代码实现动作库、可微 FK、8 步世界模型、32 步 BPTT、Critic、整 clip 评估。README 清楚披露关闭自碰撞、BF16 替代 TF32、添加相对根部朝向输入等偏离。
+- **CuboiLeo**：[EXPERIMENTS 实验与排错日志](https://github.com/CuboiLeo/SuperMimic-Reproduced/blob/main/docs/EXPERIMENTS.md) · [PAPER_SPEC 论文实现核对](https://github.com/CuboiLeo/SuperMimic-Reproduced/blob/main/docs/PAPER_SPEC.md)。其 BONES-SEED 预处理保留 **129,943 条、263.75 h**，与论文 **129,514 条、264.56 h** 存在偏差；e5 添加相对锚点观测后在 **2,000 条子集**测得约 0.935，**不是论文全量分母**。论文原观测的更新实验在所检查版本中尚待完成。
+- **Motphys**：[训练曲线](https://github.com/Motphys/Uni-SuperMimic/blob/main/docs/assets/success_curve.png) · [仿真视频](https://github.com/Motphys/Uni-SuperMimic/blob/main/docs/assets/supermimic_comparison.mp4)。注意视频是仿真机器人和参考动作，并非真实 G1 Sim2Real 证据。
+- **dhmbb2**：[RESULTS 分阶段实测记录](https://github.com/dhmbb2/supermimic_vibe/blob/main/notes/RESULTS.md) · [IMPLEMENTATION 偏离说明](https://github.com/dhmbb2/supermimic_vibe/blob/main/notes/IMPLEMENTATION.md)。有 PPO-Sim、PPO-WM、不同 H 和 Critic 消融；部分结果仍在进行中，其 World Model 加速和梯度收益不应与原论文数字混同。
+
+### 8.2 有实质代码，但尚未证明完整基准收敛的项目
+
+| 项目 | 截至核验日的范围与进度 | 推荐阅读理由 |
+|---|---|---|
+| [Breezewrf/supermimic_mjlab](https://github.com/Breezewrf/supermimic_mjlab) | mjlab + MuJoCo Warp；40 条 LAFAN1 数据，8 步 WM、32 步想象，训练、续训、全 clip 评估与离线 WM 模块；README 未给出完整收敛成绩 | 研究数据、Reward、Termination、Replay 和模型训练的模块边界 |
+| [humble02/supermimic_mjlab_vibed](https://github.com/humble02/supermimic_mjlab_vibed) | 从 zita-ch 移植至 mjlab/MuJoCo Warp；RTX 5090 完成 FK 对拍、短训、重载、全 clip 评估及视频；**尚未完成完整收敛训练** | 研究仿真后端迁移、接触、状态读写与环境一致性 |
+| [ZouYan93/trackerlab-supermimic](https://github.com/ZouYan93/trackerlab-supermimic) | 基于 zita-ch 移植到 Isaac Lab 2.3.2 / Isaac Sim 5.1 / **PhysX**；2,000 迭代报告回报 **0.5416、12/40 失败** | 比较 PhysX 与 MuJoCo-Warp，现有数值仅是训练中期进展 |
+| [RaraAlu/Supermimic](https://github.com/RaraAlu/Supermimic) | 部分模块来自 zita-ch MIT 实现，移植到 mjlab；跨平台与数据、训练流程测试已开展，完整收敛未验证 | 数据索引、G1 运动学、Windows/Linux 以及多卡分片设计 |
+
+### 8.3 与原论文任务不同，但可作为机制对照
+
+[JackMin7/supermimic_whole_body_tracking](https://github.com/JackMin7/supermimic_whole_body_tracking) 将 SuperMimic 风格的可微 World Model + BPTT 策略更新改用于 **Unitree G1 静态站立**，和调整输入/网络后的 PPO 比较。这**不是 LAFAN1 40 条动作追踪的原论文复现**。项目单种子、共享同一 GPU、分别约 1 h 训练后，报告 20 s 站立完成数为 **MBRL 32/32 vs PPO 12/32**；独立 60 s 测试则为 **32/32 vs 16/32**。[实验条件与原始结果说明](https://github.com/JackMin7/supermimic_whole_body_tracking/blob/main/docs/EXPERIMENTS.md)。这里 32 个测试副本不等于 32 个训练种子，不能推出统计显著的算法加速、复杂动作泛化或实机有效性。
+
+### 8.4 与我们研究的联系：三条重要启发
+
+**第一：观测的可辨识性比单纯训练出高回报更重要。** CuboiLeo 的纯本体输入与增强锚点观测差异，提示奖励依赖的根部位置/方向误差是否能由策略输入恢复，是影响实验结论的关键。需要回到论文核对未来 Goal、坐标参考系和是否含隐式对齐信息，**不能直接断言原论文观测设计存在错误**。
+
+**第二：仿真后端不同会改变世界模型监督本身。** 即使 Actor 和 WM 层数不变，碰撞网格、自碰撞、PD、域随机化、状态积分和终止阈值的差异都可能改变下一状态和反传梯度；跨 Isaac Lab/Newton、mjlab、UniLab 和 PhysX 的结果，不该直接只用最终回报比较。
+
+**第三：最值得复现的不是一个 LAFAN1 分数，而是是否存在独立的梯度效率增益。** zita-ch 适合快速跑通方法，CuboiLeo 适合核对原论文观测与数据，dhmbb2 适合看 PPO-WM、Critic 和 Horizon 的机制证据，JackMin7 适合看小范围简化任务。对视觉想象策略学习尤其要区分未来预测作为**辅助表征**、作为**策略输入**，以及作为**可微 Actor 训练信号**这三类收益。
+
+**最小复现核查清单**：① 是否额外加入根部锚点观测；② 同一 G1 模型、仿真后端与接触配置；③ LAFAN1 40 条是否逐 clip 从首帧评估并禁用噪声；④ 归一化回报是 clip 宏平均还是帧加权；⑤ 评测分母是 40 条、2,000 条子集还是 129,514 条；⑥ 训练墙钟时间与显卡是否可比；⑦ 是否公开训练曲线、日志、失败统计、多种子及实现偏差。
+
+**目前没有任何上述第三方仓库在公开资料中充分证明，自己已经等条件独立重现了原文的 129,514 动作库完整零失败结果或真实 G1 实机实验。** GitHub 中的普通 fork、README 镜像、无实质训练记录的项目没有计作新增独立复现。
+
+---
+
 ## 附：聊天原解读的两张可编辑 Mermaid 流程图
 
 图像文件采用 SVG 静态渲染，以保证 Astro 和 GitHub 均能看到图；下面完整保留原先输出的流程结构，便于将来修改或重新绘制。
