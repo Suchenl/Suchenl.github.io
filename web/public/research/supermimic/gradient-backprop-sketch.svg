@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340" role="img" aria-labelledby="title desc">
+<title id="title">视觉梯度反传关节动作的简化实验链路</title>
+<desc id="desc">机器人关节轨迹进入可微 FK 与渲染，再经过冻结的视频模型，得到训练损失；橙色虚线表示梯度回传到关节变量。计算图连通并不代表动作恢复成功。</desc>
+<rect width="340" height="340" rx="16" fill="#f8fafc"/>
+<g font-family="Arial,'Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+<rect x="25" y="10" width="290" height="46" rx="9" fill="#DFEAFE" stroke="#8D9BAC"/>
+<text x="170" y="38" fill="#222" font-size="13.5" text-anchor="middle" font-weight="600">机器人关节轨迹 q（可优化变量）</text>
+<rect x="25" y="72" width="290" height="46" rx="9" fill="#DFEAFE" stroke="#8D9BAC"/>
+<text x="170" y="100" fill="#222" font-size="13.5" text-anchor="middle" font-weight="600">可微 FK + nvdiffrast 渲染</text>
+<rect x="25" y="134" width="290" height="46" rx="9" fill="#E4E7F9" stroke="#8D9BAC"/>
+<text x="170" y="162" fill="#222" font-size="13.5" text-anchor="middle" font-weight="600">MiniMax-H3 视频模型（冻结权重）</text>
+<rect x="25" y="196" width="290" height="46" rx="9" fill="#FCE8D8" stroke="#8D9BAC"/>
+<text x="170" y="224" fill="#222" font-size="13.5" text-anchor="middle" font-weight="600">视频训练损失 / SDEdit 损失</text>
+<path d="M170 56 V70 M166 65 L170 71 L174 65 M170 118 V132 M166 127 L170 133 L174 127 M170 180 V194 M166 189 L170 195 L174 189" stroke="#64748b" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+<path d="M25 219 H10 V33 H25" stroke="#D97706" stroke-width="2.2" stroke-dasharray="6 4" fill="none"/>
+<path d="M18 27 L25 33 L18 39" fill="none" stroke="#D97706" stroke-width="2"/>
+<text x="170" y="264" fill="#D97706" text-anchor="middle" font-size="14" font-weight="700">反向传播 ∂L/∂q</text>
+<text x="170" y="288" fill="#344054" text-anchor="middle" font-size="12">目标：让优化后的 q 接近真实动作 q*</text>
+<text x="170" y="309" fill="#344054" text-anchor="middle" font-size="12">结果：计算图连通，但实际恢复效果很弱</text>
+</g>
+</svg>
