@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 360" role="img" aria-labelledby="title desc">
+<title id="title">参考标准绝对判断与 2AFC 比较的区别</title>
+<desc id="desc">左侧比较固定源视频 Source 与生成视频 Generated，按动作保真和变换成功标准绝对评估；右侧 2AFC 同时给出输出 A 与输出 B，仅要求选择更优的一个。基于研究讨论中小型双框 SVG 重绘。</desc>
+<rect width="1020" height="360" rx="18" fill="#f8fafc"/>
+<g font-family="Arial,'Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+<text x="42" y="48" font-weight="750" font-size="25" fill="#24374c">人工评测：Reference-Based 判断 ≠ 2AFC</text>
+<text x="42" y="76" font-size="14" fill="#5f7890">两种评测界面看起来相似，但产生的标注含义不同</text>
+<rect x="38" y="104" width="455" height="218" rx="14" fill="#ffffff" stroke="#d4dee8"/>
+<rect x="527" y="104" width="455" height="218" rx="14" fill="#ffffff" stroke="#d4dee8"/>
+<text x="60" y="138" font-weight="700" font-size="17" fill="#344d66">Reference-Based Absolute Assessment</text>
+<text x="549" y="138" font-weight="700" font-size="17" fill="#344d66">2AFC: Two-Alternative Forced Choice</text>
+<rect x="66" y="162" width="176" height="92" rx="11" fill="#DBE5EF" stroke="#93a8bd" stroke-width="1.5"/>
+<rect x="287" y="162" width="176" height="92" rx="11" fill="#DDEFE7" stroke="#96baa9" stroke-width="1.5"/>
+<rect x="554" y="162" width="176" height="92" rx="11" fill="#DBE5EF" stroke="#93a8bd" stroke-width="1.5"/>
+<rect x="775" y="162" width="176" height="92" rx="11" fill="#EDE0F0" stroke="#bd9fc8" stroke-width="1.5"/>
+<g fill="none" stroke="#5F7890" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+<path d="M86 216 L109 204 L127 214 L150 190 L171 206 L195 187 L219 199"/>
+<path d="M308 215 L333 207 L350 212 L374 191 L398 207 L422 188 L445 198"/>
+<path d="M575 215 L598 204 L616 213 L638 191 L662 206 L687 189 L711 198"/>
+<path d="M796 215 L819 201 L842 211 L865 192 L889 205 L911 190 L934 203"/>
+</g>
+<g fill="#344d66" text-anchor="middle" font-size="14" font-weight="650">
+<text x="154" y="241">Source</text><text x="375" y="241">Generated</text>
+<text x="642" y="241">Output A</text><text x="863" y="241">Output B</text>
+</g>
+<text x="263" y="213" text-anchor="middle" font-weight="700" font-size="17" fill="#5f7890">→</text>
+<text x="752" y="213" text-anchor="middle" font-weight="700" font-size="17" fill="#5f7890">vs</text>
+<text x="60" y="286" font-size="14" fill="#4e667c">对照源视频，分别判断各项标准是否达到</text>
+<text x="549" y="286" font-size="14" fill="#4e667c">比较两个候选，选出相对更好的一个</text>
+</g>
+</svg>
