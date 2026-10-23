@@ -1,6 +1,7 @@
 # 更新记录
 
 ## 2026-10-23
+- 更新 [SuperMimic 深度解读](papers/2026/supermimic.md)：把 2026 年 9 月历史视觉梯度实验 G0/G1/G3a（渲染器/像素损失有效）与 G3b/G3c（H3 v-loss、SDEdit 梯度连通但动作恢复无效）作为作者研究反例纳入第 4.4 节；新增三路径对照 SVG `web/public/research/supermimic/gradient-usefulness.svg`，并深化第六章的 Gradient Usefulness、Stop-gradient 对照、奖励对齐及自适应想象预算。数据明确标记为单案例历史记录、不作等预算比较；公开站点不出现私人仓库链接或本地机器路径。同步扩展构建验收。
 - 微调 [SuperMimic 全文解读](papers/2026/supermimic.md)的作者叙述视角：去除问答式第二人称、旧聊天记录说明和“我们此前讨论”等表述，统一为作者面向读者的研究判断；保留技术结论、公式、图片与社区复现信息。
 - [SuperMimic 深度解读](papers/2026/supermimic.md)增补 9 个第三方社区仓库及复现证据核查：记录 zita-ch、CuboiLeo、Motphys、dhmbb2 的 LAFAN1 量化结果，及其它移植、未收敛实现和静态站立对照；区分原论文观测与额外锚点观测、项目之间代码继承关系、部分数据集结果与完整 129,514 条基准。
 
