@@ -19,9 +19,12 @@ const numberContinuityDetail=page('research/research/do-tokenizers-preserve-nume
 const supermimic=page('research/papers/2026/supermimic');
 check(supermimic.includes('SuperMimic') && supermimic.includes('katex-display') &&
       supermimic.includes('/research/supermimic/training-loop.svg') &&
-      supermimic.includes('/research/supermimic/failure-counts.svg'),
+      supermimic.includes('/research/supermimic/failure-counts.svg') &&
+      supermimic.includes('/research/supermimic/gradient-usefulness.svg') &&
+      supermimic.includes('Gradient Usefulness') &&
+      supermimic.includes('G3a') && supermimic.includes('G3b'),
   'SuperMimic paper renders math and local research figures');
-for (const filename of ['training-loop.svg','visual-policy-proposal.svg','failure-counts.svg','rollout-speed.svg']) {
+for (const filename of ['training-loop.svg','visual-policy-proposal.svg','failure-counts.svg','rollout-speed.svg','gradient-usefulness.svg']) {
   check(existsSync(join(root,'research','supermimic',filename)), 'SuperMimic visual asset '+filename);
 }
 const pubs=page('publications');
