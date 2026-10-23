@@ -1,0 +1,73 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">梯度可达不等于梯度有用——三路径原始构图</title>
+  <desc id="desc">早期聊天中绘制的三栏解释性图稿，对比几何损失、H3 生成模型训练损失与 SuperMimic 奖励梯度。图中的实验步数、问题和目标不同，不构成等预算性能比较。</desc>
+  <defs>
+    <style>
+      .title { font: 700 28px Arial,"Noto Sans CJK SC",sans-serif; fill: #111827; }
+      .subtitle { font: 500 16px Arial,"Noto Sans CJK SC",sans-serif; fill: #4b5563; }
+      .section { font: 700 20px Arial,"Noto Sans CJK SC",sans-serif; fill: #111827; }
+      .label { font: 600 15px Arial,"Noto Sans CJK SC",sans-serif; fill: #111827; }
+      .txt { font: 14px Arial,"Noto Sans CJK SC",sans-serif; fill: #374151; }
+      .small { font: 13px Arial,"Noto Sans CJK SC",sans-serif; fill: #4b5563; }
+      .metric { font: 700 15px Arial,"Noto Sans CJK SC",sans-serif; fill: #111827; }
+      .ok { font: 700 16px Arial,"Noto Sans CJK SC",sans-serif; fill: #047857; }
+      .warn { font: 700 16px Arial,"Noto Sans CJK SC",sans-serif; fill: #b45309; }
+      .bad { font: 700 16px Arial,"Noto Sans CJK SC",sans-serif; fill: #b91c1c; }
+      .box { fill: white; stroke: #d1d5db; stroke-width: 1.6; }
+      .softbox { fill: #f9fafb; stroke: #d1d5db; stroke-width: 1.2; }
+      .greenbox { fill: #ecfdf5; stroke: #10b981; stroke-width: 1.6; }
+      .redbox { fill: #fef2f2; stroke: #ef4444; stroke-width: 1.6; }
+      .amberbox { fill: #fffbeb; stroke: #f59e0b; stroke-width: 1.6; }
+      .arrow { stroke: #6b7280; stroke-width: 2.3; fill: none; marker-end: url(#arrowhead); }
+      .dashed { stroke-dasharray: 7 6; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#6b7280"/></marker>
+  </defs>
+  <rect width="1200" height="720" fill="white"/>
+  <text x="60" y="50" class="title">梯度可达，不等于梯度有用：此前实验与 SuperMimic 的对照</text>
+  <text x="60" y="78" class="subtitle">关键问题不是“能不能反传”，而是“反传回来的梯度是否真的有助于改进行动”。</text>
+  <rect x="55" y="120" width="330" height="520" rx="14" class="greenbox"/>
+  <text x="80" y="155" class="section">A. 几何视觉链路：成功</text>
+  <text x="80" y="182" class="small">G1 / G3a：FK + 可微渲染 + 像素损失</text>
+  <rect x="85" y="220" width="110" height="52" rx="10" class="box"/><text x="140" y="252" class="label" text-anchor="middle">扰动动作 q</text>
+  <rect x="225" y="220" width="110" height="52" rx="10" class="box"/><text x="280" y="252" class="label" text-anchor="middle">FK + 渲染</text>
+  <rect x="155" y="320" width="110" height="52" rx="10" class="box"/><text x="210" y="352" class="label" text-anchor="middle">RGB / α 视频</text>
+  <rect x="155" y="420" width="110" height="52" rx="10" class="box"/><text x="210" y="452" class="label" text-anchor="middle">像素视频损失</text>
+  <path d="M195 246 L225 246" class="arrow"/><path d="M280 272 L280 296 L210 296 L210 320" class="arrow"/>
+  <path d="M210 372 L210 420" class="arrow"/><path d="M155 446 L125 446 L125 272" class="arrow dashed"/>
+  <text x="92" y="394" class="small">反向传播到 q</text>
+  <text x="82" y="525" class="metric">代表结果：</text>
+  <text x="82" y="552" class="txt">• G1：q error ratio = 0.171</text>
+  <text x="82" y="578" class="txt">• G3a：q error ratio = 0.296</text>
+  <text x="82" y="610" class="ok" font-size="13">梯度存在，且能恢复局部关节动作</text>
+  <rect x="435" y="120" width="330" height="520" rx="14" class="redbox"/>
+  <text x="460" y="155" class="section">B. 视频基础模型链路：失败</text>
+  <text x="460" y="182" class="small">G3b / G3c：H3 训练损失优化关节</text>
+  <rect x="465" y="220" width="100" height="52" rx="10" class="box"/><text x="515" y="252" class="label" text-anchor="middle">扰动动作 q</text>
+  <rect x="595" y="220" width="100" height="52" rx="10" class="box"/><text x="645" y="252" class="label" text-anchor="middle">FK + 渲染</text>
+  <rect x="525" y="320" width="150" height="52" rx="10" class="box"/><text x="600" y="352" class="label" text-anchor="middle">H3 / FL2VA 条件</text>
+  <rect x="525" y="420" width="150" height="52" rx="10" class="box"/><text x="600" y="452" class="label" text-anchor="middle">v-loss / SDEdit</text>
+  <path d="M565 246 L595 246" class="arrow"/><path d="M645 272 L645 296 L600 296 L600 320" class="arrow"/>
+  <path d="M600 372 L600 420" class="arrow"/><path d="M525 446 L490 446 L490 272" class="arrow dashed"/>
+  <text x="462" y="394" class="small">反向传播到 q</text>
+  <text x="462" y="525" class="metric">代表结果：</text>
+  <text x="462" y="552" class="txt">• H3 v-loss：best q ratio = 0.995</text>
+  <text x="462" y="578" class="txt">• H3 SDEdit：best q ratio = 0.980</text>
+  <text x="462" y="610" class="bad" font-size="13">图通了，关节动作仍难以恢复</text>
+  <rect x="815" y="120" width="330" height="520" rx="14" class="amberbox"/>
+  <text x="840" y="155" class="section">C. SuperMimic：另一条思路</text>
+  <text x="840" y="182" class="small">用未来任务回报而非生成损失优化 Actor</text>
+  <rect x="845" y="220" width="110" height="52" rx="10" class="box"/><text x="900" y="252" class="label" text-anchor="middle">Actor / Policy</text>
+  <rect x="985" y="220" width="110" height="52" rx="10" class="box"/><text x="1040" y="252" class="label" text-anchor="middle">World Model</text>
+  <rect x="915" y="320" width="110" height="52" rx="10" class="box"/><text x="970" y="352" class="label" text-anchor="middle">Imagined Rollout</text>
+  <rect x="915" y="420" width="110" height="52" rx="10" class="box"/><text x="970" y="452" class="label" text-anchor="middle">任务奖励</text>
+  <path d="M955 246 L985 246" class="arrow"/><path d="M1040 272 L1040 296 L970 296 L970 320" class="arrow"/>
+  <path d="M970 372 L970 420" class="arrow"/><path d="M915 446 L880 446 L880 272" class="arrow dashed"/>
+  <text x="842" y="394" class="small">奖励梯度回到策略</text>
+  <text x="842" y="525" class="metric">关键区别：</text>
+  <text x="842" y="552" class="txt">• 目标是累计回报而非生成 loss</text>
+  <text x="842" y="578" class="txt">• 梯度目标与任务定义相关</text>
+  <text x="842" y="610" class="warn" font-size="13">启发：优化目标应与控制收益对齐</text>
+  <rect x="120" y="665" width="960" height="35" rx="12" class="softbox"/>
+  <text x="145" y="688" class="label">总结：梯度可达 ≠ 梯度有用。真正需要检验的，是梯度能否改善动作与任务回报。</text>
+</svg>
