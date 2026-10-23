@@ -1,0 +1,45 @@
+# 研究 SVG 图示索引
+
+这里统一维护已保存到网站仓库的**可编辑 SVG**，包括从研究对话中整理回收的早期构图。图形资产直接保存在 `web/public/research/`，论文正文、研究问题和其他页面按需引用**同一个文件**，不复制图片，不在每次讨论时增加无意义的版本号。
+
+> **来源与证据约定**：这份索引记录图形素材，不是论文实证数据集。标为“对话构图重建”的图根据当时回复中的 SVG 内容/构图重新保存，不能宣称是从聊天界面逐字节导出的原始附件。标为“概念示意”的图不是论文作者的实验结果。涉及未公开工程实现或敏感项目细节的图片不进入公开仓库。
+
+## SuperMimic：方法、实验与梯度效用
+
+| 图形 | 直接查看 SVG | 正文用途 / 状态 |
+|---|---|---|
+| 可微分世界模型训练闭环 | [training-loop.svg](../web/public/research/supermimic/training-loop.svg) | 正文 §2：Actor / World Model / Critic 的学习循环 |
+| 大规模动作追踪失败数 | [failure-counts.svg](../web/public/research/supermimic/failure-counts.svg) | 正文 §3：据原文数字绘制的条形图 |
+| World Model 推演速度 | [rollout-speed.svg](../web/public/research/supermimic/rollout-speed.svg) | 正文 §3：论文报告的推演吞吐对照 |
+| 视觉与结构化状态的未来策略优化设想 | [visual-policy-proposal.svg](../web/public/research/supermimic/visual-policy-proposal.svg) | 正文 §6：作者研究假设；不是 SuperMimic 已验证方法 |
+| 梯度可达性与动作效用对照（正式稿） | [gradient-usefulness.svg](../web/public/research/supermimic/gradient-usefulness.svg) | 正文 §4.4：历史 G3 实验与 SuperMimic 三路径对照 |
+| **灰蓝＋橙：视觉梯度反传简图** | [gradient-backprop-sketch.svg](../web/public/research/supermimic/gradient-backprop-sketch.svg) | **对话构图重建；已入正文 §4.4** |
+| **早期绿色／红色／琥珀三栏对照** | [gradient-comparison-original.svg](../web/public/research/supermimic/gradient-comparison-original.svg) | **对话构图重建；保存为可编辑备选稿**，正文仍采用正式版以免重复 |
+
+![灰蓝橙色视觉梯度路径示意](../web/public/research/supermimic/gradient-backprop-sketch.svg)
+
+![三路径对照早期图稿](../web/public/research/supermimic/gradient-comparison-original.svg)
+
+正文入口：[SuperMimic 解读](https://suchenl.github.io/research/papers/2026/supermimic/) · [Markdown 原文](papers/2026/supermimic.md)。
+
+**数值比较边界**：G0/G1/G3a 是像素损失关节恢复实验，G3b/G3c 是冻结 H3 训练损失的局部实验；不同条件、步数和目标不构成等预算性能比较。SuperMimic 是论文作者的 Actor 奖励优化实验，不应把三者的 RMSE 比当成跨系统榜单。
+
+## 其他对话中值得保留的研究图解
+
+| 图形 | 直接查看 SVG | 使用说明 |
+|---|---|---|
+| 视频证据时间窗：精准检索 vs 多次检索 | [temporal-evidence-search.svg](../web/public/research/figures/temporal-evidence-search.svg) | **对话构图重绘**，保留灰色时间轴、橙色证据、蓝色搜索窗口、绿色命中标识；是说明定位效率的概念示意，不是论文数值 |
+| 有源视频绝对判断 vs 2AFC | [reference-assessment-vs-2afc.svg](../web/public/research/figures/reference-assessment-vs-2afc.svg) | **对话构图重绘**，保留灰蓝／绿／紫色卡片，说明两种人工评测标注协议的语义差异 |
+
+![时间窗证据搜索示意](../web/public/research/figures/temporal-evidence-search.svg)
+
+![Reference-Based Assessment 与 2AFC](../web/public/research/figures/reference-assessment-vs-2afc.svg)
+
+这两张图跨越不同研究话题，目前**只在索引中归档，不插入无关的 SuperMimic 论文正文**。以后如出现对应的视频 Agent 阅读条目或人工评测方法论文章，应直接引用现有 SVG，而不是维护第二个副本。
+
+## 维护方式
+
+- SVG 必须是独立的矢量元素与文字，不要把整张截图塞进 SVG 外壳冒充可编辑图。
+- 每张图明确区分原论文数据复绘、概念示意与研究设想；图片 ALT 文本和旁边段落也应该尊重这一边界。
+- 在文章中优先使用最有解释力的一张图；其他历史草稿保存在图示索引，避免为了保留素材而牺牲正文阅读体验。
+- 原图发生内容更正时更新 canonical 文件和本索引；必要时更新论文引用与网站构建检查。
