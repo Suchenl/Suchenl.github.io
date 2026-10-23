@@ -1,6 +1,7 @@
 # 更新记录
 
 ## 2026-10-23
+- 回收研究聊天中值得长期保留的可编辑 SVG 图示：恢复灰蓝/橙色视觉梯度回传简图并嵌入 SuperMimic §4.4，另存三栏对照的早期构图；归档视频证据检索时间窗和 Reference-Based Assessment / 2AFC 示意。统一建立 [SVG 图示索引](FIGURES.md) 标注正文用途、备选稿与概念示意，避免错把旧图当成等预算实验或私人项目素材。
 - 更新 [SuperMimic 深度解读](papers/2026/supermimic.md)：把 2026 年 9 月历史视觉梯度实验 G0/G1/G3a（渲染器/像素损失有效）与 G3b/G3c（H3 v-loss、SDEdit 梯度连通但动作恢复无效）作为作者研究反例纳入第 4.4 节；新增三路径对照 SVG `web/public/research/supermimic/gradient-usefulness.svg`，并深化第六章的 Gradient Usefulness、Stop-gradient 对照、奖励对齐及自适应想象预算。数据明确标记为单案例历史记录、不作等预算比较；公开站点不出现私人仓库链接或本地机器路径。同步扩展构建验收。
 - 微调 [SuperMimic 全文解读](papers/2026/supermimic.md)的作者叙述视角：去除问答式第二人称、旧聊天记录说明和“我们此前讨论”等表述，统一为作者面向读者的研究判断；保留技术结论、公式、图片与社区复现信息。
 - [SuperMimic 深度解读](papers/2026/supermimic.md)增补 9 个第三方社区仓库及复现证据核查：记录 zita-ch、CuboiLeo、Motphys、dhmbb2 的 LAFAN1 量化结果，及其它移植、未收敛实现和静态站立对照；区分原论文观测与额外锚点观测、项目之间代码继承关系、部分数据集结果与完整 129,514 条基准。
