@@ -1,5 +1,9 @@
 # 更新记录
 
+## 2026-10-23
+- [SuperMimic 深度解读](papers/2026/supermimic.md)增补 9 个第三方社区仓库及复现证据核查：记录 zita-ch、CuboiLeo、Motphys、dhmbb2 的 LAFAN1 量化结果，及其它移植、未收敛实现和静态站立对照；区分原论文观测与额外锚点观测、项目之间代码继承关系、部分数据集结果与完整 129,514 条基准。
+
+
 ## 2026-10-22
 
 - 新增 [SuperMimic 论文深度解读](papers/2026/supermimic.md)：完整记录共享可微分 World Model、8 步动力学训练、32 步 BPTT 策略优化、Critic、自适应想象与 VPP2 / 视觉未来预测的差异、作者消融数据、方法缺陷和 A–E 可证伪验证实验。包含四张仓库内 SVG 图表和原论文 Figure 1、Figure 2、Figure 5(b) 图片，均注明图片来源与实际保存方式。未将动态图片搜索中的通用机器人图片冒充为论文实拍。
