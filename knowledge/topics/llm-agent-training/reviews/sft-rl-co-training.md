@@ -87,11 +87,11 @@ ICLR 2026 正式版在五项数学和一项 OOD 基准上报告相对所选 RLVR
 
 ### 2.3 最新 2026-10 进展：TSRL 的困难状态触发监督
 
-[TSRL 详细解读](../../../papers/2026/tsrl.md) · [arXiv 原文](https://arxiv.org/abs/2610.17726)（2026-10-13，预印本）。与 ReLIFT 类似，TSRL 也不赞成在所有状态无条件 SFT，但更突出**持续学习中的能力遗忘**。它将 RL 作为主干，用 Group Success Rate 判断当前状态是否难到应当请求专家标签，仅在触发时加监督，并逐步减弱其影响。作者在 ALFWorld、WebShop、Deep Search 实验中报告，之前任务的能力比某些 SFT→RL 基线最多多保留 **9.6 个百分点**。重要限制：它仍然要求困难状态有可信专家，不能解决 ORA 没有通用专家的根本问题。
+[TSRL 详细解读](../../../papers/2026/tsrl.md) · [arXiv 原文](https://arxiv.org/abs/2610.17726)（2026-10-13，预印本）。与 ReLIFT 类似，TSRL 也不赞成在所有状态无条件 SFT，但更突出**持续学习中的能力遗忘**。它将 RL 作为主干，用 Group Success Rate 判断当前状态是否难到应当请求专家标签，仅在触发时加监督，并逐步减弱其影响。作者在 ALFWorld、WebShop、Deep Search 实验中报告，之前任务的能力比某些 SFT→RL 基线最多多保留 **9.6 个百分点**。重要限制：它仍然要求困难状态有可信专家，不能解决 机器人任务常缺乏通用专家的根本问题。
 
 ### 2.4 AgentTune / UniRL：训练框架不等于联合优化算法
 
-[AgentTune](../../../papers/2026/agenttune.md)（2026-10-09，预印本）用双层 EventLog 将执行、训练、蒸馏与评价共享同一个轨迹事实来源。[腾讯混元 UniRL](../../../papers/2026/unirl-hunyuan.md)（2026-10 官方仓库）已经将 SFT、Agentic RL、AR/VLM RL 与异步训练等入口纳入统一设施。两者对 ORA 的关键作用是**可维护、可信的训练基础设施**；它们不能作为“同一 Loss 联合更新一定更强”的证据。
+[AgentTune](../../../papers/2026/agenttune.md)（2026-10-09，预印本）用双层 EventLog 将执行、训练、蒸馏与评价共享同一个轨迹事实来源。[腾讯混元 UniRL](../../../papers/2026/unirl-hunyuan.md)（2026-10 官方仓库）已经将 SFT、Agentic RL、AR/VLM RL 与异步训练等入口纳入统一设施。两者的关键作用是**可维护、可信的训练基础设施**；它们不能作为“同一 Loss 联合更新一定更强”的证据。
 
 ### 2.5 双层协调而不是普通混 Loss：BRIDGE（ICML 2026）
 
