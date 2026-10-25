@@ -37,6 +37,22 @@
 
 这两张图跨越不同研究话题，目前**只在索引中归档，不插入无关的 SuperMimic 论文正文**。以后如出现对应的视频 Agent 阅读条目或人工评测方法论文章，应直接引用现有 SVG，而不是维护第二个副本。
 
+## MiMo-V2.6：Agentic RL 完整论文解读图
+
+以下七张是本次解读中根据先前研究对话的构图重新写成的**原生 SVG**；结构图属于概念复绘，两张结果图仅绘制技术报告所列作者数值。它们不是从聊天 UI 逐字节导出的原始文件，也不是直接复制论文自带插图。
+
+| 图形 | SVG 源文件 | 用途 |
+|---|---|---|
+| Agentic RL 三维 Scaling | [scaling.svg](../web/public/research/figures/mimo-v2-6/scaling.svg) | 训练计算 × 环境 × Grader |
+| 完整训练阶段 | [training-stages.svg](../web/public/research/figures/mimo-v2-6/training-stages.svg) | Pre-training / Mid-training / SFT / RL / MOPD2 |
+| 1,568 × 16 的 GRPO Rollout | [rollout.svg](../web/public/research/figures/mimo-v2-6/rollout.svg) | 一轮训练的 Agent ↔ Env 循环 |
+| Groupwise Grading | [grading.svg](../web/public/research/figures/mimo-v2-6/grading.svg) | Binary Reward 不足与 Advantage 重新分配 |
+| 轨迹四层组织 | [trace-hierarchy.svg](../web/public/research/figures/mimo-v2-6/trace-hierarchy.svg) | Sample / Sequence / Context / Segment |
+| DeepSWE RL 前后 | [deep-swe.svg](../web/public/research/figures/mimo-v2-6/deep-swe.svg) | 作者报告的两模型分数 |
+| 9B SFT/RL 对比 | [distill-9b.svg](../web/public/research/figures/mimo-v2-6/distill-9b.svg) | 作者报告的四项指标 |
+
+全文：[MiMo-V2.6 深度解读](papers/2026/mimo-mopd2.md) · [站点阅读页](https://suchenl.github.io/research/papers/2026/mimo-mopd2/)。
+
 ## 维护方式
 
 - SVG 必须是独立的矢量元素与文字，不要把整张截图塞进 SVG 外壳冒充可编辑图。
