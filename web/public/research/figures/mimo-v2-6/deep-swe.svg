@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 365" role="img" aria-label="DeepSWE v1.1 · RL 前后（%）"><title>DeepSWE v1.1 · RL 前后（%）</title><rect width="900" height="365" rx="18" fill="#F8FAFC"/><g font-family="-apple-system,BlinkMacSystemFont,'Noto Sans SC','Microsoft YaHei',Arial,sans-serif">
+<text x="450" y="43" font-size="23" font-weight="700" fill="#253548" text-anchor="middle">DeepSWE v1.1 · RL 前后（%）</text>
+
+<text x="28" y="112" font-size="15" font-weight="700" fill="#344457" text-anchor="start">Flash</text>
+<rect x="236" y="95" width="550" height="20" rx="4" fill="#ECF0F5" stroke="none" stroke-width="1.3"/><rect x="236" y="95" width="334.8125" height="20" rx="4" fill="#8DA9C5"/><text x="575.8125" y="110" font-size="13" font-weight="700" fill="#304A62" text-anchor="start">48.7</text>
+<rect x="236" y="127" width="550" height="20" rx="4" fill="#ECF0F5" stroke="none" stroke-width="1.3"/><rect x="236" y="127" width="451.6875" height="20" rx="4" fill="#C49764"/><text x="692.6875" y="142" font-size="13" font-weight="700" fill="#785A3B" text-anchor="start">65.7</text>
+
+<text x="28" y="212" font-size="15" font-weight="700" fill="#344457" text-anchor="start">Pro</text>
+<rect x="236" y="195" width="550" height="20" rx="4" fill="#ECF0F5" stroke="none" stroke-width="1.3"/><rect x="236" y="195" width="401.5" height="20" rx="4" fill="#8DA9C5"/><text x="642.5" y="210" font-size="13" font-weight="700" fill="#304A62" text-anchor="start">58.4</text>
+<rect x="236" y="227" width="550" height="20" rx="4" fill="#ECF0F5" stroke="none" stroke-width="1.3"/><rect x="236" y="227" width="499.125" height="20" rx="4" fill="#C49764"/><text x="740.125" y="242" font-size="13" font-weight="700" fill="#785A3B" text-anchor="start">72.6</text>
+
+<rect x="248" y="299" width="18" height="14" rx="3" fill="#8DA9C5"/><text x="275" y="311" font-size="13" font-weight="400" fill="#536375" text-anchor="start">RL 前</text>
+<rect x="480" y="299" width="18" height="14" rx="3" fill="#C49764"/><text x="507" y="311" font-size="13" font-weight="400" fill="#536375" text-anchor="start">RL 后</text>
+</g></svg>
