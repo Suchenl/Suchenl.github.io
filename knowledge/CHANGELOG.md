@@ -1,5 +1,10 @@
 # 更新记录
 
+## 2026-10-25
+- 将原有 MiMo-V2.6/MOPD2 短卡片扩写为 15 节完整论文解读，覆盖模型与训练、GRPO、任务环境、GRS/GAR、长度惩罚、Multi-Harness、RL 基础设施、MOPD2、实验、开源与证据边界；用读者视角而不是聊天式建议写作。
+- 根据研究对话构图重建七张可编辑 SVG：三维 Scaling、完整训练流程、Rollout 循环、Groupwise Grading、轨迹层级和两张性能对比图；更新 FIGURES 索引。
+- 完成公开知识库隐私清理：将旧论文卡片和主题综述中涉及私有项目的具体指称替换成通用技术讨论，不发布私人研究路线或仓库细节。
+
 ## 2026-10-23
 - 回收研究聊天中值得长期保留的可编辑 SVG 图示：恢复灰蓝/橙色视觉梯度回传简图并嵌入 SuperMimic §4.4，另存三栏对照的早期构图；归档视频证据检索时间窗和 Reference-Based Assessment / 2AFC 示意。统一建立 [SVG 图示索引](FIGURES.md) 标注正文用途、备选稿与概念示意，避免错把旧图当成等预算实验或私人项目素材。
 - 更新 [SuperMimic 深度解读](papers/2026/supermimic.md)：把 2026 年 9 月历史视觉梯度实验 G0/G1/G3a（渲染器/像素损失有效）与 G3b/G3c（H3 v-loss、SDEdit 梯度连通但动作恢复无效）作为作者研究反例纳入第 4.4 节；新增三路径对照 SVG `web/public/research/supermimic/gradient-usefulness.svg`，并深化第六章的 Gradient Usefulness、Stop-gradient 对照、奖励对齐及自适应想象预算。数据明确标记为单案例历史记录、不作等预算比较；公开站点不出现私人仓库链接或本地机器路径。同步扩展构建验收。
