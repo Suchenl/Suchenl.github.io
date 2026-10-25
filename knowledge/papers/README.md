@@ -19,7 +19,7 @@
 | [Provable Benefits of RLVR over SFT](2026/rlvr-backtracking.md) | ICML 2026 | 为何结果奖励可能学会回溯策略 |
 | [SFT or RL for Tool-Calling Agents?](2026/sft-rl-tool-agents.md) | arXiv 预印本（2026-09） | 工具 Agent 中哪种方法更好 |
 | [AutoTool](2026/autotool.md) | ICML 2026 | 动态工具选择，SFT/RL/排序联合使用 |
-| [MiMo-V2.6 MOPD2](2026/mimo-mopd2.md) | 官方技术报告/模型卡 | 多领域教师、RL 和 SFT 前缀蒸馏 |
+| [MiMo-V2.6：Scaling Reinforcement Learning Towards Self-Improvement（全文图解）](2026/mimo-mopd2.md) | 2026 官方技术报告 / arXiv | 多环境 Agentic RL、Mini-Harness、Groupwise Grading、MOPD2 与训练系统 |
 
 ## 2025
 
