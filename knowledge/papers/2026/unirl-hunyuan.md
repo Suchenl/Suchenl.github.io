@@ -25,8 +25,8 @@ Agentic 训练时，工具环境可以多轮执行；Rollout 产生按回合组�
 
 ## 为什么它与协同训练有关？
 
-该框架证明 SFT 和 Agentic RL 可以在**共享训练基础设施**中实施；但不同 entrypoint 并不意味着 SFT/RL Loss 已被同一步稳定联合。对 ORA 应优先比较支持的 Qwen/VLM 精度、工具 Token 一致性、LoRA、GPU 恢复与实际显存，不能只因为叫 UniRL 就全面迁移。
+该框架证明 SFT 和 Agentic RL 可以在**共享训练基础设施**中实施；但不同 entrypoint 并不意味着 SFT/RL Loss 已被同一步稳定联合。评估是否迁移框架时，应优先比较支持的 Qwen/VLM 精度、工具 Token 一致性、LoRA、GPU 恢复与实际显存，不能只因为叫 UniRL 就全面迁移。
 
 ## 研究判断
 
-对于已有 TorchTitan SFT 和 verl RL 链路的 ORA，UniRL 是工程参考，**不是立即重构的证据**。可吸收统一数据格式、Reward Service 与异步 worker 边界。
+对于已有成熟训练管线的研究项目，UniRL 是工程参考，**不是立即重构的证据**。可吸收统一数据格式、Reward Service 与异步 worker 边界。
