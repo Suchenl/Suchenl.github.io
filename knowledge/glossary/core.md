@@ -1,4 +1,6 @@
 ---
+contentType: glossary
+domains: ["大模型与强化学习/后训练与策略优化","机器人与具身智能/策略学习与控制"]
 title: "通用机器学习和后训练术语"
 categories: ["通用概念"]
 summaryZh: "跨领域复用的基础研究术语与精确定义"
