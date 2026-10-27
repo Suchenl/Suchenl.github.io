@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 shortName: "RL Squeezes"
 aliases: ["SFT Expands"]
 title: "RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs"
