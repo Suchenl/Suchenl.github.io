@@ -1,4 +1,6 @@
 ---
+contentType: plan
+domains: ["机器人与具身智能/策略学习与控制","大模型与强化学习/后训练与策略优化"]
 title: "研究提议：SFT Loss 不变，让 RLVR 从真实机器人演示中学习可变动作进度"
 categories: ["机器人与具身智能","强化学习与 Agent"]
 summaryZh: "真实机器人轨迹如何为可变步长动作提供有边界的代理奖励"
