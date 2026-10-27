@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["多模态学习与生成/图像与视频生成"]
 shortName: "DreamOmni2"
 categories: ["生成模型/图像生成"]
 summaryZh: "统一图像生成与编辑能力的研究"
