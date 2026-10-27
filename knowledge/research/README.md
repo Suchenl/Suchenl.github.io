@@ -1,16 +1,28 @@
-# 研究问题与实验候选
+# 技术问答、研究探索与实验计划
 
-- [OPD 为什么使用反向 KL？正向和反向 KL 如何定义，为什么不一起使用？](opd-forward-reverse-kl-qa.md)：原始问答，含概率定义、Mode-Covering / Mode-Seeking、Student 采样训练、KL 混合策略及原对话示意图。
-这里记录我们的**假设**，不把它们归类为“已被论文证明”。只有明确设置 `publicQuestion: true` 的条目会被展示在公开的「问题与探索」栏目中；不要把私人研究资料标记为公开。
+这里存储的文章只有一个正文；**内容展示类型由 `contentType` 决定，所属研究领域由 `domains` 决定**。本目录名称是兼容既有 URL 的存储路径，不表示所有内容都是原创研究问题。
 
-- [一个 Agent 是如何组织推理、工具调用与跨轮状态的？](how-agent-reasoning-tools-and-state-work.md)：基础兴趣问答，跨 Claude / Responses / Codex 与开源 Agent 对照模型 API、Harness、事件、工具执行及上下文回放。
-- [如何让模型学会自适应推理](how-models-learn-adaptive-reasoning.md)：兴趣综述，系统梳理 Think/NoThink、混合推理、跨轮推理、动态规划及交互式 RL，并深入讨论我更认可的闭环、成本敏感学习路线；不是原创科学问题声明。
-- [不同数据集动作采样频率是否引入策略偏置？](action-sampling-frequency-bias.md)：区分物理时间、动作语义、现有多频率研究与可证伪实验。
-- [目前的 Tokenizer，是否天然具备数值连续性？](do-tokenizers-preserve-numerical-continuity.md)：分别分析 VLM 的数值/空间输出与 VLA 的动作 Tokenizer、连续 Action Head、物理邻近保持及可迁移的实验路线。
-- [通用 Agent 如何统一学习离散语言决策与连续数值预测？](how-general-agents-unify-discrete-language-and-continuous-numerical-prediction.md)：比较 xVal、Transfusion、BLIP3-o、Beyond Language Modeling、π0.5 与离散/连续动作 Head，区分固定 Schema、特殊 Token 和 learned routing，讨论连续数值回填与任务反馈驱动的切换学习。
-- [Agent 后训练：从证据矛盾到可证伪实验](agent-post-training-experiment-agenda.md)：先 E0 核对验证器，再分离数据/算法贡献、触发监督、失败恢复及代理奖励有效性。
-- [SFT/RL 研究主张证据地图](../topics/llm-agent-training/reviews/evidence-map.md)：区分论文原始证据与尚未验证的研究假设。
-- [真实机器人轨迹如何成为 RLVR 的奖励来源？](robot-trajectory-reward.md)：固定 SFT Loss，探索轨迹匹配奖励、动作约束、反事实不可辨识与训练实验。
+## 技术问答（qa）
 
-研究提议应包含反例、基线、所需数据、通过/失败标准和与既有文献的差异；兴趣综述则应优先客观整理整条技术路线，清楚区分已有证据和个人判断。
-**公开写作约定：**每次调研把所有来源直接并入当前完整对照表和正文，读者不需要知道“原有”“新增”“扩展到多少”等迭代过程；历史留给 Git 提交。保留证据等级、口径区别、核查日期和未验证的判断。
+- [为什么 OPD 使用反向 KL？能否混合正反 KL？](opd-forward-reverse-kl-qa.md)：原对话完整问答、公式、训练过程与 SVG。
+- [Agent 的 Thinking、Tool Calling 与跨轮状态如何组织？](how-agent-reasoning-tools-and-state-work.md)：官方协议、执行器与状态回放机制。
+
+技术问答属于 Research，不自动进入个人主页的「问题与探索」。
+
+## 开放研究问题与研究兴趣（exploration）
+
+- [不同机器人数据集动作频率是否导致策略偏置？](action-sampling-frequency-bias.md)
+- [Tokenizer 是否天然保留数值连续性？](do-tokenizers-preserve-numerical-continuity.md)
+- [通用 Agent 如何统一离散语言与连续数值预测？](how-general-agents-unify-discrete-language-and-continuous-numerical-prediction.md)
+- [如何让模型学会自适应推理？](how-models-learn-adaptive-reasoning.md)
+
+以上四项是人工精选的「问题与探索」；更改 `publicQuestion` 和 `featuredOrder` 必须有明确作者授权。
+
+## 研究计划（plan）
+
+- [Agent 后训练：从争议主张到可证伪实验](agent-post-training-experiment-agenda.md)
+- [从机器人演示轨迹构造奖励：实验设想](robot-trajectory-reward.md)
+
+计划是候选实验，不代表实验已经完成。所有公开内容不得泄露私人代码库或内部实验。
+
+查看 [统一领域与内容分类规范](../TAXONOMY.md) 或在 [Research](https://suchenl.github.io/research/) 选择任意领域，按内容类型交叉筛选。已建立关系的文档彼此引用，而不重复复制长文。
