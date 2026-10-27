@@ -1,4 +1,7 @@
 ---
+contentType: exploration
+domains: ["机器人与具身智能/数据与动作表示"]
+featuredOrder: 10
 title: "不同机器人数据集的动作采样频率，是否会引入数据集偏置？"
 questionTitleEn: "Do heterogeneous robot action rates induce dataset-specific shortcuts?"
 publicQuestion: true
