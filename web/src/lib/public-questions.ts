@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 export async function getPublicQuestions() {
   const entries = await getCollection('knowledge');
   return entries
-    .filter((entry) => entry.id.startsWith('research/') && entry.data.publicQuestion === true)
+    .filter((entry) => entry.id.startsWith('research/') && entry.data.publicQuestion === true && entry.data.contentType === 'exploration')
     .map((entry) => ({
       id: entry.id,
       href: '/research/' + entry.id + '/',
@@ -15,6 +15,8 @@ export async function getPublicQuestions() {
       date: entry.data.questionDate || '',
       kind: entry.data.questionKind === 'interest' ? 'interest' : 'question',
       evidence: entry.data.questionEvidence || [],
+      domain: entry.data.domains?.[0] || '',
+      order: entry.data.featuredOrder ?? 100,
     }))
-    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+    .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
 }
