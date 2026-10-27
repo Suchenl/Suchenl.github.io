@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 shortName: "AgentTune"
 title: "AgentTune: A Unified Training Lifecycle for Tool-Using LLM Agents"
 year: 2026
