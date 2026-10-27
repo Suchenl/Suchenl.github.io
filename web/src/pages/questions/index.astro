@@ -12,13 +12,14 @@ const questions = await getPublicQuestions();
     <h1 class="page-title"><Bi zh="我好奇的问题与探索" en="Questions & Explorations" /></h1>
     <p class="questions-intro"><Bi zh="这里记录我持续好奇的技术兴趣与研究问题：已有工作走到哪里、不同路线怎样权衡，以及我更认可什么。兴趣综述不意味着原创声明，研究设想也不是已验证结论。" en="Technical interests and research questions: prior work, trade-offs, and current perspectives. An interest survey is not a novelty claim, and proposed ideas are not established findings." /></p>
   </header>
+  <p class="question-scope"><Bi zh="精选开放研究问题，不重复收录技术问答和论文笔记。完整材料统一在 Research。" en="A curated selection of ongoing research questions; technical Q&A and paper notes live only in Research." /></p>
   <section class="question-list" aria-label="公开的研究兴趣与问题">
     {questions.map((q, i) => (
       <article class="question-entry card">
         <div class="question-top">
           <span class="question-num">{q.kind === 'interest' ? 'INTEREST' : 'QUESTION'} {String(i + 1).padStart(2, '0')}</span>
           <span class="question-state">{q.kind === 'interest' ? <Bi zh="兴趣专题" en="Interest survey" /> : <Bi zh="持续探索" en="Exploring" />}</span>
-          <time datetime={q.date}>{q.date}</time>
+          <span class="question-domain">{q.domain.split("/").join(" / ")}</span>
         </div>
         <h2><a href={q.href}><span data-l="zh">{q.titleZh}</span><span data-l="en">{q.titleEn}</span></a></h2>
         <p><span data-l="zh">{q.summaryZh}</span><span data-l="en">{q.summaryEn}</span></p>
@@ -41,6 +42,8 @@ const questions = await getPublicQuestions();
   .question-top { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .8rem; font-size: .74rem; color: var(--fg-muted); }
   .question-num { color: var(--accent-ink); font-weight: 800; letter-spacing: .075em; }
   .question-state { background: var(--accent-soft); padding: .09rem .55rem; border-radius: 99px; color: var(--accent-ink); font-weight: 720; }
+  .question-scope {font-size:.88rem;color:var(--fg-muted);margin:-.4rem 0 1.5rem;}
+  .question-domain {color:var(--fg-muted);font-size:.76rem;}
   .question-entry h2 { font-size: clamp(1.12rem, 2.3vw, 1.4rem); line-height: 1.48; margin: .8rem 0 .65rem; }
   .question-entry h2 a { color: var(--fg); }
   .question-entry h2 a:hover { color: var(--accent-ink); }
