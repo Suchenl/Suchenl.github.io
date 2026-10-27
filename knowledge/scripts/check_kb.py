@@ -8,6 +8,8 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
+PUBLIC_ROOT = ROOT.parent / "web" / "public"
+ASSET_EXTS = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".pdf", ".avif"}
 EXCLUDED = {".git", ".venv", "__pycache__"}
 LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 SKIP_PREFIXES = ("https://", "http://", "mailto:", "data:", "javascript:")
@@ -28,10 +30,18 @@ def main() -> int:
             parsed = urlsplit(link)
             if parsed.scheme or parsed.netloc:
                 continue
-            target = (p.parent / unquote(parsed.path)).resolve()
-            try:
-                target.relative_to(ROOT.resolve())
-            except ValueError:
+            decoded = unquote(parsed.path)
+            if decoded.startswith("/"):
+                # Root-relative images are public assets; route URLs are checked by Astro.
+                if Path(decoded).suffix.lower() not in ASSET_EXTS:
+                    continue
+                target = (PUBLIC_ROOT / decoded.lstrip("/")).resolve()
+            else:
+                target = (p.parent / decoded).resolve()
+            # Preserve the repository boundary while supporting existing SVG references
+            # in web/public/ (including those referenced from FIGURES.md).
+            if not (target.is_relative_to(ROOT.resolve()) or
+                    target.is_relative_to(PUBLIC_ROOT.resolve())):
                 missing.append((p, f"越界内部链接: {raw}"))
                 continue
             if not target.exists():
