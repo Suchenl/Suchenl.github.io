@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 comparison:
   objective: "持续训练 Agent 时按困难状态触发专家监督，保留旧技能"
   training: "RL 主干 + 基于组成功率的监督触发 + 随时间衰减监督强度"
