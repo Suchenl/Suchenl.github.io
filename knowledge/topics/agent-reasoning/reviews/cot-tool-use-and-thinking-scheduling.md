@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 title: "CoT 是工具调用吗？长程 Agent 何时思考、Codex/GLM/Qwen 如何实现"
 shortName: "When to Think"
 aliases: ["CoT", "Chain-of-Thought", "reasoning", "think tool", "interleaved thinking", "preserved thinking", "reasoning_effort", "Codex", "update_plan", "GLM-5.3-Flash", "Qwen3.8-27B", "RACE", "CogRouter", "adaptive thinking", "tool calling"]
