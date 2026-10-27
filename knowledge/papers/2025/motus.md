@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["世界模型与环境交互/世界模型与记忆","机器人与具身智能/策略学习与控制"]
 shortName: "Motus"
 categories: ["机器人与具身智能/世界动作模型"]
 summaryZh: "用于机器人动作与世界预测的建模路线"
