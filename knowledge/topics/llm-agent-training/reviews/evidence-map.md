@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/后训练与策略优化"]
 title: "SFT × RL × Agent：研究主张、证据强度与表面矛盾"
 summaryZh: "不按论文堆砌，而按可检验主张对照 SFT、RLVR、困难状态监督、联合优化与失败恢复的证据、前提和缺口。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/SFT 与 RL 协同"]
