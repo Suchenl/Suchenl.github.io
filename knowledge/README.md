@@ -7,6 +7,10 @@
 
 本仓库不要求把每个方向写成正式论文。最重要的是：**找得到、读得懂、可追溯、能更新、不会把猜想和论文结论混为一谈**。
 
+## 统一内容模型
+
+所有正式文章均标记 **\`domains\`（研究领域）** 和 **\`contentType\`（内容类型）**：领域目录展示不同类型的知识，而「问题与探索」是经作者精选、且仅指向原始 Research 正文的研究兴趣列表。分类、前端类型和精选规则统一见 [分类与治理规范](TAXONOMY.md) · [机器可读字典](taxonomy.json)。原 `categories` 仅保留历史细分检索，不再驱动主领域树。
+
 ## 快速入口
 
 | 我想做什么 | 从哪里开始 |
@@ -40,10 +44,11 @@ papers/                      每篇论文唯一 Markdown：元信息+阅读状�
 glossary/                    单一术语定义来源（通用/各领域），每个二级标题可直达
 paths/                       少量精选的有序学习路线；只引用已有文献/术语
 
-research/                    作者自己的假设、设计、反例与待验证问题
+research/                    技术问答（qa）、开放研究探索（exploration）、实验计划（plan）；保留旧 URL
 templates/                   新增条目的简洁 Markdown 模板
 scripts/                     本地一致性自检；无收费 Actions 依赖
 FIGURES.md                   可编辑研究 SVG 及聊天图示回收索引
+taxonomy.json / TAXONOMY.md   统一领域树、知识类型和精选规则
 CHANGELOG.md                 逐次更新摘要
 ```
 
@@ -62,7 +67,7 @@ GitHub 原生显示公式、目录、代码和链接；每次更改都可以用 
 
 ## 统一浏览方式
 
-网站使用 `/research/` 作为唯一入口：左侧文件夹式目录、右侧按论文与研究资料浏览。原 `/reading/` 自动跳转到 Research。原 `web/src/content/papers/` 的论文记录已并入 `knowledge/papers/`，不再创建第二份笔记。分类来自论文 frontmatter 的 `categories` 数组，一篇论文可以关联多个目录；原论文英文题目保留，摘要、笔记及分类中文优先。
+网站使用 `/research/` 作为唯一入口：左侧文件夹式目录、右侧按论文与研究资料浏览。原 `/reading/` 自动跳转到 Research。原 `web/src/content/papers/` 的论文记录已并入 `knowledge/papers/`，不再创建第二份笔记。主分类由所有文档 frontmatter 的 `domains` 数组统一驱动；原论文英文题目保留，摘要、笔记及分类中文优先。
 
 阅读状态分为 `to-read`（想读）、`reading`（在读）、`read`（已读）和 `untracked`（未标记）。已有 AI 解读不等于用户本人已经读过，不应擅自标记为已读。
 
