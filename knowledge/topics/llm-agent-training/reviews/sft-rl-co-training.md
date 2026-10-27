@@ -11,6 +11,8 @@ summaryZh: "SFT 与 RL 的核心训练信号、协同方案、代表方法与证
 > **核验日期：2026-10-20** · 研究范围：LLM / 多模态 Agent 后训练的 SFT、RLVR、交替训练、联合优化、在线蒸馏、工具选择与机器人迁移。  
 > **文献性质**：叙述性综述，不声称系统综述或穷尽所有工作。优先核对会议官方、arXiv 原文与官方模型卡；引用链接可点击。论文实验的数学/代码结果**不自动外推**到机器人 Agent。
 
+**理解在线策略蒸馏**：参见 [OPD 反向 KL、正向 KL 与混合 KL 的完整技术问答](../../../research/opd-forward-reverse-kl-qa.md)，并对照 [OPD 共享术语](../../../glossary/agent-training.md)。
+
 **如果不想按论文逐篇阅读**：先打开[研究主张证据地图](evidence-map.md)看 C01–C07、冲突与证据缺口；若已准备做实验，直接查看[Agent 后训练可证伪实验议程](../../../research/agent-post-training-experiment-agenda.md)中的 E0–E5。原有这篇综述继续负责方法概念与文献背景。
 
 ## 0. 先给研究判断
