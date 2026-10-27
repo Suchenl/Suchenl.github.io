@@ -22,10 +22,10 @@ OPD（On-Policy Distillation，在线策略蒸馏）通常使用**反向 KL（Re
 
 先定义两个分布：
 
-- \(P\)：Teacher 模型的输出概率分布。
-- \(Q\)：Student 模型的输出概率分布。
+- $P$：Teacher 模型的输出概率分布。
+- $Q$：Student 模型的输出概率分布。
 
-我们希望 Student 学习 Teacher，也就是让 \(Q\) 尽量接近 \(P\)。
+我们希望 Student 学习 Teacher，也就是让 $Q$ 尽量接近 $P$。
 
 ### 1. 正向 KL（Forward KL）
 
@@ -86,7 +86,7 @@ $$
 
 | 比较 | 正向 KL | 反向 KL |
 |---|---|---|
-| 定义 | \(KL(P\|Q)\) | \(KL(Q\|P)\) |
+| 定义 | $KL(P\|Q)$ | $KL(Q\|P)$ |
 | 概率权重 | Teacher | Student |
 | 优化倾向 | Mode-Covering | Mode-Seeking |
 | 主要优势 | 学习 Teacher 的多样性 | 聚焦 Student 已有行为的优化 |
@@ -98,7 +98,7 @@ $$
 
 ![OPD 学生生成轨迹、教师评分及反向 KL 更新流程](https://suchenl.github.io/research/opd/opd-flow.svg)
 
-假设 Student 生成了一个 token \(a_t\)。
+假设 Student 生成了一个 token $a_t$。
 
 我们让 Teacher 和 Student 分别计算这个 token 的概率：
 
@@ -118,8 +118,8 @@ $$
 
 这个值可以作为 OPD 的 token-level 训练信号：
 
-- Teacher 比 Student 更认可这个 token：\(r_t>0\)，倾向于提高它的概率。
-- Teacher 比 Student 更不认可：\(r_t<0\)，倾向于降低它的概率。
+- Teacher 比 Student 更认可这个 token：$r_t>0$，倾向于提高它的概率。
+- Teacher 比 Student 更不认可：$r_t<0$，倾向于降低它的概率。
 
 因为 token 是由 Student 采样的，所以其期望恰好对应反向 KL 的负值：
 
@@ -151,7 +151,7 @@ $$
 \mathcal L=\alpha D_{\mathrm{KL}}(Q\|P)+(1-\alpha)D_{\mathrm{KL}}(P\|Q)
 $$
 
-其中 \(\alpha\in[0,1]\)。
+其中 $\alpha\in[0,1]$。
 
 这样既能保留反向 KL 的模式寻优，又能引入正向 KL 的模式覆盖。
 
@@ -169,7 +169,7 @@ $$
 
 在只提供 sampled-token logprob 的 OPD 系统中，增加正向 KL 通常需要更多 Teacher 概率信息，或者使用额外的采样与估计方法。
 
-而且混合系数 \(\alpha\) 如何设定，本身又成为一个优化问题。
+而且混合系数 $\alpha$ 如何设定，本身又成为一个优化问题。
 
 ## 五、其实已经有人这么做了
 
