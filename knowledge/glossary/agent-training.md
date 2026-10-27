@@ -1,4 +1,6 @@
 ---
+contentType: glossary
+domains: ["大模型与强化学习/后训练与策略优化"]
 title: "LLM Agent 后训练术语"
 categories: ["强化学习与 Agent"]
 summaryZh: "RLVR、SFT、OPD、On-policy 等 Agent 后训练常见概念"
