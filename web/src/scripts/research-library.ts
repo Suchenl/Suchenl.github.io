@@ -1,44 +1,51 @@
+import { domainCatalog, domainMatches, domainTitle, typeLabel, legacyCategoryRoots } from '../lib/research-taxonomy';
+
 type Item = {
     kind: string; id: string; href: string; title: string; summary: string; shortName?: string; aliases?: string[];
-    authors?: string[]; year?: number; venue?: string; categories?: string[];
+    authors?: string[]; year?: number; venue?: string; categories?: string[]; domains?: string[];
     tags?: string[]; status?: string; rating?: number; searchText?: string; added?: string; external?: string; noteDepth?: string;
   };
   type Folder = { name: string; path: string; count: number; children: Map<string, Folder> };
   const ALL: Item[] = JSON.parse(document.getElementById('research-items-json')?.textContent || '[]');
-  const state = { selected: 'papers', query: '', status: 'all', sort: 'year', visibleLimit: 12 };
+  const state = { selected: 'all', type: 'all', query: '', status: 'all', sort: 'year', visibleLimit: 12 };
   const compareIds = new Set<string>();
-  const expanded = new Set<string>(['papers']);
+  const expanded = new Set<string>(['all']);
   const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
-  const labels: Record<string, string> = { papers: '全部论文', paths: '学习路线', reviews: '主题综述', glossary: '术语词典', ideas: '研究思路' };
+  const labels: Record<string, string> = { all: '全部内容' };
   const escapeHtml = (s: string) => String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c] as string));
 
   function makeTree(): Folder[] {
-    const result: Folder[] = ['papers', 'paths', 'reviews', 'glossary', 'ideas'].map(k => ({
-      name: labels[k], path: k, count: ALL.filter(p => k === 'papers' ? p.kind === 'paper' : k === 'glossary' ? (p.kind === 'term' || p.kind === 'glossary') : p.kind === k).length, children: new Map(),
-    }));
-    const root = result[0];
-    for (const p of ALL.filter(p => p.kind === 'paper')) {
-      for (const category of p.categories || []) {
-        let parent = root;
-        let partial = '';
-        for (const segment of category.split('/').filter(Boolean)) {
-          partial = partial ? partial + '/' + segment : segment;
-          if (!parent.children.has(segment)) {
-            parent.children.set(segment, { name: segment, path: 'cat:' + partial, count: 0, children: new Map() });
-          }
-          parent = parent.children.get(segment)!;
+    // Domain tree is derived from ALL canonical articles, never papers alone.
+    // Individual glossary headings are search-only and are not separate library items.
+    const root: Folder = {
+      name: '全部内容', path: 'all',
+      count: ALL.filter(item => item.kind !== 'term').length,
+      children: new Map(),
+    };
+    const entries = ALL.filter(item => item.kind !== 'term');
+    for (const domain of domainCatalog) {
+      if (!entries.some(item => domainMatches(item.domains, domain.id))) continue;
+      const top: Folder = {
+        name: domain.id, path: 'domain:' + domain.id, count: 0, children: new Map(),
+      };
+      root.children.set(domain.id, top);
+      for (const childName of domain.children) {
+        const full = domain.id + '/' + childName;
+        if (entries.some(item => domainMatches(item.domains, full))) {
+          top.children.set(childName, {
+            name: childName, path: 'domain:' + full, count: 0, children: new Map(),
+          });
         }
       }
     }
-    const countChildren = (node: Folder) => {
-      for (const child of node.children.values()) {
-        const category = child.path.slice(4);
-        child.count = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === category || c.startsWith(category + '/'))).length;
-        countChildren(child);
+    const count = (node: Folder) => {
+      if (node.path.startsWith('domain:')) {
+        node.count = entries.filter(item => domainMatches(item.domains, node.path.slice(7))).length;
       }
+      node.children.forEach(count);
     };
-    countChildren(root);
-    return result;
+    count(root);
+    return [root];
   }
   const roots = makeTree();
   // One full-row control per folder: click selects it and opens/closes its subtree.
@@ -65,22 +72,26 @@ type Item = {
       + (hasChildren && open ? children.map((c,i) => treeNode(c,depth+1,i+1,children.length)).join('') : '');
   }
 
-  let focusPath = 'papers';
-  function parentOf(path: string): string | null {
-    if (path === 'papers' || ['paths','reviews','glossary','ideas'].includes(path)) return null;
-    if (!path.startsWith('cat:')) return 'papers';
-    const raw = path.slice(4);
-    return raw.includes('/') ? 'cat:' + raw.slice(0,raw.lastIndexOf('/')) : 'papers';
+  let focusPath = 'all';
+  function parentOf(selectedPath: string): string | null {
+    if (selectedPath === 'all') return null;
+    if (!selectedPath.startsWith('domain:')) return 'all';
+    const name = selectedPath.slice(7);
+    return name.includes('/') ? 'domain:' + name.slice(0, name.lastIndexOf('/')) : 'all';
   }
-  function exposeAncestors(path: string) {
-    for (let p = parentOf(path);p;p = parentOf(p)) expanded.add(p);
+  function exposeAncestors(selectedPath: string) {
+    for (let p = parentOf(selectedPath);p;p = parentOf(p)) expanded.add(p);
   }
   function currentFolderFromUrl(): string {
-    const params = new URLSearchParams(window.location.search);
-    const folder = params.get('folder') || 'papers';
-    return roots.some(n => n.path === folder) ||
-      (folder.startsWith('cat:') && ALL.some(p => (p.categories || []).some(c => c === folder.slice(4) || c.startsWith(folder.slice(4)+'/'))))
-      ? folder : 'papers';
+    const folder = new URLSearchParams(window.location.search).get('folder') || 'all';
+    if (folder.startsWith('domain:') && findFolder(folder)) return folder;
+    // Keep bookmarked legacy paper-category filters usable without moving any article.
+    if (folder.startsWith('cat:')) {
+      const old = folder.slice(4);
+      const domain = legacyCategoryRoots[old.split('/')[0]];
+      if (domain && findFolder('domain:' + domain)) return 'domain:' + domain;
+    }
+    return 'all';
   }
   function syncExpandLabel() {
     const control = document.getElementById('lit-expand');
@@ -100,7 +111,7 @@ type Item = {
     const html = roots.map((n,i) => treeNode(n,0,i+1,roots.length)).join('');
     host.innerHTML = html;
     if (!host.querySelector('[data-path="' + CSS.escape(focusPath) + '"]')) focusPath = state.selected;
-    if (!host.querySelector('[data-path="' + CSS.escape(focusPath) + '"]')) focusPath = 'papers';
+    if (!host.querySelector('[data-path="' + CSS.escape(focusPath) + '"]')) focusPath = 'all';
     host.querySelectorAll<HTMLButtonElement>('[data-path]').forEach(b => b.tabIndex = b.dataset.path === focusPath ? 0 : -1);
     if (side) side.scrollTop = scroll;
     const needsFocus = Boolean(focus || oldFocus);
@@ -112,8 +123,9 @@ type Item = {
   }
   function persistUrl(mode: 'push' | 'replace' = 'replace') {
     const next = new URL(window.location.href);
-    for (const key of ['folder','q','status','sort']) next.searchParams.delete(key);
-    if (state.selected !== 'papers') next.searchParams.set('folder',state.selected);
+    for (const key of ['folder','type','q','status','sort']) next.searchParams.delete(key);
+    if (state.selected !== 'all') next.searchParams.set('folder',state.selected);
+    if (state.type !== 'all') next.searchParams.set('type',state.type);
     if (state.query.trim()) next.searchParams.set('q',state.query.trim());
     if (state.status !== 'all') next.searchParams.set('status',state.status);
     if (state.sort !== 'year') next.searchParams.set('sort',state.sort);
@@ -215,17 +227,22 @@ type Item = {
     let values: Item[];
     const q = state.query.trim().toLowerCase();
     if (q) {
-      values = ALL.filter(p => [p.shortName || '', (p.aliases || []).join(' '), p.title, p.summary, p.id, p.searchText || '', (p.authors || []).join(' '), (p.tags || []).join(' '), (p.categories || []).join(' ')].join(' ').toLowerCase().includes(q));
-    } else if (state.selected === 'papers') {
-      values = ALL.filter(p => p.kind === 'paper');
-    } else if (state.selected.startsWith('cat:')) {
-      const cat = state.selected.slice(4);
-      values = ALL.filter(p => p.kind === 'paper' && (p.categories || []).some(c => c === cat || c.startsWith(cat + '/')));
+      values = ALL.filter(p => [p.shortName || '', (p.aliases || []).join(' '), p.title, p.summary,
+        p.id, p.searchText || '', (p.authors || []).join(' '), (p.tags || []).join(' '),
+        (p.categories || []).join(' '), (p.domains || []).join(' ')]
+        .join(' ').toLowerCase().includes(q));
+    } else if (state.selected.startsWith('domain:')) {
+      values = ALL.filter(p => p.kind !== 'term' && domainMatches(p.domains, state.selected.slice(7)));
     } else {
-      values = ALL.filter(p => state.selected === 'glossary' ? (p.kind === 'glossary' || p.kind === 'term') : p.kind === state.selected);
+      values = ALL.filter(p => p.kind !== 'term');
+    }
+    if (state.type !== 'all') {
+      values = values.filter(p => state.type === 'glossary'
+        ? p.kind === 'glossary' || (q && p.kind === 'term')
+        : p.kind === state.type);
     }
     if (state.status !== 'all') values = values.filter(p => p.kind === 'paper' && p.status === state.status);
-    const kindOrder = (k: string) => ({ paths: 0, reviews: 1, term: 2, paper: 3, glossary: 4, ideas: 5 }[k] ?? 6);
+    const kindOrder = (k: string) => ({ review: 0, qa: 1, exploration: 2, paper: 3, path: 4, plan: 5, glossary: 6, term: 7 }[k] ?? 8);
     const relevance = (p: Item) => {
       if (!q) return 0;
       const title = p.title.toLowerCase();
@@ -256,9 +273,10 @@ type Item = {
   }
   function itemRow(p: Item): string {
     // Preserve the chosen directory across detail navigation without changing canonical IDs.
-    const returnFolder = state.selected.startsWith('cat:') ? state.selected : (p.kind === 'paper' ? 'papers' : state.selected);
+    const returnFolder = state.selected;
     const destination = new URLSearchParams();
     destination.set('from',returnFolder);
+    if (state.type !== 'all') destination.set('type',state.type);
     if (state.query.trim()) destination.set('q',state.query.trim());
     if (state.status !== 'all') destination.set('status',state.status);
     if (state.sort !== 'year') destination.set('sort',state.sort);
@@ -269,62 +287,61 @@ type Item = {
     const paper = p.kind === 'paper';
     const title = escapeHtml(p.title);
     const acronym = paper && p.shortName ? '<span class="lit-short-name">' + escapeHtml(p.shortName) + '</span>' : '';
-    const category = paper ? ((p.categories || [])[0] || '') : (labels[p.kind] || '研究资料');
-    const kind = paper ? (p.noteDepth || '阅读笔记') : (p.kind === 'term' ? '术语解释' : labels[p.kind] || '研究资料');
+    const category = (p.domains || [])[0] || '';
+    const kind = p.kind === 'term' ? '术语速查' : (typeLabel[p.kind] || '研究资料');
     const year = paper ? [p.year || '', p.venue || ''].filter(Boolean).join(' · ') : kind;
     const chips = paper ? (p.tags || []).slice(0,3).map(tag => '<span class="lit-chip">' + escapeHtml(tag) + '</span>').join('') : '';
     const rating = paper && p.rating && p.rating > 0 ? '<span class="lit-rating">' + '★'.repeat(p.rating) + '☆'.repeat(Math.max(0,5-p.rating)) + '</span>' : '';
-    const compareAction = paper ? '<button type="button" class="lit-compare-pick" data-compare-id="' + escapeHtml(p.id) + '" aria-pressed="' + compareIds.has(p.id) + '">' + (compareIds.has(p.id) ? '✓ 已选对比' : '＋ 加入对比') + '</button>' : '';
+    const compareAction = paper && (state.type === 'paper' || compareIds.size > 0) ? '<button type="button" class="lit-compare-pick" data-compare-id="' + escapeHtml(p.id) + '" aria-pressed="' + compareIds.has(p.id) + '">' + (compareIds.has(p.id) ? '✓ 已选对比' : '＋ 加入对比') + '</button>' : '';
     const external = paper && p.external && /^https?:\/\//.test(p.external)
       ? '<a class="lit-external" href="' + escapeHtml(p.external) + '" target="_blank" rel="noopener noreferrer" aria-label="在新标签页打开 ' + title + ' 的原始来源">原始资料 ↗</a>' : '';
     return '<article class="row">'
       + '<div class="row-main"><div class="lit-row-eyebrow"><span>' + escapeHtml(year) + '</span><span>' + escapeHtml(kind) + '</span></div>'
       + '<div class="row-title">' + acronym + '<a href="' + escapeHtml(detailHref) + '">' + title + '</a></div>'
       + (p.summary ? '<p class="row-abs">' + escapeHtml(p.summary) + '</p>' : '')
-      + '<div class="lit-row-bottom"><span class="lit-category">' + escapeHtml(category.replaceAll('/', ' / ')) + '</span>' + chips + '</div></div>'
+      + '<div class="lit-row-bottom"><span class="lit-category">' + escapeHtml(domainTitle(category)) + '</span>' + chips + '</div></div>'
       + '<div class="row-meta">' + (paper ? '<span class="st st-' + escapeHtml(p.status || 'untracked') + '">' + statusLabel[p.status || 'untracked'] + '</span>' : '')
       + rating + compareAction + '<span class="lit-card-links">' + external + '<a href="' + escapeHtml(detailHref) + '">' + (paper ? '阅读笔记 →' : '查看内容 →') + '</a></span></div></article>';
   }
   function renderContext() {
     const host = document.getElementById('lit-context');
     if (!host) return;
-    if (state.query.trim() || !state.selected.startsWith('cat:')) {
-      host.innerHTML = '';
-      return;
+    if (state.query.trim() || !state.selected.startsWith('domain:')) {
+      host.innerHTML = ''; return;
     }
-    const folder = state.selected.slice(4);
-    const match = ALL.filter(p => p.kind !== 'paper' && p.kind !== 'term' && (p.categories || []).some(c =>
-      c === folder || c.startsWith(folder + '/') || folder.startsWith(c + '/')
-    ));
-    if (!match.length) { host.innerHTML = ''; return; }
-    const categoryNames: Record<string, string> = { paths: '循序学习', reviews: '专题综述', glossary: '相关术语', ideas: '研究问题' };
-    host.innerHTML = '<div class="lit-context"><div class="lit-context-title">从这里开始 <span>本方向的研究脉络与概念</span></div><div class="lit-context-links">'
-      + match.map(p => '<a href="' + escapeHtml(p.href) + '"><span class="lit-context-kind">' + (categoryNames[p.kind] || '关联阅读') + '</span>'
-      + '<strong>' + escapeHtml(p.title) + '</strong><span class="lit-context-summary">' + escapeHtml(p.summary || '') + '</span></a>').join('')
-      + '</div></div>';
+    const selected = state.selected.slice(7);
+    const domain = domainCatalog.find(item => item.id === selected);
+    const descriptor = domain?.description || '本领域的技术原理、代表工作与开放问题都集中在下面，可继续按内容类型筛选。';
+    const kinds = ALL.filter(p => p.kind !== 'term' && domainMatches(p.domains, selected))
+      .reduce<Record<string, number>>((acc,p)=>{acc[p.kind]=(acc[p.kind]||0)+1;return acc;},{});
+    const counts = Object.entries(kinds).map(([kind,n]) => typeLabel[kind] + ' ' + n).join(' · ');
+    host.innerHTML = '<div class="lit-context"><div class="lit-context-title">'
+      + escapeHtml(domainTitle(selected)) + '</div><p>' + escapeHtml(descriptor)
+      + '</p><div class="lit-domain-counts">' + escapeHtml(counts) + '</div></div>';
   }
   function render() {
     renderTree();
     renderContext();
     const data = filteredItems();
-    const current = state.selected.startsWith('cat:') ? state.selected.slice(4).replaceAll('/', ' / ') : labels[state.selected] || '研究目录';
+    const current = state.selected.startsWith('domain:') ? domainTitle(state.selected.slice(7)) : '全部内容';
     const label = state.query.trim() ? '搜索 “' + escapeHtml(state.query.trim()) + '”' : escapeHtml(current);
     document.getElementById('lit-crumb')!.innerHTML = '<strong>' + label + '</strong><span>' + data.length + ' 条结果</span>';
     updateCompareBar();
+    compareBar.hidden = !(state.type === 'paper' || compareIds.size > 0);
     document.getElementById('lit-body')!.innerHTML = data.length ? '<div class="view-list">' + data.slice(0,state.visibleLimit).map(itemRow).join('') + '</div>' : '<div class="lit-empty">没有匹配内容。试试其他关键词或清除筛选条件。</div>';
     const more = document.getElementById('lit-more') as HTMLElement;
     const remaining = Math.max(0,data.length-state.visibleLimit);
     more.hidden = remaining===0;
     (document.getElementById('lit-more-button') as HTMLButtonElement).textContent = '显示更多 · 剩余 '+remaining+' 条';
-    (document.getElementById('lit-mobile-active') as HTMLElement).textContent = '浏览研究方向：' + current;
-    const showingPapers = !state.query.trim() && (state.selected === 'papers' || state.selected.startsWith('cat:'));
+    (document.getElementById('lit-mobile-active') as HTMLElement).textContent = '浏览研究领域：' + current;
+    const showingPapers = !state.query.trim() && state.type === 'paper';
     (document.getElementById('lit-filters') as HTMLElement).hidden = !showingPapers;
     (document.querySelector('.lit-sort-label') as HTMLElement).hidden = !showingPapers && !state.query.trim();
     (document.getElementById('lit-clear') as HTMLButtonElement).hidden = !state.query.trim();
     const defaultSort = document.querySelector<HTMLOptionElement>('#lit-sort option[value="year"]');
-    if (defaultSort) defaultSort.textContent = state.query.trim() ? '相关度优先' : '年份：新到旧';
+    if (defaultSort) defaultSort.textContent = state.query.trim() ? '相关度优先' : state.type === 'paper' ? '年份：新到旧' : '推荐阅读顺序';
     document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach(button => button.classList.toggle('active', button.dataset.status === state.status));
-    document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === state.selected && !state.query.trim()));
+    document.querySelectorAll<HTMLButtonElement>('[data-type]').forEach(button => button.classList.toggle('active', button.dataset.type === state.type));
   }
   const compareBar = document.querySelector('.lit-compare-bar') as HTMLElement;
   const compareStatus = document.getElementById('lit-compare-status')!;
@@ -387,8 +404,12 @@ type Item = {
     persistUrl('replace');
     render();
   }));
-  document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => {
-    selectView(button.dataset.view || 'papers');
+  document.querySelectorAll<HTMLButtonElement>('[data-type]').forEach(button => button.addEventListener('click', () => {
+    state.type = button.dataset.type || 'all';
+    state.status = 'all';
+    state.visibleLimit = 12;
+    persistUrl('push');
+    render();
   }));
   document.getElementById('lit-expand')!.addEventListener('click', () => {
     const all: string[] = [];
@@ -397,7 +418,7 @@ type Item = {
     const expand=all.some(x=>!expanded.has(x));
     for (const p of all) { if(expand) expanded.add(p); else expanded.delete(p); }
     // Collapsed subtrees must never retain invisible keyboard focus.
-    focusPath='papers';
+    focusPath='all';
     renderTree();
   });
   const sortField = document.getElementById('lit-sort') as HTMLSelectElement;
@@ -430,6 +451,8 @@ type Item = {
   const restoreFromHistory = () => {
     const params = new URLSearchParams(window.location.search);
     state.selected = currentFolderFromUrl();
+    const requestedType = params.get('type') || ({ papers: 'paper', reviews: 'review', ideas: 'exploration', paths: 'path', glossary: 'glossary' }[params.get('folder') || ''] || 'all');
+    state.type = ['all','paper','review','qa','exploration','plan','glossary','path'].includes(requestedType) ? requestedType : 'all';
     const status = params.get('status')||'all';
     const sort = params.get('sort')||'year';
     state.status = ['all','read','reading','to-read','untracked'].includes(status) ? status : 'all';
