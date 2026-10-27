@@ -28,7 +28,7 @@ jobs:
       - run: npm run build
       - name: Measure performance and accessibility baseline
         run: node scripts/performance-baseline.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lighthouse-baseline
