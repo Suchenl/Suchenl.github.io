@@ -2,6 +2,7 @@ export interface Paper {
   venue: string;
   image?: string;
   thumbnail?: string; // Explicitly available thumbnail; otherwise use the full image.
+  imageAlt?: { zh: string; en: string };
   titleZh: string;
   titleEn: string;
   url: string;
@@ -29,6 +30,12 @@ export const PUB_GROUPS: PubGroup[] = [
     papers: [
       {
         venue: 'Preprint',
+        image: '/images/frameworks/VMem-Bench.png',
+        thumbnail: '/images/frameworks/VMem-Bench-thumb.jpg',
+        imageAlt: {
+          zh: 'VMem-Bench teaser：相关的过去不一定适用于当前故事，展示三种视觉记忆失败案例。',
+          en: 'VMem-Bench teaser: a relevant past can be wrong for the present, showing three visual-memory failure cases.',
+        },
         titleZh: '更多记忆，视频就更好吗？长视频生成中视觉记忆的受控研究',
         titleEn: 'More Memory, Better Videos? A Controlled Study of Visual Memory in Long-Video Generation',
         url: 'https://arxiv.org/abs/2610.35001',

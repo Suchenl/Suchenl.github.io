@@ -24,7 +24,9 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p =>
     <div class="research-proj-grid">
       {researchHighlights.map(p=>(
         <article class="card research-proj">
-          
+          {p.imageAlt && p.image && <a class="research-proj-image" href={p.url} target="_blank" rel="noopener noreferrer" aria-label={'查看论文：' + p.titleEn}>
+            <img src={p.thumbnail || p.image} alt={`${p.imageAlt.en} / ${p.imageAlt.zh}`} width="1000" height="428" loading="lazy" decoding="async" />
+          </a>}
           <div><span class="featured-venue">{p.venue}</span><h3>{p.code?.split('/').pop()}</h3>
             {p.brief && <p class="muted"><span data-l="zh">{p.brief.methodZh}</span><span data-l="en">{p.brief.methodEn}</span></p>}
             <div class="proj-links">{p.code && <a class="repo-link" href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="查看代码 ↗" en="Open code ↗" /></a>}
@@ -115,6 +117,8 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p =>
   .research-proj-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
   .research-proj {display:flex;flex-direction:column;gap:.7rem;}
   .research-proj h3 {font-size:1rem;line-height:1.5;margin:.35rem 0;}
+  .research-proj-image {display:block;overflow:hidden;border-radius:8px;background:var(--surface-2);}
+  .research-proj-image img {display:block;width:100%;height:auto;aspect-ratio:1320/565;object-fit:contain;}
   .research-proj p {font-size:.82rem;line-height:1.6;}
   .research-proj .proj-links {margin-top:.7rem;font-size:.85rem;flex-wrap:wrap;row-gap:.5rem;}
   .featured-venue {font-size:.76rem;font-weight:700;color:var(--accent-ink);}
