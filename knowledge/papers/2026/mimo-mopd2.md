@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 shortName: "MiMo-V2.6"
 aliases: ["MOPD2", "MiMo-V2.6-Pro-RL", "Groupwise Agentic Grading", "Multi-Harness Training"]
 title: "MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement"
