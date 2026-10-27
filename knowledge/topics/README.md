@@ -1,9 +1,12 @@
 # 研究方向索引
 
-| 研究方向 | 主题综述 | 研究状态 |
-|---|---|---|
-| 大模型预训练 | [预训练工程与训练稳定性](pretraining/README.md) | 数据、Tokenizer、分布式、Scaling Laws、继续预训练 |
-| LLM/多模态 Agent 后训练 | [SFT、RL 与协同优化](llm-agent-training/README.md) | 后训练方法、可证伪实验与证据地图 |
-| 长程 Agent 思考与工具调用 | [CoT、Codex、GLM/Qwen 与动态思考调度](agent-reasoning/README.md) | 已核对官方 API；训练时机机制仍有未公开部分 |
+研究目录按照 [统一领域分类](../TAXONOMY.md) 组织。**领域不是存储目录名**；论文、综述、问答、术语和研究探索均可归属同一领域。
 
-后续可以增加机器人控制/VLA、世界模型、视频理解、长期记忆、具身智能与因果推断等方向。新增方向时先确认不会与现有主题重叠；相关论文始终共用 `papers/` 卡片。
+| 核心领域 | 当前实际收录的方向 | 入口 |
+| --- | --- | --- |
+| 大模型与强化学习 | 预训练与模型架构、后训练与策略优化、推理与 Agent 系统 | [预训练综述](pretraining/reviews/pretraining-engineering-roadmap.md) · [SFT/RL 综述](llm-agent-training/reviews/sft-rl-co-training.md) · [Thinking 综述](agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling.md) |
+| 多模态学习与生成 | 视觉语言理解、图像与视频生成 | [已收录论文](../papers/README.md) |
+| 机器人与具身智能 | 策略学习与控制、数据与动作表示 | [采样频率研究](../research/action-sampling-frequency-bias.md) |
+| 世界模型与环境交互 | 世界模型与记忆 | [相关论文](../papers/README.md) |
+
+完整按领域聚合在 [Research 页面](https://suchenl.github.io/research/)，不为尚未收录内容创建空分类。新文献优先归入实际相关领域，并与既有术语、综述建立交叉链接。
