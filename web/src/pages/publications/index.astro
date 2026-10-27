@@ -68,6 +68,12 @@ import { SITE, AUTHOR } from '../../config';
               </a>
             </h3>
             <p class="authors" set:html={paper.authorsHtml} />
+            {paper.brief && (
+              <p class="paper-takeaway">
+                <span data-l="zh">{paper.brief.takeawayZh}</span>
+                <span data-l="en">{paper.brief.takeawayEn}</span>
+              </p>
+            )}
             {paper.code && (
               <div class="paper-links">
                 <a class="repo-link" href={'https://github.com/' + paper.code} target="_blank" rel="noopener noreferrer">
@@ -81,18 +87,18 @@ import { SITE, AUTHOR } from '../../config';
           </div>
           <details class="pub-abstract">
             <summary>
-              <span data-l="zh">研究简介：动机、方法与发现</span>
-              <span data-l="en">Research summary: motivation, method, findings</span>
+              <span data-l="zh">展开：研究问题、方法与实验结果</span>
+              <span data-l="en">Explore the problem, method & evidence</span>
               <span class="pub-chevron" aria-hidden="true">⌄</span>
             </summary>
             <div class="pub-abstract-body">
               {paper.brief ? (
                 <>
                   {([
-                    ['研究动机','Motivation',paper.brief.motivationZh,paper.brief.motivationEn],
-                    ['核心方法','Approach',paper.brief.methodZh,paper.brief.methodEn],
-                    ['主要发现','Findings',paper.brief.resultZh,paper.brief.resultEn],
-                    ['局限与边界','Limitations',paper.brief.boundaryZh,paper.brief.boundaryEn]
+                    ['研究问题','The problem',paper.brief.motivationZh,paper.brief.motivationEn],
+                    ['方法设计','The approach',paper.brief.methodZh,paper.brief.methodEn],
+                    ['实验结果','Key findings',paper.brief.resultZh,paper.brief.resultEn],
+                    ['如何理解','Scope & interpretation',paper.brief.boundaryZh,paper.brief.boundaryEn]
                   ] as const).map(([zh,en,zhText,enText]) => (
                     <div class="pub-brief-row">
                       <strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong>
@@ -169,6 +175,7 @@ import { SITE, AUTHOR } from '../../config';
   .paper-information h3 a {color:var(--fg);text-decoration:none;}
   .paper-information h3 a:hover {color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;}
   .paper-information .authors {font-size:.85rem;line-height:1.7;color:var(--fg-muted);margin:.35rem 0;}
+  .paper-takeaway {font-size:.88rem;line-height:1.72;font-weight:520;color:var(--fg);margin:.55rem 0 .45rem;overflow-wrap:anywhere;}
   .paper-links {display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin-top:.7rem;font-size:.81rem;}
   .repo-link {display:inline-flex;align-items:center;font-weight:720;color:var(--accent-ink);background:var(--accent-soft);padding:.35rem .7rem;border:1px solid transparent;border-radius:7px;}
   .repo-link:hover {border-color:var(--accent);text-decoration:none;}

@@ -74,6 +74,8 @@ try {
    assert.equal(await newPaper.locator('h3 a[href="https://arxiv.org/abs/2610.35001"]').count(),1,'arXiv paper title link should be present');
    assert.equal(await newPaper.locator('.paper-links a.repo-link[href="https://github.com/Suchenl/VMem-Bench"]').count(),1,'GitHub code link should be present');
    assert.equal(await page.locator('.paper-entry').count(),await page.locator('.pub-abstract').count(),'Every paper gets the same summary control');
+   assert.equal(await page.locator('.paper-takeaway').count(),await page.locator('.paper-entry').count(),'All papers show a concise takeaway');
+   assert((await page.locator('.paper-takeaway').first().innerText()).length>25,'Takeaway must provide substance at first glance');
    assert((await page.locator('.paper-no-image').count())>=2,'Papers without figures must retain a card');
    const imageHealth=await page.locator('.paper-image img').evaluateAll(async images=>{
      const outcomes=await Promise.all(images.map(img=>img.decode().then(()=>img.naturalWidth>0).catch(()=>false)));

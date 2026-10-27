@@ -33,6 +33,11 @@ for (const filename of ['temporal-evidence-search.svg','reference-assessment-vs-
   check(existsSync(join(root,'research','figures',filename)), 'Recovered research illustration '+filename);
 }
 const pubs=page('publications');
+check((pubs.match(/class="paper-takeaway"/g)||[]).length === (pubs.match(/class="paper-entry/g)||[]).length,
+  'all seven publications have reader-first visible takeaways');
+check(pubs.includes('Group Isolation Attention') && pubs.includes('256 bits') && pubs.includes('85.24%') &&
+      pubs.includes('0.968') && pubs.includes('43,013'),
+  'paper summaries explain mechanism and grounded findings across research areas');
 const projects=page('projects');
 
 check(pubs.includes('More Memory, Better Videos? A Controlled Study of Visual Memory in Long-Video Generation') &&
