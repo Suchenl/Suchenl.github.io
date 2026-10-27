@@ -39,11 +39,11 @@ import { SITE, AUTHOR } from '../../config';
         <article class:list={['paper-entry', 'card', !paper.image && 'paper-no-image']}>
           {paper.image && (
             <div class="paper-image">
-              <a
-                class="paper-image-link"
-                href={paper.image}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                class="paper-image-button"
+                type="button"
+                data-full-image={paper.image}
+                data-full-image-alt={paper.imageAlt ? `${paper.imageAlt.en} / ${paper.imageAlt.zh}` : '论文方法示意图：' + paper.titleZh}
                 aria-label={`查看论文图片大图：${paper.titleZh}`}
                 title="点击查看大图"
               >
@@ -56,7 +56,7 @@ import { SITE, AUTHOR } from '../../config';
                   loading="lazy"
                   decoding="async"
                 />
-              </a>
+              </button>
             </div>
           )}
           <div class="paper-information">
@@ -118,7 +118,29 @@ import { SITE, AUTHOR } from '../../config';
       ))}
     </section>
   ))}
+  <dialog class="image-viewer" aria-label="论文图片大图预览">
+    <button class="image-viewer-close" type="button" aria-label="关闭大图">×</button>
+    <img class="image-viewer-content" alt="" />
+  </dialog>
 </Base>
+<script>
+  const imageViewer = document.querySelector<HTMLDialogElement>('.image-viewer');
+  const imageViewerContent = imageViewer?.querySelector<HTMLImageElement>('.image-viewer-content');
+
+  document.querySelectorAll<HTMLButtonElement>('.paper-image-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!imageViewer || !imageViewerContent) return;
+      imageViewerContent.src = button.dataset.fullImage || '';
+      imageViewerContent.alt = button.dataset.fullImageAlt || '';
+      imageViewer.showModal();
+    });
+  });
+
+  imageViewer?.querySelector('.image-viewer-close')?.addEventListener('click', () => imageViewer.close());
+  imageViewer?.addEventListener('click', (event) => {
+    if (event.target === imageViewer) imageViewer.close();
+  });
+</script>
 <style>
   .pub-group {margin:1.8rem 0 2.5rem;}
   .pub-group h2 {font-size:1.25rem;line-height:1.45;margin:0 0 1rem;}
@@ -133,9 +155,13 @@ import { SITE, AUTHOR } from '../../config';
     min-width:0;
   }
   .paper-image {width:100%;min-width:0;}
-  .paper-image-link {display:block;cursor:zoom-in;}
+  .paper-image-button {display:block;width:100%;padding:0;border:0;background:transparent;text-align:inherit;cursor:zoom-in;}
   .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:transparent;}
   .paper-image img.wide-teaser {aspect-ratio:1320/565;}
+  .image-viewer {position:fixed;inset:0;width:fit-content;max-width:94vw;height:fit-content;max-height:94vh;padding:36px 20px 20px;border:0;border-radius:12px;background:rgba(20,20,20,.96);overflow:visible;}
+  .image-viewer::backdrop {background:rgba(0,0,0,.78);}
+  .image-viewer-content {display:block;max-width:calc(94vw - 40px);max-height:calc(94vh - 56px);width:auto;height:auto;object-fit:contain;}
+  .image-viewer-close {position:absolute;top:4px;right:8px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:white;font-size:26px;line-height:1;cursor:pointer;}
   .paper-information {min-width:0;}
   .paper-no-image .paper-information {grid-column:1/-1;}
   .paper-venue {color:var(--fg-muted);font-size:.74rem;font-weight:760;margin-bottom:.38rem;}
