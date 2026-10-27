@@ -8,16 +8,17 @@ export type KnowledgeRecord = {
 export type KnowledgeNode = {
   id: string;
   title: string;
-  kind: 'paper' | 'review' | 'glossary' | 'idea' | 'path' | 'other';
+  kind: 'paper' | 'review' | 'qa' | 'exploration' | 'plan' | 'glossary' | 'path' | 'other';
   summary: string;
   href: string;
 };
 export type LearningStep = { ref: string; why: string; stage?: string };
 
-function kindOf(id: string): KnowledgeNode['kind'] {
+function kindOf(id: string, declared?: unknown): KnowledgeNode['kind'] {
+  if (typeof declared === 'string' && ['paper','review','qa','exploration','plan','glossary','path'].includes(declared)) return declared as KnowledgeNode['kind'];
   if (id.startsWith('papers/')) return 'paper';
   if (id.startsWith('glossary/')) return 'glossary';
-  if (id.startsWith('research/')) return 'idea';
+  if (id.startsWith('research/')) return 'exploration';
   if (id.startsWith('paths/')) return 'path';
   if (id.includes('/reviews/')) return 'review';
   return 'other';
@@ -29,7 +30,7 @@ export function titleOf(entry: KnowledgeRecord): string {
   return asString(entry.data.title) || (entry.body || '').match(/^#\s+(.+)$/m)?.[1]?.trim() || entry.id.split('/').pop() || entry.id;
 }
 export function readingSteps(entry: KnowledgeRecord): LearningStep[] {
-  if (kindOf(entry.id) !== 'path') return [];
+  if (kindOf(entry.id, entry.data.contentType) !== 'path') return [];
   const raw = entry.data.steps;
   if (!Array.isArray(raw)) return [];
   return raw.map((step, index) => {
@@ -56,7 +57,7 @@ export function buildKnowledgeGraph(entries: KnowledgeRecord[]) {
       id: e.id,
       title: titleOf(e),
       summary: asString(e.data.summaryZh),
-      kind: kindOf(e.id),
+      kind: kindOf(e.id, e.data.contentType),
       href: '/research/' + e.id + '/',
     });
   }
@@ -96,7 +97,7 @@ export function buildKnowledgeGraph(entries: KnowledgeRecord[]) {
   }
   const toNodes = (ids: Iterable<string>) =>
     [...ids].map(id => nodes.get(id)!).filter(Boolean).sort((a,b) => {
-      const order = { path: 0, review: 1, glossary: 2, paper: 3, idea: 4, other: 5 };
+      const order = { path: 0, review: 1, qa: 2, glossary: 3, paper: 4, exploration: 5, plan: 6, other: 7 };
       return order[a.kind] - order[b.kind] || a.title.localeCompare(b.title, 'zh');
     });
   return {
