@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["多模态学习与生成/图像与视频生成"]
 shortName: "Phantom-Data"
 categories: ["生成模型/视频生成"]
 summaryZh: "面向视频生成的训练数据构建与使用"
