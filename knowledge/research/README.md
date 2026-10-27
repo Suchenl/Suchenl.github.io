@@ -1,5 +1,6 @@
 # 研究问题与实验候选
 
+- [OPD 为什么使用反向 KL？正向和反向 KL 如何定义，为什么不一起使用？](opd-forward-reverse-kl-qa.md)：原始问答，含概率定义、Mode-Covering / Mode-Seeking、Student 采样训练、KL 混合策略及原对话示意图。
 这里记录我们的**假设**，不把它们归类为“已被论文证明”。只有明确设置 `publicQuestion: true` 的条目会被展示在公开的「问题与探索」栏目中；不要把私人研究资料标记为公开。
 
 - [一个 Agent 是如何组织推理、工具调用与跨轮状态的？](how-agent-reasoning-tools-and-state-work.md)：基础兴趣问答，跨 Claude / Responses / Codex 与开源 Agent 对照模型 API、Harness、事件、工具执行及上下文回放。
