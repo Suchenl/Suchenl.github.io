@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["世界模型与环境交互/世界模型与记忆","机器人与具身智能/策略学习与控制"]
 title: "SuperMimic: Scaling Humanoid Whole-Body Control with One Differentiable World Model"
 shortName: "SuperMimic"
 year: 2026
