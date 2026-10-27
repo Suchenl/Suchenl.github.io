@@ -4,7 +4,9 @@ import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PROJECTS } from '../../data/projects';
 import { PUB_GROUPS } from '../../data';
-const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code && ['LAMIC','TAG-WM'].some(name => p.titleEn.startsWith(name)));
+const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p =>
+  p.code && ['Suchenl/VMem-Bench', 'Suchenl/LAMIC', 'Suchenl/TAG-WM'].includes(p.code)
+);
 ---
 
 <Base title="Projects">
@@ -23,10 +25,13 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
       {researchHighlights.map(p=>(
         <article class="card research-proj">
           
-          <div><span class="featured-venue">{p.venue}</span><h3>{p.titleEn.split(':')[0]}</h3>
+          <div><span class="featured-venue">{p.venue}</span><h3>{p.code?.split('/').pop()}</h3>
             {p.brief && <p class="muted"><span data-l="zh">{p.brief.methodZh}</span><span data-l="en">{p.brief.methodEn}</span></p>}
             <div class="proj-links">{p.code && <a class="repo-link" href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="查看代码 ↗" en="Open code ↗" /></a>}
-            <a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="阅读论文 ↗" en="Read paper ↗" /></a></div>
+            <a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="阅读论文 ↗" en="Read paper ↗" /></a>
+            {p.projectPage && <a href={p.projectPage} target="_blank" rel="noopener noreferrer"><Bi zh="项目主页 ↗" en="Project website ↗" /></a>}
+            {p.dataset && <a href={p.dataset} target="_blank" rel="noopener noreferrer"><Bi zh="数据集 ↗" en="Dataset ↗" /></a>}
+            </div>
           </div>
         </article>
       ))}
@@ -111,7 +116,7 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p => p.code 
   .research-proj {display:flex;flex-direction:column;gap:.7rem;}
   .research-proj h3 {font-size:1rem;line-height:1.5;margin:.35rem 0;}
   .research-proj p {font-size:.82rem;line-height:1.6;}
-  .research-proj .proj-links {margin-top:.7rem;font-size:.85rem;}
+  .research-proj .proj-links {margin-top:.7rem;font-size:.85rem;flex-wrap:wrap;row-gap:.5rem;}
   .featured-venue {font-size:.76rem;font-weight:700;color:var(--accent-ink);}
   @media(max-width:720px){.research-proj-grid{grid-template-columns:1fr;}.research-proj img{height:auto;max-height:210px;}}
 </style>

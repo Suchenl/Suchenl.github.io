@@ -34,6 +34,21 @@ for (const filename of ['temporal-evidence-search.svg','reference-assessment-vs-
 }
 const pubs=page('publications');
 const projects=page('projects');
+
+check(pubs.includes('More Memory, Better Videos? A Controlled Study of Visual Memory in Long-Video Generation') &&
+      pubs.includes('https://arxiv.org/abs/2610.35001') && pubs.includes('https://github.com/Suchenl/VMem-Bench'),
+      'VMem-Bench preprint and code published in publications');
+check(pubs.includes('https://suchenl.github.io/VMem-Bench/') &&
+      pubs.includes('https://huggingface.co/datasets/Suchenl/VMem-Bench') &&
+      pubs.includes('16,548') && pubs.includes('2,824'),
+      'VMem-Bench project, public dataset and source-grounded findings are linked');
+check(projects.includes('VMem-Bench') &&
+      projects.includes('https://github.com/Suchenl/VMem-Bench') &&
+      projects.includes('https://arxiv.org/abs/2610.35001') &&
+      projects.includes('https://huggingface.co/datasets/Suchenl/VMem-Bench'),
+      'VMem-Bench research repository and paper are included under projects');
+check(home.includes('VMem-Bench') && home.includes('2026.10.26'),
+      'new video-memory preprint appears in homepage highlights and news');
 const research=page('research');
 const compare=page('research/compare');
 const steps=page('research/paths/agent-post-training');

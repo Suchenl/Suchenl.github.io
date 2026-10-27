@@ -57,10 +57,22 @@ try {
    await navigate(page,href); await noOverflow(page);
    assert((await page.locator('.rkd-prose').innerText()).includes('Chronos Policy'),'Full research note is readable');
   });
-  await check('Projects '+width,async()=>{await navigate(page,'/projects/');await noOverflow(page);assert(await page.getByText('公开研究实现').count()>0);});
+  await check('Projects '+width,async()=>{
+   await navigate(page,'/projects/');await noOverflow(page);
+   assert(await page.getByText('公开研究实现').count()>0);
+   const research=page.locator('.research-proj').filter({hasText:'VMem-Bench'});
+   assert.equal(await research.count(),1,'VMem-Bench should appear once as a public research implementation');
+   assert.equal(await research.locator('a[href="https://github.com/Suchenl/VMem-Bench"]').count(),1,'Project code link');
+   assert.equal(await research.locator('a[href="https://arxiv.org/abs/2610.35001"]').count(),1,'Project paper link');
+   assert.equal(await research.locator('a[href="https://huggingface.co/datasets/Suchenl/VMem-Bench"]').count(),1,'Project data link');
+  });
   await check('Publications '+width,async()=>{
    await navigate(page,'/publications/');await noOverflow(page);
    assert.equal(await page.locator('.pub-timeline').count(),0,'Redundant timeline must stay removed');
+   const newPaper=page.locator('.paper-entry').filter({hasText:'More Memory, Better Videos?'});
+   assert.equal(await newPaper.count(),1,'VMem-Bench preprint should be listed once');
+   assert.equal(await newPaper.locator('a[href="https://arxiv.org/abs/2610.35001"]').count(),1,'arXiv paper link should be present');
+   assert.equal(await newPaper.locator('a[href="https://github.com/Suchenl/VMem-Bench"]').count(),1,'GitHub code link should be present');
    assert.equal(await page.locator('.paper-entry').count(),await page.locator('.pub-abstract').count(),'Every paper gets the same summary control');
    assert((await page.locator('.paper-no-image').count())>=2,'Papers without figures must retain a card');
    const imageHealth=await page.locator('.paper-image img').evaluateAll(async images=>{

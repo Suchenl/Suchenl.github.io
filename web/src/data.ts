@@ -7,6 +7,8 @@ export interface Paper {
   url: string;
   authorsHtml: string;
   code?: string; // GitHub repo, e.g. "Suchenl/LAMIC"
+  projectPage?: string; // public project website
+  dataset?: string; // public benchmark dataset
   releasedYear?: number; // Public release/publication year, not research start date
   briefSource?: { url: string; labelZh: string; labelEn: string }; // Auditable source of the short description
   brief?: { motivationZh:string; motivationEn:string; methodZh:string; methodEn:string; resultZh:string; resultEn:string; boundaryZh:string; boundaryEn:string };
@@ -25,6 +27,28 @@ export const PUB_GROUPS: PubGroup[] = [
     zh: '生成式 AI 与图像/视频生成',
     en: 'Generative AI · Image & Video Generation',
     papers: [
+      {
+        venue: 'Preprint',
+        titleZh: '更多记忆，视频就更好吗？长视频生成中视觉记忆的受控研究',
+        titleEn: 'More Memory, Better Videos? A Controlled Study of Visual Memory in Long-Video Generation',
+        url: 'https://arxiv.org/abs/2610.35001',
+        authorsHtml: `${ME}, Huafeng Shi, Xinyu Wang, Yulong Xu, Yucheng Wang, Haoqin Hong, Guoxin Zhang, Zehua Ma, Weiming Zhang`,
+        code: 'Suchenl/VMem-Bench',
+        projectPage: 'https://suchenl.github.io/VMem-Bench/',
+        dataset: 'https://huggingface.co/datasets/Suchenl/VMem-Bench',
+        releasedYear: 2026,
+        briefSource: { url: 'https://arxiv.org/abs/2610.35001', labelZh: 'arXiv 预印本摘要（2026-10-26）', labelEn: 'arXiv preprint abstract (Oct 26, 2026)' },
+        brief: {
+          motivationZh: '长视频生成会借助历史视觉参考保持角色与场景一致，但对过去忠实的参考，不一定适用于故事当前状态。',
+          motivationEn: 'Long-video generators use past visual references to preserve identity and scenes, yet a historically faithful reference can be incorrect for the current story.',
+          methodZh: 'VMem-Bench 设双轨诊断：Track-A 在 92 部真实影片的 16,548 个片段上独立评估参考选择；Track-B 在 30 个因果生成故事的 2,824 个片段上，用共享生成器对比检索策略与无记忆、知情对照。',
+          methodEn: 'Two-track diagnosis: Track-A assesses reference selection over 16,548 segments from 92 films; Track-B compares retrieval policies and memory controls with one shared generator over 2,824 segments from 30 causally generated stories.',
+          resultZh: '论文报告检索使实体召回率由 0.559 提高至 0.628–0.693，却使精确率由 0.977 降至 0.915–0.938，禁入实体规避率由 0.968 降至 0.845–0.898；旧外观记忆还可能干扰当前故事状态。',
+          resultEn: 'Retrieval improves entity recall (0.559 → 0.628–0.693) but reduces precision (0.977 → 0.915–0.938) and forbidden-entity avoidance (0.968 → 0.845–0.898); obsolete appearances can also conflict with current story state.',
+          boundaryZh: '这是受控诊断而非通用生成模型改进方案；Track-B 使用共享生成器及特定故事、记忆条件，不能将结果外推为所有视觉记忆策略都有害。',
+          boundaryEn: 'A controlled diagnostic study, not a general-purpose generation fix. Track-B uses a shared generator and specific stories/conditions; the findings do not show that visual memory is universally harmful.',
+        },
+      },
       {
         venue: 'AAAI 2026',
         image: '/images/frameworks/LAMIC.png',
@@ -179,6 +203,11 @@ export interface NewsItem {
 }
 
 export const NEWS: NewsItem[] = [
+  {
+    date: '2026.10.26',
+    zh: '📄 预印本 <a href="https://arxiv.org/abs/2610.35001" target="_blank" rel="noopener noreferrer">VMem-Bench</a> 已公开：视觉记忆能提高长视频中的实体召回，却未必使当前故事更正确。<a href="https://github.com/Suchenl/VMem-Bench" target="_blank" rel="noopener noreferrer">代码与数据说明 ↗</a>',
+    en: '📄 <a href="https://arxiv.org/abs/2610.35001" target="_blank" rel="noopener noreferrer">VMem-Bench</a> preprint released: retrieval can improve entity recall without improving current-story correctness. <a href="https://github.com/Suchenl/VMem-Bench" target="_blank" rel="noopener noreferrer">Code and data details ↗</a>',
+  },
   {
     date: '2026.10.11',
     zh: '📊 发布 <a href="/iclr2027/">ICLR 2027 投稿分析</a>：43,013 篇投稿翻倍之后，同行评审的把关机制还跟得上吗？',

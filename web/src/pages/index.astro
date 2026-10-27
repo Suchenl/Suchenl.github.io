@@ -12,7 +12,9 @@ const interests = [
   { zh: 'AI 安全', en: 'AI Safety' },
   { zh: 'AI + 医疗', en: 'AI for Medicine' },
 ];
-const featured = PUB_GROUPS.flatMap(group => group.papers).filter(p => ['LAMIC', 'TAG-WM'].some(name => p.titleEn.startsWith(name)));
+const featured = PUB_GROUPS.flatMap(group => group.papers).filter(p =>
+  ['Suchenl/VMem-Bench', 'Suchenl/LAMIC', 'Suchenl/TAG-WM'].includes(p.code || '')
+);
 const hub = [
   { emoji:'📚', href:'/research/', zh:'研究知识库', en:'Research Library', descZh:'文献综述 · 术语 · 学习路线 · 研究问题', descEn:'Surveys, concepts, reading paths, questions' },
   { emoji:'📝', href:'/publications/', zh:'论文成果', en:'Publications', descZh:'公开论文与学术成果', descEn:'Published papers and scholarly work' },
@@ -95,6 +97,7 @@ const socials = [
             <div class="featured-actions">
               <a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="阅读论文 ↗" en="Read paper ↗" /></a>
               {p.code && <a href={'https://github.com/' + p.code} target="_blank" rel="noopener noreferrer"><Bi zh="源代码 ↗" en="Code ↗" /></a>}
+              {p.projectPage && <a href={p.projectPage} target="_blank" rel="noopener noreferrer"><Bi zh="项目主页 ↗" en="Project site ↗" /></a>}
             </div>
           </div>
         </article>
