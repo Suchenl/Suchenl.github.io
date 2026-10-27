@@ -4,6 +4,13 @@
 
 **单一维护位置**：`Suchenl/Suchenl.github.io` 仓库的 `knowledge/`。网站 `/research/` 直接由这里渲染。不要再向 `Suchenl/sus_research_review` 写新知识；那是迁移前的只读快照。
 
+## 2026-10-27：统一知识分类（优先遵循）
+
+- 分类唯一准则为 [TAXONOMY.md](TAXONOMY.md) 与 [taxonomy.json](taxonomy.json)；每份正式正文都必须具有 `contentType` 和 `domains`。历史 `categories` 保留辅助检索，不再驱动 Research 目录。
+- `knowledge/research/` 既可存技术问答（qa）、研究探索（exploration），也可存实验计划（plan）；不能再靠物理存放路径推断都为“研究设想”。既有 URL 原样保留。
+- `/questions/` 不是文献库的镜像：仅由作者选择、标注 `publicQuestion: true` 且 `contentType: exploration` 的四类开放问题/兴趣条目展示，按 `featuredOrder` 排序。绝不可自动上架 QA/plan。
+- 增改文档后运行 `cd web && npm run build`：先校验分类与 Questions 元数据，再验证静态构建、图像、公式和原有路由；Chromium UI 验证另行执行。
+
 ## 一、语言与分工
 
 - 使用简体中文写作和维护。保留原论文英文标题、作者姓名、会议名、模型名、URL 和必要术语原文。
