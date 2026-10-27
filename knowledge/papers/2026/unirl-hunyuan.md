@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 shortName: "UniRL"
 aliases: ["Hunyuan UniRL"]
 title: "UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架"
