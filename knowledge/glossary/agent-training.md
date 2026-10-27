@@ -45,7 +45,7 @@ PPO 是带截断重要性比的策略优化方法；GRPO（Group Relative Policy
 
 ## On-Policy Distillation（OPD）
 
-由当前学生策略生成样本，再让教师在相同前缀上提供分布信息/评分，通常优化学生对教师分布的接近度。它并不等同于 DAgger：后者传统上以学生访问的状态请求专家**动作标签**。OPD 的作用取决于教师质量与前缀分布覆盖。
+由当前学生策略生成样本，再让教师在相同前缀上提供分布信息/评分，通常优化学生对教师分布的接近度。它并不等同于 DAgger：后者传统上以学生访问的状态请求专家**动作标签**。OPD 的作用取决于教师质量与前缀分布覆盖。 [正向 / 反向 KL 的完整问答和 SVG 图示](../research/opd-forward-reverse-kl-qa.md)解释 Teacher / Student 分布如何加权、Mode-Seeking / Mode-Covering，以及为什么 OPD 可用混合 KL。
 
 ## 多教师 OPD / MOPD
 
