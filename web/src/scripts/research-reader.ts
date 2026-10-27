@@ -5,14 +5,15 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
     const params = new URLSearchParams(window.location.search);
     const from = params.get('from');
     const back = document.getElementById('research-return') as HTMLAnchorElement | null;
-    const validFrom = from && /^(papers|paths|reviews|glossary|ideas|cat:[^?#]+)$/.test(from);
+    const validFrom = from && /^(all|papers|paths|reviews|glossary|ideas|cat:[^?#]+|domain:[^?#]+)$/.test(from);
     if (back) {
       const ret = new URL('/research/',window.location.origin);
-      if (validFrom && from !== 'papers') ret.searchParams.set('folder',from);
+      if (validFrom && from !== 'all') ret.searchParams.set('folder',from);
       const q=params.get('q'),status=params.get('status'),sort=params.get('sort');
       if(q)ret.searchParams.set('q',q.slice(0,300));
       if(status && ['read','reading','to-read','untracked'].includes(status))ret.searchParams.set('status',status);
       if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
+      if (url.searchParams.get('type')) ret.searchParams.set('type', url.searchParams.get('type')!);
       back.href=ret.pathname+ret.search;
     }
     const articleId = reader.dataset.documentId || '';
