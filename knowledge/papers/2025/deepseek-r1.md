@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 shortName: "DeepSeek-R1"
 aliases: ["R1","R1-Zero","DeepSeek-R1-Zero"]
 related:
