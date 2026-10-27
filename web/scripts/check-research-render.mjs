@@ -133,10 +133,12 @@ console.log('Pretraining topic, privacy exclusions and shared left TOC contract 
 
 
 // A public page must never expose private repository names or implementation paths.
+// VMem-Bench is explicitly public at https://github.com/Suchenl/VMem-Bench
+// and approved for the publications/projects pages; it must not be blocked here.
 // This scans all generated HTML, not only the initial Research topic.
 const privateMarkers = [
   'local-workbench','model_bridge.py','model_bridge.log',
-  'Open-Robot-Agent','UniRobo-Data','AgentHarness3D','VMem-Bench',
+  'Open-Robot-Agent','UniRobo-Data','AgentHarness3D',
   'ytech_milm_intern', 'cursor-agent-store', 'reasoning.sqlite',
   'Codex→GLM Bridge 的 SQLite', 'Suchenl/local-workbench'
 ];
