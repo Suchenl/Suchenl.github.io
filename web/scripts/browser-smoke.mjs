@@ -72,7 +72,7 @@ try {
    const newPaper=page.locator('.paper-entry').filter({hasText:'More Memory, Better Videos?'});
    assert.equal(await newPaper.count(),1,'VMem-Bench preprint should be listed once');
    assert.equal(await newPaper.locator('h3 a[href="https://arxiv.org/abs/2610.35001"]').count(),1,'arXiv paper title link should be present');
-   assert.equal(await newPaper.locator('a[href="https://github.com/Suchenl/VMem-Bench"]').count(),1,'GitHub code link should be present');
+   assert.equal(await newPaper.locator('.paper-links a.repo-link[href="https://github.com/Suchenl/VMem-Bench"]').count(),1,'GitHub code link should be present');
    assert.equal(await page.locator('.paper-entry').count(),await page.locator('.pub-abstract').count(),'Every paper gets the same summary control');
    assert((await page.locator('.paper-no-image').count())>=2,'Papers without figures must retain a card');
    const imageHealth=await page.locator('.paper-image img').evaluateAll(async images=>{
