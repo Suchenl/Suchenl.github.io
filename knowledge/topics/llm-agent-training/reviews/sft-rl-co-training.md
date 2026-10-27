@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/后训练与策略优化"]
 title: "SFT、RL 与 LLM Agent 的协同训练：2025–2026 年文献综述"
 categories: ["强化学习与 Agent"]
 summaryZh: "SFT 与 RL 的核心训练信号、协同方案、代表方法与证据边界"
