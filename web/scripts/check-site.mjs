@@ -45,20 +45,21 @@ check(home.includes('href="/questions/"') && home.includes('home-question-card')
 const publicQuestions = readdirSync('../knowledge/research')
   .filter(name => name.endsWith('.md'))
   .map(name => {
-    const source = readFileSync(join('..', 'knowledge', 'research', name), 'utf8');
+    const source = readFileSync(join('..','knowledge','research',name),'utf8');
     const fm = source.match(/^---\s*\n([\s\S]*?)\n---/m)?.[1] || '';
     return {
       id: 'research/' + name.replace(/\.md$/, ''),
-      date: fm.match(/^questionDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1] || '',
-      isPublic: /^publicQuestion:\s*true\s*$/m.test(fm),
+      order: Number(fm.match(/^featuredOrder:\s*(\d+)/m)?.[1] || 100),
+      isPublic: /^publicQuestion:\s*true\s*$/m.test(fm) &&
+        /^contentType:\s*exploration\s*$/m.test(fm),
     };
   })
   .filter(entry => entry.isPublic)
-  .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
 const latestThree = publicQuestions.slice(0, 3);
 check(latestThree.length === 3 &&
   latestThree.every(q => home.includes('href="/research/' + q.id + '/"')),
-  'homepage teasers match the three newest public questions');
+  'homepage teasers match three explicitly curated research questions');
 check(questions.includes('/research/research/action-sampling-frequency-bias/') &&
       questions.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
   'older and new research questions remain in the complete Questions index');
