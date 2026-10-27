@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/预训练与模型架构"]
 title: "预训练工程完整路线：数据、算力、Tokenizer、稳定性和研究问题"
 shortName: "Pretraining Roadmap"
 aliases: ["Pretrain", "LLM Pretraining", "Tokenizer", "CPT", "Continue Pretraining", "FineWeb", "Megatron Core", "Scaling Laws", "Data Mixture", "Chinchilla"]
