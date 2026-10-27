@@ -13,7 +13,7 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
       if(q)ret.searchParams.set('q',q.slice(0,300));
       if(status && ['read','reading','to-read','untracked'].includes(status))ret.searchParams.set('status',status);
       if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
-      if (url.searchParams.get('type')) ret.searchParams.set('type', url.searchParams.get('type')!);
+      if (params.get('type')) ret.searchParams.set('type', params.get('type')!);
       back.href=ret.pathname+ret.search;
     }
     const articleId = reader.dataset.documentId || '';
