@@ -6,6 +6,7 @@ const taxonomy = JSON.parse(readFileSync(path.join(root, 'taxonomy.json'), 'utf8
 const domainPaths = new Set(taxonomy.domains.flatMap(d => d.children.map(c => d.id + '/' + c)));
 const types = new Set(taxonomy.contentTypes.map(x => x.id));
 const curatedOrders = new Map();
+const canonicalTitles = new Map();
 const counts = new Map();
 let checked = 0;
 const problems = [];
@@ -24,6 +25,13 @@ for (const file of scan(root)) {
   if (!match) continue;
   checked += 1;
   const field = name => match[1].match(new RegExp('^' + name + ':\\s*(.*)$', 'm'))?.[1]?.trim() || '';
+  const title = field('title').replace(/^["']|["']$/g,'').trim();
+  check(title.length > 0, relative, 'missing canonical title');
+  if (canonicalTitles.has(title)) {
+    check(false, relative, 'duplicate canonical title with ' + canonicalTitles.get(title));
+  } else if (title) {
+    canonicalTitles.set(title, relative);
+  }
   const kind = field('contentType');
   check(types.has(kind), relative, 'invalid contentType: ' + kind);
   counts.set(kind, (counts.get(kind) || 0) + 1);
