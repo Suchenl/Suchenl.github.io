@@ -1,4 +1,7 @@
 ---
+contentType: exploration
+domains: ["大模型与强化学习/预训练与模型架构","机器人与具身智能/数据与动作表示"]
+featuredOrder: 30
 title: "通用 Agent 如何统一学习离散语言决策与连续数值预测？"
 questionTitleEn: "How Can General Agents Jointly Learn Discrete Language Decisions and Continuous Numerical Prediction?"
 publicQuestion: true
