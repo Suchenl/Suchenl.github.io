@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "domains": [
+    {
+      "id": "大模型与强化学习",
+      "description": "预训练、后训练、推理模型与 Agent 的学习及执行机制",
+      "children": [
+        "预训练与模型架构",
+        "后训练与策略优化",
+        "推理与 Agent 系统"
+      ]
+    },
+    {
+      "id": "多模态学习与生成",
+      "description": "视觉语言理解、多模态表征及图像与视频生成",
+      "children": [
+        "视觉语言理解",
+        "图像与视频生成"
+      ]
+    },
+    {
+      "id": "机器人与具身智能",
+      "description": "机器人控制、模仿学习、动作数据与多机器人泛化",
+      "children": [
+        "策略学习与控制",
+        "数据与动作表示"
+      ]
+    },
+    {
+      "id": "世界模型与环境交互",
+      "description": "动作世界模型、长期记忆与可交互环境建模",
+      "children": [
+        "世界模型与记忆"
+      ]
+    }
+  ],
+  "contentTypes": [
+    {
+      "id": "paper",
+      "label": "论文"
+    },
+    {
+      "id": "review",
+      "label": "专题综述"
+    },
+    {
+      "id": "qa",
+      "label": "技术问答"
+    },
+    {
+      "id": "exploration",
+      "label": "研究探索"
+    },
+    {
+      "id": "plan",
+      "label": "研究计划"
+    },
+    {
+      "id": "glossary",
+      "label": "术语解释"
+    },
+    {
+      "id": "path",
+      "label": "学习路线"
+    }
+  ]
+}
