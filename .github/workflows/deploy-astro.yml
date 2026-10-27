@@ -7,6 +7,7 @@ on:
     paths:
       - 'web/**'
       # Only material published as Research pages needs a rebuild.
+      - 'knowledge/taxonomy.json'
       - 'knowledge/papers/**'
       - 'knowledge/topics/**'
       - 'knowledge/glossary/**'
