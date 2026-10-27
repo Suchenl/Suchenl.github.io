@@ -5,6 +5,7 @@ featuredOrder: 20
 title: "目前的 Tokenizer，是否天然具备数值连续性？"
 questionTitleEn: "Do Today's Tokenizers Inherently Preserve Numerical Continuity?"
 publicQuestion: true
+questionKind: "question"
 questionDate: "2026-10-21"
 categories: ["多模态大模型", "机器人与具身智能", "数值表示与 Tokenization"]
 tags: ["Numerical Tokenization", "VLM", "VLA", "Action Tokenizer", "Continuity", "Robot Learning"]
