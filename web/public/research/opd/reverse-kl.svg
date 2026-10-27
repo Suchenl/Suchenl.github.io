@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 94" width="680" role="img" aria-label="Student Q 到 Teacher P">
+<rect x="4" y="7" width="145" height="67" rx="8" fill="#EAF2FB" stroke="#D5DAE0"/>
+<rect x="192" y="7" width="144" height="67" rx="8" fill="#F1F2F3" stroke="#D5DAE0"/>
+<path d="M156 40 H184 M177 33 L184 40 L177 47" fill="none" stroke="#697586" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="76" y="35" fill="#243041" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="14">Student Q</text>
+<text x="76" y="54" fill="#566474" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">当前策略</text>
+<text x="264" y="35" fill="#243041" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="14">Teacher P</text>
+<text x="264" y="54" fill="#566474" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">参考分布</text>
+</svg>
