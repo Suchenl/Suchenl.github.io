@@ -2,9 +2,12 @@
 import Base from '../../layouts/Base.astro';
 import '../../styles/research-library.css';
 import { getCollection, render } from 'astro:content';
+import { contentTypes } from '../../lib/research-taxonomy';
 
 type PaperMeta = {
   title?: string;
+  contentType?: string;
+  domains?: string[];
   shortName?: string;
   aliases?: string[];
   authors?: string[];
@@ -41,6 +44,7 @@ const termGroups = await Promise.all(glossaries.map(async e => {
       kind: 'term', id: e.id + '#' + h.slug, href: '/research/' + e.id + '/#' + h.slug,
       title: h.text, summary: description,
       categories: meta(e).categories || [],
+      domains: meta(e).domains || [],
       searchText: h.text + ' ' + description,
     };
   });
@@ -51,7 +55,7 @@ const papers = paperNotes.map(e => {
   const embeddedTags = body(e).match(/^[-*]\s+\*\*标签\*\*[:：]\s*(.+)$/m)?.[1]?.split(/\s*[\/、,，|]\s*/).filter(Boolean) || [];
   const embeddedSource = body(e).match(/https?:\/\/(?:arxiv\.org|proceedings\.mlr\.press|aclanthology\.org|openreview\.net|huggingface\.co\/papers)[^\s)>\]]*/)?.[0] || '';
   return {
-    kind: 'paper',
+    kind: m.contentType || 'paper',
     id: e.id,
     href: '/research/' + e.id + '/',
     title: m.title || heading(e),
@@ -63,7 +67,8 @@ const papers = paperNotes.map(e => {
     authors: m.authors || [],
     year: m.year || getYear(e.id),
     venue: m.venue || '',
-    categories: m.categories?.length ? m.categories : ['其他研究'],
+    categories: m.categories || [],
+    domains: m.domains || [],
     tags: m.tags?.length ? m.tags : embeddedTags,
     status: m.status || 'untracked',
     rating: m.rating || 0,
@@ -71,14 +76,23 @@ const papers = paperNotes.map(e => {
     added: m.added ? (m.added instanceof Date ? m.added.toISOString().slice(0, 10) : String(m.added)) : '',
   };
 });
-const other = [
-  ...glossaryTerms,
-  ...paths.map(e => ({ kind: 'paths', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '按顺序学习基础概念、代表方法及研究问题', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
-  ...reviews.map(e => ({ kind: 'reviews', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '研究脉络、方法比较、实验证据和开放问题', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
-  ...glossaries.map(e => ({ kind: 'glossary', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '概念定义、公式与反例', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
-  ...ideas.map(e => ({ kind: 'ideas', id: e.id, href: '/research/' + e.id + '/', title: meta(e).title || heading(e), summary: meta(e).summaryZh || '研究假设、反例与实验设计', categories: meta(e).categories || [], searchText: body(e).slice(0, 14000) })),
-];
-const items = [...papers, ...other];
+// Every knowledge object has one contentType and multiple cross-disciplinary domains.
+// Glossary headings remain deep-linkable in search, but do not inflate domain counts.
+const docItem = (e: (typeof entries)[number]) => {
+  const m = meta(e);
+  return {
+    kind: m.contentType || (e.id.startsWith('paths/') ? 'path' : e.id.startsWith('glossary/') ? 'glossary' : 'review'),
+    id: e.id, href: '/research/' + e.id + '/',
+    title: m.title || heading(e),
+    summary: m.summaryZh || '',
+    categories: m.categories || [],
+    domains: m.domains || [],
+    searchText: body(e).slice(0, 14000),
+  };
+};
+const other = [...paths, ...reviews, ...glossaries, ...ideas].map(docItem);
+const items = [...papers, ...other, ...glossaryTerms];
+const countType = (kind: string) => items.filter(item => item.kind === kind).length;
 const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
@@ -86,13 +100,12 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   <section class="lit-intro">
     <p class="lit-eyebrow">PERSONAL RESEARCH LIBRARY</p>
     <h1 class="page-title">研究知识库</h1>
-    <p class="page-intro">论文、方法与研究思考，统一整理在这里。按研究方向浏览，按关键词检索，从简要笔记逐步深入到专题综述。</p>
-    <div class="lit-shortcuts" aria-label="内容类别">
-      <button type="button" data-view="paths"><strong>{paths.length}</strong><span>条学习路线</span></button>
-      <button type="button" data-view="papers"><strong>{papers.length}</strong><span>篇论文</span></button>
-      <button type="button" data-view="reviews"><strong>{reviews.length}</strong><span>篇专题综述</span></button>
-      <button type="button" data-view="glossary"><strong>{glossaryTerms.length}</strong><span>条术语速查</span></button>
-      <button type="button" data-view="ideas"><strong>{ideas.length}</strong><span>个研究问题</span></button>
+    <p class="page-intro">先选研究领域，再按内容类型筛选。论文、技术问答、专题综述、研究探索与学习路线共用一个知识库和唯一正文。</p>
+    <div class="lit-shortcuts" aria-label="按知识类型筛选">
+      <button type="button" data-type="all"><strong>{papers.length + other.length}</strong><span>全部内容</span></button>
+      {contentTypes.map(type => (
+        <button type="button" data-type={type.id}><strong>{countType(type.id)}</strong><span>{type.label}</span></button>
+      ))}
     </div>
   </section>
   <section id="lit-continue" class="lit-continue" hidden aria-label="继续上次学习">
@@ -110,19 +123,19 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     </div>
     <div class="lit-main">
       <button type="button" class="lit-mobile-folder-toggle" id="lit-mobile-folder-toggle" aria-expanded="false" aria-controls="lit-sidebar">
-        <span id="lit-mobile-active">浏览研究方向：全部论文</span><span aria-hidden="true">⌄</span>
+        <span id="lit-mobile-active">浏览研究领域：全部内容</span><span aria-hidden="true">⌄</span>
       </button>
-      <aside class="lit-sidebar" id="lit-sidebar" aria-label="研究目录">
+      <aside class="lit-sidebar" id="lit-sidebar" aria-label="研究领域目录">
         <div class="lit-side-head"><strong>研究目录</strong><button id="lit-expand" type="button">展开全部</button></div>
         <nav class="lit-tree" id="lit-tree" aria-label="研究方向"></nav>
-        <p class="lit-side-hint">同一篇论文可以出现在多个研究方向中，笔记只维护一份。</p>
+        <p class="lit-side-hint">同一篇文章可归属多个领域，但正文只维护一份。</p>
       </aside>
       <section class="lit-results" aria-label="研究条目">
         <div class="lit-heading">
           <div class="lit-crumb" id="lit-crumb" aria-live="polite"></div>
           <label class="lit-sort-label" for="lit-sort">排序
             <select id="lit-sort">
-              <option value="year">年份：新到旧</option>
+              <option value="year">推荐阅读顺序</option>
               <option value="added">收藏时间</option>
               <option value="rating">我的评分</option>
               <option value="title">标题 A–Z</option>
