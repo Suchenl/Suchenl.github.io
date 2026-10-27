@@ -37,6 +37,9 @@ const knowledge = defineCollection({
   }),
   schema: z.object({
     title: z.string().optional(),
+    contentType: z.enum(['paper','review','qa','exploration','plan','glossary','path']).optional(),
+    domains: z.array(z.string().min(1)).optional(),
+    featuredOrder: z.number().int().min(0).optional(),
     shortName: z.string().min(1).optional(),
     aliases: z.array(z.string()).optional(),
     summaryZh: z.string().optional(),
