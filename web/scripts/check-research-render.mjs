@@ -4,6 +4,7 @@ import path from 'node:path';
 const targets = [
   ['topics/llm-agent-training/reviews/sft-rl-co-training', 4],
   ['research/robot-trajectory-reward', 4],
+  ['research/opd-forward-reverse-kl-qa', 6],
 ];
 for (const [slug, required] of targets) {
   const file = path.join('dist', 'research', slug, 'index.html');
@@ -26,6 +27,24 @@ for (const marker of ['lit-shortcuts', 'lit-search', 'lit-context', 'lit-sort'])
 }
 if (!existsSync(path.join('dist', 'reading', 'index.html'))) throw new Error('Missing deprecated /reading/ redirect');
 console.log('Research routes, navigation and internal paper links verified.');
+
+for (const label of ['data-type="qa"', 'data-type="exploration"', 'data-type="plan"', 'data-type="paper"']) {
+ if (!library.includes(label)) throw new Error('Missing content-type facet: ' + label);
+}
+for(const phrase of ['大模型与强化学习/后训练与策略优化','机器人与具身智能/数据与动作表示']) {
+ if(!library.includes(phrase))throw new Error('Missing cross-type canonical domain: '+phrase);
+}
+const questionsHtml=readFileSync(path.join('dist','questions','index.html'),'utf8');
+if(questionsHtml.includes('opd-forward-reverse-kl-qa') || questionsHtml.includes('how-agent-reasoning-tools-and-state-work'))
+  throw new Error('Technical Q&A leaked into curated Questions');
+for(const figure of ['forward-kl.svg','reverse-kl.svg','mode-seeking-covering.svg','opd-flow.svg']){
+ if(!existsSync(path.join('dist','research','opd',figure)))throw new Error('Missing OPD SVG '+figure);
+}
+const opdHtml=readFileSync(path.join('dist','research','research','opd-forward-reverse-kl-qa','index.html'),'utf8');
+if(!opdHtml.includes('mode-seeking-covering.svg')||!opdHtml.includes('opd-flow.svg'))
+  throw new Error('OPD article lost one of its original diagrams');
+console.log('Domain/type facets, curated Questions boundaries, OPD figures verified.');
+
 
 
 // Interaction contracts: do not regress to split caret/text click targets.
