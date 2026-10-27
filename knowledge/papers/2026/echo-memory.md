@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["世界模型与环境交互/世界模型与记忆"]
 shortName: "Echo-Memory"
 categories: ["世界模型/长期记忆"]
 summaryZh: "世界模型中的时序记忆及历史信息利用"
