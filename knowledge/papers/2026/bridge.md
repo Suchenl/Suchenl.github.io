@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 shortName: "BRIDGE"
 related:
   - ref: papers/2026/relift
