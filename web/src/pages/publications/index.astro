@@ -41,6 +41,7 @@ import { SITE, AUTHOR } from '../../config';
             <div class="paper-image">
               <img
                 src={paper.thumbnail || paper.image}
+                class:list={paper.imageAlt && 'wide-teaser'}
                 alt={paper.imageAlt ? `${paper.imageAlt.en} / ${paper.imageAlt.zh}` : '论文方法示意图：' + paper.titleZh}
                 width={paper.imageAlt ? 1320 : 440}
                 height={paper.imageAlt ? 565 : 248}
@@ -123,7 +124,8 @@ import { SITE, AUTHOR } from '../../config';
     min-width:0;
   }
   .paper-image {width:100%;min-width:0;}
-  .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:var(--surface-2);}
+  .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:transparent;}
+  .paper-image img.wide-teaser {aspect-ratio:1320/565;}
   .paper-information {min-width:0;}
   .paper-no-image .paper-information {grid-column:1/-1;}
   .paper-venue {color:var(--fg-muted);font-size:.74rem;font-weight:760;margin-bottom:.38rem;}
