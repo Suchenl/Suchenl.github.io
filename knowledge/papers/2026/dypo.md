@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 comparison:
   objective: "动态协调 SFT 稳定性与 RL 探索，缓解推理训练中的偏差和高方差"
   training: "Group Alignment Loss + 多教师蒸馏 + 动态探索-利用门控"
