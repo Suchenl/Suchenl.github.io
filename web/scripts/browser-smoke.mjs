@@ -98,6 +98,7 @@ try {
   await check('Research comparison '+width,async()=>{
    await navigate(page,'/research/');await noOverflow(page);
    if(width<700){await page.locator('#lit-mobile-folder-toggle').click();await page.locator('#lit-mobile-folder-toggle').click();}
+   await page.locator('[data-type="paper"]').click();
    assert(await page.locator('.lit-compare-pick').count()>=2);
    await page.locator('.lit-compare-pick').nth(0).click();
    await page.locator('.lit-compare-pick').nth(1).click();
@@ -120,6 +121,21 @@ try {
    assert.equal(await page.locator('.compare-selected').count(),3);
    await noOverflow(page);
    if(width===1440)await page.screenshot({path:'visual-qa/compare-3papers-desktop.png',fullPage:true});
+  });
+  await check('Research domains and typed Q&A '+width,async()=>{
+   await navigate(page,'/research/');await noOverflow(page);
+   assert.equal(await page.locator('[data-type="qa"]').count(),1,'Technical Q&A must have an explicit filter');
+   if(width<700)await page.locator('#lit-mobile-folder-toggle').click();
+   await page.locator('[data-path="domain:大模型与强化学习"]').click();
+   assert((await page.locator('#lit-crumb').innerText()).includes('大模型与强化学习'));
+   await page.locator('[data-type="qa"]').click();
+   assert((await page.locator('.row-title').allTextContents()).some(t=>t.includes('OPD')),'OPD appears in domain Q&A');
+   assert((await page.locator('.row-title').allTextContents()).some(t=>t.includes('Agent')),'Agent protocol Q&A shares domain view');
+   const href=await page.locator('.row-title a').first().getAttribute('href');
+   assert(href?.includes('type=qa'),'Reader links must preserve content-type selection');
+   await navigate(page,href);
+   assert((await page.locator('#research-return').getAttribute('href')).includes('type=qa'),'Return navigation restores type filter');
+   await noOverflow(page);
   });
   await check('Acronym search and R1 article '+width,async()=>{
    await navigate(page,'/research/');
