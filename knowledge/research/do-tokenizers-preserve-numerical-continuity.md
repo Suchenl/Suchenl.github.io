@@ -1,4 +1,7 @@
 ---
+contentType: exploration
+domains: ["大模型与强化学习/预训练与模型架构","机器人与具身智能/数据与动作表示"]
+featuredOrder: 20
 title: "目前的 Tokenizer，是否天然具备数值连续性？"
 questionTitleEn: "Do Today's Tokenizers Inherently Preserve Numerical Continuity?"
 publicQuestion: true
