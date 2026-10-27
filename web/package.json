@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node scripts/check-research-render.mjs && node scripts/check-site.mjs",
+    "build": "node scripts/check-knowledge-taxonomy.mjs && astro build && node scripts/check-research-render.mjs && node scripts/check-site.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "analytics:cf": "node scripts/fetch-cloudflare-analytics.mjs"
