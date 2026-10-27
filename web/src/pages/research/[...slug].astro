@@ -4,6 +4,7 @@ import ReadingToc from '../../components/ReadingToc.astro';
 import '../../styles/research-reader.css';
 import { getCollection, render } from 'astro:content';
 import { buildKnowledgeGraph, readingSteps } from '../../lib/research-graph';
+import { typeLabel, domainTitle } from '../../lib/research-taxonomy';
 
 export async function getStaticPaths() {
   const entries = await getCollection('knowledge');
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const data = entry.data as {
-  title?: string; shortName?: string; aliases?: string[]; summaryZh?: string; categories?: string[];
+  title?: string; shortName?: string; aliases?: string[]; summaryZh?: string; categories?: string[]; domains?: string[]; contentType?: string;
   status?: string; rating?: number;
   links?: { arxiv?: string; pdf?: string; code?: string; project?: string };
 };
@@ -23,13 +24,13 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 const isPaper = entry.id.startsWith('papers/');
 const source = 'https://github.com/Suchenl/Suchenl.github.io/blob/main/knowledge/' + entry.id + '.md';
 const editSource = 'https://github.com/Suchenl/Suchenl.github.io/edit/main/knowledge/' + entry.id + '.md';
-const category = data.categories?.[0];
-const folderHref = category ? '/research/?folder=' + encodeURIComponent('cat:' + category) : '/research/';
+const category = data.domains?.[0];
+const folderHref = category ? '/research/?folder=' + encodeURIComponent('domain:' + category) : '/research/';
 const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
 const outLinks = Object.entries(data.links || {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string' && /^https?:\/\//.test(pair[1]));
 const sourceLabels: Record<string, string> = { arxiv: 'arXiv', pdf: 'PDF', project: '项目主页', code: '代码' };
 const isLearningPath = entry.id.startsWith('paths/');
-const kind = isLearningPath ? '学习路线' : isPaper ? '论文笔记' : entry.id.startsWith('glossary/') ? '术语解释' : entry.id.startsWith('research/') ? (entry.data.questionKind === 'interest' ? '兴趣综述' : '研究设想') : '主题综述';
+const kind = typeLabel[data.contentType || ''] || (isPaper ? '论文' : '研究资料');
 const prose = (entry.body || '').replace(/^---[\s\S]*?---\s*/, '').replace(/`{3}[\s\S]*?`{3}/g, '');
 const minutes = Math.max(1, Math.ceil((prose.match(/[\u3400-\u9fff]/g) || []).length / 350 + (prose.match(/[A-Za-z]+/g) || []).length / 200));
 const canShowToc = toc.length > 1;
@@ -63,8 +64,8 @@ const navShortcuts = toc.filter(h => h.depth === 2 && /(一句话|核心|问题|
 const allPaperEntries = isPaper ? await getCollection('knowledge') : [];
 const relatedPapers = category ? allPaperEntries.filter(e => {
   if (e.id === entry.id || !e.id.startsWith('papers/')) return false;
-  const cats = (e.data as { categories?: string[] }).categories || [];
-  return cats.some(c => c === category);
+  const domains = (e.data as { domains?: string[] }).domains || [];
+  return domains.some(domain => domain === category || domain.startsWith(category + '/') || category.startsWith(domain + '/'));
 }).slice(0, 3).map(e => ({
   href: '/research/' + e.id + '/',
   title: (e.data as { title?: string }).title || (e.body || '').match(/^#\s+(.+)$/m)?.[1] || e.id,
@@ -76,7 +77,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
     <div class="rkd-progress" id="reading-progress" aria-hidden="true"></div>
     <nav class="rkd-breadcrumb" aria-label="位置">
       <a href="/research/">Research</a><span aria-hidden="true">/</span>
-      {isPaper && category ? <a href={folderHref}>{category.replaceAll('/', ' / ')}</a> : <span>{kind}</span>}
+      {category ? <a href={folderHref}>{domainTitle(category)}</a> : <span>{kind}</span>}
     </nav>
     <header class="rkd-head">
       <div class="rkd-kicker">{kind} <span aria-hidden="true">·</span> 约 {minutes} 分钟阅读</div>
