@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 shortName: "AutoTool"
 title: "AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning"
 year: 2026
