@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["多模态学习与生成/图像与视频生成"]
 shortName: "LongLive"
 categories: ["生成模型/视频生成"]
 summaryZh: "实时交互长视频生成、长程一致性与记忆机制"
