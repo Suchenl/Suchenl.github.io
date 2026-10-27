@@ -108,7 +108,7 @@ const bridge = readFileSync(path.join('dist','research','papers','2026','bridge'
 if(!bridge.includes('哪些内容链接到这里') || !bridge.includes('/research/paths/agent-post-training/')) {
   throw new Error('Learning-path backlink missing from BRIDGE');
 }
-if(!library.includes('条术语速查') || !library.includes('glossary/agent-training#')) {
+if(!library.includes('data-type="glossary"') || !library.includes('glossary/agent-training#')) {
   throw new Error('Glossary heading deep-link index is missing');
 }
 if(!readerSource.includes('research-last-read-v1') || !readerSource.includes('rkd-recall')) {
