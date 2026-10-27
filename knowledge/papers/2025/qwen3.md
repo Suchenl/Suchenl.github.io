@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 comparison:
   objective: "结合思考与非思考模式，同时提升推理与通用指令表现"
   training: "长 CoT 冷启动 SFT → 推理 RL → 模式融合 SFT → 通用 RL"
