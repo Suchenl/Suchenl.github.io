@@ -1,4 +1,6 @@
 ---
+contentType: path
+domains: ["大模型与强化学习/后训练与策略优化"]
 title: "SFT、RL 与 LLM Agent 后训练：循序渐进学习路线"
 summaryZh: "从核心术语到训练范式，再到代表论文、方法对比和具身迁移问题；适合建立完整理解，而非只收藏论文。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/SFT 与 RL 协同"]
