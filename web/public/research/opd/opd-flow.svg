@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 157" width="680" role="img" aria-label="OPD Student生成轨迹经Teacher评分后计算反向KL更新Student">
+<rect x="112" y="5" width="116" height="30" rx="7" fill="#357EC9" fill-opacity=".15" stroke="#357EC9"/>
+<text x="170" y="24" font-size="12" fill="#28313f" text-anchor="middle" font-weight="600">Student 生成轨迹</text>
+<path d="M170 35V50" stroke="#28313f" stroke-opacity=".5" stroke-width="1.5"/>
+<path d="M166 46L170 52L174 46" stroke="#28313f" fill="none"/>
+<rect x="68" y="54" width="204" height="32" rx="7" fill="#888" fill-opacity=".10" stroke="#28313f" stroke-opacity=".25"/>
+<text x="170" y="74" font-size="11" fill="#28313f" text-anchor="middle">Teacher 计算已生成 Token 的概率</text>
+<path d="M170 86V100" stroke="#28313f" stroke-opacity=".5" stroke-width="1.5"/>
+<path d="M166 96L170 102L174 96" stroke="#28313f" fill="none"/>
+<rect x="65" y="104" width="210" height="34" rx="7" fill="#357EC9" fill-opacity=".10" stroke="#357EC9" stroke-opacity=".6"/>
+<text x="170" y="118" font-size="11" font-weight="600" fill="#28313f" text-anchor="middle">计算反向 KL 的采样估计</text>
+<text x="170" y="131" font-size="10" fill="#28313f" text-anchor="middle">更新 Student 策略</text>
+</svg>
