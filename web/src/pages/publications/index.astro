@@ -39,15 +39,24 @@ import { SITE, AUTHOR } from '../../config';
         <article class:list={['paper-entry', 'card', !paper.image && 'paper-no-image']}>
           {paper.image && (
             <div class="paper-image">
-              <img
-                src={paper.thumbnail || paper.image}
-                class:list={paper.imageAlt && 'wide-teaser'}
-                alt={paper.imageAlt ? `${paper.imageAlt.en} / ${paper.imageAlt.zh}` : '论文方法示意图：' + paper.titleZh}
-                width={paper.imageAlt ? 1320 : 440}
-                height={paper.imageAlt ? 565 : 248}
-                loading="lazy"
-                decoding="async"
-              />
+              <a
+                class="paper-image-link"
+                href={paper.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`查看论文图片大图：${paper.titleZh}`}
+                title="点击查看大图"
+              >
+                <img
+                  src={paper.thumbnail || paper.image}
+                  class:list={paper.imageAlt && 'wide-teaser'}
+                  alt={paper.imageAlt ? `${paper.imageAlt.en} / ${paper.imageAlt.zh}` : '论文方法示意图：' + paper.titleZh}
+                  width={paper.imageAlt ? 1320 : 440}
+                  height={paper.imageAlt ? 565 : 248}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
             </div>
           )}
           <div class="paper-information">
@@ -124,6 +133,7 @@ import { SITE, AUTHOR } from '../../config';
     min-width:0;
   }
   .paper-image {width:100%;min-width:0;}
+  .paper-image-link {display:block;cursor:zoom-in;}
   .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:transparent;}
   .paper-image img.wide-teaser {aspect-ratio:1320/565;}
   .paper-information {min-width:0;}
