@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 shortName: "SFT vs RL · Tool Calling"
 aliases: ["Tool-Calling SFT/RL","SFT or RL for Tool-Calling Agents"]
 comparison:
