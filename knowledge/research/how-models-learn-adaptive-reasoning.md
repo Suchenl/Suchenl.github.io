@@ -1,4 +1,7 @@
 ---
+contentType: exploration
+domains: ["大模型与强化学习/推理与 Agent 系统","大模型与强化学习/后训练与策略优化"]
+featuredOrder: 40
 title: "如何让模型学会自适应推理"
 questionTitleEn: "How Can Models Learn Adaptive Reasoning?"
 publicQuestion: true
