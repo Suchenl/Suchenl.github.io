@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["多模态学习与生成/视觉语言理解"]
 shortName: "Qwen3-VL"
 categories: ["多模态理解/视觉语言模型"]
 summaryZh: "Qwen3-VL 的视觉编码、位置表示与长视频理解"
