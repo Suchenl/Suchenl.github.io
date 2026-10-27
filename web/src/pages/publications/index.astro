@@ -36,7 +36,7 @@ import { SITE, AUTHOR } from '../../config';
     <section class="pub-group" aria-label={group.zh}>
       <h2><span data-l="zh">{group.zh}</span><span data-l="en">{group.en}</span></h2>
       {group.papers.map((paper) => (
-        <article class:list={['paper-entry', 'card', !paper.image && 'paper-no-image', paper.imageAlt && 'paper-wide-teaser']}>
+        <article class:list={['paper-entry', 'card', !paper.image && 'paper-no-image']}>
           {paper.image && (
             <div class="paper-image">
               <img
@@ -122,9 +122,6 @@ import { SITE, AUTHOR } from '../../config';
     padding:1.15rem 1.2rem;
     min-width:0;
   }
-  .paper-entry.paper-wide-teaser {grid-template-columns:minmax(0, 1fr);}
-  .paper-wide-teaser .paper-image,.paper-wide-teaser .paper-information {grid-column:1/-1;}
-  .paper-wide-teaser .paper-image img {aspect-ratio:1320/565;}
   .paper-image {width:100%;min-width:0;}
   .paper-image img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;background:var(--surface-2);}
   .paper-information {min-width:0;}
