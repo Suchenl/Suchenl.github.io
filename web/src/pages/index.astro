@@ -110,7 +110,7 @@ const socials = [
     <p class="home-questions-lead"><Bi zh="记录持续感兴趣的技术路线与研究疑问：认真阅读已有工作，也区分个人判断和经过验证的结论。" en="Technical interests and open questions, separating the literature, hypotheses, and personal perspectives." /></p>
     {curiousQuestions.map(q => (
       <article class="home-question-card card">
-        <p class="question-kicker">{q.kind === 'interest' ? <Bi zh="INTEREST · 技术路线" en="INTEREST · Technical survey" /> : <Bi zh="OPEN QUESTION · 机器人学习" en="OPEN QUESTION · Robot Learning" />} <span aria-hidden="true">·</span> <time datetime={q.date}>{q.date}</time></p>
+        <p class="question-kicker"><Bi zh={q.kind === 'interest' ? '研究兴趣' : '开放研究问题'} en={q.kind === 'interest' ? 'RESEARCH INTEREST' : 'OPEN QUESTION'} /> <span aria-hidden="true">·</span> {q.domain.split("/")[0]}</p>
         <h3><a href={q.href}><span data-l="zh">{q.titleZh}</span><span data-l="en">{q.titleEn}</span></a></h3>
         <p class="home-question-summary"><span data-l="zh">{q.summaryZh}</span><span data-l="en">{q.summaryEn}</span></p>
         {q.evidence.length > 0 && (
