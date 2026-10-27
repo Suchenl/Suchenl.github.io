@@ -29,3 +29,13 @@
 - 逐段核验论文深度笔记中的评测表、训练资源与原论文是否一致。
 - 通过稳定的单项文献数据索引维护跨主题文献比较。
 - 按实际使用反馈收敛重复的样式规则；避免以添加新功能代替解决可读性问题。
+
+## 当前领域与类型架构（2026-10-27）
+
+- `knowledge/taxonomy.json`：统一维护领域树与正文类型字典；`web/src/lib/research-taxonomy.ts` 读取同一源。不可将论文 frontmatter 的旧 `categories` 当作唯一研究领域。
+- 各正式正文使用 `domains: ["一级/二级"]`、`contentType: paper|review|qa|exploration|plan|glossary|path`。既有文章原路径、URL 和正文保持不变。
+- `web/src/pages/research/index.astro` 一次性聚合不同知识类型，术语章节可通过全站搜索定位但不重复计入领域计数。
+- `web/src/scripts/research-library.ts` 创建跨类型的领域树，`type` 独立于 `folder`（领域）。查询参数保存筛选，返回链接复原；旧 `cat:` 和 `papers` 书签保持兼容。
+- `web/src/lib/public-questions.ts` 只筛 `contentType: exploration && publicQuestion: true`，按人工 `featuredOrder` 排序。Questions 只做展示，不存第二份正文。
+- `node web/scripts/check-knowledge-taxonomy.mjs`（需从 web 目录运行）验证每份正文的类型、领域和 Questions 约束，随 `npm run build` 自动执行；`check-research-render.mjs` 验证关键公式、OPD SVG 和精选边界。
+- 论文对比、阅读状态只对论文开放；搜索、阅读目录、反向引用、学习路径以及中文优先原则沿用原系统。
