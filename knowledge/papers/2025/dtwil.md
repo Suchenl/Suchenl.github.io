@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["机器人与具身智能/策略学习与控制"]
 shortName: "DTWIL"
 aliases: ["Action-Constrained IL"]
 title: "Action-Constrained Imitation Learning"
