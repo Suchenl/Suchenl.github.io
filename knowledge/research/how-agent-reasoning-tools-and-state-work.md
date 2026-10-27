@@ -1,9 +1,8 @@
 ---
+contentType: qa
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 title: "一个 Agent 是如何组织推理、工具调用与跨轮状态的？"
 questionTitleEn: "How Do Agents Organize Reasoning, Tool Calls, and Cross-Turn State?"
-publicQuestion: true
-questionKind: "interest"
-questionDate: "2026-10-21"
 categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工具使用"]
 summaryZh: "从模型 Token、API 结构化输出到 Harness 的工具执行和状态回传，比较 Claude Messages、OpenAI Responses/Codex、Qwen/vLLM、OpenHands、LangGraph、smolagents 与 OpenCode；解释 Thinking、Tool Call、执行反馈和跨轮历史分别由谁负责。"
 questionSummaryEn: "An end-to-end comparison of how Claude, OpenAI Responses/Codex, Qwen/vLLM, OpenHands, LangGraph, smolagents and OpenCode organize reasoning, tool use, execution feedback and conversation state."
