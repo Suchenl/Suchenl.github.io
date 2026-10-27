@@ -1,4 +1,6 @@
 ---
+contentType: paper
+domains: ["大模型与强化学习/后训练与策略优化"]
 comparison:
   objective: "在可验证数学推理中提高 RL 的有效探索和长链训练稳定性"
   training: "Clip-Higher、Dynamic Sampling、Token-Level PG Loss、Overlong Reward Shaping 四项配方"
