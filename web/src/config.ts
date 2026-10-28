@@ -56,6 +56,7 @@ export const FEATURES = {
 export const NAV: { zh: string; en: string; href: string }[] = [
   { zh: '首页', en: 'Home', href: '/' },
   { zh: '研究知识库', en: 'Research', href: '/research/' },
+  { zh: '论文解读', en: 'Paper Notes', href: '/paper-notes/' },
   { zh: '问题与探索', en: 'Questions', href: '/questions/' },
   { zh: '博客', en: 'Blog', href: '/blog/' },
   { zh: '论文', en: 'Publications', href: '/publications/' },
