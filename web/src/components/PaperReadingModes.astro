@@ -1,0 +1,68 @@
+---
+interface Heading {depth:number;slug:string;text:string;}
+interface Props {headings:Heading[];summary?:string;source?:string;noteDepth?:string;}
+const {headings,summary='',source='',noteDepth=''} = Astro.props;
+const main=headings.filter(h=>h.depth===2);
+const quick=main.filter(h=>/(一句话|概念|研究脉络|背景|问题|动机|方法总览|核心|目标)/.test(h.text)).slice(0,5);
+const evidence=main.filter(h=>/(实验|证据|消融|比较|对比|局限|边界|结论|讨论|分析|判断|复现|来源|开放问题)/.test(h.text)).slice(0,7);
+const overview=quick.length?quick:main.slice(0,3);
+const support=evidence.length?evidence:main.slice(-3);
+---
+<div class="pn-reading-modes" data-paper-reading-modes>
+  <div class="pn-reading-switch" role="group" aria-label="论文阅读视图">
+    <span class="pn-reading-label">阅读视图</span>
+    <button type="button" data-reading-mode="overview" aria-pressed="false" aria-controls="pn-mode-overview">速览</button>
+    <button type="button" data-reading-mode="full" aria-pressed="true">完整解读</button>
+    <button type="button" data-reading-mode="evidence" aria-pressed="false" aria-controls="pn-mode-evidence">证据与原文</button>
+  </div>
+  <div class="pn-mode-panel" id="pn-mode-overview" data-mode-panel="overview" hidden>
+    <strong>先建立论文全貌</strong>
+    {summary && <p>{summary}</p>}
+    <nav aria-label="快速理解的相关章节">{overview.map(h=><a href={'#'+h.slug}>{h.text} →</a>)}</nav>
+    <small>以下链接定位到文章原有章节，不是另行生成的摘要。文章正文始终可继续阅读。</small>
+  </div>
+  <div class="pn-mode-panel" id="pn-mode-evidence" data-mode-panel="evidence" hidden>
+    <strong>追溯主张、实验与适用边界</strong>
+    <nav aria-label="证据和讨论章节">{support.map(h=><a href={'#'+h.slug}>{h.text} →</a>)}</nav>
+    {source && <p><a href={source} target="_blank" rel="noopener noreferrer">打开原始论文核对图表与实验 ↗</a></p>}
+    <small>根据已存在的章节导航；未写明的实验或主张不会自动生成。核验结论应以论文对应版本为准。</small>
+  </div>
+  <p class="pn-mode-hint">{noteDepth==='deep'?'深度精读':noteDepth==='standard'?'标准解读':noteDepth==='note'?'文献速记':'论文笔记'} · 三种视图共用同一份 Markdown 正文，不会改变实际阅读状态。</p>
+</div>
+<script>
+  const groups=document.querySelectorAll<HTMLElement>('[data-paper-reading-modes]');
+  groups.forEach(group=>{
+    const buttons=Array.from(group.querySelectorAll<HTMLButtonElement>('[data-reading-mode]'));
+    const panels=Array.from(group.querySelectorAll<HTMLElement>('[data-mode-panel]'));
+    const selectMode=(mode:string)=>{
+      buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.readingMode===mode)));
+      panels.forEach(p=>{p.hidden=p.dataset.modePanel!==mode;});
+      group.dataset.activeMode=mode;
+    };
+    buttons.forEach(button=>button.addEventListener('click',()=>{
+      const mode=button.dataset.readingMode||'full';
+      selectMode(mode);
+      if(mode==='full')document.getElementById('reader-article')?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+      else group.querySelector<HTMLElement>('[data-mode-panel="'+mode+'"]')?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    }));
+    selectMode('full');
+  });
+</script>
+<style>
+  .pn-reading-modes{margin:1rem 0 1.4rem;border:1px solid var(--border);border-radius:11px;background:var(--surface);}
+  .pn-reading-switch{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;padding:.45rem .55rem;}
+  .pn-reading-label{font-size:.8rem;color:var(--fg-muted);font-weight:700;padding:.35rem .5rem;}
+  .pn-reading-switch button{font:inherit;font-size:.82rem;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--fg-muted);font-weight:650;padding:.48rem .75rem;border-radius:8px;min-height:38px;}
+  .pn-reading-switch button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);}
+  .pn-reading-switch button:hover{color:var(--accent-ink);}
+  .pn-mode-panel{border-top:1px solid var(--border);padding:.95rem 1rem .75rem;}
+  .pn-mode-panel[hidden]{display:none!important;}
+  .pn-mode-panel strong{display:block;font-size:.91rem;}
+  .pn-mode-panel p{font-size:.87rem;color:var(--fg-muted);line-height:1.72;margin:.45rem 0;}
+  .pn-mode-panel nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0;}
+  .pn-mode-panel nav a{font-size:.8rem;color:var(--accent-ink);text-decoration:none;border:1px solid var(--border);background:var(--surface-2);border-radius:7px;padding:.5rem .7rem;line-height:1.5;}
+  .pn-mode-panel nav a:hover{border-color:var(--accent);}
+  .pn-mode-panel small{display:block;font-size:.75rem;line-height:1.65;color:var(--fg-muted);}
+  .pn-mode-hint{font-size:.74rem;color:var(--fg-muted);line-height:1.55;border-top:1px solid var(--border);padding:.53rem .95rem;margin:0;}
+  @media(max-width:540px){.pn-reading-label{width:100%;}.pn-reading-switch button{flex:1;padding:.46rem .28rem;font-size:.78rem;}.pn-mode-panel nav{display:flex;flex-direction:column;}}
+</style>
