@@ -4,6 +4,23 @@
 
 > **来源与证据约定**：这份索引记录图形素材，不是论文实证数据集。标为“对话构图重建”的图根据当时回复中的 SVG 内容/构图重新保存，不能宣称是从聊天界面逐字节导出的原始附件。标为“概念示意”的图不是论文作者的实验结果。涉及未公开工程实现或敏感项目细节的图片不进入公开仓库。
 
+## HIL-SERL：精密机器人 RL（10 张 SVG）
+
+来自 [HIL-SERL 中文全文图解](papers/2024/hil-serl.md)。这批图保留原先解读网页中的 **SVG 矢量源文件**，正文按技术章节穿插展示，机制图为教学示意，数值图遵循指定预印本。SVG 不复制到 Markdown。
+
+| 图形 | 查看 SVG | 状态 |
+|---|---|---|
+| 系统闭环 | [01_system_overview.svg](../web/public/research/figures/hil-serl/01_system_overview.svg) | 机制示意（不是论文原图） |
+| 人工干预与双缓冲 | [02_human_interventions_buffers.svg](../web/public/research/figures/hil-serl/02_human_interventions_buffers.svg) | 机制示意（不是论文原图） |
+| 训练准备 | [03_training_setup.svg](../web/public/research/figures/hil-serl/03_training_setup.svg) | 机制示意（不是论文原图） |
+| 连续动作与夹爪 | [04_policy_and_gripper.svg](../web/public/research/figures/hil-serl/04_policy_and_gripper.svg) | 机制示意（不是论文原图） |
+| 坐标与控制器 | [05_frames_and_low_level_control.svg](../web/public/research/figures/hil-serl/05_frames_and_low_level_control.svg) | 机制示意（不是论文原图） |
+| 策略漏斗 Funnel | [06_reliability_funnel.svg](../web/public/research/figures/hil-serl/06_reliability_funnel.svg) | 机制示意（不是论文原图） |
+| 反馈与前馈行为 | [07_reactive_vs_predictive.svg](../web/public/research/figures/hil-serl/07_reactive_vs_predictive.svg) | 机制示意（不是论文原图） |
+| 任务成功率 | [08_all_tasks_success_rates.svg](../web/public/research/figures/hil-serl/08_all_tasks_success_rates.svg) | 依据预印本 Table 1 的数值重绘 |
+| 研究证据边界 | [09_evidence_boundaries.svg](../web/public/research/figures/hil-serl/09_evidence_boundaries.svg) | 机制示意（不是论文原图） |
+| 100% 的统计解释 | [10_why_success_not_100pct_truth.svg](../web/public/research/figures/hil-serl/10_why_success_not_100pct_truth.svg) | 补充统计分析（不是论文原图） |
+
 ## SuperMimic：方法、实验与梯度效用
 
 | 图形 | 直接查看 SVG | 正文用途 / 状态 |
