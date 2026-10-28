@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" role="img" aria-label="阻抗控制中的虚拟弹簧、阻尼器、末端与障碍物">
+<rect width="720" height="380" rx="22" fill="#f7f9fc"/><text x="33" y="50" font-size="27" font-weight="700" fill="#192940">阻抗控制：让末端像连着“虚拟弹簧 + 阻尼器”</text><text x="33" y="82" font-size="17" fill="#617189">不是增加物理弹簧，而是控制算法给机械臂设定力学响应</text>
+<rect x="265" y="109" width="176" height="55" rx="12" fill="#e7efff" stroke="#87a5d8"/><text x="353" y="144" text-anchor="middle" font-size="20" font-weight="700" fill="#315fa7">期望目标 x*</text>
+<path d="M322 164 L309 174 L335 185 L309 196 L335 207 L309 218 L335 229 L322 239" fill="none" stroke="#326acc" stroke-width="4" stroke-linejoin="round"/><path d="M381 164 V186 M366 186 H396 M381 186 V224 M366 224 H396 M381 224 V239" fill="none" stroke="#d18a42" stroke-width="3"/>
+<rect x="269" y="239" width="168" height="55" rx="12" fill="#def4ec" stroke="#88bbab"/><text x="353" y="274" text-anchor="middle" font-size="20" font-weight="700" fill="#0d7667">真实末端 x</text>
+<rect x="538" y="215" width="38" height="102" rx="5" fill="#a7b5c6"/><rect x="576" y="215" width="100" height="102" rx="8" fill="#cbd5e1"/><text x="606" y="198" font-size="19" fill="#53657c">障碍物</text>
+<path d="M437 263 H538" stroke="#576d86" stroke-width="3"/><path d="M529 255 L540 263 L529 271" fill="none" stroke="#576d86" stroke-width="3"/>
+<text x="100" y="194" font-size="18" fill="#326acc">弹簧刚度 Kp</text><path d="M232 189 H303" stroke="#326acc" stroke-dasharray="4 5" stroke-width="2"/>
+<text x="100" y="226" font-size="18" fill="#b87b37">阻尼增益 Kd</text><path d="M230 221 H364" stroke="#b87b37" stroke-dasharray="4 5" stroke-width="2"/>
+<text x="34" y="348" font-size="18" fill="#34475f">F = Kp · (x* − x) + Kd · (v* − v) ＋ 其他补偿项</text></svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 530" role="img" aria-label="Actor Critic 环境经验循环">
+<rect width="1140" height="530" rx="24" fill="#f7f9fc"/>
+<text x="50" y="56" font-size="30" font-weight="700" fill="#14253f">Actor 与 Critic 如何共同改进？</text><text x="50" y="83" font-size="16" fill="#63738b">Critic 提供可微估值，Actor 提出动作；真实反馈修正不完美的估值</text>
+<defs><marker id="ac-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#58748e"/></marker></defs>
+<rect x="58" y="146" width="255" height="129" rx="18" fill="#e9f0ff" stroke="#adc5ed"/><text x="84" y="185" font-size="25" font-weight="700" fill="#1e4b9c">Actor / π(s)</text><text x="84" y="220" font-size="17" fill="#556c90">根据 s 产生候选动作</text><text x="84" y="246" font-size="17" fill="#556c90">可学习的快速优化器</text>
+<rect x="441" y="146" width="255" height="129" rx="18" fill="#fff1df" stroke="#eac393"/><text x="467" y="185" font-size="25" font-weight="700" fill="#965813">Critic / Q(s,a)</text><text x="467" y="220" font-size="17" fill="#916d46">估计长期折扣回报</text><text x="467" y="246" font-size="17" fill="#916d46">当前可能并不准确</text>
+<rect x="824" y="146" width="255" height="129" rx="18" fill="#e5f5f0" stroke="#9bd1bc"/><text x="850" y="185" font-size="25" font-weight="700" fill="#137763">真实环境</text><text x="850" y="220" font-size="17" fill="#4c756a">执行实际动作 a</text><text x="850" y="246" font-size="17" fill="#4c756a">采集 r、s'、done</text>
+<path d="M313 206 H441" fill="none" stroke="#58748e" stroke-width="3" marker-end="url(#ac-arrow)"/><text x="345" y="191" font-size="15" fill="#536a80">候选动作</text>
+<path d="M696 228 H824" fill="none" stroke="#58748e" stroke-width="3" marker-end="url(#ac-arrow)"/><text x="734" y="211" font-size="15" fill="#536a80">真实试错</text>
+<path d="M568 275 V329 H180 V275" fill="none" stroke="#58748e" stroke-width="3" marker-end="url(#ac-arrow)"/><text x="286" y="317" font-size="16" fill="#314f75">策略梯度：提高高价值动作概率</text>
+<path d="M954 275 V386 H568 V275" fill="none" stroke="#58748e" stroke-width="3" marker-end="url(#ac-arrow)"/><text x="659" y="369" font-size="16" fill="#137763">Bellman / TD 更新</text>
+<rect x="97" y="425" width="948" height="58" rx="13" fill="#eff2f8"/><text x="571" y="460" text-anchor="middle" font-size="19" fill="#26364f">真实奖励提供新的锚点；下一状态价值仍是自举估计，可能高估或发散</text></svg>

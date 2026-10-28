@@ -6,6 +6,11 @@
 
 - [Agent 长程推理与工具调用专题](../agent-reasoning/README.md)：解释 CoT 与真实工具回路、Codex 的可选计划工具，以及 GLM-5.3-Flash / Qwen3.8-27B 的跨轮推理状态和思考预算。这里关注的是**推理与行动调度**，而不是本主题的 **SFT/RL 优化配方**。
 
+## 关联入门：Off-policy 的新旧数据混合
+
+- [RLPD：先验数据与在线强化学习精读](../../papers/2023/rlpd.md)：Actor/Critic 循环、Bellman 自举、50:50 混合采样与 Agent 迁移边界。
+- [机器人控制专题](../robot-control/README.md)：如何把高层策略动作可靠地执行到物理末端。
+
 ## 三层研究入口
 
 - **建立整体理解**：[SFT/RL 后训练长篇综述](reviews/sft-rl-co-training.md)——机制、定义、方法脉络。

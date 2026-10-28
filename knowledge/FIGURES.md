@@ -4,6 +4,15 @@
 
 > **来源与证据约定**：这份索引记录图形素材，不是论文实证数据集。标为“对话构图重建”的图根据当时回复中的 SVG 内容/构图重新保存，不能宣称是从聊天界面逐字节导出的原始附件。标为“概念示意”的图不是论文作者的实验结果。涉及未公开工程实现或敏感项目细节的图片不进入公开仓库。
 
+## RLPD 与机器人控制新增图示
+
+| 图形 | SVG | 说明 |
+|---|---|---|
+| Actor–Critic–真实环境反馈 | [actor-critic-loop.svg](../web/public/research/figures/rlpd/actor-critic-loop.svg) | 概念示意，不是原论文实验图 |
+| 50:50 混合经验更新 | [mixed-batch.svg](../web/public/research/figures/rlpd/mixed-batch.svg) | 训练流程概念图 |
+| 弹簧与阻尼器 | [spring-damper.svg](../web/public/research/figures/robot-control/spring-damper.svg) | 对此前聊天中弹簧示意的独立 SVG 重绘 |
+| Agent → IK → 控制器链路 | [control-layers.svg](../web/public/research/figures/robot-control/control-layers.svg) | 典型层级示意，不代表所有机器人 |
+
 ## HIL-SERL：精密机器人 RL（10 张 SVG）
 
 来自 [HIL-SERL 中文全文图解](papers/2024/hil-serl.md)。这批图保留原先解读网页中的 **SVG 矢量源文件**，正文按技术章节穿插展示，机制图为教学示意，数值图遵循指定预印本。SVG 不复制到 Markdown。

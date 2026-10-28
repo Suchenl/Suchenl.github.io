@@ -33,6 +33,43 @@ links:
 
 **读完这一篇需要回答的四个问题：** 人类在什么时候介入、介入数据到底怎样训练？为什么 RL 比 BC / DAgger 更容易获得恢复行为？为什么动作表示和控制器这么重要？论文的 100% 成功率应怎样解读？
 
+### 阅读之前：这篇工作出现的关键概念
+
+| 概念 | 一句话理解 | 和本文的关系 |
+|---|---|---|
+| HIL-SERL | Human-in-the-Loop Sample-Efficient Robotic Reinforcement Learning，样本高效的人类在环机器人强化学习系统 | **完整系统** |
+| RLPD | Reinforcement Learning with Prior Data，利用已有数据的在线强化学习 | **主要学习算法**，不是单独的新机器人模型 |
+| MDP / State / Action | 环境状态、可执行动作及动作导致的状态转移 | 学习问题的基本定义 |
+| Policy / Actor | 输入观测，输出动作分布或候选动作的模型 | 决定如何行动 |
+| Q / Critic | 估计当前状态执行某动作后按策略继续行动的长期回报 | 指导 Actor 优化，估计可能出错 |
+| Bellman / TD / Bootstrap | 用即时奖励和下一状态价值更新当前 Q 估计 | 让成功回报逐步影响早期动作 |
+| Off-policy | 可以用过去策略、人类示范与当前策略产生的数据训练 | 两个 Replay Buffer 能共同参与 RL |
+| Demo / RL Buffer | 分别保存先验经验和在线自主交互；纠正同时写入两者 | 50:50 抽样防止少量示范被稀释 |
+| Intervention / HG-DAgger | 人类在机器人接近失败时临时接管；DAgger 通常对专家动作做监督拟合 | 本文纠正后使用 RL 价值优化 |
+| SAC / Entropy | Soft Actor-Critic，通过熵正则保留策略探索能力 | RLPD 的连续动作算法基础 |
+| Sparse Reward | 通常只有任务成功获得正奖励，途中未完成为零 | 需要示范与人类纠正加速探索 |
+| Grasp Critic / DQN | 用独立离散价值网络选择夹爪 open / close / stay | 与连续末端运动分支区分 |
+| EEF / TCP / Twist | 机器人末端执行器、工具中心点与线/角速度表示 | 动作接口与坐标解释 |
+| Impedance / PD | 借助刚度、阻尼形成类似弹簧—阻尼器的响应 | 接触类任务的底层控制 |
+| Reference Limiting | 限制目标与当前位置误差，控制过大恢复力 | 真实接触安全的工程条件 |
+| Wrench / Feedforward | 六维广义力（力＋力矩）及前馈指令 | 动态操作使用不同于常规末端位置跟踪的控制 |
+| Funnel / Critical State | 局部偏差状态的恢复收敛与动作 Q 敏感性 | 实验解释，不是形式化安全保证 |
+
+**建议阅读顺序**：先看下方的“RAM 插入教学故事”，再看原 Figure 2 的系统图；算法细节延伸到 [RLPD 独立精读](/research/papers/2023/rlpd/)，控制细节延伸到 [机器人控制专题](/research/topics/robot-control/)。
+
+### 先跟着一次 RAM 插入，理解机器人究竟怎么学会
+
+1. **先见过成功**：人类用遥操作完成约 20 条初始示范，状态、动作、结果存入 Demo Buffer。这提供“可能成功”的经验，不是训练完 BC 就结束。
+2. **机器人自己尝试**：当前 Actor 观察相机和本体状态，输出动作。偏差时可能顶住插槽边缘。
+3. **人类只纠正困难局部**：操作员用 SpaceMouse 暂时接管，例如退出、调整姿态，再交还控制权；并不是模型自动请求求助，也不是总要人类完成一整条轨迹。
+4. **保存实际发生的后果**：记录状态、**实际执行**动作、奖励、后继状态。接管片段同时进入 Demo 与 RL Buffer，其他自主数据进入 RL Buffer。
+5. **RLPD 优化长期价值**：即使退出和调整时即时奖励都是 0，只要后续更容易成功，其长期 Q 估计也可能较高；Actor 学会倾向于高价值动作，而非逐帧模仿人类动作。
+6. **边执行边更新**：Learner 反复抽取两个 Buffer 的混合 Batch，并异步给 Actor 新参数。持续优化直至表现稳定。
+
+**为什么这和 DAgger 不同？** DAgger 更侧重“这个状态下专家做了什么”，HIL-SERL 的 Off-policy RL 则问“这个动作产生了怎样的后果、如何影响未来任务回报”。人类示范能提供强先验，却不被规定为永远不能超越的动作标签。
+
+**一眼看消融**（上传 2024 预印本 Table 1b 的 RAM 插入任务）：从零 RL **0%**，有示范无在线纠正 **48%**，完整 HIL-SERL **100%**。这是本文实验设置下的观测成功率，并非无限场景可靠性；各基线的总数据与人工预算不完全相同。
+
 ## 二、先看一张完整系统图：机器人怎样一边执行一边学习？
 
 ![HIL-SERL Actor、Learner、双 Replay Buffer 和真实机器人之间的训练闭环](/research/figures/hil-serl/01_system_overview.svg)
@@ -109,7 +146,7 @@ $$
 
 ## 四、Learner 更新了什么？RLPD、奖励与网络结构
 
-论文建立在 **RLPD**（Efficient Online Reinforcement Learning with Offline Data）基础上。它采用样本效率较高的 off-policy actor–critic，并混合历史数据和当前交互数据。对于连续动作，核心结构可以记成：
+论文建立在 **RLPD**（Reinforcement Learning with Prior Data；原论文标题为 Efficient Online Reinforcement Learning with Offline Data）基础上。它采用样本效率较高的 off-policy actor–critic，并混合历史数据和当前交互数据。对于连续动作，核心结构可以记成：
 
 $$
 \mathcal L_Q(\phi)
@@ -187,7 +224,9 @@ $$
 
 如果目标位置与当前位置相差很远，弹簧误差项可能引发过大接触力。作者采用 **reference limiting** 对参考误差限幅，而不是简单降低全部刚度，目的在于同时照顾接触安全与控制精度。
 
-**它的意义**：RL 负责“在安全动作接口内尝试新的策略”，并不意味着允许模型绕过实时控制器直接给执行器无限制地随机施力。动态任务采用前馈 wrench 控制，其物理接口与接触任务不同（附录 D.2）。
+**它的意义**：更深入的 [机器人控制入门：PD、阻抗、前馈 Wrench、力控与位置控制](/research/topics/robot-control/) 包含弹簧—阻尼器 SVG、控制层级和 RoboTwin / RoboDojo 公开实现边界。
+
+RL 负责“在安全动作接口内尝试新的策略”，并不意味着允许模型绕过实时控制器直接给执行器无限制地随机施力。动态任务采用前馈 wrench 控制，其物理接口与接触任务不同（附录 D.2）。
 
 ## 七、实验覆盖了哪些任务，结果有多好？
 

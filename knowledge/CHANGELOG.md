@@ -1,5 +1,10 @@
 # 更新记录
 
+## 2026-10-28 · RLPD / 机器人控制学习专题
+- 为 HIL-SERL 一句话总结追加 17 项读者术语表、RAM 插入示例与独立学习入口，修正 RLPD 全称。
+- 新增 ICML 2023 [RLPD 独立精读](papers/2023/rlpd.md)：Actor–Critic 相互依赖、混合采样、LN / Ensemble / UTD、值函数偏差与工具 Agent 的适用边界；两张可编辑 SVG。
+- 新增 [机器人控制入门专题](topics/robot-control/README.md)：PD、阻抗、前馈 wrench、导纳、OSC、视觉伺服、RoboTwin/RoboDojo 的公开证据与边界；重绘弹簧阻尼器与控制层级 SVG。
+
 ## 2026-10-28
 - 在「研究知识库 → 论文解读」新增 [HIL-SERL 完整图文解读](papers/2024/hil-serl.md)：从人工接管、双 Replay Buffer、RLPD、训练准备、奖励与动作接口，到底层阻抗控制、实机实验、Funnel、统计边界与可复现配置。保存 10 张原始可编辑 SVG，穿插对应章节；核对 Science Robotics 正式发表信息及预印本数值不一致问题。无需创建第二套 HTML 正文。
 
