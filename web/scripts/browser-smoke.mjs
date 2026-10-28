@@ -239,7 +239,7 @@ try {
     assert(!(await page.locator('#pn-mode-evidence').isVisible()));
     const selftest=page.locator('.rkd-prose details').filter({has:page.locator('summary:text("问题 1")')}).first();
     assert(await page.locator('.rkd-prose details').count()>=3,'Deep sample must contain 3 self checks');
-    assert((await page.locator('.rkd-prose').innerText()).includes('核心概念速查'));
+    assert((await page.locator('.rkd-prose').innerText()).includes('阅读前的核心概念'));
     await noOverflow(page);
   });
   await check('Learning route '+width,async()=>{
