@@ -23,10 +23,9 @@
 
 ## 2025
 
-| [HIL-SERL：少量人类纠正与真实机器人精密 RL（10 张 SVG 全文图解）](2024/hil-serl.md) | Science Robotics 2025（2024 arXiv 首次公开） | 双 Buffer、RLPD、人工纠正、动作分支、控制器、Funnel 与可靠性 |
-
 | 论文 | 发表状态 | 关键问题 |
 |---|---|---|
+| [HIL-SERL：人类纠正如何帮助机器人通过强化学习掌握精密操作？（10 张 SVG 深度精读）](2024/hil-serl.md) | Science Robotics 2025（2024 arXiv 首次公开） | 人类纠正与 RLPD 训练闭环、研究脉络、动作与控制、消融、恢复能力和证据边界 |
 | [DeepSeek-R1](2025/deepseek-r1.md) | arXiv 技术报告 | 无 SFT 直接 RL 和冷启动 SFT 的区别 |
 | [Qwen3 Technical Report](2025/qwen3.md) | arXiv 技术报告 | 多阶段 SFT/RL 与强到弱蒸馏 |
 | [DAPO](2025/dapo.md) | NeurIPS 2025 | 稳定和有效地进行长思维链 RL |
