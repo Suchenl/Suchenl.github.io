@@ -16,6 +16,7 @@ The site source lives in [`web/`](./web):
 - `web/src/content/` — blog content (the paper library lives only under knowledge/)
 - `knowledge/` — canonical Chinese-first research library: paper metadata, detailed notes, topic reviews, glossary, hypotheses, AI maintenance rules (rendered at `/research/`)
 - `web/src/pages/research/` — one Research UI combining the former Reading folder tree and deep research pages
+- `web/src/pages/paper-notes/` — dedicated paper-reading portal (same canonical `knowledge/papers/` and Research detail URLs)
 - `/reading/` — legacy URL redirected to `/research/`
 - `web/src/config.ts` — site metadata, navigation, bilingual (中文/EN) strings
 - `web/src/data/` — structured data (publications and retained Expertise data)
@@ -76,3 +77,8 @@ The owner chose to remove the subjective skill-rating page from the public site 
 ## Questions & Explorations (2026-10-21)
 
 The homepage highlights the three latest entries, and `/questions/` lists owner-approved research questions and interest surveys. Add a Markdown entry under `knowledge/research/` with `publicQuestion: true` and optional `questionKind: interest` for literature-based interest surveys, plus `title`, `questionTitleEn`, `summaryZh`, `questionSummaryEn`, and `questionDate`. Its full content remains in the Research Library at `/research/research/<slug>/`. Do not duplicate the note as a separate blog post or publish private repositories, experiments, or undisclosed project details. Distinguish literature-backed results, personal interests/perspectives, and unverified hypotheses. The adaptive-reasoning interest survey is maintained canonically at `knowledge/research/how-models-learn-adaptive-reasoning.md`; the cross-provider Agent protocol Q&A is at `knowledge/research/how-agent-reasoning-tools-and-state-work.md`.
+
+## 中文设计原则
+
+- [设计原则目录](docs/design-principles/README.md)：维护主页各专题的长期规范。
+- [论文解读设计原则](docs/design-principles/PAPER_NOTES.md)：三层阅读、十个模块、概念与研究脉络、方法流程、主张—证据、自测及专题交互。论文解读独立入口：<https://suchenl.github.io/paper-notes/>。
