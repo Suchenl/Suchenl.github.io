@@ -15,6 +15,10 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
       if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
       if (params.get('type')) ret.searchParams.set('type', params.get('type')!);
       back.href=ret.pathname+ret.search;
+      if(params.get('source') === 'paper-notes') {
+        back.href='/paper-notes/';
+        back.textContent='← 返回论文解读';
+      }
     }
     const articleId = reader.dataset.documentId || '';
     const articleTitle = reader.dataset.documentTitle || '';
