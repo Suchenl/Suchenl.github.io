@@ -7,7 +7,7 @@
 
 本仓库不要求把每个方向写成正式论文。最重要的是：**找得到、读得懂、可追溯、能更新、不会把猜想和论文结论混为一谈**。
 
-论文解读的长期教学与页面设计遵循 [中文设计原则](../docs/design-principles/PAPER_NOTES.md)，不在前端另存一套论文正文。
+论文解读的长期教学与页面设计遵循 [中文设计原则](https://github.com/Suchenl/Suchenl.github.io/blob/main/docs/design-principles/PAPER_NOTES.md)，不在前端另存一套论文正文。
 
 ## 统一内容模型
 
