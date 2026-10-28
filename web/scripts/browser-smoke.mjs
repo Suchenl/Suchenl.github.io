@@ -210,6 +210,38 @@ try {
    const txt=await page.locator('.rkd-prose').innerText();
    for(const secret of ['local-workbench','model_bridge.py','model_bridge.log'])assert(!txt.includes(secret),'Public topic exposes private workbench details: '+secret);
   });
+  await check('Paper Notes portal '+width,async()=>{
+    await navigate(page,'/paper-notes/');await noOverflow(page);
+    assert.equal(await page.locator('#primary-navigation a[href="/paper-notes/"]').count(),1);
+    const cards=page.locator('.pn-item');
+    assert((await cards.count())>=15,'The independent portal should reuse the canonical paper collection');
+    await page.locator('#pn-search').fill('HIL-SERL');
+    assert(await page.locator('.pn-item:not([hidden])').count()>=1,'Paper search should return HIL-SERL');
+    await page.locator('#pn-depth').selectOption('note');
+    assert.equal(await page.locator('.pn-item:not([hidden])').count(),0,'Depth filter should exclude deep paper');
+    await page.locator('#pn-reset').click();
+    assert.equal(await page.locator('.pn-item:not([hidden])').count(),await cards.count());
+    await noOverflow(page);
+  });
+  await check('Paper Notes reading modes and answers '+width,async()=>{
+    await navigate(page,'/research/papers/2024/hil-serl/?source=paper-notes');await noOverflow(page);
+    const modes=page.locator('[data-paper-reading-modes]');
+    assert(await modes.count()===1,'Paper reading modes must appear on paper detail');
+    assert.equal(await page.locator('#research-return').getAttribute('href'),'/paper-notes/');
+    await modes.locator('[data-reading-mode="overview"]').click();
+    assert(await page.locator('#pn-mode-overview').isVisible());
+    assert((await page.locator('#pn-mode-overview a').count())>0,'Overview must link to real headings');
+    await modes.locator('[data-reading-mode="evidence"]').click();
+    assert(await page.locator('#pn-mode-evidence').isVisible());
+    assert((await page.locator('#pn-mode-evidence a').count())>0,'Evidence lens must link to paper content');
+    await modes.locator('[data-reading-mode="full"]').click();
+    assert.equal(await page.locator('[data-reading-mode="full"]').getAttribute('aria-pressed'),'true');
+    assert(!(await page.locator('#pn-mode-evidence').isVisible()));
+    const selftest=page.locator('.rkd-prose details').filter({has:page.locator('summary:text("问题 1")')}).first();
+    assert(await page.locator('.rkd-prose details').count()>=3,'Deep sample must contain 3 self checks');
+    assert((await page.locator('.rkd-prose').innerText()).includes('核心概念速查'));
+    await noOverflow(page);
+  });
   await check('Learning route '+width,async()=>{
    await navigate(page,'/research/paths/agent-post-training/');await noOverflow(page);
    assert.equal(await page.locator('[data-learning-step]').count(),7);
