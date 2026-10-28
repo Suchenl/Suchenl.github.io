@@ -4,6 +4,8 @@
 
 | 文件 | 作用 |
 |---|---|
+| `web/src/pages/paper-notes/index.astro` | 论文解读独立筛选入口，直接使用同一 knowledge collection |
+| `web/src/components/PaperReadingModes.astro` | 论文的速览 / 完整解读 / 证据与原文三种章节导航视图 |
 | `web/src/pages/research/index.astro` | Library 的静态数据装配、目录和列表标记 |
 | `web/src/scripts/research-library.ts` | 分类树、搜索、URL 状态、筛选、论文对比选择的客户端交互 |
 | `web/src/styles/research-library.css` | Research library 样式，保留既有选择器 |
@@ -39,3 +41,11 @@
 - `web/src/lib/public-questions.ts` 只筛 `contentType: exploration && publicQuestion: true`，按人工 `featuredOrder` 排序。Questions 只做展示，不存第二份正文。
 - `node web/scripts/check-knowledge-taxonomy.mjs`（需从 web 目录运行）验证每份正文的类型、领域和 Questions 约束，随 `npm run build` 自动执行；`check-research-render.mjs` 验证关键公式、OPD SVG 和精选边界。
 - 论文对比、阅读状态只对论文开放；搜索、阅读目录、反向引用、学习路径以及中文优先原则沿用原系统。
+
+## 论文解读设计原则（2026-10-28）
+
+- 规范位于 `docs/design-principles/PAPER_NOTES.md`；设计原则索引位于 `docs/design-principles/README.md`，要求中文维护。
+- `/paper-notes/` 仅用于按研究领域、搜索和阅读深度发现原有论文；文献正文依旧位于 `knowledge/papers/`，详情页统一为 `/research/papers/.../`。
+- 论文阅读页提供速览、完整解读和证据导航；前后者指向**已有章节**，不另行生成不可靠的原文替代摘要。
+- `readingDepth` 可选 `note/standard/deep`，属于内容深度人工维护，不等于用户的 `status`；旧文献默认未分级。
+- HIL-SERL 作为首篇样板先建立核心概念、研究脉络、主张—证据和可展开的自测答案；其余文献仍需逐步核验，不自动宣称完成。
