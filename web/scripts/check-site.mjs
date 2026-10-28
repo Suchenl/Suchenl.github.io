@@ -11,6 +11,18 @@ function page(route){
   check(existsSync(file),'route /'+route+'/');
   return existsSync(file) ? readFileSync(file,'utf8') : '';
 }
+const paperNotes=page('paper-notes');
+check(paperNotes.includes('id="pn-list"') && paperNotes.includes('id="pn-search"') &&
+      paperNotes.includes('id="pn-domain"') && paperNotes.includes('id="pn-depth"'),
+      'paper-notes independent portal with search, domain and depth facets');
+check(paperNotes.includes('/research/papers/2024/hil-serl/') &&
+      paperNotes.includes('论文解读') && !paperNotes.includes('Open-Robot-Agent'),
+      'paper-notes links canonical HIL-SERL and does not expose private projects');
+const hilReader=page('research/papers/2024/hil-serl');
+check(hilReader.includes('data-paper-reading-modes') && hilReader.includes('data-reading-mode="overview"') &&
+      hilReader.includes('data-reading-mode="evidence"') && hilReader.includes('## 核心概念速查')===false &&
+      hilReader.includes('主张—证据速查') && hilReader.includes('理解检验：不看正文'),
+      'HIL-SERL sample has reader modes, concepts, evidence matrix and self checks');
 const home=page('');
 const blog=page('blog');
 const questions=page('questions');
