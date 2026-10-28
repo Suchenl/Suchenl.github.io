@@ -7,6 +7,8 @@
 
 本仓库不要求把每个方向写成正式论文。最重要的是：**找得到、读得懂、可追溯、能更新、不会把猜想和论文结论混为一谈**。
 
+论文解读的长期教学与页面设计遵循 [中文设计原则](../docs/design-principles/PAPER_NOTES.md)，不在前端另存一套论文正文。
+
 ## 统一内容模型
 
 所有正式文章均标记 **\`domains\`（研究领域）** 和 **\`contentType\`（内容类型）**：领域目录展示不同类型的知识，而「问题与探索」是经作者精选、且仅指向原始 Research 正文的研究兴趣列表。分类、前端类型和精选规则统一见 [分类与治理规范](TAXONOMY.md) · [机器可读字典](taxonomy.json)。原 `categories` 仅保留历史细分检索，不再驱动主领域树。
@@ -24,7 +26,7 @@
 | 阅读第一篇综合综述：SFT × RL | [SFT、RL 与 Agent 后训练：协同范式和最新证据](topics/llm-agent-training/reviews/sft-rl-co-training.md) |
 | 对比不同研究主张及冲突的证据 | [SFT × RL × Agent：研究主张证据地图](topics/llm-agent-training/reviews/evidence-map.md) |
 | 将未解决问题变成可证伪实验 | [Agent 后训练实验议程](research/agent-post-training-experiment-agenda.md) |
-| 按论文查找独立解读 | [论文卡片索引](papers/README.md) |
+| 按论文查找独立解读 | [论文解读独立入口](https://suchenl.github.io/paper-notes/) · [论文卡片索引](papers/README.md) |
 | 查定义、数学符号、术语区别 | [共享术语](glossary/README.md) |
 | 查看尚未得到验证的研究设想 | [研究问题](research/README.md) |
 | 为知识库提交修改、要求 AI 维护 | [维护规范](CONTRIBUTING.md) · [AI 工作规范](AGENTS.md) |
