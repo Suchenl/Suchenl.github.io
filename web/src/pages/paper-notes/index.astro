@@ -1,0 +1,178 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { domainTitle } from '../../lib/research-taxonomy';
+
+const entries = (await getCollection('knowledge'))
+  .filter(e => /^papers\/20\d{2}\//.test(e.id) && (e.data as {contentType?:string}).contentType === 'paper');
+type PaperData = {
+  title?:string; shortName?:string; aliases?:string[]; summaryZh?:string; year?:number; venue?:string;
+  authors?:string[]; tags?:string[]; domains?:string[]; links?:{arxiv?:string;pdf?:string;project?:string;code?:string};
+  readingDepth?:'note'|'standard'|'deep';
+};
+const papers = entries.map(entry => {
+  const d = entry.data as PaperData;
+  const depth = d.readingDepth || 'unclassified';
+  return {
+    id:entry.id, href:'/research/'+entry.id+'/?source=paper-notes',
+    title:d.title || entry.id, shortName:d.shortName || entry.id.split('/').pop() || '',
+    summary:d.summaryZh || '', year:d.year || Number(entry.id.match(/20\d{2}/)?.[0] || 0),
+    venue:d.venue || '', authors:d.authors || [], tags:d.tags || [], aliases:d.aliases || [],
+    domains:d.domains || [], depth, source:d.links?.arxiv || d.links?.pdf || d.links?.project || '',
+    search:[d.title||'',d.shortName||'',d.summaryZh||'',d.venue||'',...(d.authors||[]),...(d.tags||[]),...(d.aliases||[]),...(d.domains||[]),(entry.body||'').slice(0,3000)].join(' ').toLocaleLowerCase(),
+  };
+}).sort((a,b)=>b.year-a.year||a.title.localeCompare(b.title,'zh'));
+const depthLabel:Record<string,string> = { note:'文献速记',standard:'标准解读',deep:'深度精读',unclassified:'尚未分级' };
+const domainCounts = new Map<string,number>();
+papers.forEach(p=>p.domains.forEach(d=>domainCounts.set(d,(domainCounts.get(d)||0)+1)));
+const domains = [...domainCounts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'zh'));
+const canonical = (id:string) => '/research/papers/'+id+'/';
+const featured = [
+ {label:'从示范学习到真实机器人强化学习',hint:'从示范、交互、价值估计到人类实时纠正，理解不同学习信号的作用。',terms:'BC / DAgger · RLPD · HIL-SERL',ref:'2024/hil-serl'},
+ {label:'可微分世界模型与策略学习',hint:'世界模型不仅预测下一状态，还可以通过想象轨迹为策略优化提供梯度。',terms:'Model-Based RL · BPTT · SuperMimic',ref:'2026/supermimic'},
+ {label:'长时 Agent 的交互式强化学习',hint:'把环境、评价、轨迹和训练系统作为整体分析，不只看模型排行榜。',terms:'Agentic RL · Grader · MiMo-V2.6',ref:'2026/mimo-mopd2'},
+].filter(f=>papers.some(p=>p.id==='papers/'+f.ref));
+---
+<Base title="论文解读" description="论文解读：从核心概念、研究脉络、方法流程到实验证据与适用边界。理解方法，连接知识，形成判断。">
+  <div class="pn-page">
+    <nav class="pn-breadcrumb" aria-label="当前位置"><a href="/research/">研究知识库</a><span>/</span><span>论文解读</span></nav>
+    <header class="pn-hero">
+      <p class="pn-eyebrow">PAPER NOTES · RESEARCH READING</p>
+      <h1>论文解读</h1>
+      <p class="pn-lead">理解方法，连接知识，形成判断。</p>
+      <p class="pn-desc">先用一句话和核心概念建立全貌，再理解研究脉络与算法流程，最后回到实验、局限与原始证据。这里是独立的阅读入口，所有正文仍由研究知识库的同一份 Markdown 提供。</p>
+      <div class="pn-quick"><a href="#browse-papers">浏览全部论文</a><a href="/research/compare/">对比论文方法</a><a href="/research/">进入研究知识库</a></div>
+    </header>
+
+    <section class="pn-section" aria-labelledby="pn-route-title">
+      <div class="pn-section-top"><div><span class="pn-overline">RESEARCH THREADS</span><h2 id="pn-route-title">从研究问题出发</h2></div><p>学习线索是阅读组织，不表示论文之间存在简单的线性继承。</p></div>
+      <div class="pn-route-grid">
+        {featured.map((f,i)=><a class="pn-route" href={canonical(f.ref)+'?source=paper-notes'}>
+          <span class="pn-route-number">{String(i+1).padStart(2,'0')}</span>
+          <h3>{f.label}</h3><p>{f.hint}</p>
+          <small>{f.terms}</small><span class="pn-route-link">阅读代表性论文 →</span>
+        </a>)}
+      </div>
+    </section>
+
+    <section class="pn-section" id="browse-papers" aria-labelledby="pn-browse-title">
+      <div class="pn-section-top"><div><span class="pn-overline">ALL PAPER NOTES</span><h2 id="pn-browse-title">论文目录 <span class="pn-total">{papers.length} 篇</span></h2></div><p>按领域筛选，随时回到原论文与方法对比。</p></div>
+      <div class="pn-controls">
+        <div class="pn-search-wrap"><label class="pn-sr-only" for="pn-search">检索论文、算法和概念</label><span aria-hidden="true">⌕</span><input id="pn-search" type="search" placeholder="搜索标题、算法、概念、作者或研究问题" autocomplete="off" /></div>
+        <div class="pn-filter-row">
+          <label for="pn-domain">研究领域</label>
+          <select id="pn-domain"><option value="">全部领域</option>{domains.map(([d,n])=><option value={d}>{domainTitle(d)} · {n}</option>)}</select>
+          <label for="pn-depth">阅读深度</label>
+          <select id="pn-depth"><option value="">全部级别</option><option value="deep">深度精读</option><option value="standard">标准解读</option><option value="note">文献速记</option><option value="unclassified">尚未分级</option></select>
+          <label for="pn-sort">排序</label>
+          <select id="pn-sort"><option value="new">年份 · 新到旧</option><option value="old">年份 · 旧到新</option><option value="title">标题 A–Z</option></select>
+        </div>
+      </div>
+      <p id="pn-count" class="pn-count" aria-live="polite">{papers.length} 篇论文</p>
+      <div id="pn-list" class="pn-list">
+        {papers.map(p=><article class="pn-item" data-title={p.title.toLocaleLowerCase()} data-search={p.search} data-year={p.year} data-domains={JSON.stringify(p.domains)} data-depth={p.depth}>
+          <div class="pn-item-top"><span class="pn-item-abbr">{p.shortName}</span><span class="pn-item-year">{p.year || '年份待核验'}</span><span class="pn-item-depth">{depthLabel[p.depth]}</span></div>
+          <h3><a href={p.href}>{p.title}</a></h3>
+          {p.summary && <p class="pn-item-summary">{p.summary}</p>}
+          <div class="pn-item-meta">{p.domains.map(d=><span>{domainTitle(d)}</span>)}</div>
+          <div class="pn-item-bottom"><span>{p.venue || '发表状态见原始资料'}</span><div><a href={p.href}>阅读全文 →</a>{p.source && <a href={p.source} target="_blank" rel="noopener noreferrer">原论文 ↗</a>}</div></div>
+        </article>)}
+      </div>
+      <div id="pn-empty" class="pn-empty" hidden><strong>没有找到匹配的论文</strong><p>尝试其他关键词，或重置领域与阅读深度筛选。</p><button id="pn-reset" type="button">重置筛选</button></div>
+    </section>
+    <p class="pn-footnote">注：阅读深度是人工维护的文献内容分类，不代表本人实际已经读完。尚未分级的旧笔记不会根据字数自动冒充深度精读。论文事实、作者分析和未验证推论按原文证据分别说明。</p>
+  </div>
+</Base>
+
+<script>
+  const search = document.getElementById('pn-search') as HTMLInputElement|null;
+  const domain = document.getElementById('pn-domain') as HTMLSelectElement|null;
+  const depth = document.getElementById('pn-depth') as HTMLSelectElement|null;
+  const sort = document.getElementById('pn-sort') as HTMLSelectElement|null;
+  const list = document.getElementById('pn-list');
+  const count = document.getElementById('pn-count');
+  const empty = document.getElementById('pn-empty');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.pn-item'));
+  const norm=(text:string)=>text.normalize('NFKC').toLocaleLowerCase().trim();
+  function refresh(){
+    if(!list) return;
+    const q=norm(search?.value||'');
+    let n=0;
+    cards.forEach(card=>{
+      const ds=JSON.parse(card.dataset.domains||'[]') as string[];
+      const show=(!q||norm(card.dataset.search||'').includes(q))&&(!domain?.value||ds.includes(domain.value))&&(!depth?.value||card.dataset.depth===depth.value);
+      card.hidden=!show;if(show)n++;
+    });
+    cards.sort((a,b)=>{
+      if(sort?.value==='title')return (a.dataset.title||'').localeCompare(b.dataset.title||'','zh');
+      const y=Number(a.dataset.year||0)-Number(b.dataset.year||0);
+      return (sort?.value==='old'?y:-y)||(a.dataset.title||'').localeCompare(b.dataset.title||'','zh');
+    }).forEach(card=>list.append(card));
+    if(count)count.textContent=n+' / '+cards.length+' 篇论文';
+    if(empty)empty.hidden=n!==0;
+  }
+  [search,domain,depth,sort].forEach(el=>el?.addEventListener(el===search?'input':'change',refresh));
+  document.getElementById('pn-reset')?.addEventListener('click',()=>{
+    if(search)search.value=''; if(domain)domain.value=''; if(depth)depth.value='';if(sort)sort.value='new';refresh();search?.focus();
+  });
+  refresh();
+</script>
+
+<style>
+  .pn-page{max-width:1110px;margin:0 auto 5rem;}
+  .pn-breadcrumb{display:flex;gap:.65rem;align-items:center;margin:1.5rem 0;color:var(--fg-muted);font-size:.8rem;}
+  .pn-breadcrumb a{color:var(--fg-muted);}.pn-breadcrumb a:hover{color:var(--accent-ink);}
+  .pn-hero{padding:1.6rem 0 2.35rem;border-bottom:1px solid var(--border);}
+  .pn-eyebrow,.pn-overline{color:var(--accent-ink);font-size:.73rem;font-weight:750;letter-spacing:.13em;}
+  .pn-hero h1{font-size:clamp(2rem,4vw,3.15rem);letter-spacing:-.045em;line-height:1.2;margin:.65rem 0 1rem;}
+  .pn-lead{font-size:clamp(1.12rem,2vw,1.35rem);font-weight:700;line-height:1.6;margin:.2rem 0;}
+  .pn-desc{color:var(--fg-muted);font-size:.96rem;line-height:1.85;max-width:760px;margin:.7rem 0;}
+  .pn-quick{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.55rem;}
+  .pn-quick a{border:1px solid var(--border);padding:.65rem .9rem;border-radius:9px;font-size:.85rem;color:var(--fg);background:var(--surface);font-weight:650;}
+  .pn-quick a:first-child{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);}
+  .pn-quick a:hover{border-color:var(--accent);text-decoration:none;}
+  .pn-section{margin-top:2.5rem;scroll-margin-top:80px;}
+  .pn-section-top{display:flex;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:1.1rem;}
+  .pn-section-top h2{font-size:clamp(1.2rem,2vw,1.55rem);letter-spacing:-.025em;margin:.45rem 0 0;}
+  .pn-section-top p{font-size:.79rem;color:var(--fg-muted);margin:0;max-width:360px;line-height:1.65;}
+  .pn-total{font-size:.77rem;font-weight:500;color:var(--fg-muted);margin-left:.4rem;}
+  .pn-route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;}
+  .pn-route{display:flex;flex-direction:column;gap:.65rem;min-width:0;padding:1.3rem;border:1px solid var(--border);border-radius:14px;background:var(--surface);color:var(--fg);transition:border-color .15s,transform .15s;}
+  .pn-route:hover{border-color:var(--accent);text-decoration:none;transform:translateY(-2px);}
+  .pn-route-number{font:700 .76rem ui-monospace,monospace;color:var(--accent-ink);}
+  .pn-route h3{font-size:1.02rem;line-height:1.5;letter-spacing:-.014em;margin:.15rem 0 0;color:var(--fg);}
+  .pn-route p{font-size:.85rem;line-height:1.75;color:var(--fg-muted);margin:0;flex:1;}
+  .pn-route small{font-size:.71rem;color:var(--fg-muted);line-height:1.6;}
+  .pn-route-link{font-size:.81rem;font-weight:700;color:var(--accent-ink);margin-top:.4rem;}
+  .pn-controls{border:1px solid var(--border);background:var(--surface);padding:1rem;border-radius:13px;}
+  .pn-search-wrap{display:flex;align-items:center;gap:.65rem;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:0 .85rem;}
+  .pn-search-wrap:focus-within{outline:2px solid var(--accent);outline-offset:1px;}
+  .pn-search-wrap span{font-size:1.5rem;color:var(--fg-muted);}
+  .pn-search-wrap input{border:0;outline:0;background:transparent;color:var(--fg);font:inherit;font-size:.91rem;padding:.75rem 0;flex:1;min-width:0;width:100%;}
+  .pn-filter-row{display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-top:.9rem;}
+  .pn-filter-row label{font-size:.79rem;color:var(--fg-muted);font-weight:650;}
+  .pn-filter-row select{font:inherit;font-size:.82rem;background:var(--surface);color:var(--fg);border:1px solid var(--border);border-radius:8px;min-height:38px;padding:.35rem .55rem;max-width:240px;}
+  .pn-count{font-size:.78rem;color:var(--fg-muted);margin:1rem 0;}
+  .pn-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;}
+  .pn-item{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.65rem;}
+  .pn-item[hidden]{display:none!important;}
+  .pn-item-top{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;color:var(--fg-muted);font-size:.72rem;}
+  .pn-item-abbr{font-weight:800;color:var(--accent-ink);font-size:.84rem;}
+  .pn-item-depth{margin-left:auto;background:var(--surface-2);border:1px solid var(--border);padding:.12rem .4rem;border-radius:6px;}
+  .pn-item h3{font-size:.98rem;line-height:1.48;margin:0;letter-spacing:-.012em;overflow-wrap:anywhere;}
+  .pn-item h3 a{color:var(--fg);}.pn-item h3 a:hover{color:var(--accent-ink);}
+  .pn-item-summary{font-size:.84rem;line-height:1.75;color:var(--fg-muted);margin:0;}
+  .pn-item-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 0;}
+  .pn-item-meta span{background:var(--surface-2);color:var(--fg-muted);font-size:.72rem;line-height:1.5;padding:.15rem .5rem;border-radius:6px;}
+  .pn-item-bottom{margin-top:auto;padding-top:.7rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;font-size:.74rem;color:var(--fg-muted);line-height:1.5;}
+  .pn-item-bottom>span{flex:1;min-width:140px;}
+  .pn-item-bottom div{display:flex;gap:.7rem;flex-wrap:wrap;}.pn-item-bottom a{font-size:.76rem;font-weight:650;}
+  .pn-empty{text-align:center;padding:2.5rem;border:1px dashed var(--border);border-radius:12px;}
+  .pn-empty[hidden]{display:none!important;}
+  .pn-empty p{font-size:.85rem;color:var(--fg-muted);}.pn-empty button{border:1px solid var(--border);background:var(--surface);padding:.6rem 1rem;border-radius:8px;cursor:pointer;color:var(--fg);}
+  .pn-footnote{font-size:.77rem;line-height:1.75;color:var(--fg-muted);margin-top:1.5rem;max-width:960px;}
+  .pn-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+  @media(max-width:800px){.pn-route-grid{grid-template-columns:1fr}.pn-list{grid-template-columns:1fr}.pn-section-top{display:block}.pn-section-top p{margin-top:.6rem}.pn-route{padding:1.1rem}}
+  @media(max-width:540px){.pn-filter-row label{width:100%;}.pn-filter-row select{width:100%;max-width:100%;}.pn-hero{padding:1rem 0 1.5rem;}.pn-quick a{flex:1;text-align:center}.pn-page{margin-bottom:3rem}}
+  @media(prefers-reduced-motion:reduce){.pn-route{transition:none}.pn-route:hover{transform:none}}
+</style>
