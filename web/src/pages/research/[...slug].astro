@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ReadingToc from '../../components/ReadingToc.astro';
+import PaperReadingModes from '../../components/PaperReadingModes.astro';
 import '../../styles/research-reader.css';
 import { getCollection, render } from 'astro:content';
 import { buildKnowledgeGraph, readingSteps } from '../../lib/research-graph';
@@ -23,7 +24,7 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const data = entry.data as {
   title?: string; shortName?: string; aliases?: string[]; summaryZh?: string; categories?: string[]; domains?: string[]; contentType?: string;
-  status?: string; rating?: number;
+  status?: string; rating?: number; readingDepth?: 'note' | 'standard' | 'deep';
   links?: { arxiv?: string; pdf?: string; code?: string; project?: string };
 };
 const hasHeading = /^#\s+/m.test(entry.body || '');
@@ -84,7 +85,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   <div class="rkd-page" id="research-reader" data-document-id={entry.id} data-document-title={title}>
     <div class="rkd-progress" id="reading-progress" aria-hidden="true"></div>
     <nav class="rkd-breadcrumb" aria-label="位置">
-      <a href="/research/">Research</a><span aria-hidden="true">/</span>
+      {isPaper ? <a href="/paper-notes/">论文解读</a> : <a href="/research/">研究知识库</a>}<span aria-hidden="true">/</span>
       {category ? <a href={folderHref}>{domainTitle(category)}</a> : <span>{kind}</span>}
     </nav>
     <header class="rkd-head">
@@ -115,6 +116,8 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       <button type="button" id="rkd-resume" hidden>继续上次读到的章节</button>
       <span class="rkd-tool-note" aria-live="polite" id="rkd-tool-note"></span>
     </div>
+
+    {isPaper && <PaperReadingModes headings={toc} summary={data.summaryZh} source={(data.links?.pdf || data.links?.arxiv || '')} noteDepth={data.readingDepth || 'unclassified'} />}
 
     {navShortcuts.length > 1 && !isLearningPath && (
       <nav class="rkd-quick" aria-label="快速定位">
