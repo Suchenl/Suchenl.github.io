@@ -98,7 +98,7 @@ import { SITE, AUTHOR } from '../../config';
                     ['研究问题','The problem',paper.brief.motivationZh,paper.brief.motivationEn],
                     ['方法设计','The approach',paper.brief.methodZh,paper.brief.methodEn],
                     ['实验结果','Key findings',paper.brief.resultZh,paper.brief.resultEn],
-                    ['如何理解','Scope & interpretation',paper.brief.boundaryZh,paper.brief.boundaryEn]
+                    ['适用边界','Scope & limitations',paper.brief.boundaryZh,paper.brief.boundaryEn]
                   ] as const).map(([zh,en,zhText,enText]) => (
                     <div class="pub-brief-row">
                       <strong><span data-l="zh">{zh}</span><span data-l="en">{en}</span></strong>
