@@ -57,6 +57,13 @@ try {
    await navigate(page,href); await noOverflow(page);
    assert((await page.locator('.rkd-prose').innerText()).includes('Chronos Policy'),'Full research note is readable');
   });
+  await check('Robot control topic / short route '+width,async()=>{
+   await navigate(page,'/research/topics/robot-control/');
+   const articleText=await page.locator('.rkd-prose').innerText();
+   assert(articleText.includes('阻抗控制') && articleText.includes('Wrench'),'Control article did not render');
+   assert.equal(await page.locator('img[src*="spring-damper.svg"]').count(),1,'Spring-damper diagram missing');
+   await noOverflow(page);
+  });
   await check('Projects '+width,async()=>{
    await navigate(page,'/projects/');await noOverflow(page);
    assert(await page.getByText('公开研究实现').count()>0);

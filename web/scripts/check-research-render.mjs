@@ -26,6 +26,19 @@ for (const marker of ['lit-shortcuts', 'lit-search', 'lit-context', 'lit-sort'])
   if (!library.includes(marker)) throw new Error('Missing library UI: ' + marker);
 }
 if (!existsSync(path.join('dist', 'reading', 'index.html'))) throw new Error('Missing deprecated /reading/ redirect');
+// Guard canonical topic landing pages and the standalone Actor–Critic Q&A.
+for(const [slug, marker] of [
+  ['topics/robot-control','阻抗控制'],
+  ['topics/robot-control/README','阻抗控制'],
+  ['topics/llm-agent-training','后训练'],
+  ['topics/pretraining','预训练'],
+  ['research/actor-critic-mutual-dependence','Actor'],
+]){
+ const file=path.join('dist','research',slug,'index.html');
+ if(!existsSync(file))throw new Error('Missing reader-facing route: '+slug);
+ if(!readFileSync(file,'utf8').includes(marker))throw new Error('Missing article content: '+slug);
+}
+console.log('Reader-friendly topic and Q&A URLs verified.');
 console.log('Research routes, navigation and internal paper links verified.');
 
 for (const label of ['data-type="qa"', 'data-type="exploration"', 'data-type="plan"', 'data-type="paper"']) {

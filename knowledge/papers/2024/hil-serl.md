@@ -49,7 +49,7 @@ links:
 | Wrench / Feedforward | 六维广义力（力＋力矩）及前馈指令 | 动态操作使用不同于常规末端位置跟踪的控制 |
 | Funnel / Critical State | 局部偏差状态的恢复收敛与动作 Q 敏感性 | 实验解释，不是形式化安全保证 |
 
-**建议阅读顺序**：先看下方的“RAM 插入教学故事”，再看原 Figure 2 的系统图；算法细节延伸到 [RLPD 独立精读](/research/papers/2023/rlpd/)，控制细节延伸到 [机器人控制专题](/research/topics/robot-control/)。
+**建议阅读顺序**：先沿着 RAM 插入实例理解训练流程，再看系统 Figure 2；[RLPD 独立精读](/research/papers/2023/rlpd/)负责论文算法，[Actor–Critic 基础问答](/research/research/actor-critic-mutual-dependence/)解释评价与策略互相依赖的一般问题，[机器人控制专题](/research/topics/robot-control/)解释底层控制。
 
 问题不是能不能用神经网络输出 6D 动作，而是实际部署时能不能满足三个更苛刻的要求：**精度高、恢复能力强、重复执行快**。把 RAM 插入插槽只成功一半，或者安装同步带过程中遇到接触偏差就卡住，在真实工业场景中仍然难以应用。
 

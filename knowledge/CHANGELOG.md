@@ -1,5 +1,10 @@
 # 更新记录
 
+## 2026-10-28 · 研究内容分类与专题路由修正
+- 将通用 Actor–Critic 互相依赖、策略评价与改进、Q 值误差上限等问题独立为技术问答，不再让 RLPD 论文以此命名或作为研究贡献。
+- RLPD 正文回归作者研究问题与 ICML 2023 的具体方法；HIL-SERL 与专题索引补充知识链接。公开研究稿统一改为作者面向读者的语气，移除针对对话者的用语。
+- 修复 `knowledge/topics/**/README.md` 生成的访问地址：新增 `/research/topics/<slug>/`，保留旧 `/README/` 别名；自动化加入路由与浏览器加载回归检查。
+
 ## 2026-10-28 · RLPD / 机器人控制学习专题
 - 为 HIL-SERL 一句话总结追加 17 项读者术语表、RAM 插入示例与独立学习入口，修正 RLPD 全称。
 - 新增 ICML 2023 [RLPD 独立精读](papers/2023/rlpd.md)：Actor–Critic 相互依赖、混合采样、LN / Ensemble / UTD、值函数偏差与工具 Agent 的适用边界；两张可编辑 SVG。

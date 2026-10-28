@@ -8,7 +8,8 @@
 
 ## 关联入门：Off-policy 的新旧数据混合
 
-- [RLPD：先验数据与在线强化学习精读](../../papers/2023/rlpd.md)：Actor/Critic 循环、Bellman 自举、50:50 混合采样与 Agent 迁移边界。
+- [通用 Actor–Critic：为何 Actor 和 Critic 能相互改进？](../../research/actor-critic-mutual-dependence.md)：Policy Evaluation / Improvement、自举、Q 与成功概率的关系。
+- [RLPD：先验数据与在线强化学习精读](../../papers/2023/rlpd.md)：50:50 混合采样、Critic LayerNorm、在线经验更新与 Agent 迁移边界。
 - [机器人控制专题](../robot-control/README.md)：如何把高层策略动作可靠地执行到物理末端。
 
 ## 三层研究入口

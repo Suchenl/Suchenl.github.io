@@ -4,6 +4,7 @@
 
 ## 技术问答（qa）
 
+- [Actor–Critic 为什么相互依赖却还能改进策略？](actor-critic-mutual-dependence.md)：策略评价/改进循环、Q 值与概率、估值误差是否限制策略上限。
 - [为什么 OPD 使用反向 KL？能否混合正反 KL？](opd-forward-reverse-kl-qa.md)：原对话完整问答、公式、训练过程与 SVG。
 - [Agent 的 Thinking、Tool Calling 与跨轮状态如何组织？](how-agent-reasoning-tools-and-state-work.md)：官方协议、执行器与状态回放机制。
 

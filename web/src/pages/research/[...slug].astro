@@ -8,7 +8,15 @@ import { typeLabel, domainTitle } from '../../lib/research-taxonomy';
 
 export async function getStaticPaths() {
   const entries = await getCollection('knowledge');
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  // Directory topic README files receive a short public URL and keep their old /README/ URL.
+  const originals = entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const ids = new Set(entries.map((entry) => entry.id));
+  const aliases = entries
+    .filter((entry) => entry.id.startsWith('topics/') && entry.id.endsWith('/README'))
+    .map((entry) => ({ slug: entry.id.slice(0, -'/README'.length), entry }))
+    .filter(({ slug }) => !ids.has(slug))
+    .map(({ slug, entry }) => ({ params: { slug }, props: { entry } }));
+  return [...originals, ...aliases];
 }
 
 const { entry } = Astro.props;

@@ -36,7 +36,7 @@
 
 | 论文 | 发表状态 | 关键问题 |
 |---|---|---|
-| [RLPD：先验经验与在线强化学习完整精读](2023/rlpd.md) | ICML 2023 | 混合采样、Critic 和 Actor 的学习循环、价值高估与 Agent 迁移边界 |
+| [RLPD：历史数据如何加速在线强化学习](2023/rlpd.md) | ICML 2023 | 混合采样、Critic LayerNorm、Ensemble、高 UTD 与适用边界 |
 
 ## 原 Reading 迁入的轻量卡片
 

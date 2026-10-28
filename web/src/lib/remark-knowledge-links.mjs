@@ -20,7 +20,9 @@ export default function remarkKnowledgeLinks() {
           if (raw.endsWith('.md')) {
             const target = path.posix.normalize(path.posix.join(parent, raw));
             if (target !== '..' && !target.startsWith('../')) {
-              node.url = '/research/' + target.replace(/\.md$/, '') + '/' + frag;
+              const id = target.replace(/\.md$/, '');
+              const canonical = id.startsWith('topics/') ? id.replace(/\/README$/, '') : id;
+              node.url = '/research/' + canonical + '/' + frag;
             }
           }
         }

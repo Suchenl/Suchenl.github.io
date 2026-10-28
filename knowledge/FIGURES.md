@@ -8,7 +8,7 @@
 
 | 图形 | SVG | 说明 |
 |---|---|---|
-| Actor–Critic–真实环境反馈 | [actor-critic-loop.svg](../web/public/research/figures/rlpd/actor-critic-loop.svg) | 概念示意，不是原论文实验图 |
+| 通用 Actor–Critic 与真实环境反馈 | [actor-critic-loop.svg](../web/public/research/figures/rlpd/actor-critic-loop.svg) | [Actor–Critic 基础问答](research/actor-critic-mutual-dependence.md)复用；并非 RLPD 独有结构 |
 | 50:50 混合经验更新 | [mixed-batch.svg](../web/public/research/figures/rlpd/mixed-batch.svg) | 训练流程概念图 |
 | 弹簧与阻尼器 | [spring-damper.svg](../web/public/research/figures/robot-control/spring-damper.svg) | 对此前聊天中弹簧示意的独立 SVG 重绘 |
 | Agent → IK → 控制器链路 | [control-layers.svg](../web/public/research/figures/robot-control/control-layers.svg) | 典型层级示意，不代表所有机器人 |

@@ -16,6 +16,19 @@ const blog=page('blog');
 const questions=page('questions');
 const questionDetail=page('research/research/action-sampling-frequency-bias');
 const numberContinuityDetail=page('research/research/do-tokenizers-preserve-numerical-continuity');
+// Guard route generation for public topic README pages.
+const robotControl=page('research/topics/robot-control');
+const robotControlLegacy=page('research/topics/robot-control/README');
+const rlpdReview=page('research/papers/2023/rlpd');
+const actorCriticQa=page('research/research/actor-critic-mutual-dependence');
+check(robotControl.includes('弹簧') && robotControl.includes('Wrench') &&
+      robotControl.includes('/research/figures/robot-control/spring-damper.svg'),
+      'robot-control short URL serves the complete illustrated article');
+check(robotControlLegacy.includes('阻抗控制'), 'robot-control old /README/ URL preserved');
+check(rlpdReview.includes('怎样利用历史数据') && !rlpdReview.includes('为什么 Actor 和 Critic 互相依赖'),
+      'RLPD title focuses on prior-data online learning');
+check(actorCriticQa.includes('策略评价') && actorCriticQa.includes('策略改进'),
+      'general Actor–Critic Q&A has its own route');
 const supermimic=page('research/papers/2026/supermimic');
 check(supermimic.includes('SuperMimic') && supermimic.includes('katex-display') &&
       supermimic.includes('/research/supermimic/training-loop.svg') &&

@@ -58,7 +58,7 @@ export function buildKnowledgeGraph(entries: KnowledgeRecord[]) {
       title: titleOf(e),
       summary: asString(e.data.summaryZh),
       kind: kindOf(e.id, e.data.contentType),
-      href: '/research/' + e.id + '/',
+      href: '/research/' + (e.id.startsWith('topics/') ? e.id.replace(/\/README$/, '') : e.id) + '/',
     });
   }
   const incoming = new Map<string, Set<string>>();
