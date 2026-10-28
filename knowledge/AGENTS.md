@@ -13,7 +13,7 @@
 
 ## 论文解读长期设计契约
 
-- 所有单篇论文解读及论文阅读器的改动，先遵循 [论文解读设计原则](../docs/design-principles/PAPER_NOTES.md)；项目主页其他设计原则统一登记在 [设计原则目录](../docs/design-principles/README.md)。
+- 所有单篇论文解读及论文阅读器的改动，先遵循 [论文解读设计原则](https://github.com/Suchenl/Suchenl.github.io/blob/main/docs/design-principles/PAPER_NOTES.md)；项目主页其他设计原则统一登记在 [设计原则目录](https://github.com/Suchenl/Suchenl.github.io/blob/main/docs/design-principles/README.md)。
 - 论文解读专题入口 `/paper-notes/` 只是单一 `knowledge/papers/` 的展示层，不能新建第二份正文，也不得破坏原 `/research/papers/...` URL。
 - 三层渐进阅读、十项理解目标并非硬性要求每篇轻量卡片都堆满；精读必须有研究脉络、概念表、具体运行案例、主张—证据及理解检验。
 - 折叠答案、阅读模式等交互须有真实行为，不能把未具备的自动摘要或验证能力伪装为已上线。
