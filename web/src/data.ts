@@ -10,6 +10,7 @@ export interface Paper {
   code?: string; // GitHub repo, e.g. "Suchenl/LAMIC"
   projectPage?: string; // public project website
   dataset?: string; // public benchmark dataset
+  video?: string; // public paper overview or demonstration video
   releasedYear?: number; // Public release/publication year, not research start date
   briefSource?: { url: string; labelZh: string; labelEn: string }; // Auditable source of the short description
   brief?: { takeawayZh:string; takeawayEn:string; motivationZh:string; motivationEn:string; methodZh:string; methodEn:string; resultZh:string; resultEn:string; boundaryZh:string; boundaryEn:string };
@@ -43,6 +44,7 @@ export const PUB_GROUPS: PubGroup[] = [
         code: 'Suchenl/VMem-Bench',
         projectPage: 'https://suchenl.github.io/VMem-Bench/',
         dataset: 'https://huggingface.co/datasets/Suchenl/VMem-Bench',
+        video: 'https://www.youtube.com/watch?v=8R2ARyxVRBE',
         releasedYear: 2026,
         briefSource: { url: 'https://arxiv.org/abs/2610.35001', labelZh: 'arXiv 预印本摘要（2026-10-26）', labelEn: 'arXiv preprint abstract (Oct 26, 2026)' },
         brief: {
