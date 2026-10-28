@@ -22,7 +22,7 @@ const hilReader=page('research/papers/2024/hil-serl');
 check(hilReader.includes('data-paper-reading-modes') && hilReader.includes('data-reading-mode="overview"') &&
       hilReader.includes('data-reading-mode="evidence"') && hilReader.includes('## 核心概念速查')===false &&
       hilReader.includes('阅读前的核心概念') && hilReader.includes('主张与证据') &&
-      hilReader.includes('理解检验、复现条件') && hilReader.includes('模块会发生什么'),
+      hilReader.includes('理解检验、复现条件') && hilReader.includes('如果删掉一个模块'),
       'HIL-SERL sample has reader modes, concepts, evidence matrix and self checks');
 const home=page('');
 const blog=page('blog');
