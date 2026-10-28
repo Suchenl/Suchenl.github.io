@@ -100,4 +100,4 @@ links:
 
 ---
 
-> **内容深度**：`note` 可以仅填写核验状态、第一至第三节和可靠来源；`standard` 需要讲清问题、完整方法与主要证据；`deep` 需要实质性机制图/例子、实验对照、横向比较、边界与自测。缺少某环节要说明，不要用空表格伪装完成。详细原则见 [论文解读设计原则](../../docs/design-principles/PAPER_NOTES.md)。
+> **内容深度**：`note` 可以仅填写核验状态、第一至第三节和可靠来源；`standard` 需要讲清问题、完整方法与主要证据；`deep` 需要实质性机制图/例子、实验对照、横向比较、边界与自测。缺少某环节要说明，不要用空表格伪装完成。详细原则见 [论文解读设计原则](https://github.com/Suchenl/Suchenl.github.io/blob/main/docs/design-principles/PAPER_NOTES.md)。
