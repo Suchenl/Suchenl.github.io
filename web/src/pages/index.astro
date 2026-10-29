@@ -20,11 +20,13 @@ const hub = [
   { emoji:'📝', href:'/publications/', zh:'论文成果', en:'Publications', descZh:'公开论文与学术成果', descEn:'Published papers and scholarly work' },
   { emoji:'🛠️', href:'/projects/', zh:'项目与工具', en:'Projects & Tools', descZh:'研究实现、开源工具与演示', descEn:'Research implementations and open-source tools' },
   { emoji:'✍️', href:'/blog/', zh:'写作与笔记', en:'Writing', descZh:'技术解释、研究随笔与教程', descEn:'Explanations, research notes, tutorials' },
+  { emoji:'🧰', href:SITE.researchAssetsUrl, zh:'科研资产库', en:'Research Assets', descZh:'高审美科研图、实用 Skills 与 Workflows', descEn:'Curated research visuals, practical skills and workflows' },
 ];
 const curiousQuestions = (await getPublicQuestions()).slice(0, 3);
 const socials = [
   { zh: '谷歌学术', en: 'Google Scholar', href: AUTHOR.links.googlescholar },
   { zh: 'GitHub', en: 'GitHub', href: AUTHOR.links.github },
+  { zh: '科研资产库', en: 'Research Assets', href: SITE.researchAssetsUrl },
   { zh: '领英', en: 'LinkedIn', href: AUTHOR.links.linkedin },
   { zh: 'ORCID', en: 'ORCID', href: AUTHOR.links.orcid },
 ];
@@ -143,7 +145,7 @@ const socials = [
     <h2 id="explore-heading"><Bi zh="继续探索" en="Explore more" /></h2>
     <div class="hub-grid">
       {hub.map((h) => (
-        <a class="hub-card" href={h.href}>
+        <a class="hub-card" href={h.href} target={h.href.startsWith("https://") ? "_blank" : undefined} rel={h.href.startsWith("https://") ? "noopener noreferrer" : undefined}>
           <div class="hub-emoji">{h.emoji}</div>
           <h3><span data-l="zh">{h.zh}</span><span data-l="en">{h.en}</span></h3>
           <p><span data-l="zh">{h.descZh}</span><span data-l="en">{h.descEn}</span></p>

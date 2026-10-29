@@ -3,6 +3,7 @@ export const SITE = {
   titleZh: '陈宇卓',
   description: '陈宇卓 (Yuzhuo Chen)：让 AI 理解、生成，并与世界交互。个人主页与博客。',
   url: 'https://suchenl.github.io',
+  researchAssetsUrl: 'https://openresearchassets.github.io/',
   defaultLang: 'zh' as const,
 };
 

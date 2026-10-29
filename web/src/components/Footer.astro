@@ -1,5 +1,5 @@
 ---
-import { AUTHOR, FEATURES } from '../config';
+import { AUTHOR, FEATURES, SITE } from '../config';
 const year = new Date().getFullYear();
 const gc = FEATURES.goatcounter;
 const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
@@ -11,6 +11,7 @@ const cfOn = Boolean(FEATURES.cloudflareAnalytics?.beaconToken);
       &copy; {year} {AUTHOR.nameZh} ({AUTHOR.name})
       <span data-l="zh"> · 使用 </span><span data-l="en"> · Built with </span>
       <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
+      <span> · </span><a href={SITE.researchAssetsUrl} target="_blank" rel="noopener noreferrer" aria-label="OpenResearchAssets 科研资产库 / Research Assets">OpenResearchAssets</a>
       <span class="site-stats" data-gc={gc || ''} data-cf={cfOn ? '1' : ''} hidden>
         <span data-l="zh" class="ss-cf" hidden>
           · 访问 <b class="ss-pageviews">–</b> · 访客 <b class="ss-visits">–</b>
