@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="375" viewBox="0 0 1120 375" role="img"><style>
+  text{font-family:Inter,"Noto Sans SC","PingFang SC",Arial,sans-serif;fill:#25354b}
+  .h{font-size:23px;font-weight:700}.st{font-size:15px;fill:#697b8e}.t{font-size:17px;font-weight:650}
+  .sm{font-size:14px;fill:#546779}.mini{font-size:12px;fill:#66788d}
+  .box{fill:#fff;stroke:#d4dfe8;stroke-width:1.4}.sky{fill:#eef5fc;stroke:#b3d1ec;stroke-width:1.4}
+  .mint{fill:#e8f7f2;stroke:#aadacb;stroke-width:1.4}.sand{fill:#fff7e9;stroke:#f3d5a5;stroke-width:1.4}
+  .ink{fill:#23354b}.line{stroke:#7993a8;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7993a8"/></marker></defs><rect x="0" y="0" width="1120" height="375" fill="#f9fbfd"/>
+<text x="44" y="47" class="h" >前瞻式闭环：预测下一次该看哪里，而非当前帧检测</text>
+<text x="44" y="76" class="st" >时间轴重绘 · H=16 动作预测；w=8 执行动作并预测 t+8 时的交互区</text>
+<rect x="45" y="118" width="294" height="99" rx="14" class="sky"/><text x="192" y="151" class="t" text-anchor="middle">在 t 时刻获取全局 + 局部 RGB-D</text><text x="192" y="178" class="sm" text-anchor="middle">共享 Backbone 编码一次</text>
+<path d="M340 168 H406" class="line" marker-end="url(#arr)" />
+<rect x="407" y="118" width="304" height="99" rx="14" class="mint"/><text x="559" y="150" class="t" text-anchor="middle">并行产生两类输出</text><text x="559" y="177" class="sm" text-anchor="middle">动作 a[t:t+16]；未来框 b[t+8]</text>
+<path d="M712 169 H778" class="line" marker-end="url(#arr)" />
+<rect x="778" y="118" width="296" height="99" rx="14" class="sand"/><text x="926" y="150" class="t" text-anchor="middle">执行前 8 步</text><text x="926" y="177" class="sm" text-anchor="middle">同时解码 BBox，无需额外等待</text>
+<path d="M926 218 V263 H192 V219" class="line" marker-end="url(#arr)" />
+<text x="569" y="252" class="sm" text-anchor="middle">t + 8 ：采新图 → 用旧预测框做裁剪 → 再预测</text>
+<rect x="107" y="296" width="905" height="50" rx="14" class="box"/>
+<text x="560" y="327" class="sm" text-anchor="middle">训练： L = L_flow + 0.1 L_foveation；位置 Token 交叉熵与动作 Flow Loss 联合更新</text>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="610" viewBox="0 0 1120 610" role="img"><style>
+  text{font-family:Inter,"Noto Sans SC","PingFang SC",Arial,sans-serif;fill:#25354b}
+  .h{font-size:23px;font-weight:700}.st{font-size:15px;fill:#697b8e}.t{font-size:17px;font-weight:650}
+  .sm{font-size:14px;fill:#546779}.mini{font-size:12px;fill:#66788d}
+  .box{fill:#fff;stroke:#d4dfe8;stroke-width:1.4}.sky{fill:#eef5fc;stroke:#b3d1ec;stroke-width:1.4}
+  .mint{fill:#e8f7f2;stroke:#aadacb;stroke-width:1.4}.sand{fill:#fff7e9;stroke:#f3d5a5;stroke-width:1.4}
+  .ink{fill:#23354b}.line{stroke:#7993a8;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7993a8"/></marker></defs><rect x="0" y="0" width="1120" height="610" fill="#f9fbfd"/>
+<text x="44" y="48" class="h" >FoveaVLA · 一个共享模型、两类动作输出</text>
+<text x="44" y="76" class="st" >教学性架构重绘 · 对应论文 Fig. 2 / §IV；Single 为例</text>
+<rect x="42" y="113" width="1036" height="91" rx="14" class="sky"/>
+<text x="64" y="141" class="t" >输入（每个外部视角）</text>
+<rect x="70" y="158" width="189" height="30" rx="7" class="box"/><text x="165" y="179" class="sm" text-anchor="middle">Full RGB</text><rect x="290" y="158" width="189" height="30" rx="7" class="box"/><text x="385" y="179" class="sm" text-anchor="middle">Foveal RGB</text><rect x="510" y="158" width="189" height="30" rx="7" class="box"/><text x="605" y="179" class="sm" text-anchor="middle">Full Depth</text><rect x="730" y="158" width="189" height="30" rx="7" class="box"/><text x="825" y="179" class="sm" text-anchor="middle">Foveal Depth</text>
+<text x="961" y="180" class="sm" text-anchor="middle">+ 指令 / 状态</text>
+<path d="M560 205 V239" class="line" marker-end="url(#arr)" />
+<rect x="250" y="240" width="620" height="93" rx="14" class="sky"/>
+<text x="560" y="275" class="h" text-anchor="middle">共享视觉语言前缀 · PaliGemma</text>
+<text x="560" y="304" class="sm" text-anchor="middle">SigLIP 400M（各视觉流共享编码器） + Gemma 2B</text>
+<path d="M560 334 V351 H290 V375" class="line" marker-end="url(#arr)" />
+<path d="M560 351 H830 V375" class="line" marker-end="url(#arr)" />
+<rect x="54" y="376" width="462" height="105" rx="14" class="mint"/>
+<text x="285" y="410" class="t" text-anchor="middle">Action Expert · Gemma 300M</text>
+<text x="285" y="438" class="sm" text-anchor="middle">Flow Matching → 16 步动作 Chunk</text>
+<text x="285" y="459" class="mini" text-anchor="middle">执行前 8 步，再查询视觉观测</text>
+<rect x="604" y="376" width="462" height="105" rx="14" class="sand"/>
+<text x="835" y="410" class="t" text-anchor="middle">Language-model Output Head</text>
+<text x="835" y="438" class="sm" text-anchor="middle">自回归生成未来 BBox · 4 个 Location Tokens / 视角</text>
+<text x="835" y="459" class="mini" text-anchor="middle">预测 t+8 的交互区域，不是独立检测网络</text>
+<path d="M830 482 V517 H560 V532" class="line" marker-end="url(#arr)" />
+<rect x="265" y="534" width="590" height="49" rx="14" class="box"/>
+<text x="560" y="564" class="sm" text-anchor="middle">在新采集的 1280×720 RGB / Depth 上裁剪 → 下一轮输入</text>
+<path d="M265 557 H128 V213 H176" class="line" marker-end="url(#arr)" />
+<text x="44" y="602" class="mini" >注：动作分支与位置 Token 分支共享输入前缀，输出分支之间做 Attention Mask；Dual 为每视角各预测一个框。</text>
+</svg>

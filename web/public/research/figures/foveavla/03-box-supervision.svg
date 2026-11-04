@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img"><style>
+  text{font-family:Inter,"Noto Sans SC","PingFang SC",Arial,sans-serif;fill:#25354b}
+  .h{font-size:23px;font-weight:700}.st{font-size:15px;fill:#697b8e}.t{font-size:17px;font-weight:650}
+  .sm{font-size:14px;fill:#546779}.mini{font-size:12px;fill:#66788d}
+  .box{fill:#fff;stroke:#d4dfe8;stroke-width:1.4}.sky{fill:#eef5fc;stroke:#b3d1ec;stroke-width:1.4}
+  .mint{fill:#e8f7f2;stroke:#aadacb;stroke-width:1.4}.sand{fill:#fff7e9;stroke:#f3d5a5;stroke-width:1.4}
+  .ink{fill:#23354b}.line{stroke:#7993a8;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7993a8"/></marker></defs><rect x="0" y="0" width="1120" height="520" fill="#f9fbfd"/>
+<text x="42" y="45" class="h" >交互 BBox 的标签构造：由 RoboInter 组件框合并得到</text>
+<text x="42" y="73" class="st" >教学性框示意，非原始标注截图 · 参考论文 Fig. 3 / Appendix A / Table IV</text>
+<rect x="40" y="106" width="560" height="333" rx="14" class="sky"/>
+<text x="65" y="139" class="t" >示意任务：把方块放进碗中（place / transfer）</text>
+<rect x="87" y="162" width="460" height="234" rx="12" fill="#e1e9ec"/>
+<rect x="132" y="204" width="74" height="99" rx="11" fill="#8297ad"/>
+<rect x="252" y="248" width="60" height="53" rx="5" fill="#caa571"/>
+<ellipse cx="441" cy="305" rx="65" ry="31" fill="#8599b6"/><ellipse cx="441" cy="301" rx="51" ry="18" fill="#c4d7e5"/>
+<rect x="125" y="192" width="88" height="120" fill="none" stroke="#f5a354" stroke-width="3"/>
+<rect x="242" y="239" width="80" height="71" fill="none" stroke="#62a5ef" stroke-width="3"/>
+<rect x="371" y="265" width="138" height="80" fill="none" stroke="#e788a9" stroke-width="3"/>
+<rect x="112" y="176" width="413" height="185" fill="none" stroke="#2da884" stroke-width="4" stroke-dasharray="9 5"/>
+<text x="142" y="187" class="mini" >Gripper</text><text x="245" y="233" class="mini" >Object</text><text x="383" y="260" class="mini" >Target</text>
+<rect x="112" y="369" width="413" height="17" rx="4" class="mint"/>
+<text x="318" y="382" class="mini" text-anchor="middle">Enclosing Interaction Box（绿框）</text>
+<path d="M601 265 H660" class="line" marker-end="url(#arr)" />
+<rect x="661" y="145" width="414" height="145" rx="14" class="box"/>
+<text x="683" y="175" class="t" >Primitive → 所需视觉角色</text>
+<text x="683" y="207" class="sm" >Pick / Push / Pull / Press / Twist</text>
+<text x="683" y="228" class="sm" >→ Gripper + Object/Tool</text>
+<text x="683" y="258" class="sm" >Place / Transfer / Fold / Insert 等</text>
+<text x="683" y="279" class="sm" >→ Gripper + Object + Target</text>
+<rect x="661" y="313" width="414" height="127" rx="14" class="sand"/>
+<text x="683" y="343" class="t" >监督目标不是 Crop 本身</text>
+<text x="683" y="367" class="sm" >Label：最小外接矩形（tight BBox）</text>
+<text x="683" y="390" class="sm" >视觉输入：扩张为 1.5× 的正方形 Crop</text>
+<text x="683" y="413" class="sm" >训练时可扰动 Crop；BBox 标签不扰动</text>
+<rect x="118" y="456" width="895" height="43" rx="10" class="box"/>
+<text x="565" y="484" class="t" text-anchor="middle">当前 t 的观测 + 16 步示教动作  →  第 t+8 步的交互框标签</text>
+</svg>

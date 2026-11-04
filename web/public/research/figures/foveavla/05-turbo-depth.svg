@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="276" viewBox="0 0 1120 276" role="img"><style>
+  text{font-family:Inter,"Noto Sans SC","PingFang SC",Arial,sans-serif;fill:#25354b}
+  .h{font-size:23px;font-weight:700}.st{font-size:15px;fill:#697b8e}.t{font-size:17px;font-weight:650}
+  .sm{font-size:14px;fill:#546779}.mini{font-size:12px;fill:#66788d}
+  .box{fill:#fff;stroke:#d4dfe8;stroke-width:1.4}.sky{fill:#eef5fc;stroke:#b3d1ec;stroke-width:1.4}
+  .mint{fill:#e8f7f2;stroke:#aadacb;stroke-width:1.4}.sand{fill:#fff7e9;stroke:#f3d5a5;stroke-width:1.4}
+  .ink{fill:#23354b}.line{stroke:#7993a8;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7993a8"/></marker></defs><rect x="0" y="0" width="1120" height="276" fill="#f9fbfd"/>
+<text x="44" y="47" class="h" >Turbo：把单通道米制深度转成三通道彩色图，而不是增加几何精度</text>
+<text x="44" y="74" class="st" >固定全局映射：r(z)=ln(z/0.2)/ln(3.0/0.2)，再查 Turbo(1-r)</text>
+<defs><linearGradient id="turbo" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#8d0b24"/><stop offset="13%" stop-color="#e84a15"/><stop offset="28%" stop-color="#f5c634"/>
+<stop offset="48%" stop-color="#76d64c"/><stop offset="65%" stop-color="#1cb3a7"/><stop offset="82%" stop-color="#2e6dc4"/><stop offset="100%" stop-color="#2a185c"/>
+</linearGradient></defs>
+<rect x="52" y="111" width="1016" height="71" rx="13" fill="url(#turbo)"/>
+<text x="52" y="208" class="t" >0.2 m · 近处（暖色）</text><text x="1068" y="208" class="t" text-anchor="end">3.0 m · 远处（冷色）</text>
+<text x="52" y="244" class="sm" >黑色像素 = 无效深度；这是一种输入表示，不等于真实表面颜色，也不是修复深度偏差的方法。</text>
+</svg>

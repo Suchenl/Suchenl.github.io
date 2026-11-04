@@ -8,6 +8,7 @@
 
 | 论文 | 发表状态 | 关键问题 |
 |---|---|---|
+| [FoveaVLA：主动交互区域、深度与腕部相机替代](2026/foveavla.md) | arXiv 预印本（2026-10-14；v2 2026-10-21） | π₀.₅ 联合预测未来 BBox 与动作；DROID / RoboInter 标签、双目深度、Foveation-Depth 消融与证据边界 |
 | [SuperMimic：可微分世界模型与视觉想象策略学习](2026/supermimic.md) | CoRL 2026 Oral | 共享人形动力学、BPTT 想象策略优化与视觉世界模型的独立增益 |
 | [TSRL：触发式 SFT + RL](2026/tsrl.md) | arXiv 预印本（2026-10-13） | RL 主导，难状态才注入专家监督，减少遗忘 |
 | [AgentTune](2026/agenttune.md) | arXiv 预印本（2026-10-09） | 统一 Agent 轨迹、训练与评测的 EventLog |

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img"><style>
+  text{font-family:Inter,"Noto Sans SC","PingFang SC",Arial,sans-serif;fill:#25354b}
+  .h{font-size:23px;font-weight:700}.st{font-size:15px;fill:#697b8e}.t{font-size:17px;font-weight:650}
+  .sm{font-size:14px;fill:#546779}.mini{font-size:12px;fill:#66788d}
+  .box{fill:#fff;stroke:#d4dfe8;stroke-width:1.4}.sky{fill:#eef5fc;stroke:#b3d1ec;stroke-width:1.4}
+  .mint{fill:#e8f7f2;stroke:#aadacb;stroke-width:1.4}.sand{fill:#fff7e9;stroke:#f3d5a5;stroke-width:1.4}
+  .ink{fill:#23354b}.line{stroke:#7993a8;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7993a8"/></marker></defs><rect x="0" y="0" width="1120" height="550" fill="#f9fbfd"/>
+<text x="44" y="47" class="h" >真实世界深度输入的完整来源</text>
+<text x="44" y="76" class="st" >ZED 2 是双目成像设备，Metric Depth 来自立体匹配估计；不是 GT / ToF 原始测距</text>
+<rect x="38" y="122" width="328" height="135" rx="14" class="sky"/>
+<text x="202" y="152" class="t" text-anchor="middle">一台外部 ZED 2</text>
+<rect x="73" y="171" width="110" height="58" rx="8" class="box"/><rect x="217" y="171" width="110" height="58" rx="8" class="box"/>
+<text x="128" y="205" class="sm" text-anchor="middle">左 RGB</text><text x="272" y="205" class="sm" text-anchor="middle">右 RGB</text>
+<path d="M366 205 H434" class="line" marker-end="url(#arr)" />
+<rect x="436" y="149" width="282" height="105" rx="14" class="mint"/>
+<text x="577" y="182" class="t" text-anchor="middle">Fast-FoundationStereo</text>
+<text x="577" y="210" class="sm" text-anchor="middle">640×360 预测视差 d</text>
+<text x="577" y="234" class="sm" text-anchor="middle">z = fₓB / d</text>
+<path d="M718 203 H777" class="line" marker-end="url(#arr)" />
+<rect x="779" y="150" width="303" height="105" rx="14" class="sand"/>
+<text x="930" y="180" class="t" text-anchor="middle">深度有效性检查</text>
+<text x="930" y="208" class="sm" text-anchor="middle">0.2–3.0 m；无效值 Mask</text>
+<text x="930" y="231" class="sm" text-anchor="middle">对数归一化 + Turbo 伪彩色</text>
+<path d="M939 256 V287" class="line" marker-end="url(#arr)" />
+<rect x="527" y="290" width="551" height="95" rx="14" class="sky"/>
+<text x="804" y="322" class="t" text-anchor="middle">Depth 变为 3 通道 RGB-like 图像</text>
+<text x="804" y="349" class="sm" text-anchor="middle">Full Depth / Foveal Depth → 共享 SigLIP</text>
+<path d="M212 257 V429 H464" class="line" marker-end="url(#arr)" />
+<path d="M800 385 V429 H692" class="line" marker-end="url(#arr)" />
+<rect x="465" y="403" width="225" height="61" rx="14" class="box"/>
+<text x="577" y="430" class="sm" text-anchor="middle">RGB 视觉流 + Depth 视觉流</text>
+<text x="577" y="450" class="mini" text-anchor="middle">分别编码，不拼 4/6 通道</text>
+<text x="46" y="508" class="sm" >Single：1 台 ZED 2 → 4 个视觉流；Dual：2 台 ZED 2 → 8 个视觉流。两台外部相机各自有双目深度估计。</text>
+<text x="46" y="532" class="sm" >注意：可产生数字深度 ≠ 深度可信；有效范围过滤无法保证反光、透明、遮挡处的深度准确。</text>
+</svg>

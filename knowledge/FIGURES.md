@@ -79,6 +79,18 @@
 
 全文：[MiMo-V2.6 深度解读](papers/2026/mimo-mopd2.md) · [站点阅读页](https://suchenl.github.io/research/papers/2026/mimo-mopd2/)。
 
+## FoveaVLA：主动局部观察与双目几何（5 张 SVG）
+
+来源：[FoveaVLA 深度精读](papers/2026/foveavla.md)；[论文 v2](https://arxiv.org/pdf/2610.20064) Figure 2–3、Appendix A–B。**全部为本解读原创教学性 SVG 重绘**：结构和流程根据原文理解绘制，不是论文原始图片，也不是从聊天 UI 无损导出的图像。保留同一套主要概念和数据流，避免在 Markdown 中重复复制。
+
+| 图形 | 原生 SVG | 对应问题 |
+|---|---|---|
+| 单共享主干与两个输出分支 | [01-model-architecture.svg](../web/public/research/figures/foveavla/01-model-architecture.svg) | PaliGemma 与 π₀.₅ 的关系；Action Expert 与 LM BBox Head |
+| 双目深度计算和视觉 Token 输入 | [02-stereo-depth-encoding.svg](../web/public/research/figures/foveavla/02-stereo-depth-encoding.svg) | ZED 2、Fast-FoundationStereo、RGB/Depth 独立三通道流 |
+| RoboInter 交互组件框合成 | [03-box-supervision.svg](../web/public/research/figures/foveavla/03-box-supervision.svg) | BBox Label / Crop 构造 / 未来时间配对 |
+| 时序闭环与联合训练 | [04-policy-time-loop.svg](../web/public/research/figures/foveavla/04-policy-time-loop.svg) | 16 步预测、8 步执行、t+8 预测框与双 Loss |
+| Turbo 伪彩色概念图 | [05-turbo-depth.svg](../web/public/research/figures/foveavla/05-turbo-depth.svg) | 对数深度数值映射至三通道；不是精确 Turbo LUT 或新的深度信息 |
+
 ## 维护方式
 
 - SVG 必须是独立的矢量元素与文字，不要把整张截图塞进 SVG 外壳冒充可编辑图。
