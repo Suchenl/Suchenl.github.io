@@ -110,7 +110,7 @@ comparison:
 
 ### 5.2 为什么不用 ZED SDK 自带深度？
 
-ZED SDK 自身也从双目图像计算深度。FoveaVLA 则选择拿到 DROID 原始双目录像和标定参数，使用 [Fast-FoundationStereo](https://github.com/NVlabs/FoundationStereo) 估计视差。论文规定在 640×360 上做立体匹配，8 次 Refinement、最大视差 192，并根据
+ZED SDK 自身也从双目图像计算深度。FoveaVLA 则选择拿到 DROID 原始双目录像和标定参数，使用 [Fast-FoundationStereo](https://github.com/NVlabs/Fast-FoundationStereo) 估计视差。论文规定在 640×360 上做立体匹配，8 次 Refinement、最大视差 192，并根据
 
 $$
 z=\frac{f_x B}{d}
@@ -301,6 +301,6 @@ Metric Depth 经固定对数归一化和 Turbo 映射为 RGB-like 三通道图�
 - [FoveaVLA 论文 v2](https://arxiv.org/pdf/2610.20064)：§III–V，Fig. 2–5，Table I–III；Appendix A（标签与 Crop / Stereo）、Appendix B（训练与深度）、Appendix C（MolmoSpaces）。
 - [FoveaVLA 项目主页与真实机器人 Rollout](https://tml.stanford.edu/FoveaVLA/)；[官方 GitHub / 模型与数据准备](https://github.com/Stanford-TML/FoveaVLA)。
 - [DROID 数据集官方页面](https://droid-dataset.github.io/)：相机型号、RLDS 与原始 Stereo/SVO；[RoboInter 官方仓库](https://github.com/InternRobotics/RoboInter)：标注角色与数据工具。
-- [Fast-FoundationStereo](https://github.com/NVlabs/FoundationStereo) 与 [π 系列 OpenPI](https://github.com/Physical-Intelligence/openpi)。
+- [Fast-FoundationStereo](https://github.com/NVlabs/Fast-FoundationStereo) 与 [π 系列 OpenPI](https://github.com/Physical-Intelligence/openpi)。
 
 **适用边界**：本文是对公开预印本与代码的机制解读，未进行独立训练和物理机器人复现；部分工程动机是合理解释而非作者明确论证，已在对应段落注明。
