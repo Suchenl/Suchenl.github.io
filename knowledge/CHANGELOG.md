@@ -1,5 +1,11 @@
 # 更新记录
 
+## 2026-11-04 · 深度感知与几何估计专题
+- 在 [深度专题](topics/depth-perception/README.md) 建立「深度从哪里来、什么时候能信」的统一入口，新增 9 篇主题文章：获取机制、被动/主动双目、结构光/ToF/LiDAR、单目、视频/多视角、RGB-D 融合、可信度、标定坐标和受控评测。
+- 五张可编辑教学性 SVG 归档于 `web/public/research/figures/depth-perception/`，交叉链接到适当的正文位置并更新 [图示索引](FIGURES.md)。
+- 将新方向登记在正式 taxonomy，补充知识库目录及 Research 页面专题入口；链接 [FoveaVLA 论文解读](papers/2026/foveavla.md)。
+- 公开正文仅使用公开论文、厂家说明和一般学术推论；区分相机输出的有效数值、物理测量来源和经独立验证的可靠性，未宣称实机对照已经执行。
+
 ## 2026-10-28 · HIL-SERL 按新论文解读原则完整重构
 - 依照 [论文解读设计原则](https://github.com/Suchenl/Suchenl.github.io/blob/main/docs/design-principles/PAPER_NOTES.md)，将 [HIL-SERL](papers/2024/hil-serl.md) 整体组织成「一句话概括 → 核心概念 → 研究脉络 → 问题动机 → 方法总览 → 机制精读 → 主张—证据 → 机制解释与证据边界 → 横向比较与研究判断 → 理解检验和复现」十个模块；清除重复概念表和旧编号。
 - 用 RAM 插入贯穿数据闭环，明确 HIL/SERL/RLPD/BC/DAgger 不同层级的技术作用；增加教学性价值传播数值例子、逐模块删减预期与独立消融证据的区别、示范预算及 100% 成功率边界。

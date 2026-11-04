@@ -29,6 +29,7 @@ const meta = (e: (typeof entries)[number]) => e.data as PaperMeta;
 const getYear = (id: string) => Number(id.match(/20\d{2}/)?.[0] || 0);
 const paperNotes = entries.filter(e => /^papers\/20\d{2}\//.test(e.id));
 const reviews = entries.filter(e => e.id.includes('/reviews/'));
+const topicHubs = entries.filter(e => e.id.startsWith('topics/') && e.id.endsWith('/README') && e.id.split('/').length === 3);
 const glossaries = entries.filter(e => e.id.startsWith('glossary/') && !e.id.endsWith('README'));
 const ideas = entries.filter(e => e.id.startsWith('research/') && !e.id.endsWith('README'));
 const paths = entries.filter(e => e.id.startsWith('paths/'));
@@ -90,7 +91,7 @@ const docItem = (e: (typeof entries)[number]) => {
     searchText: body(e).slice(0, 14000),
   };
 };
-const other = [...paths, ...reviews, ...glossaries, ...ideas].map(docItem);
+const other = [...topicHubs, ...paths, ...reviews, ...glossaries, ...ideas].map(docItem);
 const items = [...papers, ...other, ...glossaryTerms];
 const countType = (kind: string) => items.filter(item => item.kind === kind).length;
 const serialized = JSON.stringify(items).replace(/</g, '\\u003c');

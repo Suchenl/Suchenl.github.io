@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="550" viewBox="0 0 1220 550" role="img" aria-label="双目视差与深度距离几何"><title>双目视差与深度距离几何</title><style>
+text{font-family:Inter,"Noto Sans SC","PingFang SC","Microsoft Yahei",sans-serif;fill:#263c52}
+.t{font-size:27px;font-weight:720}.sub{font-size:16px;fill:#687e90}.mid{font-size:19px;font-weight:640}.small{font-size:16px;fill:#4b6178}.tiny{font-size:14px;fill:#6c8095}
+.box{fill:#fff;stroke:#d3dfeb;stroke-width:1.5}.blue{fill:#ecf4ff;stroke:#9cc3ec;stroke-width:1.5}
+.green{fill:#e9f7f1;stroke:#99d3b9;stroke-width:1.5}.orange{fill:#fff5e6;stroke:#eed09e;stroke-width:1.5}
+.red{fill:#fdf0ef;stroke:#e6b1aa;stroke-width:1.5}.purple{fill:#f1efff;stroke:#bcb4ea;stroke-width:1.5}
+.line{stroke:#7b98af;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7.2" refY="4.5" orient="auto-start-reverse"><path d="M0 0L9 4.5L0 9Z" fill="#7b98af"/></marker></defs><rect width="1220" height="550" fill="#f8fbfe"/>
+<text x="44" y="54" class="t" >双目 Stereo：图像视差是深度的几何证据</text>
+<text x="44" y="83" class="sub" >校正后的双目：Z = fₓ · B / d；远处的同量级视差误差会被放大成更大的距离误差。</text>
+<rect x="42" y="110" width="750" height="391" rx="14" class="box"/>
+<path d="M152 394 L431 177 L702 394" stroke="#b7cce0" stroke-width="2" fill="none"/>
+<path d="M337 394L430 177L521 394" stroke="#80b7d8" stroke-width="2" stroke-dasharray="7 5" fill="none"/>
+<circle cx="430" cy="178" r="12" fill="#ffb87d" stroke="#da8c45" stroke-width="2"/>
+<text x="453" y="174" class="small" >场景中的同一世界点 P</text>
+<rect x="150" y="392" width="147" height="65" rx="14" class="blue"/><text x="224" y="418" class="mid" text-anchor="middle">左相机</text><text x="224" y="443" class="tiny" text-anchor="middle">成像像素 uL</text>
+<rect x="533" y="392" width="147" height="65" rx="14" class="blue"/><text x="607" y="418" class="mid" text-anchor="middle">右相机</text><text x="607" y="443" class="tiny" text-anchor="middle">成像像素 uR</text>
+<path d="M224 468V483H607V468" fill="none" stroke="#729abc" stroke-width="2"/><rect x="360" y="465" width="120" height="26" rx="6" fill="#e3eff9"/><text x="420" y="482" text-anchor="middle" class="tiny">基线 B</text>
+<path d="M792 303 H843" class="line" marker-end="url(#arr)" />
+<rect x="845" y="149" width="331" height="301" rx="14" class="green"/>
+<text x="1010" y="192" class="mid" text-anchor="middle">视差恢复</text>
+<text x="1010" y="231" class="mid" text-anchor="middle">d = uL − uR</text>
+<text x="1010" y="274" class="mid" text-anchor="middle">Z = fₓ · B / d</text>
+<text x="1010" y="326" class="small" text-anchor="middle">误差近似</text>
+<text x="1010" y="357" class="small" text-anchor="middle">|ΔZ| ≈ Z² |Δd| / (fₓB)</text>
+<text x="1010" y="403" class="tiny" text-anchor="middle">遮挡 / 错配 / 标定偏差无法凭</text>
+<text x="1010" y="423" class="tiny" text-anchor="middle">“合法正视差”自动排除</text>
+</svg>

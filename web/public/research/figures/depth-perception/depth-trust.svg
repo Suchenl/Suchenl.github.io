@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="612" viewBox="0 0 1220 612" role="img" aria-label="有效、测得与可靠深度的区分"><title>有效、测得与可靠深度的区分</title><style>
+text{font-family:Inter,"Noto Sans SC","PingFang SC","Microsoft Yahei",sans-serif;fill:#263c52}
+.t{font-size:27px;font-weight:720}.sub{font-size:16px;fill:#687e90}.mid{font-size:19px;font-weight:640}.small{font-size:16px;fill:#4b6178}.tiny{font-size:14px;fill:#6c8095}
+.box{fill:#fff;stroke:#d3dfeb;stroke-width:1.5}.blue{fill:#ecf4ff;stroke:#9cc3ec;stroke-width:1.5}
+.green{fill:#e9f7f1;stroke:#99d3b9;stroke-width:1.5}.orange{fill:#fff5e6;stroke:#eed09e;stroke-width:1.5}
+.red{fill:#fdf0ef;stroke:#e6b1aa;stroke-width:1.5}.purple{fill:#f1efff;stroke:#bcb4ea;stroke-width:1.5}
+.line{stroke:#7b98af;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7.2" refY="4.5" orient="auto-start-reverse"><path d="M0 0L9 4.5L0 9Z" fill="#7b98af"/></marker></defs><rect width="1220" height="612" fill="#f8fbfe"/>
+<text x="42" y="52" class="t" >Valid ≠ Measured ≠ Reliable</text>
+<text x="42" y="80" class="sub" >合法数值、物理来源和任务可信度是三个不同的判定维度；灰度/伪彩色深度图不会暴露全部错误。</text>
+<rect x="42" y="126" width="338" height="130" rx="14" class="blue"/><text x="211" y="160" class="mid" text-anchor="middle">Valid · 数值有效</text><text x="211" y="192" class="small" text-anchor="middle">有限值、合理单位、允许量程</text><text x="211" y="218" class="tiny" text-anchor="middle">只是初步检查</text>
+<rect x="440" y="126" width="338" height="130" rx="14" class="green"/><text x="609" y="160" class="mid" text-anchor="middle">Measured · 物理来源</text><text x="609" y="192" class="small" text-anchor="middle">来自传感器匹配或回波</text><text x="609" y="218" class="tiny" text-anchor="middle">可能系统性偏差</text>
+<rect x="838" y="126" width="338" height="130" rx="14" class="purple"/><text x="1007" y="160" class="mid" text-anchor="middle">Reliable · 任务可信</text><text x="1007" y="192" class="small" text-anchor="middle">误差在任务容忍范围内</text><text x="1007" y="218" class="tiny" text-anchor="middle">需要独立证据与校准</text>
+<path d="M212 257V303H609V326" class="line" marker-end="url(#arr)" /><path d="M609 257V326" class="line" marker-end="url(#arr)" /><path d="M1007 257V303H609V326" class="line" marker-end="url(#arr)" />
+<rect x="215" y="328" width="789" height="111" rx="14" class="orange"/><text x="610" y="361" class="mid" text-anchor="middle">交叉核验：立体一致性 · ToF 幅度 · 多视角 · 标定板 · 时间稳定性</text><text x="610" y="392" class="small" text-anchor="middle">检查假深度、反射多径、有效范围边界和外参/时间误差</text><text x="610" y="419" class="tiny" text-anchor="middle">单个 Confidence 值需要实测校准，才可能解释概率意义</text>
+<path d="M610 441V470" class="line" marker-end="url(#arr)" />
+<rect x="115" y="472" width="468" height="91" rx="14" class="green"/><text x="349" y="508" class="mid" text-anchor="middle">可以作为几何观测使用</text><text x="349" y="538" class="small" text-anchor="middle">保留置信度和 Source</text>
+<rect x="636" y="472" width="468" height="91" rx="14" class="red"/><text x="870" y="508" class="mid" text-anchor="middle">请求重观测 / 拒绝接触</text><text x="870" y="538" class="small" text-anchor="middle">不要直接拿可疑深度执行抓取</text>
+<text x="42" y="598" class="tiny" >教学性决策逻辑，不是厂商 SDK 提供的安全认证。</text>
+</svg>

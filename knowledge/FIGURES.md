@@ -91,6 +91,18 @@
 | 时序闭环与联合训练 | [04-policy-time-loop.svg](../web/public/research/figures/foveavla/04-policy-time-loop.svg) | 16 步预测、8 步执行、t+8 预测框与双 Loss |
 | Turbo 伪彩色概念图 | [05-turbo-depth.svg](../web/public/research/figures/foveavla/05-turbo-depth.svg) | 对数深度数值映射至三通道；不是精确 Turbo LUT 或新的深度信息 |
 
+## 深度感知与几何估计专题（5 张独立可编辑 SVG）
+
+[专题总入口](topics/depth-perception/README.md) · [研究网页](https://suchenl.github.io/research/topics/depth-perception/) · 核验：2026-11-04。全部是依照公开技术原理重绘的**教学性 SVG**，不是论文原图、真实相机采样图或已完成的机器人实测。
+
+| 图示 | 源文件 | 说明 |
+|---|---|---|
+| 深度获取物理与算法分类 | [acquisition-map.svg](../web/public/research/figures/depth-perception/acquisition-map.svg) | 三角化、主动回波、学习推断和可信融合 |
+| 双目视差与几何误差 | [stereo-geometry.svg](../web/public/research/figures/depth-perception/stereo-geometry.svg) | 视差公式、基线、远距离误差放大 |
+| RGB-D 保真融合 | [rgbd-fusion.svg](../web/public/research/figures/depth-perception/rgbd-fusion.svg) | 原始测量、视觉先验和可拒绝的融合判定 |
+| 深度可信度分层 | [depth-trust.svg](../web/public/research/figures/depth-perception/depth-trust.svg) | Valid / Measured / Reliable 不等价 |
+| 像素到机器人基座点 | [pixel-to-robot.svg](../web/public/research/figures/depth-perception/pixel-to-robot.svg) | 相机内参、对齐、外参和时序 |
+
 ## 维护方式
 
 - SVG 必须是独立的矢量元素与文字，不要把整张截图塞进 SVG 外壳冒充可编辑图。

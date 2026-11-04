@@ -3,7 +3,7 @@
 > **正式阅读入口**：[个人主页 · 研究知识库](https://suchenl.github.io/research/) · **唯一可编辑内容源**：本仓库 `knowledge/`。此前的 `Suchenl/sus_research_review` 仓库仅保留历史快照，不再更新。
 
 > **定位**：以中文持续积累论文研究、技术概念、可证伪的研究判断与实验设计。  
-> **最近核对**：2026-10-20 · **全部内容可直接使用 Markdown 阅读和维护**。
+> **最近核对**：2026-11-04 · **全部内容可直接使用 Markdown 阅读和维护**。
 
 本仓库不要求把每个方向写成正式论文。最重要的是：**找得到、读得懂、可追溯、能更新、不会把猜想和论文结论混为一谈**。
 
@@ -19,6 +19,7 @@
 |---|---|
 | 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
 | 了解机器人末端控制、PD、阻抗与 Wrench | [机器人控制专题](topics/robot-control/README.md) |
+| 系统理解深度相机、立体匹配、单目/多视角与 RGB-D 可靠性 | [深度感知与几何估计专题](topics/depth-perception/README.md) |
 | 理解通用 Actor–Critic 的策略迭代与估值边界 | [Actor–Critic 技术问答](research/actor-critic-mutual-dependence.md) |
 | 系统学习预训练工程与继续预训练 | [Pretraining 专题](topics/pretraining/README.md) |
 | 按顺序学习 SFT、RL 与 Agent 后训练 | [7 步学习路线](paths/agent-post-training.md) |

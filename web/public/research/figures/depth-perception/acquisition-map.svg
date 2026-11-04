@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="675" viewBox="0 0 1220 675" role="img" aria-label="深度来源的物理与计算分类"><title>深度来源的物理与计算分类</title><style>
+text{font-family:Inter,"Noto Sans SC","PingFang SC","Microsoft Yahei",sans-serif;fill:#263c52}
+.t{font-size:27px;font-weight:720}.sub{font-size:16px;fill:#687e90}.mid{font-size:19px;font-weight:640}.small{font-size:16px;fill:#4b6178}.tiny{font-size:14px;fill:#6c8095}
+.box{fill:#fff;stroke:#d3dfeb;stroke-width:1.5}.blue{fill:#ecf4ff;stroke:#9cc3ec;stroke-width:1.5}
+.green{fill:#e9f7f1;stroke:#99d3b9;stroke-width:1.5}.orange{fill:#fff5e6;stroke:#eed09e;stroke-width:1.5}
+.red{fill:#fdf0ef;stroke:#e6b1aa;stroke-width:1.5}.purple{fill:#f1efff;stroke:#bcb4ea;stroke-width:1.5}
+.line{stroke:#7b98af;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style><defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7.2" refY="4.5" orient="auto-start-reverse"><path d="M0 0L9 4.5L0 9Z" fill="#7b98af"/></marker></defs><rect width="1220" height="675" fill="#f8fbfe"/>
+<text x="46" y="56" class="t" >深度获取的三条证据路径</text>
+<text x="46" y="85" class="sub" >先区分“如何观测”和“如何推断”，再讨论相机型号、神经网络与输出可信度。</text>
+<rect x="40" y="115" width="1140" height="67" rx="14" class="blue"/><text x="610" y="146" class="mid" text-anchor="middle">目标：获得有坐标、有尺度、有不确定性定义的 Depth / 3D Geometry</text><text x="610" y="168" class="tiny" text-anchor="middle">同一个 RGB-D 系统往往组合多种物理与算法证据</text>
+<path d="M610 183V203H221V225" class="line" marker-end="url(#arr)" /><path d="M610 203V225" class="line" marker-end="url(#arr)" /><path d="M610 203H999V225" class="line" marker-end="url(#arr)" />
+<rect x="42" y="227" width="360" height="206" rx="14" class="green"/><text x="222" y="260" class="mid" text-anchor="middle">三角测量 / 视差</text><text x="222" y="292" class="small" text-anchor="middle">被动 RGB 双目 · ZED</text><text x="222" y="324" class="small" text-anchor="middle">主动 IR 双目 · D435</text><text x="222" y="356" class="small" text-anchor="middle">结构光：相机 + 已知投影</text><text x="222" y="390" class="small" text-anchor="middle">SfM / 多视角几何</text>
+<rect x="430" y="227" width="360" height="206" rx="14" class="orange"/><text x="610" y="260" class="mid" text-anchor="middle">主动回波测距</text><text x="610" y="292" class="small" text-anchor="middle">iToF · 光强调制相位</text><text x="610" y="324" class="small" text-anchor="middle">dToF · 光脉冲往返时间</text><text x="610" y="356" class="small" text-anchor="middle">LiDAR · 激光扫描 / 阵列</text><text x="610" y="390" class="small" text-anchor="middle">误差：多径、折射与弱回波</text>
+<rect x="818" y="227" width="360" height="206" rx="14" class="purple"/><text x="998" y="260" class="mid" text-anchor="middle">学习式视觉预测</text><text x="998" y="292" class="small" text-anchor="middle">单目 Relative / Metric Depth</text><text x="998" y="324" class="small" text-anchor="middle">学习式 Stereo Matching</text><text x="998" y="356" class="small" text-anchor="middle">学习式多视角几何 / 视频</text><text x="998" y="390" class="small" text-anchor="middle">来源：视觉统计先验</text>
+<path d="M222 435V461H610V476" class="line" marker-end="url(#arr)" /><path d="M610 435V476" class="line" marker-end="url(#arr)" /><path d="M998 435V461H610V476" class="line" marker-end="url(#arr)" />
+<rect x="232" y="478" width="756" height="84" rx="14" class="blue"/><text x="610" y="511" class="mid" text-anchor="middle">可靠性与融合层：Validity · Confidence · Calibration · Alignment</text><text x="610" y="540" class="small" text-anchor="middle">保留原始测量、模型预测和融合结果的 Source / Uncertainty</text>
+<path d="M610 563V590" class="line" marker-end="url(#arr)" />
+<rect x="320" y="592" width="580" height="55" rx="14" class="box"/><text x="610" y="625" class="mid" text-anchor="middle">机器人基座系中的 3D 点 · 抓取 / 控制 / 建图</text>
+</svg>

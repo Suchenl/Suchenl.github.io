@@ -1,6 +1,6 @@
 ---
 contentType: paper
-domains: ["机器人与具身智能/策略学习与控制", "机器人与具身智能/数据与动作表示", "多模态学习与生成/视觉语言理解"]
+domains: ["机器人与具身智能/策略学习与控制", "机器人与具身智能/深度感知与几何估计", "机器人与具身智能/数据与动作表示", "多模态学习与生成/视觉语言理解"]
 title: "FoveaVLA: Foveation Actions Replace the Wrist Camera in VLAs"
 shortName: "FoveaVLA"
 aliases: ["主动视觉", "Foveation", "交互区域预测", "视觉裁剪"]
@@ -304,3 +304,5 @@ Metric Depth 经固定对数归一化和 Turbo 映射为 RGB-like 三通道图�
 - [Fast-FoundationStereo](https://github.com/NVlabs/Fast-FoundationStereo) 与 [π 系列 OpenPI](https://github.com/Physical-Intelligence/openpi)。
 
 **适用边界**：本文是对公开预印本与代码的机制解读，未进行独立训练和物理机器人复现；部分工程动机是合理解释而非作者明确论证，已在对应段落注明。
+
+**相关基础专题**：[深度感知与几何估计](/research/topics/depth-perception/)：将双目、深度伪彩色、有效性与可靠性问题放回更一般的技术体系中理解。
