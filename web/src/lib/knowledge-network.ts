@@ -11,7 +11,7 @@ export type KnowledgeNode = {
 };
 export type KnowledgeEdge = {
   from: string; to: string;
-  kind: 'belongs_to' | 'topic_contains' | 'references' | 'semantic';
+  kind: 'belongs_to' | 'topic_contains' | 'references' | 'semantic' | 'reading_step';
   evidence: string; sourceHref: string; relation?: string;
 };
 const PALETTE = ['#79b6ff','#a89cfa','#65d6bd','#f2b872'];
@@ -129,6 +129,11 @@ export async function createKnowledgeNetwork(){
       const target=indexed.has(raw)?raw:indexed.has(raw+'/README')?raw+'/README':null;
       if(target)addEdge(id,'doc:'+target,'references','正文链接：'+match[1].trim().slice(0,100),source);
     }
+    for(const step of e.data.steps||[]){
+      if(indexed.has(step.ref)){
+        addEdge(id,'doc:'+step.ref,'reading_step',step.why,source,step.stage||'');
+      }
+    }
     const topicName=e.id.match(/^topics\/([^/]+)\/reviews\//)?.[1];
     const overview=topicName&&'topics/'+topicName+'/README';
     if(overview&&indexed.has(overview)){
@@ -153,7 +158,7 @@ export async function createKnowledgeNetwork(){
     nodes,edges,
     stats:{
       areas:roots.length,topics:topics.length,documents:eligible.length,
-      links:edges.filter(e=>e.kind==='references'||e.kind==='semantic').length,
+      links:edges.filter(e=>['references','semantic','reading_step'].includes(e.kind)).length,
       isolated:eligible.filter(e=>!linkedDocs.has('doc:'+e.id)).length
     },
     world:WORLD,
@@ -188,7 +193,7 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
   ];
   const cross=new Map<string,number>();
   for(const edge of edges){
-    if(edge.kind!=='references'&&edge.kind!=='semantic')continue;
+    if(!['references','semantic','reading_step'].includes(edge.kind))continue;
     const aa=byId.get(edge.from)?.parent;
     const bb=byId.get(edge.to)?.parent;
     if(!aa||!bb||aa===bb)continue;
@@ -289,11 +294,12 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
       const a=nodes[edge.i],b=nodes[edge.j];
       const dx=b.x-a.x,dy=b.y-a.y;
       const dist=Math.max(1,Math.hypot(dx,dy));
-      const reference=edge.kind==='references'||edge.kind==='semantic';
+      const reference=['references','semantic','reading_step'].includes(edge.kind);
       const desired=reference?restDistance(a,b):
         edge.kind==='topic_contains'?75:a.kind==='topic'||b.kind==='topic'?113:145;
       const k=edge.kind==='semantic'?0.125:
-        edge.kind==='references'?0.092:edge.kind==='topic_contains'?0.065:0.018;
+        edge.kind==='references'?0.092:edge.kind==='reading_step'?0.087:
+        edge.kind==='topic_contains'?0.065:0.018;
       const force=(dist-desired)*k;
       const px=force*dx/dist,py=force*dy/dist;
       if(a.kind==='area'&&edge.kind==='belongs_to'){
