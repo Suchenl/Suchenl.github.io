@@ -10,7 +10,9 @@ export type KnowledgeNode = {
   color: string; x: number; y: number; radius: number; group: string;
 };
 export type KnowledgeEdge = {
-  from: string; to: string; kind: 'belongs_to' | 'references';
+  from: string; to: string;
+  kind: 'belongs_to' | 'topic_contains' | 'references' | 'semantic';
+  evidence: string; sourceHref: string; relation?: string;
 };
 const PALETTE = ['#79b6ff','#a89cfa','#65d6bd','#f2b872'];
 const CENTERS = [
@@ -67,11 +69,11 @@ export async function createKnowledgeNetwork(){
   const nodes:KnowledgeNode[]=[];
   const edges:KnowledgeEdge[]=[];
   const used=new Set<string>();
-  const addEdge=(from:string,to:string,kind:KnowledgeEdge['kind'])=>{
+  const addEdge=(from:string,to:string,kind:KnowledgeEdge['kind'],evidence:string,sourceHref:string,relation?:string)=>{
     if(from===to)return;
-    const key=[from,to].sort().join('::');
+    const key=[from,to,kind].join('::');
     if(used.has(key))return;
-    used.add(key);edges.push({from,to,kind});
+    used.add(key);edges.push({from,to,kind,evidence,sourceHref,relation});
   };
   for(const area of roots){
     const index=areaIndex.get(area.id)??0;
@@ -108,30 +110,35 @@ export async function createKnowledgeNetwork(){
     // An area connection is backed by the entry's explicit domains metadata.
     for(const domain of e.data.domains||[]){
       const root=taxonomy.domains.find(d=>domain===d.id||domain.startsWith(d.id+'/'));
-      if(root)addEdge('area:'+root.slug,'doc:'+e.id,'belongs_to');
+      if(root)addEdge('area:'+root.slug,'doc:'+e.id,'belongs_to',domain,entryHref(e.id));
     }
   }
-  // A link is drawn only if the author linked an existing Markdown article.
+  // Semantic links only from public Markdown; structural relations stay distinct.
   for(const e of eligible){
     const id='doc:'+e.id;
+    const source=entryHref(e.id);
     for(const relation of e.data.related||[]){
-      if(indexed.has(relation.ref))addEdge(id,'doc:'+relation.ref,'references');
+      if(indexed.has(relation.ref))
+        addEdge(id,'doc:'+relation.ref,'semantic',relation.note,source,relation.type);
     }
-    for(const match of (e.body||'').matchAll(/\]\(([^)]+)\)/g)){
-      const raw=resolveNoteLink(e.id,match[1]);
+    const withoutCode=(e.body||'').replace(/[\u0060]{3,}[\s\S]*?[\u0060]{3,}/g,'')
+      .replace(/[\u0060][^\u0060\n]+[\u0060]/g,'');
+    for(const match of withoutCode.matchAll(/(?<!!)\[([^\]\n]+)\]\((<[^>]+>|[^)\s]+)(?:\s+["'][^"']+["'])?\)/g)){
+      const raw=resolveNoteLink(e.id,match[2]);
       if(!raw)continue;
       const target=indexed.has(raw)?raw:indexed.has(raw+'/README')?raw+'/README':null;
-      if(target)addEdge(id,'doc:'+target,'references');
+      if(target)addEdge(id,'doc:'+target,'references','正文链接：'+match[1].trim().slice(0,100),source);
     }
-    // Explicitly linked reviews and their real topic overview share a group.
     const topicName=e.id.match(/^topics\/([^/]+)\/reviews\//)?.[1];
     const overview=topicName&&'topics/'+topicName+'/README';
-    if(overview&&indexed.has(overview))addEdge('doc:'+overview,id,'references');
+    if(overview&&indexed.has(overview)){
+      addEdge('doc:'+overview,id,'topic_contains','正文位于该公开专题的 reviews/ 子目录',source);
+    }
   }
   // Make node size reflect actual, traceable references rather than invented scores.
   const degree=new Map<string,number>();
   for(const edge of edges){
-    if(edge.kind==='references'){
+    if(edge.kind==='references'||edge.kind==='semantic'){
       degree.set(edge.from,(degree.get(edge.from)||0)+1);
       degree.set(edge.to,(degree.get(edge.to)||0)+1);
     }
@@ -141,16 +148,16 @@ export async function createKnowledgeNetwork(){
     if(node.kind==='topic')node.radius=9+Math.min(4,Math.sqrt(degree.get(node.id)||0));
   }
   layoutByRelations(nodes,edges);
-  const linkedDocs=new Set(edges.filter(e=>e.kind==='references').flatMap(e=>[e.from,e.to]));
+  const linkedDocs=new Set(edges.filter(e=>e.kind==='references'||e.kind==='semantic').flatMap(e=>[e.from,e.to]));
   return{
     nodes,edges,
     stats:{
       areas:roots.length,topics:topics.length,documents:eligible.length,
-      links:edges.filter(e=>e.kind==='references').length,
+      links:edges.filter(e=>e.kind==='references'||e.kind==='semantic').length,
       isolated:eligible.filter(e=>!linkedDocs.has('doc:'+e.id)).length
     },
     world:WORLD,
-    layout:'relationship-force-v1'
+    layout:'relationship-force-v2'
   };
 }
 
@@ -181,7 +188,7 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
   ];
   const cross=new Map<string,number>();
   for(const edge of edges){
-    if(edge.kind!=='references')continue;
+    if(edge.kind!=='references'&&edge.kind!=='semantic')continue;
     const aa=byId.get(edge.from)?.parent;
     const bb=byId.get(edge.to)?.parent;
     if(!aa||!bb||aa===bb)continue;
@@ -282,9 +289,11 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
       const a=nodes[edge.i],b=nodes[edge.j];
       const dx=b.x-a.x,dy=b.y-a.y;
       const dist=Math.max(1,Math.hypot(dx,dy));
-      const desired=edge.kind==='references'?restDistance(a,b):
-        a.kind==='topic'||b.kind==='topic'?113:145;
-      const k=edge.kind==='references'? .092 : .024;
+      const reference=edge.kind==='references'||edge.kind==='semantic';
+      const desired=reference?restDistance(a,b):
+        edge.kind==='topic_contains'?75:a.kind==='topic'||b.kind==='topic'?113:145;
+      const k=edge.kind==='semantic'?0.125:
+        edge.kind==='references'?0.092:edge.kind==='topic_contains'?0.065:0.018;
       const force=(dist-desired)*k;
       const px=force*dx/dist,py=force*dy/dist;
       if(a.kind==='area'&&edge.kind==='belongs_to'){
