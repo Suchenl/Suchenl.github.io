@@ -85,9 +85,15 @@ try {
      'Reader returns to the filtered Knowledge index, not a separate Research directory');
    assert((await page.locator('.rkd-breadcrumb').innerText()).includes('知识库'),
      'Reader breadcrumbs consistently begin at Knowledge');
-   await returnLink.click();
+   const topReturn=page.locator('#research-return-top');
+   assert.equal(await topReturn.getAttribute('href'),await returnLink.getAttribute('href'),
+     'Top and bottom return actions preserve the same Knowledge context');
+   await topReturn.click();
    assert.equal(await page.locator('#kl-type').inputValue(),'paper','Returning to Knowledge restores paper filter');
    await page.locator('#kl-type').selectOption('all');
+   await navigate(page,'/knowledge/?type=exploration#knowledge-browser');
+   assert.equal(await page.locator('#kl-type').inputValue(),'exploration','Filtered Knowledge URL opens the correct content type');
+   assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Exploration filter is populated');
    await noOverflow(page);
   });
   await check('Open research Questions '+width,async()=>{
