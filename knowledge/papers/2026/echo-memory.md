@@ -1,5 +1,6 @@
 ---
 contentType: paper
+readingDepth: note
 domains: ["世界模型与环境交互/世界模型与记忆"]
 shortName: "Echo-Memory"
 categories: ["世界模型/长期记忆"]

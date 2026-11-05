@@ -1,5 +1,6 @@
 ---
 contentType: paper
+readingDepth: note
 domains: ["多模态学习与生成/图像与视频生成"]
 shortName: "VACE"
 categories: ["生成模型/视频生成"]

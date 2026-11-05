@@ -1,5 +1,6 @@
 ---
 contentType: paper
+readingDepth: note
 domains: ["世界模型与环境交互/世界模型与记忆","机器人与具身智能/策略学习与控制"]
 shortName: "Motus"
 categories: ["机器人与具身智能/世界动作模型"]

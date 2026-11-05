@@ -1,5 +1,6 @@
 ---
 contentType: paper
+readingDepth: note
 domains: ["机器人与具身智能/策略学习与控制","多模态学习与生成/视觉语言理解"]
 shortName: "RoboBrain 2.0"
 aliases: ["RoboBrain2"]

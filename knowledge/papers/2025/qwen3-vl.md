@@ -1,5 +1,6 @@
 ---
 contentType: paper
+readingDepth: note
 domains: ["多模态学习与生成/视觉语言理解"]
 shortName: "Qwen3-VL"
 categories: ["多模态理解/视觉语言模型"]
