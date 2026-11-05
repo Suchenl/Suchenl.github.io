@@ -101,15 +101,8 @@ if(src){
     citeDegree.set(e.from,(citeDegree.get(e.from)||0)+1);
     citeDegree.set(e.to,(citeDegree.get(e.to)||0)+1);
   }
-  // Overview includes only existing domain hubs, real topic overviews, and
-  // three linked documents per domain. No synthetic nodes are created.
-  const overview=new Set(graph.nodes.filter(n=>n.kind==='area'||n.kind==='topic').map(n=>n.id));
-  for(const area of graph.nodes.filter(n=>n.kind==='area')){
-    const items=graph.nodes.filter(n=>n.kind==='document'&&n.group===area.group);
-    items.sort((a,b)=>(citeDegree.get(b.id)||0)-(citeDegree.get(a.id)||0)||
-      a.titleZh.localeCompare(b.titleZh,'zh'));
-    items.slice(0,3).forEach(n=>overview.add(n.id));
-  }
+  // The source-built overview is the canonical featured set and layout.
+  const overview=new Set(graph.nodes.filter(n=>n.featured).map(n=>n.id));
   const direct=new Map<string,Set<string>>();
   for(const e of graph.edges.filter(e=>e.kind!=='belongs_to')){
     if(!direct.has(e.from))direct.set(e.from,new Set());
