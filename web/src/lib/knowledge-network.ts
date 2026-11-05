@@ -55,7 +55,7 @@ export async function createKnowledgeNetwork(){
   // A node is permitted only when its underlying public Markdown actually exists.
   // A category is permitted only when at least one such article is assigned to it.
   const eligible=entries.filter(e=>e.data.domains?.length||
-    /^topics\/[^/]+\/README$/.test(e.id));
+    /^topics\/[^/]+\/README$/.test(e.id)).sort((a,b)=>a.id.localeCompare(b.id));
   const topics=eligible.filter(e=>/^topics\/[^/]+\/README$/.test(e.id));
   const indexed=new Map(eligible.map(e=>[e.id,e]));
   const titleOf=(e:typeof eligible[number])=>e.data.title||
@@ -64,7 +64,6 @@ export async function createKnowledgeNetwork(){
   const areaIndex=new Map(taxonomy.domains.map((d,i)=>[d.id,i]));
   const roots=taxonomy.domains.filter(domain=>eligible.some(e=>
     (e.data.domains||[]).some(d=>d===domain.id||d.startsWith(domain.id+'/'))));
-  const areas=roots.map((area)=>taxonomy.domains.indexOf(area));
   const nodes:KnowledgeNode[]=[];
   const edges:KnowledgeEdge[]=[];
   const used=new Set<string>();
@@ -112,24 +111,6 @@ export async function createKnowledgeNetwork(){
       if(root)addEdge('area:'+root.slug,'doc:'+e.id,'belongs_to');
     }
   }
-  const byId=new Map(nodes.map(n=>[n.id,n]));
-  // Arrange real nodes around existing research areas, with deterministic positions.
-  // The layout is stable across builds and never creates placeholder subjects.
-  for(const area of roots){
-    const hub=nodes.find(n=>n.id==='area:'+area.slug)!;
-    const children=nodes.filter(n=>n.kind!=='area'&&n.group===area.id)
-      .sort((a,b)=>Number(b.kind==='topic')-Number(a.kind==='topic')||
-        stableHash(a.id)-stableHash(b.id));
-    children.forEach((n,i)=>{
-      const topic=n.kind==='topic';
-      const h=stableHash(n.id)/4294967296;
-      const angle=i*2.399963229728653+0.5+h*0.18;
-      const radius=topic?74+i*13:84+Math.sqrt(i+2)*24;
-      const r=Math.min(radius,238);
-      n.x=hub.x+Math.cos(angle)*r;
-      n.y=hub.y+Math.sin(angle)*r*.87;
-    });
-  }
   // A link is drawn only if the author linked an existing Markdown article.
   for(const e of eligible){
     const id='doc:'+e.id;
@@ -159,6 +140,7 @@ export async function createKnowledgeNetwork(){
     if(node.kind==='document')node.radius=4.3+Math.min(4,Math.sqrt(degree.get(node.id)||0)*1.5);
     if(node.kind==='topic')node.radius=9+Math.min(4,Math.sqrt(degree.get(node.id)||0));
   }
+  layoutByRelations(nodes,edges);
   const linkedDocs=new Set(edges.filter(e=>e.kind==='references').flatMap(e=>[e.from,e.to]));
   return{
     nodes,edges,
@@ -167,6 +149,193 @@ export async function createKnowledgeNetwork(){
       links:edges.filter(e=>e.kind==='references').length,
       isolated:eligible.filter(e=>!linkedDocs.has('doc:'+e.id)).length
     },
-    world:WORLD
+    world:WORLD,
+    layout:'relationship-force-v1'
   };
+}
+
+/**
+ * Deterministic, relation-driven layout:
+ * 1) Arrange the existing *area* hubs so areas with more cross-area references
+ *    occupy neighbouring slots (this layer is a map, not a semantic embedding).
+ * 2) Use their positions ONLY as seeds/soft anchors.
+ * 3) Attract nodes along author-backed links; explicit references are stronger
+ *    than taxonomy membership. Repel non-linked nodes and prevent collisions.
+ * 4) Never create or infer an edge. Distance represents graph layout pressure,
+ *    not a calibrated semantic-similarity score.
+ */
+function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
+  const areaNodes=nodes.filter(n=>n.kind==='area');
+  const areas=areaNodes.map(n=>n.id);
+  const byId=new Map(nodes.map(n=>[n.id,n]));
+  const allNodes=nodes.filter(n=>n.kind!=='area');
+  const groups=new Map<string,KnowledgeNode[]>();
+  for(const n of allNodes){
+    if(!groups.has(n.parent||''))groups.set(n.parent||'',[]);
+    groups.get(n.parent||'')!.push(n);
+  }
+  // The four existing clusters get reproducible centres. Their order is
+  // optimized against the actual number of cross-area references.
+  const slots=[
+    {x:330,y:272},{x:980,y:272},{x:330,y:707},{x:980,y:707},
+  ];
+  const cross=new Map<string,number>();
+  for(const edge of edges){
+    if(edge.kind!=='references')continue;
+    const aa=byId.get(edge.from)?.parent;
+    const bb=byId.get(edge.to)?.parent;
+    if(!aa||!bb||aa===bb)continue;
+    const key=[aa,bb].sort().join('|');
+    cross.set(key,(cross.get(key)||0)+1);
+  }
+  const cost=(order:string[])=>{
+    let result=0;
+    for(let i=0;i<order.length;i++)for(let j=i+1;j<order.length;j++){
+      const weight=cross.get([order[i],order[j]].sort().join('|'))||0;
+      result+=weight*Math.hypot(slots[i].x-slots[j].x,slots[i].y-slots[j].y);
+    }
+    return result;
+  };
+  const list=areas.slice();
+  let best=list.slice(),bestCost=cost(best);
+  const visit=(prefix:string[],rest:string[])=>{
+    if(rest.length===0){
+      const score=cost(prefix);
+      if(score<bestCost-.001){bestCost=score;best=prefix.slice();}
+      return;
+    }
+    for(let i=0;i<rest.length;i++)visit([...prefix,rest[i]],rest.filter((_,j)=>j!==i));
+  };
+  if(list.length===slots.length)visit([list[0]],list.slice(1));
+  best.forEach((id,i)=>{
+    const n=byId.get(id);
+    if(n){n.x=slots[i].x;n.y=slots[i].y;}
+  });
+  // Golden-angle seeding avoids exact overlap, but contributes NO final
+  // distance rule. The graph forces below determine the eventual layout.
+  for(const [areaId,children] of groups){
+    const hub=byId.get(areaId);
+    const cx=hub?.x||WORLD.width/2,cy=hub?.y||WORLD.height/2;
+    children.sort((a,b)=>Number(b.kind==='topic')-Number(a.kind==='topic')||
+      stableHash(a.id)-stableHash(b.id));
+    children.forEach((n,i)=>{
+      const phase=i*2.399963229728653+(stableHash(n.id)%31)/50;
+      const r=(n.kind==='topic'?70:87)+Math.sqrt(i)*24;
+      n.x=cx+Math.cos(phase)*r;
+      n.y=cy+Math.sin(phase)*r*.81;
+    });
+  }
+  // Real topic-overview links are particularly useful initial guides.
+  const reviewOf=(id:string)=>id.match(/^doc:topics\/([^/]+)\/reviews\//)?.[1];
+  for(const n of allNodes){
+    const topic=reviewOf(n.id);
+    if(!topic)continue;
+    const parent=byId.get('doc:topics/'+topic+'/README');
+    if(!parent)continue;
+    const angle=(stableHash(n.id)%6283)/1000;
+    n.x=parent.x+Math.cos(angle)*55;
+    n.y=parent.y+Math.sin(angle)*55;
+  }
+  const vx=new Float64Array(nodes.length);
+  const vy=new Float64Array(nodes.length);
+  const fx=new Float64Array(nodes.length);
+  const fy=new Float64Array(nodes.length);
+  const index=new Map(nodes.map((n,i)=>[n.id,i]));
+  const validEdges=edges.map(e=>({
+    i:index.get(e.from)!,j:index.get(e.to)!,
+    kind:e.kind,
+  })).filter(e=>Number.isInteger(e.i)&&Number.isInteger(e.j));
+  const initial=nodes.map(n=>({x:n.x,y:n.y}));
+  const restDistance=(a:KnowledgeNode,b:KnowledgeNode)=>{
+    if(a.kind==='area'&&b.kind==='area')return 340;
+    if(a.kind==='area'||b.kind==='area')return b.kind==='topic'||a.kind==='topic'?105:132;
+    const same=a.group===b.group;
+    if(a.kind==='topic'||b.kind==='topic')return same?71:160;
+    return same?79:215;
+  };
+  for(let tick=0;tick<460;tick++){
+    fx.fill(0);fy.fill(0);
+    const cooling=.7+.3*(1-tick/460);
+    // Gentle hub attraction preserves readable clusters without fixing
+    // article coordinates or overriding strong citation relationships.
+    for(let i=0;i<nodes.length;i++){
+      const n=nodes[i];
+      if(n.kind==='area'){
+        fx[i]+=(initial[i].x-n.x)*.085;
+        fy[i]+=(initial[i].y-n.y)*.085;
+      }else{
+        const hub=byId.get(n.parent||'');
+        if(hub){
+          fx[i]+=(hub.x-n.x)*.004;
+          fy[i]+=(hub.y-n.y)*.004;
+        }
+      }
+      // A small boundary pressure keeps nodes and their hit targets visible.
+      const pad=n.kind==='area'?83:27;
+      if(n.x<pad)fx[i]+=(pad-n.x)*.06;
+      if(n.x>WORLD.width-pad)fx[i]+=(WORLD.width-pad-n.x)*.06;
+      if(n.y<pad)fy[i]+=(pad-n.y)*.06;
+      if(n.y>WORLD.height-pad)fy[i]+=(WORLD.height-pad-n.y)*.06;
+    }
+    // Springs: every force is backed by a graph edge.
+    for(const edge of validEdges){
+      const a=nodes[edge.i],b=nodes[edge.j];
+      const dx=b.x-a.x,dy=b.y-a.y;
+      const dist=Math.max(1,Math.hypot(dx,dy));
+      const desired=edge.kind==='references'?restDistance(a,b):
+        a.kind==='topic'||b.kind==='topic'?113:145;
+      const k=edge.kind==='references'? .092 : .024;
+      const force=(dist-desired)*k;
+      const px=force*dx/dist,py=force*dy/dist;
+      if(a.kind==='area'&&edge.kind==='belongs_to'){
+        fx[edge.j]-=px;fy[edge.j]-=py;
+      }else if(b.kind==='area'&&edge.kind==='belongs_to'){
+        fx[edge.i]+=px;fy[edge.i]+=py;
+      }else{
+        fx[edge.i]+=px;fy[edge.i]+=py;
+        fx[edge.j]-=px;fy[edge.j]-=py;
+      }
+    }
+    // Short-range charge plus hard collision avoidance; no artificial link.
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];
+      let dx=b.x-a.x,dy=b.y-a.y;
+      let dist=Math.hypot(dx,dy);
+      if(dist<.001){const ang=((stableHash(a.id+b.id)%6283)/1000);dx=Math.cos(ang);dy=Math.sin(ang);dist=1;}
+      const bothAreas=a.kind==='area'&&b.kind==='area';
+      const oneArea=a.kind==='area'||b.kind==='area';
+      const bothTopics=a.kind==='topic'&&b.kind==='topic';
+      const oneTopic=a.kind==='topic'||b.kind==='topic';
+      const minDist=bothAreas?245:oneArea?82:bothTopics?64:oneTopic?40:19;
+      const maxRepel=bothAreas?390:oneArea?160:oneTopic?110:72;
+      if(dist>maxRepel)continue;
+      const collision=Math.max(0,minDist-dist)*.23;
+      const charge=(maxRepel-dist)/maxRepel*(oneArea?.9:.55);
+      const force=collision+charge;
+      const px=force*dx/dist,py=force*dy/dist;
+      if(a.kind==='area'&&!bothAreas){
+        fx[j]+=px;fy[j]+=py;
+      }else if(b.kind==='area'&&!bothAreas){
+        fx[i]-=px;fy[i]-=py;
+      }else{
+        fx[i]-=px;fy[i]-=py;
+        fx[j]+=px;fy[j]+=py;
+      }
+    }
+    for(let i=0;i<nodes.length;i++){
+      const n=nodes[i];
+      vx[i]=Math.max(-10,Math.min(10,(vx[i]+fx[i]*cooling)*.75));
+      vy[i]=Math.max(-10,Math.min(10,(vy[i]+fy[i]*cooling)*.75));
+      n.x+=vx[i];
+      n.y+=vy[i];
+    }
+  }
+  // Respect actual boundaries in the published SVG viewBox.
+  for(const n of nodes){
+    const pad=n.kind==='area'?82:20;
+    n.x=Math.min(WORLD.width-pad,Math.max(pad,n.x));
+    n.y=Math.min(WORLD.height-pad,Math.max(pad,n.y));
+    n.x=Math.round(n.x*10)/10;
+    n.y=Math.round(n.y*10)/10;
+  }
 }
