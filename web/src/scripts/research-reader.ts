@@ -16,7 +16,7 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
         // Never interpret query parameters as an arbitrary return URL.
         const ret = new URL('/knowledge/',window.location.origin);
         const scope = params.get('scope') || '';
-        if (scope.length <= 120 && /^[a-z0-9-]+(?:\/[\u3400-\u9fffA-Za-z0-9-]+)?$/.test(scope))
+        if (scope.length <= 120 && (/^[a-z0-9-]+(?:\/[\u3400-\u9fffA-Za-z0-9-]+)?$/.test(scope) || /^topic:[a-z0-9-]+$/.test(scope)))
           ret.searchParams.set('scope',scope);
         const kind = params.get('type') || '';
         if (['topic','review','paper','qa','exploration','path','glossary','plan'].includes(kind))
