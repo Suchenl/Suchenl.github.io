@@ -65,7 +65,14 @@
 ## Knowledge 页面最终交互：目录与卡片（2026-11-05）
 
 - 此前试验的可缩放知识星图已撤下：用户更倾向于直观树形层级和可直接点击的内容卡片。历史图谱方案不代表当前产品方向。
-- `/knowledge/` 使用 `getCollection('knowledge')` 与 `knowledge/taxonomy.json`，按真实领域聚合已公开正文：顶部领域卡片、左侧展开目录、右侧可搜索文章卡片，不创建空节点。
+- `/knowledge/` 使用 `getCollection('knowledge')` 与 `knowledge/taxonomy.json`，按真实领域聚合已公开正文：左侧一份可展开目录、右侧可搜索文章卡片，不重复显示顶部领域卡片。
 - `web/src/scripts/knowledge-library.ts` 负责领域/二级方向筛选、文本搜索、类型过滤与分页加载；`web/src/styles/knowledge-library.css` 负责响应式排版。旧 graph 专用渲染文件退出当前代码。
 - `/research/` 的复杂阅读功能和 `web/src/lib/research-graph.ts` 的正文引用/反向链接逻辑继续保留；只是 Knowledge 首页不再展示抽象图谱。
 - 验收仍需同时完成 Astro 构建、静态链接检查与 320/390/1440px 的浏览器烟测。
+
+## Knowledge 导航与返回一致性（2026-11-05）
+
+- Knowledge 是日常知识浏览唯一入口，研究领域与论文解读/技术问答/问题探索都在同一页面筛选；Research 只作为高级检索与对比页面保留。
+- 目录/类型筛选原地更新，URL 使用 scope/type/q/limit 保存状态；点击文章传递 source=knowledge，上下文在文章顶部/底部返回时恢复。
+- 保留旧 /research/[...slug]/ canonical URL 和 /paper-notes/、/questions/ 书签，不在 Knowledge 首页重复放置并列目录。
+- SectionNav 指向统一知识库及其类型筛选；正文面包屑以 Knowledge 为起点。
