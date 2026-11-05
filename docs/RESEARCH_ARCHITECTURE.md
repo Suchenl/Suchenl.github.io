@@ -76,3 +76,11 @@
 - 目录/类型筛选原地更新，URL 使用 scope/type/q/limit 保存状态；点击文章传递 source=knowledge，上下文在文章顶部/底部返回时恢复。
 - 保留旧 /research/[...slug]/ canonical URL 和 /paper-notes/、/questions/ 书签，不在 Knowledge 首页重复放置并列目录。
 - SectionNav 指向统一知识库及其类型筛选；正文面包屑以 Knowledge 为起点。
+
+## 知识目录三级专题与推荐阅读顺序（2026-11-05）
+
+- 一级是知识领域，二级是 taxonomy 中真实包含文章的子领域，三级**只来自实际公开的 `topics/<slug>/README.md`**，不能硬编码不存在的章节。
+- 专题 Markdown 的 `readingOrder` 显式列出既有文章 `ref/stage/why`；Knowledge 目录会同步显示专题导读、前四步和可展开后续步骤，筛选的卡片排序也遵守这一清单。原 `paths/*` 的独立学习路线继续保留。
+- 阅读器自动显示在真实专题顺序中的当前进度和前后篇；跨文档导航携带 `source=knowledge&scope=topic:<slug>`，返回原专题目录。
+- 正式英文论文标题和 canonical URL 不变；可选的 `catalogTitleZh` 只用于中文导航/文章卡片，并展示原始论文名。简短笔记诚实标为「简要笔记」，摘要写明证据范围，不能捏造未做的实验核查。
+- 文章卡片仅展示真实内容，搜索覆盖原题和中文标题；所有 route refs 在 Astro 构建时校验，不允许重复、自指或指向不存在的文章。

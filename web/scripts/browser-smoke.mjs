@@ -94,6 +94,30 @@ try {
    await navigate(page,'/knowledge/?type=exploration#knowledge-browser');
    assert.equal(await page.locator('#kl-type').inputValue(),'exploration','Filtered Knowledge URL opens the correct content type');
    assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Exploration filter is populated');
+   await navigate(page,'/knowledge/?scope=topic%3Adepth-perception#knowledge-browser');
+   assert.equal(await page.locator('.kl-topic-guide:not([hidden])').count(),1,'One authored topic guide is visible');
+   assert.equal(await page.locator('.kl-tree-topic').count(),5,'Third-level tree includes only five published topic overviews');
+   const route=page.locator('.kl-topic-guide:not([hidden])');
+   assert.equal(await route.locator('.kl-topic-step').count(),9,'Nine real depth-learning steps are present');
+   assert((await route.locator('.kl-topic-step a').first().getAttribute('href'))?.includes('depth-acquisition-taxonomy'),
+     'Topic starts with the authored acquisition overview');
+   assert.equal(await page.locator('.kl-note:not([hidden])').first().getAttribute('data-kl-id'),'topics/depth-perception/README',
+     'Topic overview is the first article in that scope');
+   assert.equal(await page.locator('.kl-note:not([hidden])').nth(1).getAttribute('data-kl-id'),'topics/depth-perception/reviews/depth-acquisition-taxonomy',
+     'Note list follows the same authored order as the guide rather than generic content-type sorting');
+   if(width===1440)await page.screenshot({path:'visual-qa/knowledge-topic-depth-desktop.png',fullPage:true});
+   if(width===390)await page.screenshot({path:'visual-qa/knowledge-topic-depth-mobile.png',fullPage:true});
+   await route.locator('.kl-topic-step a').first().click();
+   assert((await page.locator('.rkd-topic-sequence').innerText()).includes('1/9'),
+     'Article shows current position in the topic sequence');
+   assert((await page.locator('#research-return-top').getAttribute('href'))?.includes('scope=topic%3Adepth-perception'),
+     'The article can return to its exact topic scope');
+   await page.locator('.rkd-sequence-actions a').last().click();
+   assert((await page.locator('.rkd-topic-sequence').innerText()).includes('2/9'),
+     'Next article advances along the curated topic route');
+   await page.locator('#research-return-top').click();
+   assert.equal(await page.locator('.kl-topic-guide:not([hidden])').count(),1,
+     'Returning from the second route article restores the topic guide');
    await noOverflow(page);
   });
   await check('Open research Questions '+width,async()=>{
