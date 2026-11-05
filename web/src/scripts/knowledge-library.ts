@@ -6,6 +6,7 @@ if (root) {
   const guides = [...root.querySelectorAll<HTMLElement>('[data-kl-topic-guide]')];
   const topicQuickstart = root.querySelector<HTMLElement>('#kl-topic-quickstart')!;
   const topicPreviewGroups = [...root.querySelectorAll<HTMLElement>('[data-kl-subarea-topics]')];
+  const subareaOthers = root.querySelector<HTMLElement>('#kl-subarea-others')!;
   const readingOrders = new Map(guides.map(g=>[
     g.dataset.klTopicGuide || '',
     (g.dataset.klRefs || '').split('|').filter(Boolean)
@@ -90,16 +91,20 @@ if (root) {
     // otherwise silently reorders them by original publication type.
     // A topic's reading steps already act as linked article cards. Do not
     // duplicate them below; show only real, not-yet-curated additions.
+    const previewTopicIds = new Set(activeGroups.flatMap(g=>[
+      ...g.querySelectorAll<HTMLElement>('[data-kl-topic-entry-id]')
+    ].map(n=>n.dataset.klTopicEntryId||'')));
     const listed = guideMode ? matching.filter(card=>{
       const id=card.dataset.klId || '';
       return id !== 'topics/' + topic + '/README' && !steps.includes(id);
-    }) : matching;
+    }) : activeGroups.length ? matching.filter(card=>!previewTopicIds.has(card.dataset.klId||'')) : matching;
     const matchedSet = new Set(listed);
     const ordered = [...listed,...cards.filter(card=>!matchedSet.has(card))];
     ordered.forEach(card=>articleHost.appendChild(card));
     const visible = new Set(listed.slice(0,limit));
     for (const card of cards) card.hidden = !visible.has(card);
     supplementHeading.hidden = !guideMode || listed.length===0;
+    subareaOthers.hidden = activeGroups.length===0 || listed.length===0;
     articleHost.hidden = guideMode && listed.length===0;
     empty.hidden = matching.length !== 0;
     more.hidden = listed.length <= limit;

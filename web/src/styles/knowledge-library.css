@@ -178,3 +178,8 @@ html[data-lang="en"] .kl-note>.kl-original-title{display:none}
 .kl-topic-entry button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(max-width:800px){.kl-quickstart-heading{flex-direction:column;gap:.3rem}.kl-quickstart-heading p{max-width:none}}
 @media(max-width:650px){.kl-topic-entry-grid{grid-template-columns:1fr}.kl-topic-quickstart-group{padding:.8rem}.kl-topic-entry{padding:.8rem}}
+
+.kl-subarea-others{border-top:1px solid var(--border);padding:.9rem 0 .6rem;margin-top:.35rem}
+.kl-subarea-others[hidden]{display:none!important}
+.kl-subarea-others strong{display:block;font-size:.85rem}
+.kl-subarea-others p{color:var(--fg-muted);font-size:.74rem;line-height:1.6;margin:.3rem 0 0}
