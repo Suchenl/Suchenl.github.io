@@ -45,7 +45,7 @@ try {
   await check('Knowledge cards and directory tree '+width,async()=>{
    await navigate(page,'/knowledge/');await noOverflow(page);
    assert.equal(await page.locator('#kn-svg').count(),0,'Abstract knowledge graph is removed');
-   assert.equal(await page.locator('.kl-domain-card').count(),4,'Four published content areas are shown as cards');
+   assert.equal(await page.locator('.kl-domain-card').count(),0,'No duplicate field cards competing with the directory');
    assert.equal(await page.locator('.kl-tree-domain').count(),4,'Four published content areas appear in expandable tree');
    assert((await page.locator('.kl-note').count())>30,'Notes come from canonical public Markdown');
    assert.equal(await page.locator('.kl-note:not([hidden])').count(),12,'First page uses readable cards rather than dumping all notes');
@@ -59,11 +59,13 @@ try {
    await page.locator('#kl-search').fill('');
    await page.locator('.kl-tree-domain').filter({has:page.locator('[data-kl-scope="robotics"]')}).locator('summary').click();
    await page.locator('.kl-tree [data-kl-scope="robotics"]').click();
+   assert(page.url().includes('scope=robotics'),'Directory state is reflected in the URL');
    const field=page.locator('.kl-note:not([hidden])');
    assert((await field.count())>=1,'Domain navigation filters real notes');
    const fields=await field.evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-kl-domains')));
    assert(fields.every(d=>d?.includes('机器人与具身智能')),'Domain filter does not show unrelated notes');
    await page.locator('.kl-tree [data-kl-scope="robotics/深度感知与几何估计"]').click();
+   assert(page.url().includes('scope=robotics%2F'),'Nested field state remains bookmarkable');
    const depth=page.locator('.kl-note:not([hidden])');
    assert((await depth.count())>=1,'Second-level topic filter displays existing notes');
    const depthDomains=await depth.evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-kl-domains')));
@@ -74,6 +76,17 @@ try {
    assert.equal(await page.locator('#kl-empty').isVisible(),false,'Clear filters restores notes');
    await page.locator('#kl-type').selectOption('paper');
    assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Paper type filter shows actual paper notes');
+   assert(page.url().includes('type=paper'),'Content type is a filter, not another portal');
+   await page.locator('.kl-note:not([hidden]) h4 a').first().click();
+   assert(page.url().includes('source=knowledge') && page.url().includes('type=paper'),
+     'Opening a paper preserves Knowledge browsing context');
+   const returnLink=page.locator('#research-return');
+   assert((await returnLink.getAttribute('href'))?.includes('/knowledge/?type=paper#knowledge-browser'),
+     'Reader returns to the filtered Knowledge index, not a separate Research directory');
+   assert((await page.locator('.rkd-breadcrumb').innerText()).includes('知识库'),
+     'Reader breadcrumbs consistently begin at Knowledge');
+   await returnLink.click();
+   assert.equal(await page.locator('#kl-type').inputValue(),'paper','Returning to Knowledge restores paper filter');
    await page.locator('#kl-type').selectOption('all');
    await noOverflow(page);
   });
@@ -85,7 +98,7 @@ try {
    assert.equal(await page.locator('.question-evidence-chip').count(),0,'Full evidence belongs in the Research article rather than the homepage');
    await navigate(page,'/questions/'); await noOverflow(page);
    assert.equal(await page.locator('#primary-navigation a[href="/knowledge/"]').getAttribute('aria-current'),'page');
-   assert.equal(await page.locator('.section-nav a[href="/questions/"]').getAttribute('aria-current'),'page');
+   assert.equal(await page.locator('.section-nav a[href="/knowledge/?type=exploration#knowledge-browser"]').getAttribute('aria-current'),'page');
    assert((await page.locator('.question-entry').count())>=1,'Published questions and interests should be listed');
    const target=page.locator('.question-entry h2 a[href*="action-sampling-frequency-bias"]');
    assert.equal(await target.count(),1,'Canonical robot-frequency note should remain visible in Questions index');
@@ -258,7 +271,7 @@ try {
   await check('Paper Notes portal '+width,async()=>{
     await navigate(page,'/paper-notes/');await noOverflow(page);
     assert.equal(await page.locator('#primary-navigation a[href="/knowledge/"]').getAttribute('aria-current'),'page');
-     assert.equal(await page.locator('.section-nav a[href="/paper-notes/"]').getAttribute('aria-current'),'page');
+     assert.equal(await page.locator('.section-nav a[href="/knowledge/?type=paper#knowledge-browser"]').getAttribute('aria-current'),'page');
     const cards=page.locator('.pn-item');
     assert((await cards.count())>=15,'The independent portal should reuse the canonical paper collection');
     await page.locator('#pn-search').fill('HIL-SERL');
