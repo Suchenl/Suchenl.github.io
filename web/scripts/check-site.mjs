@@ -145,10 +145,11 @@ check(knowledge.includes('id="kn-svg"') && knowledge.includes('id="kn-search"') 
 const graphMatch=knowledge.match(/<script\b(?=[^>]*id="kn-data")[^>]*>([\s\S]*?)<\/script>/);
 let graphData=null;
 try{graphData=graphMatch?JSON.parse(graphMatch[1]):null;}catch{}
-check(Boolean(graphData)&&graphData.layout==='relationship-force-v2',
+check(Boolean(graphData)&&graphData.layout==='overview-hierarchy+relationship-force-v2',
   'Knowledge network uses a deterministic, relation-driven layout');
 if(graphData){
   const byId=new Map(graphData.nodes.map(n=>[n.id,n]));
+  check(graphData.nodes.filter(n=>n.featured).length<graphData.nodes.length && graphData.nodes.filter(n=>n.kind==='topic').every(n=>n.featured),'Overview uses existing topic nodes without showing all documents');
   check(graphData.edges.every(e=>typeof e.evidence==='string'&&e.evidence.length>0&&
     typeof e.sourceHref==='string'&&e.sourceHref.startsWith('/research/'))&&
     graphData.edges.some(e=>e.kind==='topic_contains')&&
