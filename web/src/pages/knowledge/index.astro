@@ -141,7 +141,7 @@ const domainEntries=taxonomy.domains.map(d=>{
             <div><p class="kl-results-overline" id="kl-location"><span data-l="zh">知识库 / 全部知识</span><span data-l="en">Library / All notes</span></p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
             <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
           </div>
-          {topicEntries.map(topic=><section class="kl-topic-guide" data-kl-topic-guide={topic.slug} hidden aria-label={'专题学习路线：'+topic.title}>
+          {topicEntries.map(topic=><section class="kl-topic-guide" data-kl-topic-guide={topic.slug} data-kl-refs={topic.order.map(step=>step.ref).join('|')} hidden aria-label={'专题学习路线：'+topic.title}>
             <div class="kl-topic-guide-head">
               <p class="kl-kicker"><span data-l="zh">专题导读 · 建议阅读顺序</span><span data-l="en">TOPIC GUIDE · SUGGESTED READING</span></p>
               <h3><span data-l="zh">{topic.catalogTitleZh||topic.title}</span><span data-l="en">{topic.title}</span></h3>
