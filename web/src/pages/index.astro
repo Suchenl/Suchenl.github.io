@@ -16,7 +16,7 @@ const featured = PUB_GROUPS.flatMap(group => group.papers).filter(p =>
   ['Suchenl/VMem-Bench', 'Suchenl/LAMIC', 'Suchenl/TAG-WM'].includes(p.code || '')
 );
 const hub = [
-  { emoji:'📚', href:'/knowledge/', zh:'个人知识网络', en:'Knowledge Atlas', descZh:'点亮知识 · 探索专题 · 规划学习', descEn:'Explore topics, illuminate gaps and find learning paths' },
+  { emoji:'📚', href:'/knowledge/', zh:'个人知识库', en:'Knowledge Library', descZh:'分类目录 · 知识卡片 · 直接阅读', descEn:'Browse domains, topics and published notes' },
   { emoji:'📝', href:'/outputs/', zh:'研究产出', en:'Research Outputs', descZh:'公开论文 · 研究项目 · 开源工具', descEn:'Publications, projects and open-source work' },
   { emoji:'✍️', href:'/blog/', zh:'博客与观点', en:'Writing', descZh:'技术文章、研究思考与独立观点', descEn:'Technical writing and perspectives' },
   { emoji:'🧰', href:SITE.researchAssetsUrl, zh:'科研资产库', en:'Research Assets', descZh:'高审美科研图、实用 Skills 与 Workflows', descEn:'Curated visuals, practical skills and workflows' },
@@ -178,7 +178,7 @@ const socials = [
         ))}
       </ul>
       <p class="see-all">
-        <a href="/knowledge/"><Bi zh="探索个人知识网络 →" en="Explore the knowledge atlas →" /></a>
+        <a href="/knowledge/"><Bi zh="浏览个人知识库 →" en="Browse the knowledge library →" /></a>
       </p>
     </section>
   </div>

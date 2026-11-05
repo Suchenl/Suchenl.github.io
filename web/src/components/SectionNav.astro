@@ -2,7 +2,7 @@
 interface Props { section:'research'|'outputs'; active?:string }
 const { section, active = 'overview' } = Astro.props;
 const items = section === 'research' ? [
-  {id:'knowledge',href:'/knowledge/',zh:'知识网络',en:'Knowledge Map'},
+  {id:'knowledge',href:'/knowledge/',zh:'知识目录',en:'Knowledge Library'},
   {id:'overview',href:'/research/',zh:'研究领域',en:'Research Areas'},
   {id:'papers',href:'/paper-notes/',zh:'论文解读',en:'Paper Notes'},
   {id:'questions',href:'/questions/',zh:'问题与探索',en:'Questions'},
