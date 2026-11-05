@@ -5,8 +5,9 @@ shortName: "AutoTool"
 title: "AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]
-summaryZh: "动态工具选择中的监督学习、强化学习与排序"
+summaryZh: "分析动态工具集合中从多步工具交互到工具排序的训练流程，区分 SFT/RL 行为训练与带 KL 约束的工具排序，并审视新增工具泛化和真实任务成功率之间的差别。"
 status: untracked
+catalogTitleZh: "AutoTool：动态工具库中如何学会选择合适的工具"
 ---
 
 # AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning

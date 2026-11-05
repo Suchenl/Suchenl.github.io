@@ -6,8 +6,9 @@ aliases: ["Action-Constrained IL"]
 title: "Action-Constrained Imitation Learning"
 year: 2025
 categories: ["机器人与具身智能/模仿学习"]
-summaryZh: "通过轨迹对齐与约束放松逐时间戳行为克隆"
+summaryZh: "研究专家动作与机器人执行约束不一致的问题：通过动态时间规整与 MPC 构造可执行的替代示范，再做模仿学习；重点区分轨迹相似、动力学可行和真实任务成功。"
 status: untracked
+catalogTitleZh: "DTWIL：受动作约束的机器人如何模仿专家轨迹"
 ---
 
 # Action-Constrained Imitation Learning

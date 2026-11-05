@@ -6,8 +6,9 @@ aliases: ["Hunyuan UniRL"]
 title: "UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]
-summaryZh: "面向 SFT、Agentic RL 等的统一训练框架"
+summaryZh: "腾讯混元公开的训练框架项目速览，并非同行评审论文：关注统一数据与 Rollout 接口、Reward Service、异步训练和工具轨迹契约；共享训练基础设施不等于证明 SFT 与 RL 必须联合优化。"
 status: untracked
+catalogTitleZh: "UniRL：统一多模态 SFT、RL 与 Agent 训练的工程框架"
 ---
 
 # UniRL（腾讯混元）：统一多模态 RL/SFT/Agentic 训练框架
