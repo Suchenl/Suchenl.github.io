@@ -16,7 +16,7 @@ const records = source
     const labelZh:Record<string,string>={topic:'专题',review:'综述',paper:'论文解读',qa:'技术问答',exploration:'问题与探索',plan:'研究计划',glossary:'概念',path:'学习路线'};
     const labelEn:Record<string,string>={topic:'Topic',review:'Review',paper:'Paper notes',qa:'Q&A',exploration:'Exploration',plan:'Research plan',glossary:'Concept',path:'Learning path'};
     return {id:e.id,title,href,domains,type,topic,summary:e.data.summaryZh||'',
-      catalogTitleZh:e.data.catalogTitleZh||'',brief:type==='paper'&&(e.body||'').length<950,
+      catalogTitleZh:e.data.catalogTitleZh||'',brief:type==='paper'&&e.data.readingDepth==='note',
       aliases:[e.data.shortName||'',...(e.data.aliases||[])].filter(Boolean).join('|').toLocaleLowerCase(),
       search:[title,e.data.catalogTitleZh||'',e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
       labelZh:labelZh[type]||'文章',labelEn:labelEn[type]||'Note'};
@@ -141,6 +141,25 @@ const domainEntries=taxonomy.domains.map(d=>{
             <div><p class="kl-results-overline" id="kl-location"><span data-l="zh">知识库 / 全部知识</span><span data-l="en">Library / All notes</span></p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
             <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
           </div>
+          <div id="kl-topic-quickstart" class="kl-topic-quickstart" hidden aria-label="本方向已收录的学习专题">
+            {domainEntries.flatMap(d=>d.children.filter(c=>c.topics.length>0).map(c=><section
+              data-kl-subarea-topics={c.slug} class="kl-topic-quickstart-group">
+              <div class="kl-quickstart-heading">
+                <div><span class="kl-quickstart-kicker"><span data-l="zh">推荐从专题开始</span><span data-l="en">START WITH A TOPIC</span></span>
+                  <h3><span data-l="zh">{c.name} · 已有 {c.topics.length} 个专题</span><span data-l="en">{c.name} · {c.topics.length} topics</span></h3>
+                </div>
+                <p><span data-l="zh">专题根据真实文章整理了阅读顺序。可以先看全貌，再决定是否深入。</span><span data-l="en">Each published topic contains an authored reading sequence. Start with its overview.</span></p>
+              </div>
+              <div class="kl-topic-entry-grid">
+                {c.topics.map(t=><article class="kl-topic-entry">
+                  <div class="kl-topic-entry-meta"><span data-l="zh">知识专题</span><span data-l="en">TOPIC</span><span>{t.order.length} <span data-l="zh">步阅读</span><span data-l="en">steps</span></span></div>
+                  <h4><span data-l="zh">{t.catalogTitleZh||t.title}</span><span data-l="en">{t.title}</span></h4>
+                  {t.summary&&<p>{t.summary}</p>}
+                  <button type="button" data-kl-open-topic={'topic:'+t.slug}><span data-l="zh">按顺序阅读</span><span data-l="en">Explore reading order</span><span aria-hidden="true"> →</span></button>
+                </article>)}
+              </div>
+            </section>))}
+          </div>
           {topicEntries.map(topic=><section class="kl-topic-guide" data-kl-topic-guide={topic.slug} data-kl-refs={topic.order.map(step=>step.ref).join('|')} hidden aria-label={'专题学习路线：'+topic.title}>
             <div class="kl-topic-guide-head">
               <p class="kl-kicker"><span data-l="zh">专题导读 · 建议阅读顺序</span><span data-l="en">TOPIC GUIDE · SUGGESTED READING</span></p>
@@ -177,7 +196,7 @@ const domainEntries=taxonomy.domains.map(d=>{
               <div class="kl-note-meta">
                 <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
                 <span class="kl-note-group">{e.domains[0]?.split('/').slice(-1)[0]||''}</span>
-                {e.brief&&<span class="kl-brief"><span data-l="zh">简要笔记</span><span data-l="en">Brief note</span></span>}
+                {e.brief&&<span class="kl-brief"><span data-l="zh">概要性笔记</span><span data-l="en">Brief overview</span></span>}
               </div>
               <h4><a href={e.href}><span data-l="zh">{e.catalogTitleZh||e.title}</span><span data-l="en">{e.title}</span></a></h4>
               {e.catalogTitleZh&&e.catalogTitleZh!==e.title&&<p class="kl-original-title">{e.title}</p>}

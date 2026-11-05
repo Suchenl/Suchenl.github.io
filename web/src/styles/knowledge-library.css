@@ -158,3 +158,23 @@ html[data-lang="en"] .kl-note>.kl-original-title{display:none}
 .kl-supplement-head{margin:1.05rem 0 .65rem;border-top:1px solid var(--border);padding-top:.9rem}
 .kl-supplement-head strong{font-size:.84rem}
 .kl-supplement-head p{font-size:.73rem;color:var(--fg-muted);line-height:1.7;margin:.24rem 0 0}
+
+/* A light-weight topic recommendation appears only when an existing subarea
+   has a real, editor-authored reading order; it is not another navigation page. */
+.kl-topic-quickstart{margin:0 0 1.15rem}
+.kl-topic-quickstart[hidden],.kl-topic-quickstart-group[hidden]{display:none!important}
+.kl-topic-quickstart-group{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;padding:1rem 1.12rem}
+.kl-quickstart-heading{display:flex;align-items:start;justify-content:space-between;gap:1rem;margin-bottom:.9rem}
+.kl-quickstart-kicker{display:inline-block;color:var(--accent-ink);font-size:.64rem;font-weight:750;letter-spacing:.06em}
+.kl-quickstart-heading h3{font-size:.94rem;line-height:1.5;margin:.23rem 0 0}
+.kl-quickstart-heading p{font-size:.72rem;line-height:1.6;color:var(--fg-muted);max-width:330px;margin:.1rem 0}
+.kl-topic-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+.kl-topic-entry{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.84rem .95rem;min-width:0}
+.kl-topic-entry-meta{display:flex;justify-content:space-between;gap:.5rem;font-size:.65rem;font-weight:700;color:var(--fg-muted)}
+.kl-topic-entry h4{margin:.55rem 0 .38rem;font-size:.9rem;line-height:1.5;overflow-wrap:anywhere}
+.kl-topic-entry p{font-size:.72rem;line-height:1.7;color:var(--fg-muted);margin:.35rem 0 .7rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.kl-topic-entry button{cursor:pointer;text-align:left;background:transparent;border:0;padding:.24rem 0;color:var(--accent-ink);font:inherit;font-size:.75rem;font-weight:750}
+.kl-topic-entry button:hover{text-decoration:underline}
+.kl-topic-entry button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:800px){.kl-quickstart-heading{flex-direction:column;gap:.3rem}.kl-quickstart-heading p{max-width:none}}
+@media(max-width:650px){.kl-topic-entry-grid{grid-template-columns:1fr}.kl-topic-quickstart-group{padding:.8rem}.kl-topic-entry{padding:.8rem}}

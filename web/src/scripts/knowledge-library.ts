@@ -4,6 +4,8 @@ if (root) {
   const articleHost = root.querySelector<HTMLElement>('#kl-articles')!;
   const supplementHeading = root.querySelector<HTMLElement>('#kl-supplement-head')!;
   const guides = [...root.querySelectorAll<HTMLElement>('[data-kl-topic-guide]')];
+  const topicQuickstart = root.querySelector<HTMLElement>('#kl-topic-quickstart')!;
+  const topicPreviewGroups = [...root.querySelectorAll<HTMLElement>('[data-kl-subarea-topics]')];
   const readingOrders = new Map(guides.map(g=>[
     g.dataset.klTopicGuide || '',
     (g.dataset.klRefs || '').split('|').filter(Boolean)
@@ -55,6 +57,10 @@ if (root) {
     const topic = selected.dataset.klTopic;
     const steps = topic ? (readingOrders.get(topic) || []) : [];
     const guideMode = !!topic && !query && type.value === 'all' && steps.length>0;
+    const preview = !topic && !query && type.value === 'all';
+    const activeGroups = topicPreviewGroups.filter(g=>preview && g.dataset.klSubareaTopics === scope);
+    topicQuickstart.hidden = activeGroups.length === 0;
+    topicPreviewGroups.forEach(g=>g.hidden = !activeGroups.includes(g));
     for (const guide of guides) guide.hidden = !guideMode || guide.dataset.klTopicGuide !== topic;
     if (topic && !query) {
       const order = readingOrders.get(topic) || [];
@@ -152,6 +158,13 @@ if (root) {
     render();
   }
   buttons.forEach(button => button.addEventListener('click', () => setScope(button.dataset.klScope || 'all')));
+  root.querySelectorAll<HTMLButtonElement>('[data-kl-open-topic]').forEach(button=>
+    button.addEventListener('click',()=>{
+      setScope(button.dataset.klOpenTopic||'all');
+      const selection = scopes.get(scope);
+      if(selection)selection.focus({preventScroll:true});
+    })
+  );
   search.addEventListener('input', () => {limit = initialLimit;render();persist('replace');});
   type.addEventListener('change', () => {limit = initialLimit;render();persist('push');});
   more.addEventListener('click', () => {limit += initialLimit;render();persist('replace');});
