@@ -310,7 +310,7 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
       const maxRepel=bothAreas?390:oneArea?160:oneTopic?110:72;
       if(dist>maxRepel)continue;
       const collision=Math.max(0,minDist-dist)*.23;
-      const charge=(maxRepel-dist)/maxRepel*(oneArea?.9:.55);
+      const charge=(maxRepel-dist)/maxRepel*(oneArea ? 0.9 : 0.55);
       const force=collision+charge;
       const px=force*dx/dist,py=force*dy/dist;
       if(a.kind==='area'&&!bothAreas){
