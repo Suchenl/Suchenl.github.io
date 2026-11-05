@@ -151,3 +151,10 @@ html[data-lang="en"] .kl-note>.kl-original-title{display:none}
   .kl-topic-guide{padding:.85rem .8rem}
   .kl-topic-step{padding:.7rem}
 }
+
+/* A topic route is a compact reading interface; duplicate content cards
+   only appear when an authored topic has uncurated additional notes. */
+.kl-articles[hidden],.kl-supplement-head[hidden]{display:none!important}
+.kl-supplement-head{margin:1.05rem 0 .65rem;border-top:1px solid var(--border);padding-top:.9rem}
+.kl-supplement-head strong{font-size:.84rem}
+.kl-supplement-head p{font-size:.73rem;color:var(--fg-muted);line-height:1.7;margin:.24rem 0 0}

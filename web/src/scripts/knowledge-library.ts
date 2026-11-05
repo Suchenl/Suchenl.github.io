@@ -2,6 +2,7 @@ const root = document.getElementById('kl-page');
 if (root) {
   const cards = [...root.querySelectorAll<HTMLElement>('.kl-note')];
   const articleHost = root.querySelector<HTMLElement>('#kl-articles')!;
+  const supplementHeading = root.querySelector<HTMLElement>('#kl-supplement-head')!;
   const guides = [...root.querySelectorAll<HTMLElement>('[data-kl-topic-guide]')];
   const readingOrders = new Map(guides.map(g=>[
     g.dataset.klTopicGuide || '',
@@ -52,7 +53,9 @@ if (root) {
     const query = search.value.trim().toLocaleLowerCase();
     const selected = scopes.get(scope) || scopes.get('all')!;
     const topic = selected.dataset.klTopic;
-    for (const guide of guides) guide.hidden = !topic || guide.dataset.klTopicGuide !== topic;
+    const steps = topic ? (readingOrders.get(topic) || []) : [];
+    const guideMode = !!topic && !query && type.value === 'all' && steps.length>0;
+    for (const guide of guides) guide.hidden = !guideMode || guide.dataset.klTopicGuide !== topic;
     if (topic && !query) {
       const order = readingOrders.get(topic) || [];
       const rank = (card:HTMLElement) => {
@@ -79,13 +82,21 @@ if (root) {
     // The DOM reading order follows the curated topic sequence or search
     // relevance. Simply hiding cards is insufficient: the old CSS grid
     // otherwise silently reorders them by original publication type.
-    const matchedSet = new Set(matching);
-    const ordered = [...matching,...cards.filter(card=>!matchedSet.has(card))];
+    // A topic's reading steps already act as linked article cards. Do not
+    // duplicate them below; show only real, not-yet-curated additions.
+    const listed = guideMode ? matching.filter(card=>{
+      const id=card.dataset.klId || '';
+      return id !== 'topics/' + topic + '/README' && !steps.includes(id);
+    }) : matching;
+    const matchedSet = new Set(listed);
+    const ordered = [...listed,...cards.filter(card=>!matchedSet.has(card))];
     ordered.forEach(card=>articleHost.appendChild(card));
-    const visible = new Set(matching.slice(0, limit));
+    const visible = new Set(listed.slice(0,limit));
     for (const card of cards) card.hidden = !visible.has(card);
+    supplementHeading.hidden = !guideMode || listed.length===0;
+    articleHost.hidden = guideMode && listed.length===0;
     empty.hidden = matching.length !== 0;
-    more.hidden = matching.length <= limit;
+    more.hidden = listed.length <= limit;
     counter.textContent = tr(matching.length + ' 篇', matching.length + ' notes');
     const nameZh = selected.dataset.klNameZh || '全部知识';
     const nameEn = selected.dataset.klNameEn || 'All notes';

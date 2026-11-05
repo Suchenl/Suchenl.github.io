@@ -168,7 +168,11 @@ const domainEntries=taxonomy.domains.map(d=>{
               <p class="kl-route-caveat"><span data-l="zh">这是根据已公开内容整理的推荐顺序，并非强制前置条件；没有为尚不存在的知识添加条目。</span><span data-l="en">A suggested order based on existing public notes, not a mandatory prerequisite graph. No unwritten topics are included.</span></p>
             </div>}
           </section>)}
-                    <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
+                    <div class="kl-supplement-head" id="kl-supplement-head" hidden>
+            <strong><span data-l="zh">路线之外的补充资料</span><span data-l="en">Additional notes beyond the route</span></strong>
+            <p><span data-l="zh">这些已收录文章尚未编排进上面的推荐顺序，仍可以直接阅读。</span><span data-l="en">Published notes not yet included in this topic's suggested reading order.</span></p>
+          </div>
+          <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
             {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-title={(e.catalogTitleZh||e.title).toLocaleLowerCase()} data-kl-aliases={e.aliases} data-kl-order={i}>
               <div class="kl-note-meta">
                 <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
