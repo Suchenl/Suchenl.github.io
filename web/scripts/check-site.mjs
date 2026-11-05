@@ -164,6 +164,12 @@ check(knowledge.includes('DAPO：长思维链强化学习如何解决训练瓶�
       knowledge.includes('class="kl-original-title"') &&
       knowledge.includes('class="kl-brief"'),
       'Knowledge cards retain original paper names, readable Chinese headings and honest brief-note markers');
+// Method tags must not override the primary research goal of a paper.
+const superMimicCard=knowledge.match(/<article\b[^>]*data-kl-id="papers\/2026\/supermimic"[^>]*>/)?.[0] || '';
+check(superMimicCard.includes('data-kl-domains="机器人与具身智能/策略学习与控制"') &&
+      !superMimicCard.includes('世界模型与记忆'),
+      'SuperMimic is categorized under humanoid robot policy learning, not memory');
+
 const depthStepReader=page('research/topics/depth-perception/reviews/depth-acquisition-taxonomy');
 check(depthStepReader.includes('rkd-topic-sequence') &&
       depthStepReader.includes('建议顺序 1/9') &&

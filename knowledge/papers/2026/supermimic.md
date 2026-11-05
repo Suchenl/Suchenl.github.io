@@ -1,12 +1,12 @@
 ---
 contentType: paper
-domains: ["世界模型与环境交互/世界模型与记忆","机器人与具身智能/策略学习与控制"]
+domains: ["机器人与具身智能/策略学习与控制"]
 title: "SuperMimic: Scaling Humanoid Whole-Body Control with One Differentiable World Model"
 shortName: "SuperMimic"
 readingDepth: deep
 year: 2026
-categories: ["世界模型/机器人策略学习", "强化学习与 Agent/具身智能"]
-summaryZh: "解读 SuperMimic 以可微分状态世界模型、BPTT 和 Critic 优化人形机器人策略的机制；结合既有视觉梯度反传实验的成功与负结果，分析梯度可达性、任务对齐及未来可验证的研究方向。"
+categories: ["机器人与具身智能/策略学习与控制"]
+summaryZh: "研究人形机器人全身动作追踪的高效策略学习：通过可微分物理状态动力学、短程想象、BPTT 和 Critic 优化策略，并分析训练效率与真实机器人迁移的证据边界。世界模型在这里是训练策略的方法，不是视觉或长期记忆研究。"
 status: untracked
 authors: ["Qiayuan Liao", "Yiyang Shao", "Junfeng Long", "Kevin Zakka", "Roberto Horowitz", "Pieter Abbeel", "Koushil Sreenath"]
 venue: "CoRL 2026 (Oral)"
