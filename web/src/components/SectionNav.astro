@@ -1,0 +1,29 @@
+---
+interface Props { section:'research'|'outputs'; active?:string }
+const { section, active = 'overview' } = Astro.props;
+const items = section === 'research' ? [
+  {id:'overview',href:'/research/',zh:'研究领域',en:'Research Areas'},
+  {id:'papers',href:'/paper-notes/',zh:'论文解读',en:'Paper Notes'},
+  {id:'questions',href:'/questions/',zh:'问题与探索',en:'Questions'},
+  {id:'all',href:'/research/#all-knowledge',zh:'全部知识',en:'Knowledge Index'},
+] : [
+  {id:'overview',href:'/outputs/',zh:'成果总览',en:'Overview'},
+  {id:'papers',href:'/publications/',zh:'学术论文',en:'Publications'},
+  {id:'projects',href:'/projects/',zh:'项目与工具',en:'Projects'},
+];
+---
+<nav class="section-nav" aria-label={section === 'research' ? '研究内容导航' : '成果内容导航'}>
+  {items.map(item => (
+    <a class:list={['section-nav-link',active===item.id && 'current']} href={item.href} aria-current={active===item.id ? 'page' : undefined}>
+      <span data-l="zh">{item.zh}</span><span data-l="en">{item.en}</span>
+    </a>
+  ))}
+</nav>
+<style>
+  .section-nav{display:flex;align-items:center;flex-wrap:wrap;gap:.38rem;padding:.75rem 0;margin:.8rem 0 1.1rem;border-bottom:1px solid var(--border);}
+  .section-nav-link{display:inline-flex;align-items:center;min-height:38px;padding:.4rem .76rem;border-radius:9px;font-size:.83rem;font-weight:670;color:var(--fg-muted);}
+  .section-nav-link:hover{background:var(--surface-2);color:var(--fg);text-decoration:none;}
+  .section-nav-link.current{background:var(--accent-soft);color:var(--accent-ink);}
+  .section-nav-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  @media(max-width:480px){.section-nav{gap:.15rem}.section-nav-link{font-size:.78rem;padding:.42rem .58rem;}}
+</style>

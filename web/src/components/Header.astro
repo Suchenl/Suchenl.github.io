@@ -1,8 +1,12 @@
 ---
 import { SITE, NAV } from '../config';
 const path = Astro.url.pathname;
+const navChildren: Record<string, string[]> = {
+  '/research/': ['/paper-notes/', '/questions/', '/reading/'],
+  '/outputs/': ['/publications/', '/projects/'],
+};
 const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+  href === '/' ? path === '/' : path.startsWith(href) || (navChildren[href] || []).some(child => path.startsWith(child));
 ---
 
 <header class="site-header">

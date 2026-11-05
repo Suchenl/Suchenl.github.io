@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
+import SectionNav from '../../components/SectionNav.astro';
+import { PUB_GROUPS } from '../../data';
+import { PROJECTS } from '../../data/projects';
+import { SITE } from '../../config';
+const publicPapers = PUB_GROUPS.flatMap(group => group.papers);
+const featured = publicPapers.filter(p => ['Suchenl/VMem-Bench','Suchenl/LAMIC','Suchenl/TAG-WM'].includes(p.code || ''));
+const tools = PROJECTS.slice(0, 4);
+---
+<Base title="成果" description="已公开的学术论文、研究项目、开源工具与科研资产。">
+  <SectionNav section="outputs" active="overview" />
+  <header class="out-head">
+    <p class="out-eyebrow">PUBLICATIONS · RESEARCH OUTPUTS · OPEN SOURCE</p>
+    <h1><Bi zh="研究成果" en="Research Outputs" /></h1>
+    <p><Bi zh="汇集已经公开的论文、项目与开源工具。成果展示复用现有公开数据，不收录未公开的研究和内部材料。" en="Published research, released projects and open-source tools. Only public material is included." /></p>
+  </header>
+  <div class="out-links">
+    <a href="/publications/"><strong><Bi zh="学术论文" en="Publications" /></strong><span><Bi zh="按研究方向查看全部公开论文" en="All public papers by research area" /></span><span aria-hidden="true">↗</span></a>
+    <a href="/projects/"><strong><Bi zh="项目与工具" en="Projects & Tools" /></strong><span><Bi zh="研究实现、开源工具与演示" en="Public implementations and open-source tools" /></span><span aria-hidden="true">↗</span></a>
+    <a href={SITE.researchAssetsUrl} target="_blank" rel="noopener noreferrer"><strong><Bi zh="科研资产库" en="Research Assets" /></strong><span><Bi zh="科研配图、可复用 Skills 与 Workflows" en="Curated visuals, skills and workflows" /></span><span aria-hidden="true">↗</span></a>
+  </div>
+  {featured.length > 0 && (
+    <section class="out-section" aria-labelledby="out-papers">
+      <div class="out-section-heading"><h2 id="out-papers"><Bi zh="精选论文成果" en="Selected Publications" /></h2><a href="/publications/"><Bi zh="全部论文 →" en="All publications →" /></a></div>
+      <div class="out-grid">
+        {featured.map(p=><article class="out-card">
+          {p.image && <img src={p.thumbnail || p.image} alt={p.titleEn} loading="lazy" decoding="async" />}
+          <div class="out-card-body"><p class="out-meta">{p.venue}</p><h3>{p.titleEn}</h3><p><span data-l="zh">{p.titleZh}</span><span data-l="en">{p.titleEn}</span></p>
+            <div class="out-actions"><a href={p.url} target="_blank" rel="noopener noreferrer"><Bi zh="论文 ↗" en="Paper ↗" /></a>{p.code && <a href={'https://github.com/'+p.code} target="_blank" rel="noopener noreferrer"><Bi zh="代码 ↗" en="Code ↗" /></a>}{p.projectPage && <a href={p.projectPage} target="_blank" rel="noopener noreferrer"><Bi zh="主页 ↗" en="Project ↗" /></a>}</div>
+          </div>
+        </article>)}
+      </div>
+    </section>
+  )}
+  {tools.length > 0 && (
+    <section class="out-section" aria-labelledby="out-tools">
+      <div class="out-section-heading"><h2 id="out-tools"><Bi zh="开源工具" en="Open-source Tools" /></h2><a href="/projects/"><Bi zh="全部项目 →" en="All projects →" /></a></div>
+      <div class="out-tool-grid">
+        {tools.map(p=><article class="out-tool"><h3>{p.name}</h3><p><span data-l="zh">{p.descZh}</span><span data-l="en">{p.descEn}</span></p><a href={'https://github.com/'+p.repo} target="_blank" rel="noopener noreferrer"><Bi zh="查看仓库 ↗" en="Repository ↗" /></a></article>)}
+      </div>
+    </section>
+  )}
+</Base>
+<style>
+.out-head{max-width:760px;padding:1.6rem 0 1.5rem}.out-eyebrow{color:var(--accent-ink);font-size:.76rem;font-weight:750;letter-spacing:.09em}.out-head h1{font-size:clamp(2rem,4vw,2.75rem);margin:.5rem 0}.out-head>p:last-child{color:var(--fg-muted);line-height:1.8;font-size:.97rem}
+.out-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin:0 0 3rem}.out-links>a{display:flex;flex-direction:column;gap:.5rem;border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:1.25rem;min-width:0;color:var(--fg);text-decoration:none}.out-links>a:hover,.out-card:hover,.out-tool:hover{border-color:var(--accent)}.out-links strong{font-size:1.02rem}.out-links span{font-size:.85rem;color:var(--fg-muted)}.out-links>a>span:last-child{margin-top:auto;color:var(--accent-ink)}
+.out-section{margin:0 0 3.5rem}.out-section-heading{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:1.2rem}.out-section-heading h2{font-size:1.35rem;margin:0}.out-section-heading a{font-size:.86rem;font-weight:650}.out-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.out-card,.out-tool{min-width:0;border:1px solid var(--border);border-radius:13px;background:var(--surface);overflow:hidden}.out-card img{width:100%;height:170px;object-fit:contain;background:var(--surface-2)}.out-card-body{padding:1rem}.out-meta{color:var(--accent-ink);font-weight:750;font-size:.76rem}.out-card h3{font-size:.98rem;line-height:1.45;overflow-wrap:anywhere}.out-card-body>p:not(.out-meta){font-size:.82rem;color:var(--fg-muted);line-height:1.6}.out-actions{display:flex;flex-wrap:wrap;gap:.8rem;font-size:.8rem;font-weight:650}.out-tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.out-tool{padding:1rem 1.2rem}.out-tool h3{margin:.2rem 0 .5rem;font-size:1rem}.out-tool p{color:var(--fg-muted);font-size:.86rem;line-height:1.65}.out-tool a{font-size:.82rem}
+@media(max-width:780px){.out-links,.out-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.out-links,.out-grid,.out-tool-grid{grid-template-columns:1fr}.out-card img{height:185px}}
+</style>

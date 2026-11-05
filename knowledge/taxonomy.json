@@ -8,7 +8,10 @@
         "预训练与模型架构",
         "后训练与策略优化",
         "推理与 Agent 系统"
-      ]
+      ],
+      "slug": "llm-and-rl",
+      "en": "LLMs & Reinforcement Learning",
+      "descriptionEn": "Pretraining, post-training, reasoning and agent learning"
     },
     {
       "id": "多模态学习与生成",
@@ -16,7 +19,10 @@
       "children": [
         "视觉语言理解",
         "图像与视频生成"
-      ]
+      ],
+      "slug": "multimodal",
+      "en": "Multimodal Learning & Generation",
+      "descriptionEn": "Multimodal understanding and image/video generation"
     },
     {
       "id": "机器人与具身智能",
@@ -25,14 +31,20 @@
         "策略学习与控制",
         "数据与动作表示",
         "深度感知与几何估计"
-      ]
+      ],
+      "slug": "robotics",
+      "en": "Robotics & Embodied AI",
+      "descriptionEn": "Robot perception, control, learning and action representations"
     },
     {
       "id": "世界模型与环境交互",
       "description": "动作世界模型、长期记忆与可交互环境建模",
       "children": [
         "世界模型与记忆"
-      ]
+      ],
+      "slug": "world-models",
+      "en": "World Models & Interaction",
+      "descriptionEn": "World modeling, memory and interactive environments"
     }
   ],
   "contentTypes": [
