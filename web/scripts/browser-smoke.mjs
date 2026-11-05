@@ -44,12 +44,13 @@ try {
   });
   await check('Open research Questions '+width,async()=>{
    await navigate(page,'/');
-   assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),1,'Questions must be visible in main navigation');
-   assert((await page.locator('.home-question-card').count())>=1,'Homepage should show published public questions');
-   assert.equal(await page.locator('.question-evidence-chip').count(),8,'Eight representative dataset frequency sources should appear on homepage');
-   assert((await page.locator('.question-evidence-chip').last().innerText()).includes('50 Hz'),'Mobile ALOHA target frequency remains qualified');
+   assert.equal(await page.locator('#primary-navigation a[href="/research/"]').count(),1,'Research is a primary navigation entry');
+   assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),0,'Questions has moved to Research secondary navigation');
+   assert.equal(await page.locator('.home-question-card').count(),2,'Homepage should show two curated public question teasers');
+   assert.equal(await page.locator('.question-evidence-chip').count(),0,'Full evidence belongs in the Research article rather than the homepage');
    await navigate(page,'/questions/'); await noOverflow(page);
-   assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').getAttribute('aria-current'),'page');
+   assert.equal(await page.locator('#primary-navigation a[href="/research/"]').getAttribute('aria-current'),'page');
+   assert.equal(await page.locator('.section-nav a[href="/questions/"]').getAttribute('aria-current'),'page');
    assert((await page.locator('.question-entry').count())>=1,'Published questions and interests should be listed');
    const target=page.locator('.question-entry h2 a[href*="action-sampling-frequency-bias"]');
    assert.equal(await target.count(),1,'Canonical robot-frequency note should remain visible in Questions index');
@@ -143,6 +144,15 @@ try {
    await noOverflow(page);
    if(width===1440)await page.screenshot({path:'visual-qa/compare-3papers-desktop.png',fullPage:true});
   });
+  await check('Research area-first navigation '+width,async()=>{
+    await navigate(page,'/research/');await noOverflow(page);
+    assert.equal(await page.locator('.research-area-card').count(),4,'Four canonical research areas');
+    await navigate(page,'/research/domains/robotics/');await noOverflow(page);
+    assert((await page.locator('.ra-topics a[href="/research/topics/robot-control/"]').count())>=1,'Robotics area should link to existing control topic');
+    await navigate(page,'/outputs/');await noOverflow(page);
+    assert.equal(await page.locator('.section-nav a[href="/outputs/"]').getAttribute('aria-current'),'page');
+    assert((await page.locator('a[href="/publications/"]').count())>=1,'Outputs link to publications');
+  });
   await check('Research domains and typed Q&A '+width,async()=>{
    await navigate(page,'/research/');await noOverflow(page);
    assert.equal(await page.locator('[data-type="qa"]').count(),1,'Technical Q&A must have an explicit filter');
@@ -212,7 +222,8 @@ try {
   });
   await check('Paper Notes portal '+width,async()=>{
     await navigate(page,'/paper-notes/');await noOverflow(page);
-    assert.equal(await page.locator('#primary-navigation a[href="/paper-notes/"]').count(),1);
+    assert.equal(await page.locator('#primary-navigation a[href="/research/"]').getAttribute('aria-current'),'page');
+     assert.equal(await page.locator('.section-nav a[href="/paper-notes/"]').getAttribute('aria-current'),'page');
     const cards=page.locator('.pn-item');
     assert((await cards.count())>=15,'The independent portal should reuse the canonical paper collection');
     await page.locator('#pn-search').fill('HIL-SERL');
