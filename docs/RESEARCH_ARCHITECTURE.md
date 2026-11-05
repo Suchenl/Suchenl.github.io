@@ -67,3 +67,10 @@
 - `web/src/lib/knowledge-network.ts` 汇集真实分类与显式 Markdown 链接；`web/src/scripts/knowledge-network.ts` 提供统一 RAF 视角、平移/缩放、拖动节点、局部高亮和本机学习标记。
 - 不再从 `knowledge/graph-roadmap.json` 生成规划节点，该规划文件已删除。AI 功能仅复制已有知识的深入学习提示词。
 - 参考研究设计：Obsidian Graph、InfraNodus、Heptabase；行为与准确性以实际自动化验收为准。
+
+## Knowledge Atlas 渐进式交互与边的来源（2026-11-05）
+
+- 概览显示真实领域、已有专题与按文内链接度选择的部分知识条目，不是对全部知识做遗漏统计；完整网络展示全部公开正文。
+- 领域、局部、完整三种探索路径会调整可见节点及连线；布局依旧来自已有引用和分类，但展示阶段隐藏不必要的领域放射线。
+- 每条关系保留 `evidence`、`sourceHref`，并明确区分 `belongs_to`、`topic_contains`、`references`、`semantic`、`reading_step`。目录关系绝不能冒充人工语义判断。
+- 搜索结果必须可点击且有可复原的源 URL；选中节点详情包含关联说明和真实来源。未收录的领域不生成占位节点。

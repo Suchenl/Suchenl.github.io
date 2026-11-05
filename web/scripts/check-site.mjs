@@ -145,10 +145,16 @@ check(knowledge.includes('id="kn-svg"') && knowledge.includes('id="kn-search"') 
 const graphMatch=knowledge.match(/<script\b(?=[^>]*id="kn-data")[^>]*>([\s\S]*?)<\/script>/);
 let graphData=null;
 try{graphData=graphMatch?JSON.parse(graphMatch[1]):null;}catch{}
-check(Boolean(graphData)&&graphData.layout==='relationship-force-v1',
+check(Boolean(graphData)&&graphData.layout==='relationship-force-v2',
   'Knowledge network uses a deterministic, relation-driven layout');
 if(graphData){
   const byId=new Map(graphData.nodes.map(n=>[n.id,n]));
+  check(graphData.edges.every(e=>typeof e.evidence==='string'&&e.evidence.length>0&&
+    typeof e.sourceHref==='string'&&e.sourceHref.startsWith('/research/'))&&
+    graphData.edges.some(e=>e.kind==='topic_contains')&&
+    graphData.edges.some(e=>e.kind==='references')&&
+    graphData.edges.some(e=>e.kind==='reading_step'),
+    'All visible relations have authored evidence; topic membership and reading routes have distinct types');
   const all=graphData.nodes;
   const links=new Set(graphData.edges.map(e=>[e.from,e.to].sort().join('|')));
   const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);

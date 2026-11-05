@@ -50,11 +50,21 @@ try {
    assert.equal(graph.nodes.some(node=>node.id.startsWith('planned:')),false,'No speculative nodes may be rendered');
    assert(graph.nodes.every(node=>node.kind==='area'||node.id.startsWith('doc:')),'Every node must be an area with articles or an actual Markdown note');
    assert.equal(await page.locator('.kn-node').count(),graph.nodes.length,'Rendered graph exactly matches source data');
+   const overviewCount=await page.locator('.kn-node:not(.is-hidden)').count();
+   assert(overviewCount<graph.nodes.length && overviewCount>=graph.stats.areas,
+    'Overview hides low-priority details without removing published notes');
+   assert.equal(await page.locator('[data-kn-view="overview"]').getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('.kn-edge-belongs_to:not(.is-hidden)').count()>0,true,'Overview uses a few real domain-assignment edges');
    assert.equal(await page.locator('[data-kn-filter="empty"]').count(),0,'No empty-theme filter');
    assert((await page.locator('.kn-node-topic').count())>=3,'Actual topic overview files become nodes');
    await page.locator('#kn-search').fill('深度');
-   assert((await page.locator('.kn-node:not(.is-dim)').count())>=1,'Search finds existing depth content');
+   assert((await page.locator('.kn-search-option').count())>=1,'Search offers clickable source-backed results');
+   assert((await page.locator('.kn-node:not(.is-hidden):not(.is-dim)').count())>=1,'Search keeps visible relevant areas/topics');
    await page.locator('#kn-search').fill('');
+   await page.locator('[data-kn-view="all"]').click();
+   assert.equal(await page.locator('.kn-node:not(.is-hidden)').count(),graph.nodes.length,'Full-network lens reveals all real nodes');
+   await page.locator('[data-kn-view="overview"]').click();
+   assert.equal(await page.locator('.kn-node:not(.is-hidden)').count(),overviewCount,'Returning to overview restores progressive disclosure');
    await page.locator('#kn-reset').click();
    const world=page.locator('#kn-world');
    await page.locator('#kn-zoom-in').click();
@@ -66,6 +76,9 @@ try {
    await page.keyboard.press('Enter');
    assert((await page.locator('#kn-detail-title').innerText()).includes('机器人控制'),'Keyboard focus opens actual knowledge');
    assert((await page.locator('#kn-sources a[href="/research/topics/robot-control/"]').count())===1,'Original topic link preserved');
+   assert(await page.locator('#kn-back').isVisible(),'Local lens provides a return path');
+   assert((await page.locator('#kn-connections .kn-connection-item').count())>=1,'Inspector lists source-backed relations');
+   assert((await page.locator('#kn-connections .kn-connection-source').count())>=1,'Relations expose a real source link');
    assert(await page.locator('#kn-ai-prompt').isVisible(),'AI deep-dive task is available on real notes');
    await page.locator('#kn-studied').click();
    assert.equal(await page.locator('#kn-detail-progress').innerText(),'已学习','Study mark is independent of published content');
@@ -75,6 +88,11 @@ try {
    await page.locator('[data-kn-filter="all"]').click();
    await page.locator('#kn-close').click();
    assert.equal(await page.locator('#kn-inspector').isVisible(),false,'Details dismiss without navigating away');
+   await page.locator('[data-kn-select="area:robotics"]').click();
+   assert((await page.locator('.kn-node:not(.is-hidden)').count())>4,'Area view expands real documents');
+   assert((await page.locator('#kn-detail-title').innerText()).includes('机器人'),'Area expansion opens a real domain');
+   await page.locator('#kn-back').click();
+   assert.equal(await page.locator('.kn-node:not(.is-hidden)').count(),overviewCount,'Back returns to overview');
    await noOverflow(page);
    if(width===1440)await page.screenshot({path:'visual-qa/knowledge-atlas-desktop.png',fullPage:true});
   });
