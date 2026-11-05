@@ -156,3 +156,17 @@
 .rkd-top-return:hover{text-decoration:underline;text-underline-offset:3px}
 .rkd-top-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 .rkd-top-return+.rkd-breadcrumb{margin-top:.55rem}
+
+
+/* Topic steps come from authored README metadata, not guessed prerequisites. */
+.rkd-topic-sequence{max-width:1000px;margin:.7rem 0 1.25rem;display:grid;gap:.55rem}
+.rkd-sequence-row{border:1px solid var(--border);border-radius:11px;background:var(--surface-2);padding:.85rem 1.05rem}
+.rkd-sequence-context{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;font-size:.74rem;line-height:1.6;color:var(--fg-muted)}
+.rkd-sequence-context a{font-weight:780;color:var(--accent-ink)}
+.rkd-sequence-context strong{color:var(--fg);font-weight:690}
+.rkd-sequence-row>p{color:var(--fg-muted);font-size:.74rem;line-height:1.7;margin:.32rem 0 .62rem}
+.rkd-sequence-actions{display:flex;flex-wrap:wrap;align-items:start;gap:.55rem}
+.rkd-sequence-actions>a{display:flex;flex-direction:column;gap:.15rem;border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:.46rem .62rem;max-width:300px;color:var(--accent-ink);font-size:.7rem;font-weight:760;line-height:1.5}
+.rkd-sequence-actions>a:hover{border-color:var(--border-strong);text-decoration:none}
+.rkd-sequence-name{color:var(--fg-muted);font-size:.65rem;font-weight:500;line-height:1.5}
+.rkd-sequence-finish{font-size:.7rem;color:var(--fg-muted);padding:.45rem 0}
