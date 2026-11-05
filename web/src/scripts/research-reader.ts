@@ -11,7 +11,28 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
       // Only a visit from the filtered library should override it with the exact
       // filter/search state; Paper Notes has its own independent return portal.
       const hasLibraryContext = Boolean(validFrom || params.has('q') || params.has('status') || params.has('sort') || params.has('type'));
-      if (hasLibraryContext) {
+      if (params.get('source') === 'knowledge') {
+        // Only restore an allowlisted subset of the user's Knowledge filters.
+        // Never interpret query parameters as an arbitrary return URL.
+        const ret = new URL('/knowledge/',window.location.origin);
+        const scope = params.get('scope') || '';
+        if (scope.length <= 120 && /^[a-z0-9-]+(?:\/[\u3400-\u9fffA-Za-z0-9-]+)?$/.test(scope))
+          ret.searchParams.set('scope',scope);
+        const kind = params.get('type') || '';
+        if (['topic','review','paper','qa','exploration','path','glossary','plan'].includes(kind))
+          ret.searchParams.set('type',kind);
+        const query = params.get('q') || '';
+        if (query) ret.searchParams.set('q',query.slice(0,200));
+        const limit = Number(params.get('limit'));
+        if (Number.isInteger(limit) && limit > 12 && limit <= 96 && limit % 12 === 0)
+          ret.searchParams.set('limit',String(limit));
+        ret.hash = 'knowledge-browser';
+        back.href = ret.pathname + ret.search + ret.hash;
+        const zh = back.querySelector<HTMLElement>('[data-l="zh"]');
+        const en = back.querySelector<HTMLElement>('[data-l="en"]');
+        if (zh) zh.textContent = '← 返回知识库（保留筛选）';
+        if (en) en.textContent = '← Back to filtered library';
+      } else if (hasLibraryContext) {
         const ret = new URL('/research/',window.location.origin);
         if (validFrom && from !== 'all') ret.searchParams.set('folder',from);
         const q=params.get('q'),status=params.get('status'),sort=params.get('sort');
@@ -23,7 +44,10 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
       }
       if(params.get('source') === 'paper-notes') {
         back.href='/paper-notes/';
-        back.textContent='← 返回论文解读';
+        const zh = back.querySelector<HTMLElement>('[data-l="zh"]');
+        const en = back.querySelector<HTMLElement>('[data-l="en"]');
+        if (zh) zh.textContent='← 返回论文解读';
+        if (en) en.textContent='← Back to paper notes';
       }
     }
     const articleId = reader.dataset.documentId || '';

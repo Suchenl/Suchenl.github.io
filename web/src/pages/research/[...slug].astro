@@ -37,6 +37,9 @@ const category = data.domains?.[0];
 const folderHref = category ? '/research/?folder=' + encodeURIComponent('domain:' + category) : '/research/';
 const matchingArea = domainCatalog.find(area=>category && (category===area.id || category.startsWith(area.id+'/')));
 const areaHref = matchingArea ? '/research/domains/'+matchingArea.slug+'/' : folderHref;
+const knowledgeAreaHref = matchingArea ? '/knowledge/?scope='+encodeURIComponent(matchingArea.slug)+'#knowledge-browser' : '/knowledge/';
+const subarea = category?.split('/')[1];
+const knowledgeSubareaHref = matchingArea && subarea ? '/knowledge/?scope='+encodeURIComponent(matchingArea.slug+'/'+subarea)+'#knowledge-browser' : knowledgeAreaHref;
 const statusLabel: Record<string, string> = { 'to-read': '想读', reading: '在读', read: '已读', untracked: '未标记' };
 const outLinks = Object.entries(data.links || {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string' && /^https?:\/\//.test(pair[1]));
 const sourceLabels: Record<string, string> = { arxiv: 'arXiv', pdf: 'PDF', project: '项目主页', code: '代码' };
@@ -94,9 +97,10 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
   <div class="rkd-page" id="research-reader" data-document-id={entry.id} data-document-title={title}>
     <div class="rkd-progress" id="reading-progress" aria-hidden="true"></div>
     <nav class="rkd-breadcrumb" aria-label="位置">
-      <a href="/research/">研究</a><span aria-hidden="true">/</span>
-      {matchingArea ? <><a href={areaHref}>{matchingArea.id}</a><span aria-hidden="true">/</span></> : (category ? <><a href={folderHref}>{domainTitle(category)}</a><span aria-hidden="true">/</span></> : null)}
-      {isPaper ? <a href="/paper-notes/">论文解读</a> : <span>{kind}</span>}
+      <a href="/knowledge/"><span data-l="zh">知识库</span><span data-l="en">Knowledge</span></a><span aria-hidden="true">/</span>
+      {matchingArea && <><a href={knowledgeAreaHref}><span data-l="zh">{matchingArea.id}</span><span data-l="en">{matchingArea.en}</span></a><span aria-hidden="true">/</span></>}
+      {subarea && matchingArea && <><a href={knowledgeSubareaHref}>{subarea}</a><span aria-hidden="true">/</span></>}
+      {isPaper ? <a href="/knowledge/?type=paper#knowledge-browser"><span data-l="zh">论文解读</span><span data-l="en">Paper notes</span></a> : <span>{kind}</span>}
     </nav>
     <header class="rkd-head">
       <div class="rkd-kicker">{kind} <span aria-hidden="true">·</span> 约 {minutes} 分钟阅读</div>
@@ -105,7 +109,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       {data.summaryZh && <p class="rkd-description">{data.summaryZh}</p>}
       {isPaper && (
         <div class="rkd-meta">
-          {(data.categories || []).map(cat => <a href={'/research/?folder=' + encodeURIComponent('cat:' + cat)}>{cat.replaceAll('/', ' / ')}</a>)}
+          {(data.categories || []).map(cat => <span>{cat.replaceAll('/', ' / ')}</span>)}
           {data.status && <span>阅读状态：{statusLabel[data.status] || data.status}</span>}
           {data.rating && data.rating > 0 && <span>评分 {data.rating}/5</span>}
         </div>
@@ -247,7 +251,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
           </section>
         )}
         <div class="rkd-foot">
-          <a id="research-return" href={areaHref}>← 返回所属研究领域</a>
+          <a id="research-return" href="/knowledge/"><span data-l="zh">← 返回知识库</span><span data-l="en">← Back to library</span></a>
           <a href={editSource} target="_blank" rel="noopener noreferrer">编辑或完善笔记 ↗</a>
         </div>
       </article>
