@@ -57,6 +57,7 @@ try {
    await page.locator('#kl-search').fill('机器人控制');
    assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Search finds existing note titles');
    await page.locator('#kl-search').fill('');
+   await page.locator('.kl-tree-domain').filter({has:page.locator('[data-kl-scope="robotics"]')}).locator('summary').click();
    await page.locator('.kl-tree [data-kl-scope="robotics"]').click();
    const field=page.locator('.kl-note:not([hidden])');
    assert((await field.count())>=1,'Domain navigation filters real notes');
