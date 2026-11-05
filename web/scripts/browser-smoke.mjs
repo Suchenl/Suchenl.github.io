@@ -85,6 +85,7 @@ try {
    assert(await page.locator('#kn-ai-prompt').isVisible(),'AI deep-dive task is available on real notes');
    await page.locator('#kn-studied').click();
    assert.equal(await page.locator('#kn-detail-progress').innerText(),'已学习','Study mark is independent of published content');
+   if(width===1440)await page.screenshot({path:'visual-qa/knowledge-atlas-local-study.png',fullPage:true});
    assert.equal(await page.locator('.kn-node.is-studied').count(),1,'Study mark highlights one actual note');
    await page.locator('[data-kn-filter="paper"]').click();
    assert.equal(await page.locator('[data-kn-filter="paper"]').getAttribute('aria-pressed'),'true');
