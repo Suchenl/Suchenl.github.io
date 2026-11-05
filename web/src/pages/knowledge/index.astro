@@ -19,7 +19,7 @@ const records = source
       search:[title,e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
       labelZh:labelZh[type]||'文章',labelEn:labelEn[type]||'Note'};
   }).sort((a,b)=>{
-    const priority=(e:typeof records[number])=>e.topic?0:e.type==='review'?1:e.type==='path'?2:e.type==='qa'?3:e.type==='exploration'?4:e.type==='paper'?5:6;
+    const priority=(e:{topic:boolean;type:string})=>e.topic?0:e.type==='review'?1:e.type==='path'?2:e.type==='qa'?3:e.type==='exploration'?4:e.type==='paper'?5:6;
     return priority(a)-priority(b)||a.title.localeCompare(b.title,'zh');
   });
 const domainEntries=taxonomy.domains.map(d=>{
@@ -33,9 +33,6 @@ const domainEntries=taxonomy.domains.map(d=>{
 const firstByDomain=domainEntries.map(d=>({
   ...d,featured:d.items.filter(e=>e.topic).slice(0,3)
 })); 
-const typeCounts=['topic','review','paper','qa','exploration','glossary','path','plan']
-  .map(k=>({type:k,count:records.filter(e=>e.type===k).length}))
-  .filter(x=>x.count>0);
 ---
 <Base title="知识库" description="浏览个人公开知识库：按领域与专题逐层查找，也可以直接搜索论文解读、概念、技术问答与研究探索。">
   <div class="kl-page" id="kl-page">
@@ -66,12 +63,12 @@ const typeCounts=['topic','review','paper','qa','exploration','glossary','path',
           <h3><span data-l="zh">{d.id}</span><span data-l="en">{d.en}</span></h3>
           <p><span data-l="zh">{d.description}</span><span data-l="en">{d.descriptionEn}</span></p>
           <div class="kl-domain-topics">
-            {d.children.slice(0,3).map(c=><button type="button" class="kl-quick-topic" data-kl-scope={c.slug} data-kl-name-zh={c.name} data-kl-name-en={c.name}>
+            {d.children.slice(0,3).map(c=><button type="button" class="kl-quick-topic" data-kl-scope={c.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name} data-kl-name-zh={c.name} data-kl-name-en={c.name}>
               <span>{c.name}</span><span class="kl-domain-topic-count">{c.count}</span>
             </button>)}
           </div>
           <div class="kl-domain-bottom">
-            <button type="button" class="kl-enter" data-kl-scope={d.slug} data-kl-name-zh={d.id} data-kl-name-en={d.en}>
+            <button type="button" class="kl-enter" data-kl-scope={d.slug} data-kl-domain-id={d.id} data-kl-name-zh={d.id} data-kl-name-en={d.en}>
               <span data-l="zh">查看该领域全部内容</span><span data-l="en">Browse this field</span><span aria-hidden="true">→</span>
             </button>
           </div>
@@ -97,10 +94,10 @@ const typeCounts=['topic','review','paper','qa','exploration','glossary','path',
                 <small>{d.items.length}</small>
               </summary>
               <div class="kl-tree-children">
-                <button type="button" data-kl-scope={d.slug} data-kl-name-zh={d.id} data-kl-name-en={d.en} aria-pressed="false">
+                <button type="button" data-kl-scope={d.slug} data-kl-domain-id={d.id} data-kl-name-zh={d.id} data-kl-name-en={d.en} aria-pressed="false">
                   <span data-l="zh">全部条目</span><span data-l="en">All in this field</span><small>{d.items.length}</small>
                 </button>
-                {d.children.map(c=><button type="button" data-kl-scope={c.slug} data-kl-name-zh={c.name} data-kl-name-en={c.name} aria-pressed="false">
+                {d.children.map(c=><button type="button" data-kl-scope={c.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name} data-kl-name-zh={c.name} data-kl-name-en={c.name} aria-pressed="false">
                   <span>{c.name}</span><small>{c.count}</small>
                 </button>)}
               </div>
@@ -123,7 +120,7 @@ const typeCounts=['topic','review','paper','qa','exploration','glossary','path',
             <label class="kl-type-filter">
               <span data-l="zh">类型</span><span data-l="en">Type</span>
               <select id="kl-type" aria-label="按内容类型筛选">
-                <option value="all"><span>全部类型</span></option>
+                <option value="all">全部类型</option>
                 <option value="topic">专题</option>
                 <option value="review">综述</option>
                 <option value="paper">论文解读</option>
