@@ -10,8 +10,8 @@ if(src){
   const graph=JSON.parse(src.textContent||'{}') as Graph;
   const byId=new Map(graph.nodes.map(n=>[n.id,n]));
   const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
-  const svg=$<unknown as SVGSVGElement>('kn-svg');
-  const world=$<unknown as SVGGElement>('kn-world');
+  const svg=document.getElementById('kn-svg') as unknown as SVGSVGElement;
+  const world=document.getElementById('kn-world') as unknown as SVGGElement;
   const viewport=$<HTMLDivElement>('kn-viewport');
   const panel=$<HTMLElement>('kn-inspector');
   const search=$<HTMLInputElement>('kn-search');
@@ -204,7 +204,7 @@ if(src){
       if(n){
         $('kn-tooltip-title').textContent=title(n);
         $('kn-tooltip-kind').textContent=kindLabel(n).toLocaleUpperCase();
-        tooltip.hidden=false;
+        tooltip.hidden=!e;
         if(e)placeTooltip(e);
       }
     }else tooltip.hidden=true;
