@@ -1,103 +1,172 @@
 import { getCollection } from 'astro:content';
 import taxonomy from '../../../knowledge/taxonomy.json';
-import roadmap from '../../../knowledge/graph-roadmap.json';
-import { domainMatches } from './research-taxonomy';
 
 export type KnowledgeResource = { title: string; href: string; kind: string };
 export type KnowledgeNode = {
-  id: string; kind: 'root'|'area'|'topic'; parent?: string;
+  id: string; kind: 'area' | 'topic' | 'document'; parent?: string;
   titleZh: string; titleEn: string; shortZh: string; shortEn: string;
   descriptionZh: string; descriptionEn: string;
-  phase: 'ready'|'partial'|'empty'; count: number; href: string;
-  resources: KnowledgeResource[]; x: number; y: number; planned: boolean;
+  contentType: string; count: number; href: string; resources: KnowledgeResource[];
+  color: string; x: number; y: number; radius: number; group: string;
 };
-export type KnowledgeEdge = { from: string; to: string; kind: 'hierarchy'|'related'; source?: string };
-const clusterPositions = [
-  {x:145,y:126},{x:420,y:126},{x:700,y:126},{x:975,y:126},
-  {x:145,y:463},{x:420,y:463},{x:700,y:463},{x:975,y:463}
+export type KnowledgeEdge = {
+  from: string; to: string; kind: 'belongs_to' | 'references';
+};
+const PALETTE = ['#79b6ff','#a89cfa','#65d6bd','#f2b872'];
+const CENTERS = [
+  {x:330,y:260},{x:980,y:260},{x:330,y:690},{x:980,y:690}
 ];
-const itemXOffset = (length:number, index:number) => length===1 ? 0 : length===2 ? [-64,64][index] : [-88,0,88][index];
-const entryHref = (id:string) => '/research/'+(id.endsWith('/README') ? id.slice(0,-7) : id)+'/';
-
-export async function createKnowledgeNetwork() {
-  const entries = await getCollection('knowledge');
-  const docs = entries.filter(e => (e.data.domains || []).length > 0 && !e.id.endsWith('papers/README') && !e.id.endsWith('topics/README'));
-  const totalPublic = docs.length;
-  const inDomain = (name:string) => docs.filter(e => domainMatches(e.data.domains,name));
-  const resources = (items:typeof docs):KnowledgeResource[] => {
-    const ordered = [...items].sort((a,b)=>{
-      const score=(e:typeof docs[number])=>e.id.startsWith('topics/')&&e.id.endsWith('/README')?0:e.data.contentType==='review'?1:e.data.contentType==='path'?2:e.data.contentType==='qa'?3:4;
-      return score(a)-score(b);
-    });
-    return ordered.slice(0,5).map(e=>({
-      title:e.data.shortName || e.data.title || (e.body||'').match(/^#\s+(.+)$/m)?.[1] || e.id,
-      href:entryHref(e.id),kind:e.data.contentType || 'review'
-    }));
+const WORLD = {width:1310,height:960};
+const clean = (value:string) => value.replace(/^\s+|\s+$/g,'');
+const entryHref = (id:string) => '/research/' +
+  (id.endsWith('/README') ? id.slice(0,-'/README'.length) : id) + '/';
+function stableHash(text:string){
+  let h=2166136261;
+  for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619);
+  return h>>>0;
+}
+function shortTitle(text:string,max=15){
+  const t=clean(text.replace(/\s*[:：]\s*/g,' · '));
+  return Array.from(t).length>max?Array.from(t).slice(0,max-1).join('')+'…':t;
+}
+function resolveNoteLink(sourceId:string,link:string){
+  let raw=link.trim().replace(/^<|>$/g,'').split(/\s+["']/)[0].split(/[?#]/)[0];
+  if(!raw||/^(https?:|mailto:|data:|javascript:)/i.test(raw))return null;
+  let bits:string[];
+  if(raw.startsWith('/research/')){
+    bits=raw.slice('/research/'.length).split('/');
+  }else if(raw.startsWith('/')){
+    return null;
+  }else{
+    bits=[...sourceId.split('/').slice(0,-1),...raw.split('/')];
+  }
+  const normalized:string[]=[];
+  for(const part of bits){
+    if(!part||part==='.')continue;
+    if(part==='..')normalized.pop();
+    else normalized.push(part);
+  }
+  return normalized.join('/').replace(/\.md$/,'').replace(/\/$/,'');
+}
+export async function createKnowledgeNetwork(){
+  const entries=(await getCollection('knowledge')).filter(e=>e.id!=='topics/README'&&
+    e.id!=='papers/README'&&e.id!=='glossary/README'&&e.id!=='research/README'&&
+    e.id!=='paths/README');
+  // A node is permitted only when its underlying public Markdown actually exists.
+  // A category is permitted only when at least one such article is assigned to it.
+  const eligible=entries.filter(e=>e.data.domains?.length||
+    /^topics\/[^/]+\/README$/.test(e.id));
+  const topics=eligible.filter(e=>/^topics\/[^/]+\/README$/.test(e.id));
+  const indexed=new Map(eligible.map(e=>[e.id,e]));
+  const titleOf=(e:typeof eligible[number])=>e.data.title||
+    (e.body||'').match(/^#\s+(.+)$/m)?.[1]||e.id;
+  const firstDomain=(e:typeof eligible[number])=>(e.data.domains||[])[0]?.split('/')[0]||'';
+  const areaIndex=new Map(taxonomy.domains.map((d,i)=>[d.id,i]));
+  const roots=taxonomy.domains.filter(domain=>eligible.some(e=>
+    (e.data.domains||[]).some(d=>d===domain.id||d.startsWith(domain.id+'/'))));
+  const areas=roots.map((area)=>taxonomy.domains.indexOf(area));
+  const nodes:KnowledgeNode[]=[];
+  const edges:KnowledgeEdge[]=[];
+  const used=new Set<string>();
+  const addEdge=(from:string,to:string,kind:KnowledgeEdge['kind'])=>{
+    if(from===to)return;
+    const key=[from,to].sort().join('::');
+    if(used.has(key))return;
+    used.add(key);edges.push({from,to,kind});
   };
-  const nodes:KnowledgeNode[] = [{
-    id:'knowledge:root', kind:'root', titleZh:'个人知识体系', titleEn:'Knowledge System',
-    shortZh:'知识体系',shortEn:'Knowledge',descriptionZh:'一张连接公开知识、学习路径与待建设方向的地图。',descriptionEn:'A map of published knowledge and future learning directions.',
-    phase:'partial', count:totalPublic, href:'/knowledge/', resources:[],x:560,y:335,planned:false
-  }];
-  const edges:KnowledgeEdge[] = [];
-  for(const [i,area] of taxonomy.domains.entries()){
-    const at=clusterPositions[i];
-    const areaId='research:'+area.id;
-    const list=inDomain(area.id);
-    const children=area.children.map(child=>({name:child,list:inDomain(area.id+'/'+child)}));
-    const covered=children.filter(c=>c.list.length>0).length;
-    const short=roadmap.researchLabels[area.id as keyof typeof roadmap.researchLabels];
+  for(const area of roots){
+    const index=areaIndex.get(area.id)??0;
+    const members=eligible.filter(e=>(e.data.domains||[]).some(
+      d=>d===area.id||d.startsWith(area.id+'/')));
     nodes.push({
-      id:areaId,kind:'area',titleZh:area.id,titleEn:area.en,shortZh:short.zh,shortEn:short.en,
-      descriptionZh:area.description,descriptionEn:area.descriptionEn,
-      phase:covered===0?'empty':covered===children.length?'ready':'partial',
-      count:list.length, href:'/research/domains/'+area.slug+'/',resources:resources(list),
-      x:at.x,y:at.y,planned:false
-    });
-    edges.push({from:'knowledge:root',to:areaId,kind:'hierarchy'});
-    children.forEach((child,j)=>{
-      const id=areaId+'/'+child.name;
-      const label=short.topics[child.name as keyof typeof short.topics] as {zh:string;en:string};
-      nodes.push({
-        id,kind:'topic',parent:areaId,titleZh:child.name,titleEn:label?.en || child.name,
-        shortZh:label?.zh || child.name.slice(0,5),shortEn:label?.en || child.name,
-        descriptionZh:'按当前公开 Markdown 的 domains 分类统计。',descriptionEn:'Counted from published, categorized Markdown.',
-        phase:child.list.length?'ready':'empty',count:child.list.length,
-        href:child.list.length?entryHref((child.list.find(e=>e.id.endsWith('/README')) || child.list[0]).id):'',
-        resources:resources(child.list),x:at.x+itemXOffset(children.length,j),y:at.y+90,planned:false
-      });
-      edges.push({from:areaId,to:id,kind:'hierarchy'});
+      id:'area:'+area.slug,kind:'area',titleZh:area.id,titleEn:area.en,
+      shortZh:area.id,shortEn:area.en,descriptionZh:area.description,
+      descriptionEn:area.descriptionEn,contentType:'area',count:members.length,
+      href:'/research/domains/'+area.slug+'/',
+      resources:members.slice(0,6).map(e=>({title:titleOf(e),href:entryHref(e.id),
+        kind:e.data.contentType||'review'})),
+      color:PALETTE[index],x:CENTERS[index].x,y:CENTERS[index].y,
+      radius:17,group:area.id
     });
   }
-  for(const [i,area] of roadmap.futureDomains.entries()){
-    const at=clusterPositions[i+taxonomy.domains.length];
-    const areaId='planned:'+area.id;
+  for(const e of eligible){
+    const primary=firstDomain(e);
+    const groupIdx=areaIndex.get(primary)??0;
+    const areaId='area:'+(taxonomy.domains[groupIdx]?.slug||'');
+    const isTopic=/^topics\/[^/]+\/README$/.test(e.id);
+    const title=titleOf(e);
     nodes.push({
-      id:areaId,kind:'area',titleZh:area.zh,titleEn:area.en,shortZh:area.shortZh,shortEn:area.shortEn,
-      descriptionZh:area.descriptionZh,descriptionEn:area.descriptionEn,
-      phase:'empty',count:0,href:'',resources:[],x:at.x,y:at.y,planned:true
+      id:'doc:'+e.id,kind:isTopic?'topic':'document',parent:areaId,
+      titleZh:title,titleEn:title,
+      shortZh:isTopic?(e.data.shortName||shortTitle(title,16)):shortTitle(e.data.shortName||title,18),
+      shortEn:isTopic?(e.data.shortName||shortTitle(title,16)):shortTitle(e.data.shortName||title,18),
+      descriptionZh:e.data.summaryZh||'已公开的知识正文，点击进入阅读。',
+      descriptionEn:e.data.summaryZh||'A published knowledge note. Open the article to read.',
+      contentType:e.data.contentType||'review',count:1,href:entryHref(e.id),
+      resources:[{title,href:entryHref(e.id),kind:e.data.contentType||'review'}],
+      color:PALETTE[groupIdx],x:0,y:0,radius:isTopic?10:4.2,group:primary
     });
-    edges.push({from:'knowledge:root',to:areaId,kind:'hierarchy'});
-    area.topics.forEach((topic,j)=>{
-      const id=areaId+'/'+topic.id;
-      nodes.push({
-        id,kind:'topic',parent:areaId,titleZh:topic.zh,titleEn:topic.en,
-        shortZh:topic.shortZh,shortEn:topic.en,
-        descriptionZh:'公开规划中的候选知识主题，尚无经过审核的正文。',
-        descriptionEn:'A proposed topic without reviewed public material.',
-        phase:'empty',count:0,href:'',resources:[],
-        x:at.x+itemXOffset(area.topics.length,j),y:at.y+90,planned:true
-      });
-      edges.push({from:areaId,to:id,kind:'hierarchy'});
+    // An area connection is backed by the entry's explicit domains metadata.
+    for(const domain of e.data.domains||[]){
+      const root=taxonomy.domains.find(d=>domain===d.id||domain.startsWith(d.id+'/'));
+      if(root)addEdge('area:'+root.slug,'doc:'+e.id,'belongs_to');
+    }
+  }
+  const byId=new Map(nodes.map(n=>[n.id,n]));
+  // Arrange real nodes around existing research areas, with deterministic positions.
+  // The layout is stable across builds and never creates placeholder subjects.
+  for(const area of roots){
+    const hub=nodes.find(n=>n.id==='area:'+area.slug)!;
+    const children=nodes.filter(n=>n.kind!=='area'&&n.group===area.id)
+      .sort((a,b)=>Number(b.kind==='topic')-Number(a.kind==='topic')||
+        stableHash(a.id)-stableHash(b.id));
+    children.forEach((n,i)=>{
+      const topic=n.kind==='topic';
+      const h=stableHash(n.id)/4294967296;
+      const angle=i*2.399963229728653+0.5+h*0.18;
+      const radius=topic?74+i*13:84+Math.sqrt(i+2)*24;
+      const r=Math.min(radius,238);
+      n.x=hub.x+Math.cos(angle)*r;
+      n.y=hub.y+Math.sin(angle)*r*.87;
     });
   }
-  const known=new Set(nodes.map(n=>n.id));
-  for(const link of roadmap.crossLinks){
-    if(known.has(link.from)&&known.has(link.to))edges.push({from:link.from,to:link.to,kind:'related',source:link.source});
+  // A link is drawn only if the author linked an existing Markdown article.
+  for(const e of eligible){
+    const id='doc:'+e.id;
+    for(const relation of e.data.related||[]){
+      if(indexed.has(relation.ref))addEdge(id,'doc:'+relation.ref,'references');
+    }
+    for(const match of (e.body||'').matchAll(/\]\(([^)]+)\)/g)){
+      const raw=resolveNoteLink(e.id,match[1]);
+      if(!raw)continue;
+      const target=indexed.has(raw)?raw:indexed.has(raw+'/README')?raw+'/README':null;
+      if(target)addEdge(id,'doc:'+target,'references');
+    }
+    // Explicitly linked reviews and their real topic overview share a group.
+    const topicName=e.id.match(/^topics\/([^/]+)\/reviews\//)?.[1];
+    const overview=topicName&&'topics/'+topicName+'/README';
+    if(overview&&indexed.has(overview))addEdge('doc:'+overview,id,'references');
   }
-  const topics=nodes.filter(n=>n.kind==='topic');
-  return {
+  // Make node size reflect actual, traceable references rather than invented scores.
+  const degree=new Map<string,number>();
+  for(const edge of edges){
+    if(edge.kind==='references'){
+      degree.set(edge.from,(degree.get(edge.from)||0)+1);
+      degree.set(edge.to,(degree.get(edge.to)||0)+1);
+    }
+  }
+  for(const node of nodes){
+    if(node.kind==='document')node.radius=4.3+Math.min(4,Math.sqrt(degree.get(node.id)||0)*1.5);
+    if(node.kind==='topic')node.radius=9+Math.min(4,Math.sqrt(degree.get(node.id)||0));
+  }
+  const linkedDocs=new Set(edges.filter(e=>e.kind==='references').flatMap(e=>[e.from,e.to]));
+  return{
     nodes,edges,
-    stats:{areas:nodes.filter(n=>n.kind==='area').length, topics:topics.length, ready:topics.filter(n=>n.phase==='ready').length, empty:topics.filter(n=>n.phase==='empty').length, publicDocs:totalPublic}
+    stats:{
+      areas:roots.length,topics:topics.length,documents:eligible.length,
+      links:edges.filter(e=>e.kind==='references').length,
+      isolated:eligible.filter(e=>!linkedDocs.has('doc:'+e.id)).length
+    },
+    world:WORLD
   };
 }
