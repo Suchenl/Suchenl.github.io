@@ -1,201 +1,170 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { createKnowledgeNetwork } from '../../lib/knowledge-network';
-import '../../styles/knowledge-network.css';
+import { getCollection } from 'astro:content';
+import taxonomy from '../../../../knowledge/taxonomy.json';
+import '../../styles/knowledge-library.css';
 
-const graph=await createKnowledgeNetwork();
-const byId=new Map(graph.nodes.map(node=>[node.id,node]));
-const serialized=JSON.stringify(graph).replace(/</g,'\u003c');
-const areas=graph.nodes.filter(n=>n.kind==='area');
-const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get(e.to)!}));
+const source = await getCollection('knowledge');
+const records = source
+  .filter(e => (e.data.domains || []).length > 0 || /^topics\/[^/]+\/README$/.test(e.id))
+  .map(e => {
+    const title=e.data.title || (e.body || '').match(/^#\s+(.+)$/m)?.[1]?.trim() || e.id;
+    const topic=/^topics\/[^/]+\/README$/.test(e.id);
+    const type=topic?'topic':(e.data.contentType || (e.id.startsWith('papers/')?'paper':'review'));
+    const href='/research/'+(e.id.endsWith('/README')?e.id.slice(0,-7):e.id)+'/';
+    const domains=e.data.domains||[];
+    const labelZh:Record<string,string>={topic:'专题',review:'综述',paper:'论文解读',qa:'技术问答',exploration:'问题与探索',plan:'研究计划',glossary:'概念',path:'学习路线'};
+    const labelEn:Record<string,string>={topic:'Topic',review:'Review',paper:'Paper notes',qa:'Q&A',exploration:'Exploration',plan:'Research plan',glossary:'Concept',path:'Learning path'};
+    return {id:e.id,title,href,domains,type,topic,summary:e.data.summaryZh||'',
+      search:[title,e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
+      labelZh:labelZh[type]||'文章',labelEn:labelEn[type]||'Note'};
+  }).sort((a,b)=>{
+    const priority=(e:typeof records[number])=>e.topic?0:e.type==='review'?1:e.type==='path'?2:e.type==='qa'?3:e.type==='exploration'?4:e.type==='paper'?5:6;
+    return priority(a)-priority(b)||a.title.localeCompare(b.title,'zh');
+  });
+const domainEntries=taxonomy.domains.map(d=>{
+  const matches=records.filter(e=>e.domains.some(k=>k===d.id||k.startsWith(d.id+'/')));
+  const children=d.children.map(child=>({
+    name:child, slug:d.slug+'/'+child,
+    count:records.filter(e=>e.domains.some(k=>k===d.id+'/'+child||k.startsWith(d.id+'/'+child+'/'))).length
+  })).filter(c=>c.count>0);
+  return {...d,items:matches,children};
+}).filter(d=>d.items.length>0);
+const firstByDomain=domainEntries.map(d=>({
+  ...d,featured:d.items.filter(e=>e.topic).slice(0,3)
+})); 
+const typeCounts=['topic','review','paper','qa','exploration','glossary','path','plan']
+  .map(k=>({type:k,count:records.filter(e=>e.type===k).length}))
+  .filter(x=>x.count>0);
 ---
-<Base title="个人知识体系" description="真实知识构成的交互式星图：沿着已有文章与明确链接，探索概念、论文、专题和自己的学习进度。">
-  <div class="kn-page" id="kn-page">
-    <header class="kn-intro">
-      <div class="kn-eyebrow"><span class="kn-signal" aria-hidden="true"></span> PERSONAL KNOWLEDGE ATLAS <span class="kn-eyebrow-sep">/</span> SUCHENL</div>
-      <h1><span data-l="zh">知识的形状，始于真实的连接。</span><span data-l="en">Knowledge takes shape through connections.</span></h1>
-      <p><span data-l="zh">这张网络只展示已经收录的公开知识。每个光点都能追溯到真实文章；选择一个节点，探索它所在的知识脉络。</span><span data-l="en">Every point in this atlas represents real, published knowledge. Select a node to explore its sources and connections.</span></p>
-    </header>
-    <section class="kn-explorer" aria-labelledby="kn-title">
-      <div class="kn-explorer-head">
-        <div class="kn-explorer-heading">
-          <div class="kn-small-label">LIVE KNOWLEDGE GRAPH <span class="kn-label-sep">—</span> 01</div>
-          <h2 id="kn-title"><span data-l="zh">知识星图</span><span data-l="en">Knowledge Constellation</span></h2>
-        </div>
-        <div class="kn-stat">
-          <span><strong>{graph.stats.documents}</strong><small><span data-l="zh">真实知识条目</span><span data-l="en">Published notes</span></small></span>
-          <span><strong>{graph.stats.links}</strong><small><span data-l="zh">有来源的引用与关系</span><span data-l="en">Source-backed links</span></small></span>
-          <span><strong>{graph.stats.areas}</strong><small><span data-l="zh">已有知识领域</span><span data-l="en">Active domains</span></small></span>
-        </div>
+<Base title="知识库" description="浏览个人公开知识库：按领域与专题逐层查找，也可以直接搜索论文解读、概念、技术问答与研究探索。">
+  <div class="kl-page" id="kl-page">
+    <header class="kl-hero">
+      <div class="kl-eyebrow"><span class="kl-eyebrow-dot"></span> KNOWLEDGE LIBRARY / SUCHENL</div>
+      <h1><span data-l="zh">把知识整理成容易阅读的样子。</span><span data-l="en">Knowledge, made easy to explore.</span></h1>
+      <p class="kl-lead">
+        <span data-l="zh">从熟悉的领域开始，沿着专题目录阅读；也可以直接搜索一个问题、一篇论文或一个概念。这里展示的都是已经公开的真实内容。</span>
+        <span data-l="en">Start with a field, browse its topics, or search for a question, paper, or concept. Every entry links to an existing public note.</span>
+      </p>
+      <div class="kl-hero-meta">
+        <span><strong>{domainEntries.length}</strong> <span data-l="zh">个知识领域</span><span data-l="en">areas</span></span>
+        <i aria-hidden="true"></i>
+        <span><strong>{records.length}</strong> <span data-l="zh">篇已收录内容</span><span data-l="en">published notes</span></span>
+        <i aria-hidden="true"></i>
+        <a href="/research/"><span data-l="zh">进入研究资料库</span><span data-l="en">Research library</span> <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="kn-viewer" id="kn-viewer" data-kn-view="overview">
-        <div class="kn-toolbar">
-          <div class="kn-lens" role="group" aria-label="知识网络展示视图">
-            <button type="button" class="active" aria-pressed="true" data-kn-view="overview"><span data-l="zh">知识概览</span><span data-l="en">Overview</span></button>
-            <button type="button" aria-pressed="false" data-kn-view="all"><span data-l="zh">完整网络</span><span data-l="en">All notes</span></button>
-          </div>
-          <label class="kn-search-wrap" for="kn-search">
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
-            <input id="kn-search" type="search" autocomplete="off" placeholder="搜索知识、论文或专题…" />
-            <kbd>/</kbd>
-          </label>
-          <div id="kn-search-results" class="kn-search-results" role="listbox" aria-label="搜索结果" hidden></div>
-          <div class="kn-filters" aria-label="筛选现有知识">
-            <button type="button" data-kn-filter="all" class="active" aria-pressed="true"><span data-l="zh">全部</span><span data-l="en">All</span></button>
-            <button type="button" data-kn-filter="topic" aria-pressed="false"><span data-l="zh">专题</span><span data-l="en">Topics</span></button>
-            <button type="button" data-kn-filter="paper" aria-pressed="false"><span data-l="zh">论文</span><span data-l="en">Papers</span></button>
-            <button type="button" data-kn-filter="question" aria-pressed="false"><span data-l="zh">问答与探索</span><span data-l="en">Questions</span></button>
-            <button type="button" data-kn-filter="unstudied" aria-pressed="false"><span data-l="zh">未学习</span><span data-l="en">Not studied</span></button>
-          </div>
-        </div>
-        <div class="kn-canvas-wrap" id="kn-canvas-wrap">
-          <div class="kn-contextbar" id="kn-contextbar" aria-live="polite">
-            <button type="button" id="kn-back" hidden><span aria-hidden="true">←</span> <span data-l="zh">返回知识概览</span><span data-l="en">Back to overview</span></button>
-            <span id="kn-context-label"><span data-l="zh">已收录知识的整体结构 · 点击领域展开</span><span data-l="en">Published knowledge · Select a domain to explore</span></span>
-            <span id="kn-visible-count" aria-hidden="true"></span>
-          </div>
-          <div class="kn-viewport" id="kn-viewport" tabindex="0" role="region" aria-label="交互知识星图。拖动画布平移，滚轮缩放，Tab 选择节点。">
-            <svg class="kn-svg" id="kn-svg" viewBox="0 0 1310 960" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="按已有领域与 Markdown 连接的真实知识网络">
-              <defs>
-                <pattern id="kn-grid" width="28" height="28" patternUnits="userSpaceOnUse">
-                  <circle cx="1" cy="1" r=".65" fill="#9aabc6" fill-opacity=".16"/>
-                </pattern>
-                <radialGradient id="kn-nebula">
-                  <stop offset="0%" stop-color="#92b3ff" stop-opacity=".115"/>
-                  <stop offset="100%" stop-color="#92b3ff" stop-opacity="0"/>
-                </radialGradient>
-                <filter id="kn-blur" x="-80%" y="-80%" width="260%" height="260%">
-                  <feGaussianBlur stdDeviation="8"/>
-                </filter>
-              </defs>
-              <rect width="1310" height="960" fill="url(#kn-grid)" pointer-events="none" />
-              <g id="kn-world">
-                {areas.map(area=><g class="kn-overview-panel" aria-hidden="true">
-                  <rect x={area.overviewX-267} y={area.overviewY-73} width="534" height="372"
-                    rx="24" fill={area.color} fill-opacity=".035"
-                    stroke={area.color} stroke-opacity=".23" stroke-width="1"/>
-                  <path d={'M '+(area.overviewX-237)+' '+(area.overviewY-30)+' h 474'} stroke={area.color} stroke-opacity=".085"/>
-                </g>)}
-                {areas.map(area=><g class="kn-cluster-aura" data-aura={area.id} aria-hidden="true">
-                  <circle cx={area.x} cy={area.y} r="226" fill={area.color} opacity=".045"/>
-                  <circle cx={area.x} cy={area.y} r="143" fill={area.color} opacity=".045" filter="url(#kn-blur)"/>
-                  <circle cx={area.x} cy={area.y} r="226" fill="none" stroke={area.color} stroke-opacity=".16" stroke-dasharray="2 10"/>
-                  <circle cx={area.x} cy={area.y} r="130" fill="none" stroke={area.color} stroke-opacity=".09" />
-                </g>)}
-                <g id="kn-edges">
-                  {links.map(e=><path class:list={['kn-edge','kn-edge-'+e.kind,
-                      (!e.fromNode.featured||!e.toNode.featured)&&'is-hidden']}
-                    data-from={e.from} data-to={e.to}
-                    d={'M '+e.fromNode.overviewX+' '+e.fromNode.overviewY+' L '+e.toNode.overviewX+' '+e.toNode.overviewY}
-                    stroke={e.kind==='belongs_to'?e.toNode.color:e.kind==='semantic'?'#e5c6ff':e.kind==='topic_contains'?'#73c5b4':'#b8d0ee'}
-                    stroke-opacity={e.kind==='belongs_to'?.12:e.kind==='topic_contains'?.26:.40}
-                    stroke-width={e.kind==='semantic'?1.6:1.15}
-                    fill="none" />)}
-                </g>
-                <g id="kn-nodes">
-                  {graph.nodes.map(n=><g
-                    class:list={['kn-node','kn-node-'+n.kind,!n.featured&&'is-hidden',
-                      n.featured&&n.kind==='document'&&'is-key']}
-                    data-node-id={n.id} data-kind={n.kind} data-content-type={n.contentType}
-                    transform={'translate('+n.overviewX+' '+n.overviewY+')'}
-                    style={'--node-color:'+n.color}
-                    role="button" tabindex="0" aria-pressed="false"
-                    aria-label={n.titleZh + '：'+(n.kind==='area'?'知识领域':n.kind==='topic'?'专题':'公开文章')}>
-                    <title>{n.titleZh}</title>
-                    {n.kind==='area'&&<circle class="kn-area-halo" r="34"/>}
-                    <circle class="kn-node-hit" r={n.kind==='area'?32:n.kind==='topic'?24:14}/>
-                    <circle class="kn-node-outer" r={n.radius+5}/>
-                    <circle class="kn-node-core" r={n.radius}/>
-                    <circle class="kn-learned-mark" cx={n.radius+4} cy={-n.radius-4} r="4.4"/>
-                    {n.kind==='document'&&<text class="kn-doc-label" text-anchor="middle" y={n.radius+17}><tspan data-l="zh">{n.shortZh}</tspan><tspan data-l="en">{n.shortEn}</tspan></text>}
-                    {(n.kind==='area'||n.kind==='topic')&&<text class="kn-node-label" text-anchor="middle" y={n.kind==='area'?47:32}>
-                      <tspan data-l="zh">{n.shortZh}</tspan><tspan data-l="en">{n.shortEn}</tspan>
-                    </text>}
-                    {n.kind==='area'&&<text class="kn-area-count" text-anchor="middle" y="-37">{n.count} ENTRIES</text>}
-                  </g>)}
-                </g>
-              </g>
-            </svg>
-            <div id="kn-tooltip" class="kn-tooltip" hidden aria-hidden="true">
-              <span id="kn-tooltip-kind"></span><strong id="kn-tooltip-title"></strong>
-              <small><span data-l="zh">点击查看关联</span><span data-l="en">Select to explore</span></small>
-            </div>
-          </div>
-          <div class="kn-zoom" aria-label="知识图谱视图控制">
-            <button type="button" id="kn-zoom-in" aria-label="放大知识网络" title="Zoom in">+</button>
-            <button type="button" id="kn-zoom-out" aria-label="缩小知识网络" title="Zoom out">−</button>
-            <button type="button" id="kn-reset" aria-label="重置知识网络视角" title="Reset view">
-              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M4 10V4h6M20 14v6h-6M5.3 6.6a9 9 0 0 1 13 1.1M18.7 17.4a9 9 0 0 1-13-1.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
-          <div class="kn-map-caption"><span class="kn-live-dot"></span><span data-l="zh">真实内容 · 可缩放 · 可拖动 · 可聚焦</span><span data-l="en">Real sources · Zoom · Pan · Focus</span></div>
-          <aside class="kn-inspector" id="kn-inspector" hidden aria-label="选中节点的知识详情">
-            <div class="kn-inspector-top"><span id="kn-kind">KNOWLEDGE NODE</span><button type="button" id="kn-close" aria-label="关闭知识详情">×</button></div>
-            <span id="kn-phase" class="kn-inspector-phase">已有公开内容</span>
-            <h3 id="kn-detail-title"></h3>
-            <p id="kn-detail-description"></p>
-            <div class="kn-inspector-metrics">
-              <div><strong id="kn-detail-count">1</strong><span data-l="zh">相关知识条目</span><span data-l="en">Related notes</span></div>
-              <div><strong id="kn-detail-progress">—</strong><span data-l="zh">本机学习状态</span><span data-l="en">Local study status</span></div>
-            </div>
-            <div class="kn-detail-actions">
-              <a id="kn-open" href="/research/"><span data-l="zh">进入知识</span><span data-l="en">Open note</span> ↗</a>
-              <button type="button" id="kn-studied"><span data-l="zh">标记为已学习</span><span data-l="en">Mark as studied</span></button>
-              <button type="button" id="kn-ai-prompt"><span data-l="zh">复制 AI 深入学习任务</span><span data-l="en">Copy AI deep-dive task</span></button>
-            </div>
-            <h4><span data-l="zh">真实来源</span><span data-l="en">Published sources</span></h4>
-            <ul class="kn-sources" id="kn-sources"></ul>
-            <h4><span data-l="zh">直接关联</span><span data-l="en">Direct connections</span></h4>
-            <div class="kn-connections" id="kn-connections"></div>
-            <p class="kn-local-note"><span data-l="zh">学习标记仅存于当前浏览器；AI 任务不会自动修改或发布文章。</span><span data-l="en">Study marks stay in this browser; AI drafts are never auto-published.</span></p>
-            <textarea id="kn-prompt-fallback" readonly rows="5" hidden aria-label="手动复制 AI 学习任务"></textarea>
-            <p id="kn-feedback" role="status" aria-live="polite"></p>
-          </aside>
-        </div>
-        <div class="kn-relation-note" aria-label="知识网络布局说明">
-          <div class="kn-relation-legend">
-            <span><i class="kn-link-legend kn-link-category"></i><span data-l="zh">领域归属</span><span data-l="en">Area membership</span></span>
-            <span><i class="kn-link-legend kn-link-reference"></i><span data-l="zh">正文链接</span><span data-l="en">Text link</span></span>
-            <span><i class="kn-link-legend kn-link-semantic"></i><span data-l="zh">人工注明关系</span><span data-l="en">Typed relation</span></span>
-            <span><i class="kn-link-legend kn-link-topic"></i><span data-l="zh">专题收录</span><span data-l="en">Topic membership</span></span>
-            <span><i class="kn-link-legend kn-link-step"></i><span data-l="zh">学习路径</span><span data-l="en">Learning route</span></span>
-          </div>
-          <details>
-            <summary><span data-l="zh">节点为什么这样排列？</span><span data-l="en">Why are the nodes placed here?</span></summary>
-            <p><span data-l="zh">领域颜色表示元数据归属；正文链接、人工注明关系、专题收录和真实学习路线分别绘制，概览只显示少量领域归属线、深入时隐藏领域放射线。布局由这些已有关系的吸引力和节点防碰撞共同形成；距离不是语义相似度或先修难度的量尺。选择节点可查看每条连接的来源或说明。</span><span data-l="en">Colors denote authored domain metadata. Text links, typed relations, real topic membership and learning-route steps are distinguished; only a handful of area-membership lines appear in the overview. Full and local views hide area spokes. Link forces and repulsion shape the layout, but distance is not a semantic metric. Select a note to inspect connection evidence.</span></p>
-          </details>
-        </div>
-        <div class="kn-viewer-foot">
-          <div class="kn-domain-key">
-            {areas.map((area,i)=><button type="button" data-kn-select={area.id} style={'--key-color:'+area.color}>
-              <i></i><span data-l="zh">{area.titleZh}</span><span data-l="en">{area.titleEn}</span>
+    </header>
+
+    <section class="kl-start" aria-labelledby="kl-start-title">
+      <div class="kl-section-head">
+        <div><p class="kl-kicker">EXPLORE BY FIELD</p><h2 id="kl-start-title"><span data-l="zh">从领域开始</span><span data-l="en">Explore by field</span></h2></div>
+        <p><span data-l="zh">只展示确有公开文章的领域。</span><span data-l="en">Only fields with published articles appear here.</span></p>
+      </div>
+      <div class="kl-domains">
+        {firstByDomain.map((d,i)=><article class="kl-domain-card" style={'--kl-index:'+i} >
+          <div class="kl-domain-top"><span class="kl-domain-icon" aria-hidden="true">{String(i+1).padStart(2,'0')}</span><span class="kl-domain-count">{d.items.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span></div>
+          <h3><span data-l="zh">{d.id}</span><span data-l="en">{d.en}</span></h3>
+          <p><span data-l="zh">{d.description}</span><span data-l="en">{d.descriptionEn}</span></p>
+          <div class="kl-domain-topics">
+            {d.children.slice(0,3).map(c=><button type="button" class="kl-quick-topic" data-kl-scope={c.slug} data-kl-name-zh={c.name} data-kl-name-en={c.name}>
+              <span>{c.name}</span><span class="kl-domain-topic-count">{c.count}</span>
             </button>)}
           </div>
-          <p><span data-l="zh">滚轮缩放 · 拖动平移 · 双击节点聚焦</span><span data-l="en">Scroll to zoom · Drag to pan · Double-click to focus</span></p>
-        </div>
-      </div>
-      <div class="kn-disclaimer"><span data-l="zh">默认只显示领域、实际专题和部分连接较多的知识入口；「完整网络」可查看全部已收录文章，不会增加虚构节点。高亮学习标记只属于当前浏览器，不代表网站作者的公开学习记录。</span><span data-l="en">The overview shows domains, existing topics and connected entry points. All notes reveals the full published network without inventing nodes. Study marks are private to the current browser.</span></div>
-    </section>
-    <section class="kn-directory" id="knowledge-directory">
-      <div class="kn-directory-heading"><div><p class="kn-small-label">KNOWLEDGE AREAS / 02</p><h2><span data-l="zh">从已经收录的领域开始</span><span data-l="en">Explore published knowledge</span></h2></div>
-        <a href="/research/"><span data-l="zh">进入完整研究检索 ↗</span><span data-l="en">Search all research ↗</span></a></div>
-      <div class="kn-directory-grid">
-        {areas.map(area=><article class="kn-area-card" style={'--key-color:'+area.color}>
-          <div class="kn-area-top"><span class="kn-area-dot"></span><span>{area.count} <span data-l="zh">篇已公开内容</span><span data-l="en">published notes</span></span></div>
-          <h3><span data-l="zh">{area.titleZh}</span><span data-l="en">{area.titleEn}</span></h3>
-          <p><span data-l="zh">{area.descriptionZh}</span><span data-l="en">{area.descriptionEn}</span></p>
-          <details class="kn-area-sources"><summary><span data-l="zh">浏览代表性文章</span><span data-l="en">Browse key notes</span></summary>
-            <ul>{area.resources.slice(0,5).map(r=><li><a href={r.href}>{r.title}</a></li>)}</ul>
-          </details>
-          <a href={area.href}><span data-l="zh">进入完整领域</span><span data-l="en">Explore full area</span> ↗</a>
+          <div class="kl-domain-bottom">
+            <button type="button" class="kl-enter" data-kl-scope={d.slug} data-kl-name-zh={d.id} data-kl-name-en={d.en}>
+              <span data-l="zh">查看该领域全部内容</span><span data-l="en">Browse this field</span><span aria-hidden="true">→</span>
+            </button>
+          </div>
         </article>)}
       </div>
     </section>
-    <section class="kn-footer-note">
-      <div><p class="kn-small-label">GROW THE NETWORK / 03</p><h2><span data-l="zh">知识从真实内容开始生长。</span><span data-l="en">Grow the network from real knowledge.</span></h2></div>
-      <p><span data-l="zh">后续新增数学、工程或其他领域的公开知识时，先建立经过核验的正文与明确分类，网站才会生成相应节点。AI 可以帮助整理与深入学习，但不会把草稿当作已掌握的知识。</span><span data-l="en">New subjects appear only after a verified public article and metadata exist. AI can assist your research and learning, but drafting is not mastery.</span></p>
+
+    <section class="kl-browser" id="knowledge-browser" aria-labelledby="kl-browser-title">
+      <div class="kl-section-head">
+        <div><p class="kl-kicker">BROWSE & READ</p><h2 id="kl-browser-title"><span data-l="zh">知识目录</span><span data-l="en">Knowledge index</span></h2></div>
+        <p><span data-l="zh">目录决定范围，卡片直接进入正文。</span><span data-l="en">Use the tree to narrow your scope, then open a note.</span></p>
+      </div>
+      <div class="kl-shell">
+        <aside class="kl-sidebar" aria-label="知识目录树">
+          <div class="kl-sidebar-title"><span data-l="zh">分类目录</span><span data-l="en">Directory</span><small>{domainEntries.length} AREAS</small></div>
+          <nav class="kl-tree" aria-label="按领域与专题浏览">
+            <button class="kl-tree-all is-active" type="button" data-kl-scope="all" data-kl-name-zh="全部知识" data-kl-name-en="All notes" aria-pressed="true">
+              <span data-l="zh">全部知识</span><span data-l="en">All notes</span><span class="kl-tree-count">{records.length}</span>
+            </button>
+            {domainEntries.map((d,i)=><details class="kl-tree-domain" open={i===0}>
+              <summary><span class="kl-tree-chevron" aria-hidden="true">›</span>
+                <span class="kl-tree-domain-label"><span data-l="zh">{d.id}</span><span data-l="en">{d.en}</span></span>
+                <small>{d.items.length}</small>
+              </summary>
+              <div class="kl-tree-children">
+                <button type="button" data-kl-scope={d.slug} data-kl-name-zh={d.id} data-kl-name-en={d.en} aria-pressed="false">
+                  <span data-l="zh">全部条目</span><span data-l="en">All in this field</span><small>{d.items.length}</small>
+                </button>
+                {d.children.map(c=><button type="button" data-kl-scope={c.slug} data-kl-name-zh={c.name} data-kl-name-en={c.name} aria-pressed="false">
+                  <span>{c.name}</span><small>{c.count}</small>
+                </button>)}
+              </div>
+            </details>)}
+          </nav>
+          <div class="kl-sidebar-foot">
+            <span data-l="zh">旧专题与论文链接保持不变。</span>
+            <span data-l="en">Existing topic and paper URLs are preserved.</span>
+            <a href="/research/"><span data-l="zh">高级研究检索</span><span data-l="en">Advanced research search</span> ↗</a>
+          </div>
+        </aside>
+
+        <div class="kl-content">
+          <div class="kl-tools">
+            <label class="kl-search" for="kl-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16.5 16.5 5 5" stroke="currentColor" stroke-width="1.7"/></svg>
+              <input id="kl-search" type="search" autocomplete="off" placeholder="搜索标题、关键词或内容简介…" />
+              <kbd>/</kbd>
+            </label>
+            <label class="kl-type-filter">
+              <span data-l="zh">类型</span><span data-l="en">Type</span>
+              <select id="kl-type" aria-label="按内容类型筛选">
+                <option value="all"><span>全部类型</span></option>
+                <option value="topic">专题</option>
+                <option value="review">综述</option>
+                <option value="paper">论文解读</option>
+                <option value="qa">技术问答</option>
+                <option value="exploration">问题与探索</option>
+                <option value="path">学习路线</option>
+                <option value="glossary">概念</option>
+                <option value="plan">研究计划</option>
+              </select>
+            </label>
+          </div>
+          <div class="kl-results-head">
+            <div><p class="kl-results-overline">YOUR READING LIBRARY</p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
+            <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
+          </div>
+          <div class="kl-articles" id="kl-articles">
+            {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-order={i}>
+              <div class="kl-note-meta">
+                <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
+                <span class="kl-note-group">{e.domains[0]?.split('/').slice(-1)[0]||''}</span>
+              </div>
+              <h4><a href={e.href}>{e.title}</a></h4>
+              {e.summary&&<p>{e.summary}</p>}
+              <a class="kl-note-read" href={e.href} aria-label={'阅读：'+e.title}><span data-l="zh">阅读文章</span><span data-l="en">Read article</span> <span aria-hidden="true">↗</span></a>
+            </article>)}
+          </div>
+          <div id="kl-empty" class="kl-empty" hidden>
+            <strong><span data-l="zh">没有找到符合条件的内容</span><span data-l="en">No matching notes</span></strong>
+            <p><span data-l="zh">试试其他关键词，或者清除筛选后浏览完整目录。</span><span data-l="en">Try another keyword or reset the filters.</span></p>
+            <button type="button" id="kl-clear"><span data-l="zh">清除筛选</span><span data-l="en">Clear filters</span></button>
+          </div>
+          <div class="kl-more-wrap"><button type="button" id="kl-more" class="kl-more" hidden><span data-l="zh">显示更多文章</span><span data-l="en">Show more notes</span><span aria-hidden="true"> ↓</span></button></div>
+        </div>
+      </div>
     </section>
+    <div class="kl-shortcuts">
+      <span data-l="zh">其他阅读入口</span><span data-l="en">Other reading paths</span>
+      <a href="/research/"><span data-l="zh">研究资料库</span><span data-l="en">Research library</span> ↗</a>
+      <a href="/paper-notes/"><span data-l="zh">论文解读</span><span data-l="en">Paper notes</span> ↗</a>
+      <a href="/questions/"><span data-l="zh">问题与探索</span><span data-l="en">Questions</span> ↗</a>
+    </div>
   </div>
-  <script type="application/json" id="kn-data" set:html={serialized}></script>
 </Base>
-<script src="../../scripts/knowledge-network.ts"></script>
+<script src="../../scripts/knowledge-library.ts"></script>
