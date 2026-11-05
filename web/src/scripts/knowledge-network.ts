@@ -328,6 +328,8 @@ if(src){
     const url=new URL(location.href);url.searchParams.delete('node');
     history.replaceState(null,'',url.pathname+url.search+url.hash);
     restyle();
+    if(view==='overview'||view==='all')return;
+    target.x=0;target.y=0;target.s=1;animate();
   }
   // Hover: reveal the local one-hop neighbourhood instead of a noisy entire graph.
   function showHover(id:string|null,e?:PointerEvent){
@@ -480,23 +482,87 @@ if(src){
       button.setAttribute('aria-pressed',String(active));
     });
     restyle();
+    if(search.value.trim())renderSearch();
   }));
+  viewButtons.forEach(button=>button.addEventListener('click',()=>{
+    const next=button.dataset.knView==='all'?'all':'overview';
+    if(view===next&&selected===null)return;
+    selected=null;hovered=null;localFocus=null;areaFocus=null;
+    view=next;returnView=next;panel.hidden=true;tooltip.hidden=true;
+    const url=new URL(location.href);url.searchParams.delete('node');
+    history.replaceState(null,'',url.pathname+url.search+url.hash);
+    target.x=0;target.y=0;target.s=1;animate();
+    restyle();
+  }));
+  back.addEventListener('click',()=>{
+    clearSelection();
+    target.x=0;target.y=0;target.s=1;animate();
+  });
+  function renderSearch(){
+    const query=search.value.trim().toLocaleLowerCase();
+    resultBox.replaceChildren();
+    if(!query){resultBox.hidden=true;return;}
+    const score=(n:KnowledgeNode)=>{
+      const needle=n.titleZh.toLocaleLowerCase(),eng=n.titleEn.toLocaleLowerCase();
+      const q=query;
+      return needle===q||eng===q?0:needle.startsWith(q)||eng.startsWith(q)?1:
+        needle.includes(q)||eng.includes(q)?2:n.shortZh.toLocaleLowerCase().includes(q)?3:4;
+    };
+    const matches=graph.nodes.filter(n=>nodeMatches(n))
+      .sort((a,b)=>score(a)-score(b)||
+        (citeDegree.get(b.id)||0)-(citeDegree.get(a.id)||0)||
+        a.titleZh.localeCompare(b.titleZh,'zh')).slice(0,8);
+    if(!matches.length){
+      const empty=document.createElement('p');
+      empty.className='kn-search-empty';
+      empty.textContent=t('没有匹配的已收录知识','No published notes match');
+      resultBox.append(empty);
+    }
+    for(const n of matches){
+      const button=document.createElement('button');
+      button.type='button';button.setAttribute('role','option');
+      button.className='kn-search-option';
+      const kind=document.createElement('small');
+      kind.textContent=kindLabel(n);
+      const name=document.createElement('strong');
+      name.textContent=title(n);
+      button.append(kind,name);
+      button.addEventListener('click',()=>{
+        search.value='';resultBox.hidden=true;
+        select(n.id,true);search.blur();
+      });
+      resultBox.append(button);
+    }
+    resultBox.hidden=false;
+  }
   search.addEventListener('input',()=>{
     hovered=null;
     restyle();
-    const q=search.value.trim();
-    const matches=q?graph.nodes.filter(node=>nodeMatches(node)):[];
-    const first=matches[0];
-    if(first){showHover(first.id);centerOn(first.id,1.6);}
-    else showHover(null);
+    renderSearch();
   });
   search.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-      const match=graph.nodes.find(n=>nodeMatches(n));
-      if(match){select(match.id,true);viewport.focus();}
-      e.preventDefault();
+    if(e.key==='ArrowDown'){
+      const first=resultBox.querySelector<HTMLButtonElement>('button');
+      if(first){e.preventDefault();first.focus();}
+    }else if(e.key==='Enter'){
+      const first=resultBox.querySelector<HTMLButtonElement>('button');
+      if(first){e.preventDefault();first.click();}
+    }else if(e.key==='Escape'){
+      search.value='';resultBox.hidden=true;showHover(null);restyle();
     }
-    if(e.key==='Escape'){search.value='';showHover(null);restyle();}
+  });
+  resultBox.addEventListener('keydown',e=>{
+    const active=document.activeElement as HTMLElement;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      const options=Array.from(resultBox.querySelectorAll<HTMLButtonElement>('button'));
+      const idx=options.indexOf(active as HTMLButtonElement);
+      const next=options[clamp(idx+(e.key==='ArrowDown'?1:-1),0,options.length-1)];
+      if(next){e.preventDefault();next.focus();}
+    }else if(e.key==='Escape'){resultBox.hidden=true;search.focus();}
+  });
+  document.addEventListener('pointerdown',e=>{
+    const el=e.target as Node;
+    if(!resultBox.contains(el)&&!search.contains(el))resultBox.hidden=true;
   });
   document.addEventListener('keydown',e=>{
     const target=e.target as HTMLElement;
