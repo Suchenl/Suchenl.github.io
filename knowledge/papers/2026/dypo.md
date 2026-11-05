@@ -11,8 +11,9 @@ shortName: "DYPO"
 title: "Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
-summaryZh: "利用奖励反馈动态平衡监督与强化学习"
+summaryZh: "从 SFT 与 RL 不同目标的权衡出发，记录动态策略优化的研究主张；当前正文仅提供概要，具体目标函数和实验条件需要阅读原论文。"
 status: untracked
+catalogTitleZh: "DyPO：用动态策略优化协调 SFT 与 RL"
 ---
 
 # Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning

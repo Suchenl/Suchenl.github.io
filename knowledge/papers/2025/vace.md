@@ -3,7 +3,7 @@ contentType: paper
 domains: ["多模态学习与生成/图像与视频生成"]
 shortName: "VACE"
 categories: ["生成模型/视频生成"]
-summaryZh: "可控视频生成与编辑框架"
+summaryZh: "简要介绍将多种视频生成和编辑需求组织在统一框架下的研究方向；当前条目尚未展开训练细节、任务协议及关键消融。"
 title: "VACE: All-in-One Video Creation and Editing"
 authors: ["Zeyinzi Jiang", "Zhen Han", "Chaojie Mao", "et al."]
 year: 2025
@@ -15,6 +15,7 @@ links:
   arxiv: "https://arxiv.org/abs/2503.07598"
 abstract: "A unified framework that supports a wide range of video creation and editing tasks within a single model via a video condition unit."
 added: 2026-02-12
+catalogTitleZh: "VACE：统一可控视频生成与编辑的任务框架"
 ---
 
 ## Notes

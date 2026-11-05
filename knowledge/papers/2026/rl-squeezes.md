@@ -6,8 +6,9 @@ aliases: ["SFT Expands"]
 title: "RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
-summaryZh: "比较 SFT 和 RL 对推理轨迹分布的影响"
+summaryZh: "比较 SFT 与 RL 对推理行为分布的影响，而不只看最终答案准确率；当前条目是概要性阅读线索，未覆盖完整评测设计。"
 status: untracked
+catalogTitleZh: "RL Squeezes, SFT Expands：两种训练如何影响推理分布"
 ---
 
 # RL Squeezes, SFT Expands: A Comparative Study of Reasoning LLMs

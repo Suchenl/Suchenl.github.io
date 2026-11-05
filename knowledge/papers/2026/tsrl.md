@@ -11,8 +11,9 @@ shortName: "TSRL"
 title: "TSRL: Trigger-based Supervised Reinforcement Learning for Continual Agent Training"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
-summaryZh: "在难状态触发专家监督以辅助强化学习"
+summaryZh: "关注强化学习遇到困难状态时，基于触发条件引入专家监督的训练策略；重点核对触发信号、监督成本和持续训练的适用条件。"
 status: untracked
+catalogTitleZh: "TSRL：何时触发监督以辅助 Agent 强化学习"
 ---
 
 # TSRL: Trigger-based Supervised Reinforcement Learning for Continual Agent Training

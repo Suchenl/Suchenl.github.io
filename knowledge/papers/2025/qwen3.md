@@ -11,8 +11,9 @@ shortName: "Qwen3"
 title: "Qwen3 Technical Report"
 year: 2025
 categories: ["强化学习与 Agent/推理与后训练"]
-summaryZh: "Qwen3 的分阶段监督、强化学习及蒸馏配方"
+summaryZh: "概览 Qwen3 报告中阶段式监督、强化学习与蒸馏的训练分工；阅读时关注训练信号和实际能力的对应关系，不将技术报告等同于独立复现。"
 status: untracked
+catalogTitleZh: "Qwen3：基础模型到推理后训练的阶段式配方"
 ---
 
 # Qwen3 Technical Report
