@@ -1,107 +1,142 @@
-const root=document.getElementById('kl-page');
-if(root){
-  const entries=[...root.querySelectorAll<HTMLElement>('.kl-note')];
-  const scopeButtons=[...root.querySelectorAll<HTMLButtonElement>('[data-kl-scope]')];
-  const search=root.querySelector<HTMLInputElement>('#kl-search')!;
-  const type=root.querySelector<HTMLSelectElement>('#kl-type')!;
-  const count=root.querySelector<HTMLElement>('#kl-results-count')!;
-  const heading=root.querySelector<HTMLElement>('#kl-current-title')!;
-  const more=root.querySelector<HTMLButtonElement>('#kl-more')!;
-  const empty=root.querySelector<HTMLElement>('#kl-empty')!;
-  const clear=root.querySelector<HTMLButtonElement>('#kl-clear')!;
-  const container=root.querySelector<HTMLElement>('#knowledge-browser')!;
-  let selected:HTMLButtonElement=scopeButtons.find(b=>b.dataset.klScope==='all')!;
-  let visibleLimit=12;
-  const lang=()=>document.documentElement.getAttribute('data-lang')==='en'?'en':'zh';
-  const translated=(zh:string,en:string)=>lang()==='en'?en:zh;
-  const label=()=>selected.dataset[lang()==='en'?'klNameEn':'klNameZh']||translated('全部知识','All notes');
-  function inScope(card:HTMLElement){
-    const scope=selected.dataset.klScope||'all';
-    if(scope==='all')return true;
-    const d=selected.dataset.klDomainId||'';
-    const c=selected.dataset.klChildId||'';
-    return (card.dataset.klDomains||'').split('|').some(key=>{
-      if(!key||!d)return false;
-      const target=c?d+'/'+c:d;
-      return key===target||key.startsWith(target+'/');
-    });
-  }
-  function update(keepLimit=false){
-    if(!keepLimit)visibleLimit=12;
-    const q=search.value.trim().toLocaleLowerCase();
-    const kind=type.value;
-    let matches=0;
-    let shown=0;
-    for(const card of entries){
-      const qualifies=inScope(card)&&
-        (kind==='all'||card.dataset.klType===kind)&&
-        (!q||(card.dataset.klSearch||'').includes(q));
-      if(qualifies)matches++;
-      const show=qualifies&&shown<visibleLimit;
-      if(show)shown++;
-      card.hidden=!show;
-    }
-    // Fill the first page with qualifying notes, even if earlier cards were hidden.
-    const allQualifying=entries.filter(card=>inScope(card)&&(kind==='all'||card.dataset.klType===kind)&&
-      (!q||(card.dataset.klSearch||'').includes(q)));
-    entries.forEach(card=>card.hidden=!allQualifying.slice(0,visibleLimit).includes(card));
-    empty.hidden=matches!==0;
-    more.hidden=matches<=visibleLimit;
-    count.textContent=translated(matches+' 篇',matches+' notes');
-    const zh=heading.querySelector<HTMLElement>('[data-l="zh"]');
-    const en=heading.querySelector<HTMLElement>('[data-l="en"]');
-    if(zh)zh.textContent=selected.dataset.klNameZh||'全部知识';
-    if(en)en.textContent=selected.dataset.klNameEn||'All notes';
-    scopeButtons.forEach(b=>{
-      const active=b.dataset.klScope===selected.dataset.klScope;
-      if(b.closest('.kl-tree')){
-        b.classList.toggle('is-active',active);
-        b.setAttribute('aria-pressed',String(active));
-      }
-    });
-  }
-  scopeButtons.forEach(b=>b.addEventListener('click',()=>{
-    selected=b;
-    const belongs=b.closest('.kl-tree');
-    if(!belongs){
-      const match=root.querySelector<HTMLButtonElement>('.kl-tree [data-kl-scope="'+CSS.escape(b.dataset.klScope||'')+'"]');
-      const details=match?.closest('details');
-      if(details)details.open=true;
-    }
-    update();
-    if(!belongs)container.scrollIntoView({behavior:'smooth',block:'start'});
-  }));
-  search.addEventListener('input',()=>update());
-  type.addEventListener('change',()=>update());
-  more.addEventListener('click',()=>{
-    visibleLimit+=12;
-    update(true);
-  });
-  clear.addEventListener('click',()=>{
-    search.value='';type.value='all';
-    selected=scopeButtons.find(b=>b.dataset.klScope==='all')!;
-    update();
-    search.focus();
-  });
-  document.addEventListener('keydown',e=>{
-    const target=e.target as HTMLElement;
-    if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)){
-      e.preventDefault();search.focus();
-    }
-  });
-  const options=[
+const root = document.getElementById('kl-page');
+if (root) {
+  const cards = [...root.querySelectorAll<HTMLElement>('.kl-note')];
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('.kl-tree [data-kl-scope]')];
+  const scopes = new Map(buttons.map(b => [b.dataset.klScope || 'all', b]));
+  const search = root.querySelector<HTMLInputElement>('#kl-search')!;
+  const type = root.querySelector<HTMLSelectElement>('#kl-type')!;
+  const counter = root.querySelector<HTMLElement>('#kl-results-count')!;
+  const heading = root.querySelector<HTMLElement>('#kl-current-title')!;
+  const locationLine = root.querySelector<HTMLElement>('#kl-location')!;
+  const more = root.querySelector<HTMLButtonElement>('#kl-more')!;
+  const empty = root.querySelector<HTMLElement>('#kl-empty')!;
+  const clear = root.querySelector<HTMLButtonElement>('#kl-clear')!;
+  const options = [
     ['all','全部类型','All types'],['topic','专题','Topics'],['review','综述','Reviews'],
-    ['paper','论文解读','Paper notes'],['qa','技术问答','Q&A'],['exploration','问题与探索','Explorations'],
-    ['path','学习路线','Learning paths'],['glossary','概念','Concepts'],['plan','研究计划','Research plans']
+    ['paper','论文解读','Paper notes'],['qa','技术问答','Q&A'],
+    ['exploration','问题与探索','Explorations'],['path','学习路线','Learning paths'],
+    ['glossary','概念','Concepts'],['plan','研究计划','Research plans']
   ];
-  function translateControls(){
-    search.placeholder=translated('搜索标题、关键词或内容简介…','Search titles, keywords or summaries…');
-    for(const [key,zh,en] of options){
-      const option=type.querySelector<HTMLOptionElement>('option[value="'+key+'"]');
-      if(option)option.textContent=translated(zh,en);
-    }
-    update(true);
+  const allowed = new Set(options.map(o => o[0]));
+  const initialLimit = 12;
+  let scope = 'all';
+  let limit = initialLimit;
+  const language = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+  const tr = (zh:string,en:string) => language() === 'en' ? en : zh;
+
+  function isMatching(card:HTMLElement) {
+    const select = scopes.get(scope);
+    const domain = select?.dataset.klDomainId;
+    const child = select?.dataset.klChildId;
+    const belongs = !domain || (card.dataset.klDomains || '').split('|').some(key => {
+      const wanted = child ? domain + '/' + child : domain;
+      return key === wanted || key.startsWith(wanted + '/');
+    });
+    return belongs &&
+      (type.value === 'all' || type.value === card.dataset.klType) &&
+      (!search.value.trim() || (card.dataset.klSearch || '').includes(search.value.trim().toLocaleLowerCase()));
   }
-  new MutationObserver(translateControls).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
-  translateControls();
+  function render() {
+    const matching = cards.filter(isMatching);
+    const visible = new Set(matching.slice(0, limit));
+    for (const card of cards) card.hidden = !visible.has(card);
+    empty.hidden = matching.length !== 0;
+    more.hidden = matching.length <= limit;
+    counter.textContent = tr(matching.length + ' 篇', matching.length + ' notes');
+    const selected = scopes.get(scope) || scopes.get('all')!;
+    const nameZh = selected.dataset.klNameZh || '全部知识';
+    const nameEn = selected.dataset.klNameEn || 'All notes';
+    const zh = heading.querySelector<HTMLElement>('[data-l="zh"]');
+    const en = heading.querySelector<HTMLElement>('[data-l="en"]');
+    if (zh) zh.textContent = nameZh;
+    if (en) en.textContent = nameEn;
+    const zpath = locationLine.querySelector<HTMLElement>('[data-l="zh"]');
+    const epath = locationLine.querySelector<HTMLElement>('[data-l="en"]');
+    if (zpath) zpath.textContent = '知识库 / ' + nameZh;
+    if (epath) epath.textContent = 'Library / ' + nameEn;
+    buttons.forEach(b => {
+      const active = b.dataset.klScope === scope;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-pressed', String(active));
+    });
+  }
+  function currentUrl() {
+    const next = new URL(location.href);
+    for (const key of ['scope','type','q','limit']) next.searchParams.delete(key);
+    if (scope !== 'all') next.searchParams.set('scope', scope);
+    if (type.value !== 'all') next.searchParams.set('type', type.value);
+    const q = search.value.trim();
+    if (q) next.searchParams.set('q', q.slice(0, 200));
+    if (limit > initialLimit) next.searchParams.set('limit', String(limit));
+    return next.pathname + next.search + next.hash;
+  }
+  function persist(mode:'push'|'replace') {
+    history[mode === 'push' ? 'pushState' : 'replaceState'](null, '', currentUrl());
+  }
+  function setScope(next:string) {
+    if (!scopes.has(next)) return;
+    scope = next;
+    limit = initialLimit;
+    const chosen = scopes.get(next)!;
+    const parent = chosen.closest('details');
+    if (parent) parent.open = true;
+    render();
+    persist('push');
+  }
+  function restore() {
+    const params = new URL(location.href).searchParams;
+    scope = scopes.has(params.get('scope') || '') ? params.get('scope')! : 'all';
+    const kind = params.get('type') || 'all';
+    type.value = allowed.has(kind) ? kind : 'all';
+    search.value = (params.get('q') || '').slice(0,200);
+    const parsed = Number(params.get('limit'));
+    limit = Number.isFinite(parsed) && parsed > initialLimit ? Math.min(96, Math.ceil(parsed / 12) * 12) : initialLimit;
+    const parent = scopes.get(scope)?.closest('details');
+    if (parent) parent.open = true;
+    render();
+  }
+  buttons.forEach(button => button.addEventListener('click', () => setScope(button.dataset.klScope || 'all')));
+  search.addEventListener('input', () => {limit = initialLimit;render();persist('replace');});
+  type.addEventListener('change', () => {limit = initialLimit;render();persist('push');});
+  more.addEventListener('click', () => {limit += initialLimit;render();persist('replace');});
+  clear.addEventListener('click', () => {
+    const changed = scope !== 'all' || type.value !== 'all' || search.value !== '';
+    scope = 'all';type.value = 'all';search.value = '';limit = initialLimit;
+    render(); if (changed) persist('push');
+    search.focus({preventScroll:true});
+  });
+  // Open the existing canonical article while carrying only the current
+  // Knowledge filters required for a predictable return link.
+  root.querySelectorAll<HTMLAnchorElement>('.kl-note a[href^="/research/"]').forEach(link =>
+    link.addEventListener('click', () => {
+      const target = new URL(link.href);
+      target.searchParams.set('source','knowledge');
+      if (scope !== 'all') target.searchParams.set('scope', scope);
+      if (type.value !== 'all') target.searchParams.set('type', type.value);
+      const q = search.value.trim();
+      if (q) target.searchParams.set('q', q.slice(0,200));
+      if (limit > initialLimit) target.searchParams.set('limit', String(limit));
+      link.href = target.pathname + target.search;
+    })
+  );
+  document.addEventListener('keydown', e => {
+    const target = e.target as HTMLElement;
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) {
+      e.preventDefault();
+      search.focus({preventScroll:true});
+    }
+  });
+  function translate() {
+    search.placeholder = tr('搜索标题、关键词或文章简介…','Search titles, keywords or summaries…');
+    for (const [value,zh,en] of options) {
+      const item = type.querySelector<HTMLOptionElement>('option[value="'+value+'"]');
+      if (item) item.textContent = tr(zh,en);
+    }
+    render();
+  }
+  window.addEventListener('popstate', restore);
+  new MutationObserver(translate).observe(document.documentElement,
+    {attributes:true,attributeFilter:['data-lang']});
+  restore();
+  translate();
 }
