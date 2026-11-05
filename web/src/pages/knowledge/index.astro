@@ -134,6 +134,16 @@ const colors=['#79b6ff','#a89cfa','#65d6bd','#f2b872'];
             <p id="kn-feedback" role="status" aria-live="polite"></p>
           </aside>
         </div>
+        <div class="kn-relation-note" aria-label="知识网络布局说明">
+          <div class="kn-relation-legend">
+            <span><i class="kn-link-legend kn-link-category"></i><span data-l="zh">领域归属</span><span data-l="en">Domain membership</span></span>
+            <span><i class="kn-link-legend kn-link-reference"></i><span data-l="zh">正文引用</span><span data-l="en">Explicit note link</span></span>
+          </div>
+          <details>
+            <summary><span data-l="zh">节点为什么这样排列？</span><span data-l="en">Why are the nodes placed here?</span></summary>
+            <p><span data-l="zh">位置由真实链接的引力与节点之间的排斥力共同决定：有引用的文章优先靠近，同领域的内容形成聚簇，跨领域引用可以把节点拉向聚簇之间。距离只是连接结构的可视化近似，不代表语义相似度、先修关系或因果。手动拖动只改变当前显示，不会改写文章关系。</span><span data-l="en">The layout balances attraction along real links with collision avoidance. Explicitly connected notes tend to move closer; articles sharing a domain form loose clusters. Distances are approximate graph-layout cues, not measured semantic similarity, prerequisite relations or causality. Manual dragging affects only your current view.</span></p>
+          </details>
+        </div>
         <div class="kn-viewer-foot">
           <div class="kn-domain-key">
             {areas.map((area,i)=><button type="button" data-kn-select={area.id} style={'--key-color:'+area.color}>

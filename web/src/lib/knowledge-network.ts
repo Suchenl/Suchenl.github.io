@@ -177,7 +177,7 @@ function layoutByRelations(nodes:KnowledgeNode[],edges:KnowledgeEdge[]) {
   // The four existing clusters get reproducible centres. Their order is
   // optimized against the actual number of cross-area references.
   const slots=[
-    {x:330,y:272},{x:980,y:272},{x:330,y:707},{x:980,y:707},
+    {x:345,y:250},{x:965,y:295},{x:860,y:705},{x:335,y:705},
   ];
   const cross=new Map<string,number>();
   for(const edge of edges){

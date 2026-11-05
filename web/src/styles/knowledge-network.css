@@ -155,3 +155,21 @@
  .kn-node,.kn-edge,.kn-area-card,.kn-inspector{transition:none;animation:none}
  .kn-area-card:hover{transform:none}
 }
+
+/* The relationship legend is intentionally explicit: layout distance is not a
+   semantic similarity score and distinct edge types have different meanings. */
+.kn-relation-note{display:flex;justify-content:space-between;align-items:center;gap:1.2rem;border-top:1px solid #26374a;background:#0b1628;padding:.65rem 1.25rem;color:#95aac5;font-size:.7rem}
+.kn-relation-legend{display:flex;flex-wrap:wrap;gap:1.35rem;align-items:center}
+.kn-relation-legend>span{display:inline-flex;gap:.5rem;align-items:center;white-space:nowrap}
+.kn-link-legend{display:block;width:22px;height:0;border-top:1.5px solid #80b6d7}
+.kn-link-reference{border-top:1.5px dashed #d1e5fa}
+.kn-relation-note details{position:relative;margin-left:auto}
+.kn-relation-note summary{cursor:pointer;font-size:.7rem;color:#a8caef;white-space:nowrap;list-style:initial}
+.kn-relation-note summary:hover{color:#fff}
+.kn-relation-note details[open]{z-index:10}
+.kn-relation-note details p{position:absolute;right:0;top:1.2rem;width:min(380px,80vw);padding:.95rem 1rem;background:#15243b;border:1px solid #395374;border-radius:10px;color:#c0d4ec;line-height:1.75;box-shadow:0 20px 44px rgba(0,0,0,.3);white-space:normal;font-size:.76rem}
+@media(max-width:650px){
+ .kn-relation-note{align-items:start;flex-direction:column;gap:.45rem;padding:.85rem .8rem}
+ .kn-relation-note details{margin:0}
+ .kn-relation-note details p{right:auto;left:0;max-width:calc(100vw - 38px)}
+}
