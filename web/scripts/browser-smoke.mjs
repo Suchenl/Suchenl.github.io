@@ -63,6 +63,7 @@ try {
    await page.locator('[data-kn-filter="empty"]').click();
    assert.equal(await page.locator('[data-kn-filter="empty"]').getAttribute('aria-pressed'),'true');
    await noOverflow(page);
+   if(width===1440)await page.screenshot({path:'visual-qa/knowledge-atlas-desktop.png',fullPage:true});
   });
   await check('Open research Questions '+width,async()=>{
    await navigate(page,'/');
@@ -244,7 +245,7 @@ try {
   });
   await check('Paper Notes portal '+width,async()=>{
     await navigate(page,'/paper-notes/');await noOverflow(page);
-    assert.equal(await page.locator('#primary-navigation a[href="/research/"]').getAttribute('aria-current'),'page');
+    assert.equal(await page.locator('#primary-navigation a[href="/knowledge/"]').getAttribute('aria-current'),'page');
      assert.equal(await page.locator('.section-nav a[href="/paper-notes/"]').getAttribute('aria-current'),'page');
     const cards=page.locator('.pn-item');
     assert((await cards.count())>=15,'The independent portal should reuse the canonical paper collection');

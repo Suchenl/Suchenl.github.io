@@ -111,7 +111,7 @@ if(source){
       edge.classList.toggle('kn-edge-muted',!!from?.classList.contains('is-muted')||!!to?.classList.contains('is-muted'));
     }
     if(q&&visible===0)say('没有匹配的节点。试试更短的关键词。','No nodes match. Try a shorter search.');
-    else if(q||filter!=='all')say(tt('匹配','Matching')+' '+visible+' '+tt('个节点','nodes'),'');
+    else if(q||filter!=='all')feedback.textContent=tt('匹配 '+visible+' 个节点','Matching '+visible+' nodes');
     else feedback.textContent='';
   }
   function scrollNodeIntoView(n:KnowledgeNode){
