@@ -86,8 +86,8 @@ const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
 check(home.includes('href="/questions/"') && home.includes('home-question-card'),'homepage question teaser and link');
-// Check against the current source data, not a hard-coded question that may
-// legitimately fall outside the homepage's latest-three window.
+// Check against curated public research questions, not arbitrary recent files.
+// The redesigned homepage deliberately shows only two concise teasers.
 const publicQuestions = readdirSync('../knowledge/research')
   .filter(name => name.endsWith('.md'))
   .map(name => {
@@ -102,10 +102,11 @@ const publicQuestions = readdirSync('../knowledge/research')
   })
   .filter(entry => entry.isPublic)
   .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
-const latestThree = publicQuestions.slice(0, 3);
-check(latestThree.length === 3 &&
-  latestThree.every(q => home.includes('href="/research/' + q.id + '/"')),
-  'homepage teasers match three explicitly curated research questions');
+const homepageQuestions = publicQuestions.slice(0, 2);
+check(homepageQuestions.length === 2 &&
+  homepageQuestions.every(q => home.includes('href="/research/' + q.id + '/"')) &&
+  (home.match(/class="home-question-card/g) || []).length === 2,
+  'homepage shows two curated public questions without duplicating full evidence tables');
 check(questions.includes('/research/research/action-sampling-frequency-bias/') &&
       questions.includes('/research/research/do-tokenizers-preserve-numerical-continuity/'),
   'older and new research questions remain in the complete Questions index');
@@ -127,7 +128,23 @@ check(numberContinuityDetail.includes('xVal') && numberContinuityDetail.includes
 check(questionDetail.includes('RH20T') && questionDetail.includes('Open X-Embodiment') && questionDetail.includes('尚未验证'),'research note separates audited facts and hypotheses');
 check(questions.includes('action-sampling-frequency-bias') && questions.includes('question-entry'),'public Questions index');
 check(questionDetail.includes('Chronos Policy') && questionDetail.includes('Offline Reinforcement Learning at Multiple Frequencies'),'question note has relevant literature');
-check(readFileSync('src/config.ts','utf8').includes("href: '/questions/'"),'Questions main navigation');
+const configSource = readFileSync('src/config.ts','utf8');
+const sectionNavSource = readFileSync('src/components/SectionNav.astro','utf8');
+check(configSource.includes("href: '/research/'") && configSource.includes("href: '/outputs/'") &&
+      !configSource.includes("href: '/questions/'") && !configSource.includes("href: '/paper-notes/'") &&
+      sectionNavSource.includes("href:'/questions/'") && sectionNavSource.includes("href:'/paper-notes/'"),
+      'five-item primary navigation and Research secondary entrypoints');
+const outputs=page('outputs');
+const areas=['llm-and-rl','multimodal','robotics','world-models'].map(name=>page('research/domains/'+name));
+check(outputs.includes('href="/publications/"') && outputs.includes('href="/projects/"'),
+      'research outputs portal links existing publications and projects');
+check(areas.every(area=>area.includes('RESEARCH AREA')) && areas[2].includes('机器人'),
+      'four research domain pages are built from canonical taxonomy');
+check(research.includes('id="all-knowledge"') && research.includes('research-areas-grid') &&
+      research.includes('/research/domains/robotics/'),
+      'Research landing offers area-first discovery and retained filtered index');
+check(hilReader.includes('/research/domains/robotics/') && robotControlLegacy.includes('阻抗控制'),
+      'reader domain breadcrumb and legacy article deep links remain valid');
 check(!existsSync(join(root,'about','index.html')),'standalone About route removed');
 check(!home.includes('href="/about/"') && !home.includes('href="/about"'),'no stale About links');
 check(home.includes('href="/work/"') && !home.includes('href="/expertise/"'),'Experience entry remains; Expertise is not linked from homepage');
