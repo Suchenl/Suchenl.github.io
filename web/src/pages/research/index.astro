@@ -110,8 +110,8 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   <SectionNav section="research" active="overview" />
   <section class="lit-intro">
     <p class="lit-eyebrow">PERSONAL RESEARCH LIBRARY</p>
-    <h1 class="page-title"><span data-l="zh">研究知识库</span><span data-l="en">Research Library</span></h1>
-    <p class="page-intro"><span data-l="zh">以研究问题为线索，理解基础概念、技术路线与实验证据。可以从领域与专题逐层阅读，也可以检索全部论文、综述和研究问题。</span><span data-l="en">Explore research questions, concepts, technical approaches and evidence. Browse by area and topic, or search across all papers and notes.</span></p>
+    <h1 class="page-title"><span data-l="zh">高级研究检索</span><span data-l="en">Advanced Research Search</span></h1>
+    <p class="page-intro"><span data-l="zh">知识库的常规阅读请从 Knowledge 开始；这里保留论文阅读状态、全文索引、多条件筛选与比较等高级工具。</span><span data-l="en">For everyday browsing, start in Knowledge. This page retains full-text research search, reading status, advanced filters and paper comparison.</span></p>
     <a class="research-search-jump" href="#all-knowledge"><span data-l="zh">⌕ 搜索全部论文、技术概念与研究问题 →</span><span data-l="en">⌕ Search papers, concepts and research questions →</span></a>
   </section>
   <section class="research-areas" aria-labelledby="research-areas-heading">
@@ -131,8 +131,8 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
     </div>
   </section>
   <section class="research-entryways" aria-label="按内容类型探索研究">
-    <a href="/paper-notes/"><strong><span data-l="zh">论文解读</span><span data-l="en">Paper Notes</span></strong><span data-l="zh">从概念、机制到原始证据 →</span><span data-l="en">Concepts, methods and evidence →</span></a>
-    <a href="/questions/"><strong><span data-l="zh">问题与探索</span><span data-l="en">Questions</span></strong><span data-l="zh">持续追问的开放研究问题 →</span><span data-l="en">Ongoing open research questions →</span></a>
+    <a href="/knowledge/?type=paper#knowledge-browser"><strong><span data-l="zh">论文解读</span><span data-l="en">Paper Notes</span></strong><span data-l="zh">从概念、机制到原始证据 →</span><span data-l="en">Concepts, methods and evidence →</span></a>
+    <a href="/knowledge/?type=exploration#knowledge-browser"><strong><span data-l="zh">问题与探索</span><span data-l="en">Questions</span></strong><span data-l="zh">持续追问的开放研究问题 →</span><span data-l="en">Ongoing open research questions →</span></a>
     <a href="#all-knowledge"><strong><span data-l="zh">完整知识索引</span><span data-l="en">Knowledge Index</span></strong><span data-l="zh">跨领域检索、筛选和比较 →</span><span data-l="en">Search, filter and compare →</span></a>
   </section>
   <section class="research-index-head" id="all-knowledge" aria-labelledby="research-index-title">

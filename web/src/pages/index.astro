@@ -109,9 +109,9 @@ const socials = [
   <section class="section home-questions" aria-labelledby="curiosity-heading">
     <div class="featured-head">
       <h2 id="curiosity-heading"><Bi zh="我好奇的问题与探索" en="Questions I'm Exploring" /></h2>
-      <a href="/questions/"><Bi zh="查看全部探索 →" en="All explorations →" /></a>
+      <a href="/knowledge/?type=exploration#knowledge-browser"><Bi zh="查看全部探索 →" en="All explorations →" /></a>
     </div>
-    <p class="home-questions-lead"><Bi zh="精选仍在追问的问题。完整文献、方法比较与证据边界在 Research 中持续维护。" en="Selected open questions. Full evidence and technical comparisons live in Research." /></p>
+    <p class="home-questions-lead"><Bi zh="精选仍在追问的问题。完整文献、方法比较与证据边界统一在知识库中持续维护。" en="Selected open questions. Full evidence and technical comparisons are maintained in the Knowledge Library." /></p>
     {curiousQuestions.map(q => (
       <article class="home-question-card card">
         <p class="question-kicker"><Bi zh={q.kind === 'interest' ? '研究兴趣' : '开放研究问题'} en={q.kind === 'interest' ? 'RESEARCH INTEREST' : 'OPEN QUESTION'} /> <span aria-hidden="true">·</span> {q.domain.split("/")[0]}</p>

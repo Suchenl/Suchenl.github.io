@@ -16,16 +16,18 @@ const topics = entries.filter(e=>e.id.startsWith('topics/')&&e.id.endsWith('/REA
 const papers = entries.filter(e=>e.id.startsWith('papers/')).sort((a,b)=>Number((b.data as {year?:number}).year||0)-Number((a.data as {year?:number}).year||0)).slice(0,6);
 const questions = entries.filter(e=>(e.data as {contentType?:string;publicQuestion?:boolean}).contentType==='exploration'&&(e.data as {publicQuestion?:boolean}).publicQuestion===true).slice(0,4);
 const reading = entries.filter(e=>!(e.id.startsWith('papers/')||e.id.startsWith('topics/')||e.id.startsWith('research/'))&&((e.data as {contentType?:string}).contentType==='review'||(e.data as {contentType?:string}).contentType==='path')).slice(0,5);
-const browseHref='/research/?folder='+encodeURIComponent('domain:'+area.id);
+const browseHref='/knowledge/?scope='+encodeURIComponent(area.slug)+'#knowledge-browser';
+const paperHref='/knowledge/?scope='+encodeURIComponent(area.slug)+'&type=paper#knowledge-browser';
+const questionsHref='/knowledge/?scope='+encodeURIComponent(area.slug)+'&type=exploration#knowledge-browser';
 ---
 <Base title={area.id} description={area.description}>
   <SectionNav section="research" active="overview" />
-  <nav class="ra-crumb" aria-label="当前位置"><a href="/research/">研究</a><span>/</span><span>{area.id}</span></nav>
+  <nav class="ra-crumb" aria-label="当前位置"><a href="/knowledge/">知识库</a><span>/</span><span>{area.id}</span></nav>
   <header class="ra-header">
     <p class="ra-eyebrow">RESEARCH AREA</p>
     <h1><span data-l="zh">{area.id}</span><span data-l="en">{area.en}</span></h1>
     <p><span data-l="zh">{area.description}</span><span data-l="en">{area.descriptionEn}</span></p>
-    <div class="ra-action"><a href={browseHref}><span data-l="zh">浏览领域全部 {entries.length} 项知识 →</span><span data-l="en">Browse all {entries.length} entries →</span></a><a href="/paper-notes/"><span data-l="zh">论文解读 →</span><span data-l="en">Paper notes →</span></a><a href="/questions/"><span data-l="zh">问题与探索 →</span><span data-l="en">Questions →</span></a></div>
+    <div class="ra-action"><a href={browseHref}><span data-l="zh">浏览领域全部 {entries.length} 项知识 →</span><span data-l="en">Browse all {entries.length} entries →</span></a><a href={paperHref}><span data-l="zh">论文解读 →</span><span data-l="en">Paper notes →</span></a><a href={questionsHref}><span data-l="zh">问题与探索 →</span><span data-l="en">Questions →</span></a></div>
   </header>
   {topics.length>0 && <section class="ra-section" aria-labelledby="ra-topics"><h2 id="ra-topics"><span data-l="zh">技术专题</span><span data-l="en">Technical Topics</span></h2><p class="ra-note"><span data-l="zh">沿研究问题进入专题，再按推荐路径阅读基础概念、技术综述和代表性论文。</span><span data-l="en">Start from a research question, then follow its recommended reading path, concepts and evidence.</span></p><div class="ra-topics">
     {topics.map(t=><article class="ra-card"><p class="ra-type">TECHNICAL TOPIC</p><h3><a href={'/research/'+t.id.slice(0,-'/README'.length)+'/'}>{getTitle(t)} →</a></h3>{getSummary(t)&&<p>{getSummary(t)}</p>}</article>)}
@@ -33,10 +35,10 @@ const browseHref='/research/?folder='+encodeURIComponent('domain:'+area.id);
   {reading.length>0 && <section class="ra-section" aria-labelledby="ra-guides"><h2 id="ra-guides"><span data-l="zh">专题综述与学习路线</span><span data-l="en">Guides & Reading Paths</span></h2><div class="ra-list">
     {reading.map(t=><a href={fullHref(t)}><span class="ra-type">{typeLabel[(t.data as {contentType?:string}).contentType||'']||'研究资料'}</span><strong>{getTitle(t)}</strong><span class="ra-arrow">→</span></a>)}
   </div></section>}
-  {papers.length>0 && <section class="ra-section" aria-labelledby="ra-papers"><div class="ra-heading"><h2 id="ra-papers"><span data-l="zh">相关论文解读</span><span data-l="en">Related Paper Notes</span></h2><a href="/paper-notes/"><span data-l="zh">论文解读目录 →</span><span data-l="en">All paper notes →</span></a></div><div class="ra-list">
+  {papers.length>0 && <section class="ra-section" aria-labelledby="ra-papers"><div class="ra-heading"><h2 id="ra-papers"><span data-l="zh">相关论文解读</span><span data-l="en">Related Paper Notes</span></h2><a href={paperHref}><span data-l="zh">论文解读目录 →</span><span data-l="en">All paper notes →</span></a></div><div class="ra-list">
     {papers.map(p=><a href={fullHref(p)}><span class="ra-type">{(p.data as {year?:number}).year||'论文'}</span><strong>{getTitle(p)}</strong><span class="ra-arrow">→</span></a>)}
   </div></section>}
-  {questions.length>0 && <section class="ra-section" aria-labelledby="ra-questions"><div class="ra-heading"><h2 id="ra-questions"><span data-l="zh">值得继续追问的问题</span><span data-l="en">Open Research Questions</span></h2><a href="/questions/"><span data-l="zh">全部探索 →</span><span data-l="en">All questions →</span></a></div><div class="ra-list">
+  {questions.length>0 && <section class="ra-section" aria-labelledby="ra-questions"><div class="ra-heading"><h2 id="ra-questions"><span data-l="zh">值得继续追问的问题</span><span data-l="en">Open Research Questions</span></h2><a href={questionsHref}><span data-l="zh">全部探索 →</span><span data-l="en">All questions →</span></a></div><div class="ra-list">
     {questions.map(q=><a href={fullHref(q)}><span class="ra-type">EXPLORATION</span><strong>{getTitle(q)}</strong><span class="ra-arrow">→</span></a>)}
   </div></section>}
   <p class="ra-end"><span data-l="zh">同一知识对象可能跨领域关联；文章只在知识库中维护一份。</span><span data-l="en">Cross-domain links point to the same canonical article.</span> <a href={browseHref}><span data-l="zh">查看本领域完整目录与筛选 →</span><span data-l="en">Browse the full area index →</span></a></p>
