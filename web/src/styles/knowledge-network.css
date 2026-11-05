@@ -167,7 +167,7 @@
 .kn-relation-note summary{cursor:pointer;font-size:.7rem;color:#a8caef;white-space:nowrap;list-style:initial}
 .kn-relation-note summary:hover{color:#fff}
 .kn-relation-note details[open]{z-index:10}
-.kn-relation-note details p{position:absolute;right:0;top:1.2rem;width:min(380px,80vw);padding:.95rem 1rem;background:#15243b;border:1px solid #395374;border-radius:10px;color:#c0d4ec;line-height:1.75;box-shadow:0 20px 44px rgba(0,0,0,.3);white-space:normal;font-size:.76rem}
+.kn-relation-note details p{position:absolute;right:0;bottom:1.65rem;width:min(380px,80vw);padding:.95rem 1rem;background:#15243b;border:1px solid #395374;border-radius:10px;color:#c0d4ec;line-height:1.75;box-shadow:0 20px 44px rgba(0,0,0,.3);white-space:normal;font-size:.76rem}
 @media(max-width:650px){
  .kn-relation-note{align-items:start;flex-direction:column;gap:.45rem;padding:.85rem .8rem}
  .kn-relation-note details{margin:0}
