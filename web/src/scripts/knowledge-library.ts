@@ -1,6 +1,12 @@
 const root = document.getElementById('kl-page');
 if (root) {
   const cards = [...root.querySelectorAll<HTMLElement>('.kl-note')];
+  const articleHost = root.querySelector<HTMLElement>('#kl-articles')!;
+  const guides = [...root.querySelectorAll<HTMLElement>('[data-kl-topic-guide]')];
+  const readingOrders = new Map(guides.map(g=>[
+    g.dataset.klTopicGuide || '',
+    (g.dataset.klRefs || '').split('|').filter(Boolean)
+  ]));
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('.kl-tree [data-kl-scope]')];
   const scopes = new Map(buttons.map(b => [b.dataset.klScope || 'all', b]));
   const search = root.querySelector<HTMLInputElement>('#kl-search')!;
@@ -28,10 +34,15 @@ if (root) {
     const select = scopes.get(scope);
     const domain = select?.dataset.klDomainId;
     const child = select?.dataset.klChildId;
-    const belongs = !domain || (card.dataset.klDomains || '').split('|').some(key => {
-      const wanted = child ? domain + '/' + child : domain;
-      return key === wanted || key.startsWith(wanted + '/');
-    });
+    const topic = select?.dataset.klTopic;
+    const belongs = topic
+      ? (card.dataset.klId === 'topics/' + topic + '/README' ||
+         card.dataset.klId?.startsWith('topics/' + topic + '/reviews/') ||
+         (readingOrders.get(topic) || []).includes(card.dataset.klId || ''))
+      : !domain || (card.dataset.klDomains || '').split('|').some(key => {
+          const wanted = child ? domain + '/' + child : domain;
+          return key === wanted || key.startsWith(wanted + '/');
+        });
     return belongs &&
       (type.value === 'all' || type.value === card.dataset.klType) &&
       (!search.value.trim() || (card.dataset.klSearch || '').includes(search.value.trim().toLocaleLowerCase()));
@@ -39,6 +50,20 @@ if (root) {
   function render() {
     const matching = cards.filter(isMatching);
     const query = search.value.trim().toLocaleLowerCase();
+    const selected = scopes.get(scope) || scopes.get('all')!;
+    const topic = selected.dataset.klTopic;
+    for (const guide of guides) guide.hidden = !topic || guide.dataset.klTopicGuide !== topic;
+    if (topic && !query) {
+      const order = readingOrders.get(topic) || [];
+      const rank = (card:HTMLElement) => {
+        const id = card.dataset.klId || '';
+        if (id === 'topics/' + topic + '/README') return -1;
+        const index = order.indexOf(id);
+        return index>=0 ? index : 1000;
+      };
+      matching.sort((a,b)=>rank(a)-rank(b)||
+        Number(a.dataset.klOrder)-Number(b.dataset.klOrder));
+    }
     if (query) {
       // Direct title and acronym hits should beat a generic taxonomy/summary
       // mention; the default no-query reading order stays unchanged.
@@ -51,12 +76,17 @@ if (root) {
       };
       matching.sort((a,b) => rank(a)-rank(b));
     }
+    // The DOM reading order follows the curated topic sequence or search
+    // relevance. Simply hiding cards is insufficient: the old CSS grid
+    // otherwise silently reorders them by original publication type.
+    const matchedSet = new Set(matching);
+    const ordered = [...matching,...cards.filter(card=>!matchedSet.has(card))];
+    ordered.forEach(card=>articleHost.appendChild(card));
     const visible = new Set(matching.slice(0, limit));
     for (const card of cards) card.hidden = !visible.has(card);
     empty.hidden = matching.length !== 0;
     more.hidden = matching.length <= limit;
     counter.textContent = tr(matching.length + ' 篇', matching.length + ' notes');
-    const selected = scopes.get(scope) || scopes.get('all')!;
     const nameZh = selected.dataset.klNameZh || '全部知识';
     const nameEn = selected.dataset.klNameEn || 'All notes';
     const zh = heading.querySelector<HTMLElement>('[data-l="zh"]');
@@ -122,7 +152,7 @@ if (root) {
   });
   // Open the existing canonical article while carrying only the current
   // Knowledge filters required for a predictable return link.
-  root.querySelectorAll<HTMLAnchorElement>('.kl-note a[href^="/research/"]').forEach(link =>
+  root.querySelectorAll<HTMLAnchorElement>('.kl-note a[href^="/research/"], .kl-topic-guide a[href^="/research/"]').forEach(link =>
     link.addEventListener('click', () => {
       // Recompute from the canonical href so an older scope cannot leak into
       // a later click on the same article after filters have changed.
