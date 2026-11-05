@@ -7,7 +7,7 @@
 | 设计原则 | 管辖范围 | 状态 |
 |---|---|---|
 | [全站信息架构设计原则](INFORMATION_ARCHITECTURE.md) | 五大导航、栏目职责、领域/内容类型、URL 兼容和公开边界 | 已确认，持续实施 |
-| [个人知识体系与可点亮知识网络](PERSONAL_KNOWLEDGE_NETWORK.md) | Knowledge 首屏图谱、点亮语义、AI 辅助建库、学习标记与数据来源 | 已确认，逐步实施 |
+| [个人知识库：目录与卡片设计原则](PERSONAL_KNOWLEDGE_NETWORK.md) | Knowledge 领域卡片、目录树、文章搜索与阅读入口 | 已确认，持续实施 |
 | [研究专题与长文阅读设计原则](RESEARCH_TOPICS_AND_READING.md) | 领域页、技术专题、文章关联、长文阅读器与阅读路径 | 已确认，持续实施 |
 | [论文解读设计原则](PAPER_NOTES.md) | 论文解读专题、阅读体验、论文模板、研究脉络与证据表达 | 已确认，持续实施 |
 

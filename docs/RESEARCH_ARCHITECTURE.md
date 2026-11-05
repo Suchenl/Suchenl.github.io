@@ -61,16 +61,11 @@
 - 首页精简为代表性公开成果、少量问题摘要和四个继续探索入口；科研资产库保留外部链接。
 - 回归依赖 `cd web && npm run build`、已有脚本以及 GitHub Actions 的实际结果；仅源码提交不代表完整的浏览器视觉验收。
 
-## Knowledge Atlas 真实内容网络（2026-11-05）
 
-- /knowledge/ 只显示真实公开知识：领域必须包含正文，专题必须拥有实际 README，文章节点来自现有 `getCollection('knowledge')`。
-- `web/src/lib/knowledge-network.ts` 汇集真实分类与显式 Markdown 链接；`web/src/scripts/knowledge-network.ts` 提供统一 RAF 视角、平移/缩放、拖动节点、局部高亮和本机学习标记。
-- 不再从 `knowledge/graph-roadmap.json` 生成规划节点，该规划文件已删除。AI 功能仅复制已有知识的深入学习提示词。
-- 参考研究设计：Obsidian Graph、InfraNodus、Heptabase；行为与准确性以实际自动化验收为准。
+## Knowledge 页面最终交互：目录与卡片（2026-11-05）
 
-## Knowledge Atlas 渐进式交互与边的来源（2026-11-05）
-
-- 概览显示真实领域、已有专题与按文内链接度选择的部分知识条目，不是对全部知识做遗漏统计；完整网络展示全部公开正文。
-- 领域、局部、完整三种探索路径会调整可见节点及连线；布局依旧来自已有引用和分类，但展示阶段隐藏不必要的领域放射线。
-- 每条关系保留 `evidence`、`sourceHref`，并明确区分 `belongs_to`、`topic_contains`、`references`、`semantic`、`reading_step`。目录关系绝不能冒充人工语义判断。
-- 搜索结果必须可点击且有可复原的源 URL；选中节点详情包含关联说明和真实来源。未收录的领域不生成占位节点。
+- 此前试验的可缩放知识星图已撤下：用户更倾向于直观树形层级和可直接点击的内容卡片。历史图谱方案不代表当前产品方向。
+- `/knowledge/` 使用 `getCollection('knowledge')` 与 `knowledge/taxonomy.json`，按真实领域聚合已公开正文：顶部领域卡片、左侧展开目录、右侧可搜索文章卡片，不创建空节点。
+- `web/src/scripts/knowledge-library.ts` 负责领域/二级方向筛选、文本搜索、类型过滤与分页加载；`web/src/styles/knowledge-library.css` 负责响应式排版。旧 graph 专用渲染文件退出当前代码。
+- `/research/` 的复杂阅读功能和 `web/src/lib/research-graph.ts` 的正文引用/反向链接逻辑继续保留；只是 Knowledge 首页不再展示抽象图谱。
+- 验收仍需同时完成 Astro 构建、静态链接检查与 320/390/1440px 的浏览器烟测。
