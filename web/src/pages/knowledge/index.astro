@@ -28,7 +28,7 @@ const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get
           <span><strong>{graph.stats.areas}</strong><small><span data-l="zh">已有知识领域</span><span data-l="en">Active domains</span></small></span>
         </div>
       </div>
-      <div class="kn-viewer" id="kn-viewer">
+      <div class="kn-viewer" id="kn-viewer" data-kn-view="overview">
         <div class="kn-toolbar">
           <div class="kn-lens" role="group" aria-label="知识网络展示视图">
             <button type="button" class="active" aria-pressed="true" data-kn-view="overview"><span data-l="zh">知识概览</span><span data-l="en">Overview</span></button>
@@ -70,6 +70,12 @@ const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get
               </defs>
               <rect width="1310" height="960" fill="url(#kn-grid)" pointer-events="none" />
               <g id="kn-world">
+                {areas.map(area=><g class="kn-overview-panel" aria-hidden="true">
+                  <rect x={area.overviewX-267} y={area.overviewY-73} width="534" height="372"
+                    rx="24" fill={area.color} fill-opacity=".035"
+                    stroke={area.color} stroke-opacity=".23" stroke-width="1"/>
+                  <path d={'M '+(area.overviewX-237)+' '+(area.overviewY-30)+' h 474'} stroke={area.color} stroke-opacity=".085"/>
+                </g>)}
                 {areas.map(area=><g class="kn-cluster-aura" data-aura={area.id} aria-hidden="true">
                   <circle cx={area.x} cy={area.y} r="226" fill={area.color} opacity=".045"/>
                   <circle cx={area.x} cy={area.y} r="143" fill={area.color} opacity=".045" filter="url(#kn-blur)"/>
@@ -77,9 +83,10 @@ const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get
                   <circle cx={area.x} cy={area.y} r="130" fill="none" stroke={area.color} stroke-opacity=".09" />
                 </g>)}
                 <g id="kn-edges">
-                  {links.map(e=><path class:list={['kn-edge','kn-edge-'+e.kind]}
+                  {links.map(e=><path class:list={['kn-edge','kn-edge-'+e.kind,
+                      (!e.fromNode.featured||!e.toNode.featured)&&'is-hidden']}
                     data-from={e.from} data-to={e.to}
-                    d={'M '+e.fromNode.x+' '+e.fromNode.y+' L '+e.toNode.x+' '+e.toNode.y}
+                    d={'M '+e.fromNode.overviewX+' '+e.fromNode.overviewY+' L '+e.toNode.overviewX+' '+e.toNode.overviewY}
                     stroke={e.kind==='belongs_to'?e.toNode.color:e.kind==='semantic'?'#e5c6ff':e.kind==='topic_contains'?'#73c5b4':'#b8d0ee'}
                     stroke-opacity={e.kind==='belongs_to'?.12:e.kind==='topic_contains'?.26:.40}
                     stroke-width={e.kind==='semantic'?1.6:1.15}
@@ -87,9 +94,10 @@ const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get
                 </g>
                 <g id="kn-nodes">
                   {graph.nodes.map(n=><g
-                    class:list={['kn-node','kn-node-'+n.kind]}
+                    class:list={['kn-node','kn-node-'+n.kind,!n.featured&&'is-hidden',
+                      n.featured&&n.kind==='document'&&'is-key']}
                     data-node-id={n.id} data-kind={n.kind} data-content-type={n.contentType}
-                    transform={'translate('+n.x+' '+n.y+')'}
+                    transform={'translate('+n.overviewX+' '+n.overviewY+')'}
                     style={'--node-color:'+n.color}
                     role="button" tabindex="0" aria-pressed="false"
                     aria-label={n.titleZh + '：'+(n.kind==='area'?'知识领域':n.kind==='topic'?'专题':'公开文章')}>
