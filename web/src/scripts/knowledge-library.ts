@@ -109,7 +109,11 @@ if (root) {
   // Knowledge filters required for a predictable return link.
   root.querySelectorAll<HTMLAnchorElement>('.kl-note a[href^="/research/"]').forEach(link =>
     link.addEventListener('click', () => {
-      const target = new URL(link.href);
+      // Recompute from the canonical href so an older scope cannot leak into
+      // a later click on the same article after filters have changed.
+      const target = new URL(link.dataset.klCanonicalHref || link.getAttribute('href')!, location.origin);
+      if (!link.dataset.klCanonicalHref) link.dataset.klCanonicalHref = target.pathname;
+      for (const key of ['source','scope','type','q','limit']) target.searchParams.delete(key);
       target.searchParams.set('source','knowledge');
       if (scope !== 'all') target.searchParams.set('scope', scope);
       if (type.value !== 'all') target.searchParams.set('type', type.value);
