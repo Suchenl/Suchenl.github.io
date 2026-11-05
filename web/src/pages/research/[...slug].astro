@@ -75,6 +75,25 @@ const routeNeighbors = graph.pathsFor(entry.id).map(pathNode => {
     next: index + 1 < items.length ? graph.nodes.get(items[index + 1].ref) : null,
   };
 }).filter((item): item is NonNullable<typeof item> => item !== null);
+// Topic recommendations are explicitly authored on the real topic README,
+ // not inferred from similar titles or directory placement.
+const topicRoutes=graphEntries
+  .filter(e=>/^topics\/[^/]+\/README$/.test(e.id))
+  .map(e=>{
+    const order=((e.data as {readingOrder?:{ref:string;stage:string;why:string}[]}).readingOrder||[]);
+    const index=order.findIndex(step=>step.ref===entry.id);
+    if(index<0)return null;
+    const slug=e.id.split('/')[1];
+    const href=(ref:string)=>'/research/'+ref+'/?source=knowledge&scope='+encodeURIComponent('topic:'+slug);
+    const topicData=e.data as {title?:string;catalogTitleZh?:string};
+    return {slug,topicTitle:topicData.catalogTitleZh||topicData.title||slug,
+      number:index+1,total:order.length,stage:order[index].stage,why:order[index].why,
+      overviewHref:'/research/topics/'+slug+'/',
+      previous:index>0?{title:graph.nodes.get(order[index-1].ref)!.title,href:href(order[index-1].ref)}:null,
+      next:index+1<order.length?{title:graph.nodes.get(order[index+1].ref)!.title,href:href(order[index+1].ref)}:null};
+  }).filter((x):x is NonNullable<typeof x>=>x!==null);
+const topicSlug=entry.id.match(/^topics\/([^/]+)\/README$/)?.[1];
+
 const steps = readingSteps(entry).map((step, i) => ({
   index: i,
   ...step,
@@ -117,6 +136,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
       )}
       <div class="rkd-sources">
         {outLinks.map(([name, url]) => <a href={url} target="_blank" rel="noopener noreferrer">{sourceLabels[name] || name} ↗</a>)}
+        {topicSlug&&<a href={'/knowledge/?scope='+encodeURIComponent('topic:'+topicSlug)+'#knowledge-browser'}><span data-l="zh">按顺序阅读本专题 ↗</span><span data-l="en">Follow topic reading order ↗</span></a>}
         <a href={editSource} target="_blank" rel="noopener noreferrer">编辑 Markdown ↗</a>
       </div>
     </header>
@@ -140,6 +160,21 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
         {navShortcuts.map(h => <a href={'#' + h.slug}>{h.text}</a>)}
       </nav>
     )}
+
+    {topicRoutes.length>0&&<nav class="rkd-topic-sequence" aria-label="专题推荐阅读顺序">
+      {topicRoutes.map(route=><div class="rkd-sequence-row">
+        <div class="rkd-sequence-context">
+          <a href={'/knowledge/?scope='+encodeURIComponent('topic:'+route.slug)+'#knowledge-browser'}>{route.topicTitle}</a>
+          <span aria-hidden="true">/</span><strong><span data-l="zh">建议顺序 {route.number}/{route.total} · {route.stage}</span><span data-l="en">Reading step {route.number}/{route.total} · {route.stage}</span></strong>
+        </div>
+        <p>{route.why}</p>
+        <div class="rkd-sequence-actions">
+          {route.previous&&<a href={route.previous.href}><span data-l="zh">← 上一篇</span><span data-l="en">← Previous</span><span class="rkd-sequence-name">{route.previous.title}</span></a>}
+          {route.next&&<a href={route.next.href}><span data-l="zh">下一篇 →</span><span data-l="en">Next →</span><span class="rkd-sequence-name">{route.next.title}</span></a>}
+          {!route.next&&<span class="rkd-sequence-finish"><span data-l="zh">已到推荐路线末尾</span><span data-l="en">End of suggested route</span></span>}
+        </div>
+      </div>)}
+    </nav>}
 
     <div class:list={['rkd-layout','reading-with-toc', !canShowToc && 'rkd-no-toc']}>
       {canShowToc && <ReadingToc headings={toc} articleSelector=".rkd-prose" />}
