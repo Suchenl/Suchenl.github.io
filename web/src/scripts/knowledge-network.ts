@@ -56,7 +56,7 @@ if(src){
   let areaFocus:string|null=null;
   let localFocus:string|null=null;
 
-  const typed=graph.edges.filter(e=>e.kind==='references'||e.kind==='semantic');
+  const typed=graph.edges.filter(e=>['references','semantic','reading_step'].includes(e.kind));
   const citeDegree=new Map<string,number>();
   for(const e of typed){
     citeDegree.set(e.from,(citeDegree.get(e.from)||0)+1);
@@ -216,8 +216,8 @@ if(src){
     refreshViewControls();
   }
   function connectionList(id:string){
-    const priority=(e:KnowledgeEdge)=>e.kind==='semantic'?0:e.kind==='references'?1:
-      e.kind==='topic_contains'?2:3;
+    const priority=(e:KnowledgeEdge)=>e.kind==='semantic'?0:e.kind==='reading_step'?1:
+      e.kind==='references'?2:e.kind==='topic_contains'?3:4;
     const seen=new Set<string>();
     return graph.edges.filter(e=>e.from===id||e.to===id)
       .sort((a,b)=>priority(a)-priority(b))
@@ -240,6 +240,7 @@ if(src){
       return pair?t(pair[0],pair[1]):t('人工注明关系','Typed relation');
     }
     return e.kind==='references'?t('正文链接','Text link'):
+      e.kind==='reading_step'?t('学习路线步骤','Reading path'):
       e.kind==='topic_contains'?t('专题收录','Topic membership'):
       t('领域归属','Domain category');
   }
@@ -287,7 +288,10 @@ if(src){
       const badge=document.createElement('span');
       badge.className='kn-connection-kind kn-connection-'+edge.kind;
       badge.textContent=edgeLabel(edge);
-      row.append(button,badge);item.append(row);
+      const direction=document.createElement('small');
+      direction.className='kn-connection-direction';
+      direction.textContent=edge.from===n.id?t('本页链接至对方 →','Outward →'):t('← 对方链接至本页','← Inbound');
+      row.append(button,badge);item.append(row,direction);
       if(edge.evidence){
         const evidence=document.createElement('p');
         evidence.className='kn-connection-evidence';
