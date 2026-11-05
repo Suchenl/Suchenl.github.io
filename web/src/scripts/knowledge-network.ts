@@ -215,13 +215,33 @@ if(src){
     visibleCount.textContent=t(visible+' 个节点',''+visible+' nodes');
     refreshViewControls();
   }
-  function neighboursByRelevance(id:string){
-    const related=graph.edges.filter(e=>e.from===id||e.to===id);
-    related.sort((a,b)=>Number(b.kind==='references')-Number(a.kind==='references'));
-    const all=new Set<string>();
-    return related.map(e=>e.from===id?e.to:e.from).filter(next=>{
-      if(all.has(next))return false;all.add(next);return true;
-    }).map(ref=>byId.get(ref)).filter((n):n is KnowledgeNode=>!!n).slice(0,12);
+  function connectionList(id:string){
+    const priority=(e:KnowledgeEdge)=>e.kind==='semantic'?0:e.kind==='references'?1:
+      e.kind==='topic_contains'?2:3;
+    const seen=new Set<string>();
+    return graph.edges.filter(e=>e.from===id||e.to===id)
+      .sort((a,b)=>priority(a)-priority(b))
+      .filter(e=>{
+        const key=e.from===id?e.to:e.from;
+        if(seen.has(key))return false;
+        seen.add(key);return true;
+      }).slice(0,12);
+  }
+  function edgeLabel(e:KnowledgeEdge){
+    if(e.kind==='semantic'){
+      const labels:Record<string,[string,string]>={
+        requires:['前置知识','Prerequisite'],
+        compares:['比较','Comparison'],
+        extends:['后续扩展','Extends'],
+        questions:['提出问题','Questions'],
+        supports:['支持证据','Supports']
+      };
+      const pair=labels[e.relation||''];
+      return pair?t(pair[0],pair[1]):t('人工注明关系','Typed relation');
+    }
+    return e.kind==='references'?t('正文链接','Text link'):
+      e.kind==='topic_contains'?t('专题收录','Topic membership'):
+      t('领域归属','Domain category');
   }
   function renderPanel(){
     const n=selected?byId.get(selected):null;
@@ -250,29 +270,61 @@ if(src){
       li.append(a);sources.append(li);
     }
     connections.replaceChildren();
-    const peers=neighboursByRelevance(n.id);
-    if(!peers.length)connections.textContent=t('暂无正文关联','No outgoing note links yet');
-    for(const peer of peers){
-      const b=document.createElement('button');b.type='button';
-      b.textContent=peer.shortZh;b.title=peer.titleZh;
-      b.addEventListener('click',()=>select(peer.id,true));
-      connections.append(b);
+    const links=connectionList(n.id);
+    if(!links.length)connections.textContent=t('暂无明确连接，可阅读当前正文。','No direct connections yet; open the article to explore.');
+    for(const edge of links){
+      const targetId=edge.from===n.id?edge.to:edge.from;
+      const peer=byId.get(targetId);
+      if(!peer)continue;
+      const item=document.createElement('div');
+      item.className='kn-connection-item';
+      const row=document.createElement('div');
+      row.className='kn-connection-head';
+      const button=document.createElement('button');
+      button.type='button';button.className='kn-connection-target';
+      button.textContent=title(peer);
+      button.addEventListener('click',()=>select(peer.id,true));
+      const badge=document.createElement('span');
+      badge.className='kn-connection-kind kn-connection-'+edge.kind;
+      badge.textContent=edgeLabel(edge);
+      row.append(button,badge);item.append(row);
+      if(edge.evidence){
+        const evidence=document.createElement('p');
+        evidence.className='kn-connection-evidence';
+        evidence.textContent=edge.evidence;
+        item.append(evidence);
+      }
+      if(edge.sourceHref){
+        const link=document.createElement('a');
+        link.className='kn-connection-source';
+        link.href=edge.sourceHref;
+        link.textContent=t('查看关系出处 ↗','View source ↗');
+        item.append(link);
+      }
+      connections.append(item);
     }
     fallback.hidden=true;feedback.textContent='';
     restyle();
   }
   function select(id:string,focus=false){
-    if(!byId.has(id))return;
+    const n=byId.get(id);
+    if(!n)return;
+    if(view==='all'||view==='overview')returnView=view;
     hovered=null;selected=id;
-    tooltip.hidden=true;
+    areaFocus=n.kind==='area'?id:null;
+    localFocus=n.kind==='area'?null:id;
+    view=n.kind==='area'?'area':'local';
+    tooltip.hidden=true;resultBox.hidden=true;
     renderPanel();
-    if(focus)centerOn(id);
+    centerOn(id,n.kind==='area'?1.28:1.83);
     const url=new URL(location.href);
     url.searchParams.set('node',id);
     history.replaceState(null,'',url.pathname+url.search+url.hash);
   }
   function clearSelection(){
-    hovered=null;selected=null;panel.hidden=true;tooltip.hidden=true;
+    hovered=null;selected=null;areaFocus=null;localFocus=null;
+    view=returnView;
+    panel.hidden=true;tooltip.hidden=true;
     const url=new URL(location.href);url.searchParams.delete('node');
     history.replaceState(null,'',url.pathname+url.search+url.hash);
     restyle();
