@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SectionNav from '../../components/SectionNav.astro';
 import Bi from '../../components/Bi.astro';
 import { getPublicQuestions } from '../../lib/public-questions';
 
@@ -7,6 +8,7 @@ const questions = await getPublicQuestions();
 ---
 
 <Base title="好奇的问题与探索" description="技术兴趣与研究问题：文献证据、路线对比、个人判断和仍值得探索的方向。">
+  <SectionNav section="research" active="questions" />
   <header class="questions-header">
     <p class="questions-eyebrow">QUESTIONS & INTERESTS · CURIOSITY-DRIVEN EXPLORATION</p>
     <h1 class="page-title"><Bi zh="我好奇的问题与探索" en="Questions & Explorations" /></h1>

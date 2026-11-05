@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SectionNav from '../../components/SectionNav.astro';
 import { getCollection } from 'astro:content';
 import { domainTitle } from '../../lib/research-taxonomy';
 
@@ -34,6 +35,7 @@ const featured = [
 ].filter(f=>papers.some(p=>p.id==='papers/'+f.ref));
 ---
 <Base title="论文解读" description="论文解读：从核心概念、研究脉络、方法流程到实验证据与适用边界。理解方法，连接知识，形成判断。">
+  <SectionNav section="research" active="papers" />
   <div class="pn-page">
     <nav class="pn-breadcrumb" aria-label="当前位置"><a href="/research/">研究知识库</a><span>/</span><span>论文解读</span></nav>
     <header class="pn-hero">

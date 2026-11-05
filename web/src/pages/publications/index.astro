@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SectionNav from '../../components/SectionNav.astro';
 import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PUB_GROUPS } from '../../data';
@@ -27,6 +28,7 @@ import { SITE, AUTHOR } from '../../config';
     }))
   }
 }}>
+  <SectionNav section="outputs" active="papers" />
   <h1 class="page-title"><Bi zh="论文" en="Publications" /></h1>
   <p class="page-intro">
     <Bi zh="按研究领域分组。* 表示共同一作。" en="Grouped by research area. * indicates equal contribution." />

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SectionNav from '../../components/SectionNav.astro';
 import Bi from '../../components/Bi.astro';
 import Stars from '../../components/Stars.astro';
 import { PROJECTS } from '../../data/projects';
@@ -10,6 +11,7 @@ const researchHighlights = PUB_GROUPS.flatMap(g => g.papers).filter(p =>
 ---
 
 <Base title="Projects">
+  <SectionNav section="outputs" active="projects" />
   <h1 class="page-title"><Bi zh="项目" en="Projects" /></h1>
   <p class="page-intro">
     <Bi
