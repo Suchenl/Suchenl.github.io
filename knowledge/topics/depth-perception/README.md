@@ -33,6 +33,7 @@ readingOrder:
   - ref: topics/depth-perception/reviews/selection-evaluation
     stage: "评测与选择"
     why: "用任务误差、材质和边界条件决定方案，而不是只比深度图观感。"
+catalogTitleZh: "深度感知：测量、估计与可信度"
 ---
 
 # 深度感知与几何估计：深度从哪里来，什么时候能信？

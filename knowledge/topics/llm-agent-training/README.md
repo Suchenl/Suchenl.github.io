@@ -22,6 +22,7 @@ readingOrder:
   - ref: research/agent-post-training-experiment-agenda
     stage: "研究设计"
     why: "把问题拆成受控变量和可证伪对照；这不是已完成实验。"
+catalogTitleZh: "LLM Agent 后训练：SFT 与 RL"
 ---
 
 # LLM / 多模态 Agent 后训练

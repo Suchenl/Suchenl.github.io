@@ -19,6 +19,7 @@ readingOrder:
   - ref: papers/2026/foveavla
     stage: "视觉与动作延伸"
     why: "探索视觉观察、双目深度与 VLA 末端策略的接口，不把视觉预测当作物理控制保证。"
+catalogTitleZh: "机器人控制：PD、阻抗与视觉伺服"
 ---
 
 # 机器人控制专题：机器人为什么不能只给“目标位置”就完事？

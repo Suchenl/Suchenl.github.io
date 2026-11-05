@@ -16,6 +16,7 @@ readingOrder:
   - ref: research/how-general-agents-unify-discrete-language-and-continuous-numerical-prediction
     stage: "跨主题探索"
     why: "进一步思考离散语言输出与连续预测头的统一，属于开放研究而非确定结论。"
+catalogTitleZh: "大模型预训练：数据到训练稳定性"
 ---
 
 # 大模型预训练（Pretraining）

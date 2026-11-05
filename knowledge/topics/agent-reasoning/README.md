@@ -19,6 +19,7 @@ readingOrder:
   - ref: research/how-models-learn-adaptive-reasoning
     stage: "开放问题"
     why: "进一步讨论何时思考、思考多久与成本敏感训练的可验证假设。"
+catalogTitleZh: "Agent 推理、工具与跨轮状态"
 ---
 
 # Agent 长程推理与工具调用
