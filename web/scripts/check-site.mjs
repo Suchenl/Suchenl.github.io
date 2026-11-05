@@ -85,7 +85,7 @@ const compare=page('research/compare');
 const steps=page('research/paths/agent-post-training');
 const blogHtml=readFileSync('src/pages/blog/index.astro','utf8');
 check(home.includes('"@type":"ProfilePage"') && home.includes('"@type":"Person"'),'person structured data');
-check(home.includes('href="/questions/"') && home.includes('home-question-card'),'homepage question teaser and link');
+check(home.includes('href="/knowledge/?type=exploration#knowledge-browser"') && home.includes('home-question-card'),'homepage questions lead to the unified Knowledge filter');
 // Check against curated public research questions, not arbitrary recent files.
 // The redesigned homepage deliberately shows only two concise teasers.
 const publicQuestions = readdirSync('../knowledge/research')
@@ -132,7 +132,8 @@ const configSource = readFileSync('src/config.ts','utf8');
 const sectionNavSource = readFileSync('src/components/SectionNav.astro','utf8');
 check(configSource.includes("href: '/knowledge/'") && configSource.includes("href: '/outputs/'") &&
       !configSource.includes("href: '/questions/'") && !configSource.includes("href: '/paper-notes/'") &&
-      sectionNavSource.includes("href:'/questions/'") && sectionNavSource.includes("href:'/paper-notes/'"),
+      sectionNavSource.includes("href:'/knowledge/?type=exploration#knowledge-browser'") &&
+      sectionNavSource.includes("href:'/knowledge/?type=paper#knowledge-browser'"),
       'five-item primary navigation and Research secondary entrypoints');
 const knowledge=page('knowledge');
 check(knowledge.includes('id="kl-search"') &&
@@ -146,8 +147,10 @@ check(knowledge.includes('id="kl-search"') &&
       !knowledge.includes('Open-Robot-Agent'),
       'Knowledge homepage uses real public content in cards and a navigable directory, without graph UI');
 check((knowledge.match(/class="kl-note"/g)||[]).length >= 30 &&
-      (knowledge.match(/class="kl-domain-card"/g)||[]).length === 4,
-      'Knowledge homepage renders existing article cards and real domain cards');
+      (knowledge.match(/class="kl-tree-domain"/g)||[]).length === 4 &&
+      !knowledge.includes('class="kl-domain-card"') &&
+      !knowledge.includes('href="/paper-notes/"') && !knowledge.includes('href="/questions/"'),
+      'Knowledge has one real directory and article-card workspace without competing index links');
 
 const outputs=page('outputs');
 const areas=['llm-and-rl','multimodal','robotics','world-models'].map(name=>page('research/domains/'+name));
@@ -158,8 +161,9 @@ check(areas.every(area=>area.includes('RESEARCH AREA')) && areas[2].includes('�
 check(research.includes('id="all-knowledge"') && research.includes('research-areas-grid') &&
       research.includes('/research/domains/robotics/'),
       'Research landing offers area-first discovery and retained filtered index');
-check(hilReader.includes('/research/domains/robotics/') && robotControlLegacy.includes('阻抗控制'),
-      'reader domain breadcrumb and legacy article deep links remain valid');
+check(hilReader.includes('/knowledge/?scope=robotics#knowledge-browser') &&
+      hilReader.includes('id="research-return"') && robotControlLegacy.includes('阻抗控制'),
+      'reader breadcrumb and return link use Knowledge; legacy article deep links remain valid');
 check(!existsSync(join(root,'about','index.html')),'standalone About route removed');
 check(!home.includes('href="/about/"') && !home.includes('href="/about"'),'no stale About links');
 check(home.includes('href="/work/"') && !home.includes('href="/expertise/"'),'Experience entry remains; Expertise is not linked from homepage');
