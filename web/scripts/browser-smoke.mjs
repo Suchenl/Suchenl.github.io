@@ -22,7 +22,7 @@ try {
   const page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await check('Home '+width,async()=>{await navigate(page,'/');await noOverflow(page);
-   if(width<=390){assert.equal(await page.locator('#primary-navigation').isVisible(),false,'Mobile nav should start collapsed');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');}assert(await page.getByText('精选研究成果').count()>0);
+   if(width<=390){assert.equal(await page.locator('#primary-navigation').isVisible(),false,'Mobile nav should start collapsed');assert.equal(await page.locator('#mobile-menu-toggle').getAttribute('aria-expanded'),'false');}assert(await page.getByText('精选研究产出').count()>0);
    assert((await page.locator('.chips .tag-chip').count())===5,'Original research tags must remain');
    assert((await page.locator('.hero-interests').textContent()).includes('多模态生成'),'Original interests must remain');});
   await check('Experience navigation and unpublished Expertise '+width,async()=>{
@@ -42,14 +42,36 @@ try {
     assert.equal(response?.status(),404,'Expertise must not be a published page');
    }
   });
+  await check('Knowledge network and learning marks '+width,async()=>{
+   await navigate(page,'/knowledge/');await noOverflow(page);
+   assert.equal(await page.locator('#kn-svg').count(),1,'SVG network is visible before the directory');
+   assert((await page.locator('.kn-node').count())>=20,'Research and planned fields are graphed');
+   const graph=JSON.parse(await page.locator('#kn-data').textContent());
+   assert(graph.stats.ready>0 && graph.stats.empty>0,'A real mix of covered and uncovered topics');
+   await page.locator('#kn-search').fill('深度');
+   assert((await page.locator('.kn-node:not(.is-muted)').count())>=1,'Search finds depth topic');
+   await page.locator('#kn-search').fill('');
+   await page.locator('[data-node-id="research:机器人与具身智能/策略学习与控制"]').click();
+   assert.equal(await page.locator('#kn-detail-title').innerText(),'策略学习与控制');
+   assert((await page.locator('#kn-sources a[href="/research/topics/robot-control/"]').count())>0,'Canonical robot-control reading is linked');
+   await page.locator('#kn-studied').click();
+   assert.equal(await page.locator('#kn-detail-progress').innerText(),'已学习');
+   assert.equal(await page.locator('.kn-node.is-studied').count(),1,'Studied status appears on map');
+   await page.locator('[data-node-id="planned:math-science/probability"]').click();
+   assert.equal(await page.locator('#kn-phase').innerText(),'待建设');
+   assert(await page.locator('#kn-ai-prompt').isVisible(),'AI drafting task available for gaps');
+   await page.locator('[data-kn-filter="empty"]').click();
+   assert.equal(await page.locator('[data-kn-filter="empty"]').getAttribute('aria-pressed'),'true');
+   await noOverflow(page);
+  });
   await check('Open research Questions '+width,async()=>{
    await navigate(page,'/');
-   assert.equal(await page.locator('#primary-navigation a[href="/research/"]').count(),1,'Research is a primary navigation entry');
+   assert.equal(await page.locator('#primary-navigation a[href="/knowledge/"]').count(),1,'Knowledge is a primary navigation entry');
    assert.equal(await page.locator('#primary-navigation a[href="/questions/"]').count(),0,'Questions has moved to Research secondary navigation');
    assert.equal(await page.locator('.home-question-card').count(),2,'Homepage should show two curated public question teasers');
    assert.equal(await page.locator('.question-evidence-chip').count(),0,'Full evidence belongs in the Research article rather than the homepage');
    await navigate(page,'/questions/'); await noOverflow(page);
-   assert.equal(await page.locator('#primary-navigation a[href="/research/"]').getAttribute('aria-current'),'page');
+   assert.equal(await page.locator('#primary-navigation a[href="/knowledge/"]').getAttribute('aria-current'),'page');
    assert.equal(await page.locator('.section-nav a[href="/questions/"]').getAttribute('aria-current'),'page');
    assert((await page.locator('.question-entry').count())>=1,'Published questions and interests should be listed');
    const target=page.locator('.question-entry h2 a[href*="action-sampling-frequency-bias"]');

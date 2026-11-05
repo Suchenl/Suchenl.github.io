@@ -130,10 +130,16 @@ check(questions.includes('action-sampling-frequency-bias') && questions.includes
 check(questionDetail.includes('Chronos Policy') && questionDetail.includes('Offline Reinforcement Learning at Multiple Frequencies'),'question note has relevant literature');
 const configSource = readFileSync('src/config.ts','utf8');
 const sectionNavSource = readFileSync('src/components/SectionNav.astro','utf8');
-check(configSource.includes("href: '/research/'") && configSource.includes("href: '/outputs/'") &&
+check(configSource.includes("href: '/knowledge/'") && configSource.includes("href: '/outputs/'") &&
       !configSource.includes("href: '/questions/'") && !configSource.includes("href: '/paper-notes/'") &&
       sectionNavSource.includes("href:'/questions/'") && sectionNavSource.includes("href:'/paper-notes/'"),
       'five-item primary navigation and Research secondary entrypoints');
+const knowledge=page('knowledge');
+check(knowledge.includes('id="kn-svg"') && knowledge.includes('id="kn-search"') &&
+      knowledge.includes('id="kn-ai-prompt"') && knowledge.includes('id="kn-studied"') &&
+      knowledge.includes('planned:math-science') && knowledge.includes('research:机器人与具身智能') &&
+      knowledge.includes('/research/topics/robot-control/') && !knowledge.includes('Open-Robot-Agent'),
+      'Knowledge atlas is public-only and exposes covered/uncovered areas, study marks and AI tasks');
 const outputs=page('outputs');
 const areas=['llm-and-rl','multimodal','robotics','world-models'].map(name=>page('research/domains/'+name));
 check(outputs.includes('href="/publications/"') && outputs.includes('href="/projects/"'),
