@@ -1,8 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SectionNav from '../../components/SectionNav.astro';
 import '../../styles/research-library.css';
 import { getCollection, render } from 'astro:content';
-import { contentTypes } from '../../lib/research-taxonomy';
+import { contentTypes, domainCatalog, domainMatches } from '../../lib/research-taxonomy';
 
 type PaperMeta = {
   title?: string;
@@ -94,14 +95,48 @@ const docItem = (e: (typeof entries)[number]) => {
 const other = [...topicHubs, ...paths, ...reviews, ...glossaries, ...ideas].map(docItem);
 const items = [...papers, ...other, ...glossaryTerms];
 const countType = (kind: string) => items.filter(item => item.kind === kind).length;
+const areas = domainCatalog.map(area => ({
+  ...area,
+  count: entries.filter(e => domainMatches((e.data as {domains?:string[]}).domains,area.id)).length,
+  topics: topicHubs.filter(e => domainMatches((e.data as {domains?:string[]}).domains,area.id)).slice(0,2).map(e => ({
+    href:'/research/'+e.id.slice(0,-'/README'.length)+'/',
+    name:(e.data as {shortName?:string;title?:string}).shortName || (e.data as {title?:string}).title || e.id,
+  })),
+}));
 const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
-<Base title="研究知识库" description="按研究方向检索、阅读并持续维护论文、主题综述与研究笔记。">
+<Base title="研究知识库" description="从领域和技术专题出发，阅读概念、论文、技术综述与未解决的研究问题。">
+  <SectionNav section="research" active="overview" />
   <section class="lit-intro">
     <p class="lit-eyebrow">PERSONAL RESEARCH LIBRARY</p>
     <h1 class="page-title">研究知识库</h1>
-    <p class="page-intro">先选研究领域，再按内容类型筛选。论文、技术问答、专题综述、研究探索与学习路线共用一个知识库和唯一正文。</p>
+    <p class="page-intro">以研究问题为线索，理解基础概念、技术路线与实验证据。可以从领域与专题逐层阅读，也可以检索全部论文、综述和研究问题。</p>
+  </section>
+  <section class="research-areas" aria-labelledby="research-areas-heading">
+    <div class="research-areas-heading">
+      <div><p class="lit-eyebrow">RESEARCH AREAS</p><h2 id="research-areas-heading">从研究领域开始</h2></div>
+      <p>知识领域与内容类型分开组织；同一篇文章可能属于多个领域，但正文只维护一份。</p>
+    </div>
+    <div class="research-areas-grid">
+      {areas.map((area,i) => (
+        <article class="research-area-card">
+          <div class="research-area-top"><span class="research-area-number">{String(i+1).padStart(2,'0')}</span><span class="research-area-count">{area.count} 项内容</span></div>
+          <h3><a href={'/research/domains/'+area.slug+'/'}><span data-l="zh">{area.id}</span><span data-l="en">{area.en}</span> <span aria-hidden="true">↗</span></a></h3>
+          <p><span data-l="zh">{area.description}</span><span data-l="en">{area.descriptionEn}</span></p>
+          {area.topics.length > 0 && <div class="research-area-topics"><span class="research-area-topics-label">技术专题</span>{area.topics.map(t=><a href={t.href}>{t.name} →</a>)}</div>}
+        </article>
+      ))}
+    </div>
+  </section>
+  <section class="research-entryways" aria-label="按内容类型探索研究">
+    <a href="/paper-notes/"><strong>论文解读</strong><span>从概念、机制到原始证据 →</span></a>
+    <a href="/questions/"><strong>问题与探索</strong><span>持续追问的开放研究问题 →</span></a>
+    <a href="#all-knowledge"><strong>完整知识索引</strong><span>跨领域检索、筛选和比较 →</span></a>
+  </section>
+  <section class="research-index-head" id="all-knowledge" aria-labelledby="research-index-title">
+    <p class="lit-eyebrow">ALL KNOWLEDGE</p><h2 id="research-index-title">全部知识与检索</h2>
+    <p>按领域、内容类型和关键词交叉筛选。论文阅读状态及对比功能保持独立可用。</p>
     <div class="lit-shortcuts" aria-label="按知识类型筛选">
       <button type="button" data-type="all"><strong>{papers.length + other.length}</strong><span>全部内容</span></button>
       {contentTypes.map(type => (

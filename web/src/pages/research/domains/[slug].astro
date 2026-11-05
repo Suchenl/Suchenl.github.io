@@ -1,0 +1,47 @@
+---
+import Base from '../../../layouts/Base.astro';
+import SectionNav from '../../../components/SectionNav.astro';
+import { getCollection } from 'astro:content';
+import { domainCatalog, domainMatches, typeLabel } from '../../../lib/research-taxonomy';
+
+export function getStaticPaths() {
+  return domainCatalog.map(area => ({ params:{slug:area.slug}, props:{area} }));
+}
+const { area } = Astro.props;
+const entries = (await getCollection('knowledge')).filter(e => domainMatches((e.data as { domains?:string[] }).domains,area.id));
+const getTitle = (e:typeof entries[number]) => (e.data as {title?:string}).title || e.id;
+const getSummary = (e:typeof entries[number]) => (e.data as {summaryZh?:string}).summaryZh || '';
+const fullHref = (e:typeof entries[number]) => '/research/'+e.id+'/';
+const topics = entries.filter(e=>e.id.startsWith('topics/')&&e.id.endsWith('/README')&&e.id!=='topics/README');
+const papers = entries.filter(e=>e.id.startsWith('papers/')).sort((a,b)=>Number((b.data as {year?:number}).year||0)-Number((a.data as {year?:number}).year||0)).slice(0,6);
+const questions = entries.filter(e=>(e.data as {contentType?:string;publicQuestion?:boolean}).contentType==='exploration'&&(e.data as {publicQuestion?:boolean}).publicQuestion===true).slice(0,4);
+const reading = entries.filter(e=>!(e.id.startsWith('papers/')||e.id.startsWith('topics/')||e.id.startsWith('research/'))&&((e.data as {contentType?:string}).contentType==='review'||(e.data as {contentType?:string}).contentType==='path')).slice(0,5);
+const browseHref='/research/?folder='+encodeURIComponent('domain:'+area.id);
+---
+<Base title={area.id} description={area.description}>
+  <SectionNav section="research" active="overview" />
+  <nav class="ra-crumb" aria-label="当前位置"><a href="/research/">研究</a><span>/</span><span>{area.id}</span></nav>
+  <header class="ra-header">
+    <p class="ra-eyebrow">RESEARCH AREA</p>
+    <h1><span data-l="zh">{area.id}</span><span data-l="en">{area.en}</span></h1>
+    <p><span data-l="zh">{area.description}</span><span data-l="en">{area.descriptionEn}</span></p>
+    <div class="ra-action"><a href={browseHref}>浏览领域全部 {entries.length} 项知识 →</a><a href="/paper-notes/">论文解读 →</a><a href="/questions/">问题与探索 →</a></div>
+  </header>
+  {topics.length>0 && <section class="ra-section" aria-labelledby="ra-topics"><h2 id="ra-topics">技术专题 <span>Topics</span></h2><p class="ra-note">沿研究问题进入专题，再按推荐路径阅读基础概念、技术综述和代表性论文。</p><div class="ra-topics">
+    {topics.map(t=><article class="ra-card"><p class="ra-type">TECHNICAL TOPIC</p><h3><a href={'/research/'+t.id.slice(0,-'/README'.length)+'/'}>{getTitle(t)} →</a></h3>{getSummary(t)&&<p>{getSummary(t)}</p>}</article>)}
+  </div></section>}
+  {reading.length>0 && <section class="ra-section" aria-labelledby="ra-guides"><h2 id="ra-guides">专题综述与学习路线 <span>Guides & Paths</span></h2><div class="ra-list">
+    {reading.map(t=><a href={fullHref(t)}><span class="ra-type">{typeLabel[(t.data as {contentType?:string}).contentType||'']||'研究资料'}</span><strong>{getTitle(t)}</strong><span class="ra-arrow">→</span></a>)}
+  </div></section>}
+  {papers.length>0 && <section class="ra-section" aria-labelledby="ra-papers"><div class="ra-heading"><h2 id="ra-papers">相关论文解读 <span>Paper Notes</span></h2><a href="/paper-notes/">论文解读目录 →</a></div><div class="ra-list">
+    {papers.map(p=><a href={fullHref(p)}><span class="ra-type">{(p.data as {year?:number}).year||'论文'}</span><strong>{getTitle(p)}</strong><span class="ra-arrow">→</span></a>)}
+  </div></section>}
+  {questions.length>0 && <section class="ra-section" aria-labelledby="ra-questions"><div class="ra-heading"><h2 id="ra-questions">值得继续追问的问题 <span>Open Questions</span></h2><a href="/questions/">全部探索 →</a></div><div class="ra-list">
+    {questions.map(q=><a href={fullHref(q)}><span class="ra-type">EXPLORATION</span><strong>{getTitle(q)}</strong><span class="ra-arrow">→</span></a>)}
+  </div></section>}
+  <p class="ra-end">同一知识对象可能跨领域关联；文章只在知识库中维护一份。<a href={browseHref}>查看本领域完整目录与筛选 →</a></p>
+</Base>
+<style>
+.ra-crumb{display:flex;gap:.6rem;align-items:center;color:var(--fg-muted);font-size:.8rem;margin:1rem 0 1.2rem}.ra-crumb a{color:var(--fg-muted)}.ra-header{max-width:820px;margin-bottom:2.8rem}.ra-eyebrow{letter-spacing:.12em;color:var(--accent-ink);font-weight:750;font-size:.75rem}.ra-header h1{font-size:clamp(1.8rem,4vw,2.65rem);line-height:1.3;letter-spacing:-.025em;margin:.4rem 0 .65rem}.ra-header>p:not(.ra-eyebrow){font-size:1rem;color:var(--fg-muted);line-height:1.8}.ra-action{display:flex;flex-wrap:wrap;gap:.75rem 1.3rem;margin-top:1.4rem;font-size:.84rem;font-weight:650}.ra-section{margin:2.5rem 0}.ra-section h2{font-size:1.32rem;letter-spacing:-.01em;margin:0 0 .7rem}.ra-section h2 span{font-size:.76rem;font-weight:550;color:var(--fg-muted);margin-left:.35rem}.ra-note{color:var(--fg-muted);font-size:.85rem;line-height:1.65}.ra-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin-top:1.1rem}.ra-card{min-width:0;border:1px solid var(--border);background:var(--surface);padding:1.2rem 1.3rem;border-radius:13px}.ra-card:hover{border-color:var(--accent)}.ra-card .ra-type{color:var(--accent-ink);margin:0 0 .5rem}.ra-card h3{font-size:1.07rem;line-height:1.55;margin:0 0 .45rem}.ra-card h3 a{color:var(--fg)}.ra-card>p:last-child{color:var(--fg-muted);font-size:.85rem;line-height:1.7;margin:.5rem 0 0}.ra-type{font-size:.71rem;letter-spacing:.025em;color:var(--fg-muted)}.ra-heading{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}.ra-heading>a{font-size:.82rem;font-weight:650}.ra-list{border-top:1px solid var(--border);margin-top:.85rem}.ra-list>a{display:flex;align-items:center;gap:.9rem;padding:.92rem 0;border-bottom:1px solid var(--border);font-size:.9rem}.ra-list>a:hover strong{color:var(--accent-ink)}.ra-list strong{flex:1;color:var(--fg);font-size:.91rem;line-height:1.5}.ra-arrow{color:var(--fg-muted)}.ra-end{border-top:1px solid var(--border);padding-top:1.3rem;margin:3rem 0;color:var(--fg-muted);font-size:.85rem;line-height:1.8}
+@media(max-width:680px){.ra-topics{grid-template-columns:1fr}.ra-list>a{flex-wrap:wrap;gap:.3rem .65rem}.ra-list .ra-type{flex-basis:100%}}
+</style>
