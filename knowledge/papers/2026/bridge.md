@@ -19,8 +19,9 @@ comparison:
 title: "Beyond Two-Stage Training: Cooperative SFT and RL for LLM Reasoning"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
-summaryZh: "利用奖励反馈协调 SFT 与 RL 更新方向"
+summaryZh: "从监督梯度与强化学习目标可能冲突的问题出发，解释 BRIDGE 如何通过联合策略与纯 RL 对照协调训练，并核对额外计算成本、奖励条件及代码公开边界。"
 status: untracked
+catalogTitleZh: "BRIDGE：怎样协调 SFT 与 RL 的优化方向"
 ---
 
 

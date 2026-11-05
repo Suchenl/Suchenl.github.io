@@ -17,8 +17,9 @@ comparison:
 title: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"
 year: 2025
 categories: ["强化学习与 Agent/推理与后训练"]
-summaryZh: "DeepSeek-R1 的直接强化学习、冷启动与推理能力"
+summaryZh: "比较 R1-Zero 的直接强化学习与 DeepSeek-R1 的冷启动及多阶段训练，理解推理轨迹如何形成、验证奖励能提供什么信号，以及成功所依赖的基础模型条件。"
 status: untracked
+catalogTitleZh: "DeepSeek-R1：如何用强化学习训练推理能力"
 ---
 
 # DeepSeek-R1：R1-Zero、四阶段后训练与蒸馏究竟说明了什么？

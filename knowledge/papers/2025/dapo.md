@@ -11,8 +11,9 @@ shortName: "DAPO"
 title: "DAPO: An Open-Source LLM Reinforcement Learning System at Scale"
 year: 2025
 categories: ["强化学习与 Agent/强化学习算法"]
-summaryZh: "DAPO 的长思维链强化学习工程优化方法"
+summaryZh: "解读 Clip-Higher、动态采样、Token-Level Policy Gradient 和超长输出奖励塑形四项训练配方；比较其对有效探索和训练成本的影响，以及数学任务结果外推到 Agent 时的限制。"
 status: untracked
+catalogTitleZh: "DAPO：长思维链强化学习如何解决训练瓶颈"
 ---
 
 # DAPO: An Open-Source LLM Reinforcement Learning System at Scale

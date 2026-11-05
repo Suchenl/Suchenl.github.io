@@ -18,6 +18,7 @@ links:
   pdf: "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf"
   code: "https://github.com/XiaomiMiMo/verl"
   project: "https://mimo.mi.com/docs/en-US/news/latest/v2-6"
+catalogTitleZh: "MiMo-V2.6：多环境 Agent 强化学习与蒸馏"
 ---
 
 # MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement

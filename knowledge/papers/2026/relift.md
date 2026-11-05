@@ -16,8 +16,9 @@ comparison:
 title: "Learning What Reinforcement Learning Can't: Interleaved Online Fine-Tuning for Hardest Questions"
 year: 2026
 categories: ["强化学习与 Agent/SFT 与 RL 协同"]
-summaryZh: "在强化学习困难阶段定向插入 SFT"
+summaryZh: "分析当模型在困难问题上难以获得正奖励时，如何在线插入定向监督辅助探索；同时区分训练收益、示范数据成本和不同预算下的对照条件。"
 status: untracked
+catalogTitleZh: "ReLIFT：在强化学习困难状态引入定向监督"
 ---
 
 # Learning What Reinforcement Learning Can't: Interleaved Online Fine-Tuning for Hardest Questions

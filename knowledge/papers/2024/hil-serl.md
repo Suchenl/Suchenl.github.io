@@ -18,6 +18,7 @@ links:
   pdf: "https://arxiv.org/pdf/2410.21845"
   code: "https://github.com/rail-berkeley/hil-serl"
   project: "https://hil-serl.github.io/"
+catalogTitleZh: "HIL-SERL：人类介入如何帮助真实机器人学习精细操作"
 ---
 
 # HIL-SERL：人类纠正如何帮助机器人通过强化学习掌握精密操作？

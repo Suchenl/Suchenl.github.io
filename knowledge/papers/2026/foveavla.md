@@ -23,6 +23,7 @@ comparison:
   signal: "Flow Matching 动作损失与未来 BBox Location Token 交叉熵"
   evidence: "真实机器人 48 次测试：腕部 π₀.₅ 52.1%，Single 70.8%，Dual 77.1%；另有 Foveation/Depth 消融"
   limitation: "深度为双目估计非 GT；缺少 ZED SDK 直接对照与深度偏差压力测试；对主动观测的定义限于图像内裁剪"
+catalogTitleZh: "FoveaVLA：用局部观察和双目深度替代腕部相机"
 ---
 
 # FoveaVLA：让 VLA 预测下一步应该看哪里，能否替代腕部相机？

@@ -5,8 +5,9 @@ shortName: "AgentTune"
 title: "AgentTune: A Unified Training Lifecycle for Tool-Using LLM Agents"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]
-summaryZh: "统一 Agent 交互轨迹、训练、评测的数据契约"
+summaryZh: "聚焦双层 EventLog 与统一的训练、评测投影接口，说明怎样复用一条工具交互轨迹、避免把评测真值注入模型上下文；当前只核对公开论文摘要与部分框架材料。"
 status: untracked
+catalogTitleZh: "AgentTune：统一工具 Agent 的执行与训练轨迹"
 ---
 
 # AgentTune: A Unified Training Lifecycle for Tool-Using LLM Agents

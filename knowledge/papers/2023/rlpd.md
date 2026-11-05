@@ -17,6 +17,7 @@ links:
   pdf: "https://proceedings.mlr.press/v202/ball23a/ball23a.pdf"
   code: "https://github.com/ikostrikov/rlpd"
   project: "https://proceedings.mlr.press/v202/ball23a.html"
+catalogTitleZh: "RLPD：离线数据如何帮助机器人在线强化学习"
 ---
 
 # RLPD：怎样利用历史数据，加速在线强化学习？

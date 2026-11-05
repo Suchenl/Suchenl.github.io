@@ -12,8 +12,9 @@ comparison:
 title: "SFT or RL for Tool-Calling Agents? A Controlled Study Across Data, Method, and Scale"
 year: 2026
 categories: ["强化学习与 Agent/工具与训练框架"]
-summaryZh: "工具调用 Agent 中 SFT 与 RL 的受控比较"
+summaryZh: "围绕工具调用任务，对照 SFT 与 RL 的训练数据、方法与模型规模；阅读时重点区分工具选择指标与完整交互任务成功率，以及比较是否控制了数据和计算预算。"
 status: untracked
+catalogTitleZh: "工具调用 Agent：SFT 还是 RL 更合适？"
 ---
 
 # SFT or RL for Tool-Calling Agents? A Controlled Study Across Data, Method, and Scale

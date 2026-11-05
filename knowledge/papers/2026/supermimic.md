@@ -21,6 +21,7 @@ comparison:
   signal: "动作条件物理状态预测、未来奖励、连续终止权重与长期价值估计"
   evidence: "作者报告 SONIC 179 个失败片段，SuperMimic 3 h 为 25 个、双 H100 9.8 h 为 0 个；PPO-WM 对照约省 64 倍 imagined steps"
   limitation: "本体状态而非 RGB 视频，训练动作库内评测，平地仿真数据，复杂物体交互仍未验证"
+catalogTitleZh: "SuperMimic：可微世界模型如何训练人形机器人控制"
 ---
 
 # 论文深度解读：SuperMimic——通过世界模型想象，高效学习人形机器人策略
