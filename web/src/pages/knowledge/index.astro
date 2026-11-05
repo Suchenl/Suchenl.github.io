@@ -86,6 +86,7 @@ const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNo
           <p class="kn-map-hint"><span data-l="zh">选择节点查看可读资料与关联方向。手机端可左右滑动地图，也可以使用下方的文字目录。</span><span data-l="en">Select a node to view sources and related topics. Swipe horizontally on mobile, or use the text index below.</span></p>
         </div>
         <aside class="kn-inspector" id="kn-inspector" aria-label="知识节点详情">
+          <div class="kn-inspector-main">
           <div class="kn-inspector-top"><span id="kn-kind">KNOWLEDGE</span><span id="kn-phase">知识图谱</span></div>
           <h3 id="kn-detail-title">个人知识体系</h3>
           <p id="kn-detail-description">按公开知识条目构建的动态专题网络。</p>
@@ -98,6 +99,8 @@ const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNo
             <button type="button" id="kn-studied" hidden><span data-l="zh">标记为已学习</span><span data-l="en">Mark as studied</span></button>
             <button type="button" id="kn-ai-prompt" hidden><span data-l="zh">复制 AI 补全任务</span><span data-l="en">Copy AI drafting task</span></button>
           </div>
+          </div>
+          <div class="kn-inspector-related">
           <h4 id="kn-sources-label"><span data-l="zh">推荐阅读</span><span data-l="en">Suggested reading</span></h4>
           <ul class="kn-sources" id="kn-sources"><li><a href="/research/">研究知识库</a></li></ul>
           <h4 id="kn-related-label"><span data-l="zh">知识关联</span><span data-l="en">Connections</span></h4>
@@ -105,6 +108,7 @@ const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNo
           <p class="kn-local-note"><span data-l="zh">学习标记只保存于当前浏览器；AI 补全需人工核验后才能公开，不会自动发布。</span><span data-l="en">Study marks stay in this browser only. AI-generated drafts require review; nothing is auto-published.</span></p>
           <textarea id="kn-prompt-fallback" readonly rows="6" hidden aria-label="复制失败时可手动选择的 AI 提示词"></textarea>
           <p id="kn-feedback" class="kn-feedback" role="status" aria-live="polite"></p>
+          </div>
         </aside>
       </div>
     </section>
