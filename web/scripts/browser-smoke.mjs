@@ -44,6 +44,8 @@ try {
   });
   await check('Real Knowledge constellation and smooth exploration '+width,async()=>{
    await navigate(page,'/knowledge/');await noOverflow(page);
+   if(width===1440)await page.screenshot({path:'visual-qa/knowledge-atlas-overview-initial.png',fullPage:true});
+   assert.equal(await page.locator('.kn-overview-panel').count(),4,'Each active area has an overview region');
    assert.equal(await page.locator('#kn-svg').count(),1,'Source-backed constellation is visible');
    const graph=JSON.parse(await page.locator('#kn-data').textContent());
    assert(graph.stats.documents>35 && graph.stats.areas>=3 && graph.stats.links>0,'Graph uses real published articles and links');
@@ -54,6 +56,7 @@ try {
    assert(overviewCount<graph.nodes.length && overviewCount>=graph.stats.areas,
     'Overview hides low-priority details without removing published notes');
    assert.equal(await page.locator('[data-kn-view="overview"]').getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('.kn-node.is-key').count(),graph.nodes.filter(n=>n.featured&&n.kind==='document').length,'SSR overview and client choose the same real notes');
    assert.equal(await page.locator('.kn-edge-belongs_to:not(.is-hidden)').count()>0,true,'Overview uses a few real domain-assignment edges');
    assert.equal(await page.locator('[data-kn-filter="empty"]').count(),0,'No empty-theme filter');
    assert((await page.locator('.kn-node-topic').count())>=3,'Actual topic overview files become nodes');
