@@ -2,6 +2,7 @@
 contentType: qa
 domains: ["大模型与强化学习/后训练与策略优化"]
 title: "Actor 与 Critic 相互依赖，为什么还能学会更好的策略？"
+catalogTitleZh: "Actor–Critic：为什么能够相互改进？"
 shortName: "Actor–Critic"
 aliases: ["Actor-Critic 鸡生蛋问题", "Critic 限制 Actor 上限吗", "策略评估与策略改进", "价值函数为何需要策略"]
 categories: ["强化学习与 Agent", "强化学习与 Agent/策略评估与优化"]

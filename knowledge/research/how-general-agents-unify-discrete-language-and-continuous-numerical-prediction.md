@@ -3,13 +3,14 @@ contentType: exploration
 domains: ["大模型与强化学习/预训练与模型架构","机器人与具身智能/数据与动作表示"]
 featuredOrder: 30
 title: "通用 Agent 如何统一学习离散语言决策与连续数值预测？"
+catalogTitleZh: "Agent 如何统一离散语言与连续数值预测？"
 questionTitleEn: "How Can General Agents Jointly Learn Discrete Language Decisions and Continuous Numerical Prediction?"
 publicQuestion: true
 questionKind: "question"
 questionDate: "2026-10-21"
 categories: ["强化学习与 Agent", "多模态大模型", "数值表示与 Tokenization", "机器人与具身智能"]
 tags: ["Discrete-Continuous Modeling", "Numerical Head", "Flow Matching", "Multimodal Agent", "Output Routing", "VLA"]
-summaryZh: "在不牺牲语言推理和工具调用能力的前提下，通用 Agent 如何预测连续数值、选择不同输出 Head，并把数值结果继续用于推理？比较 xVal、Number Token Loss、Transfusion、BLIP3-o、Beyond Language Modeling、OpenVLA-OFT 与 π0.5，澄清特殊 Token 路由、训练时模态监督和真正自主决策的区别，并提出可验证的实验。"
+summaryZh: "梳理离散语言决策与连续数值输出的表示、Head 路由和反馈闭环。比较 xVal、Transfusion 与 VLA 动作头，区分已实现机制、固定路由和真正自主选择，提出待验证假设。"
 questionSummaryEn: "How can a general agent combine language-token decisions with continuous numeric outputs, learn when to invoke each head, and reuse predicted values? A critical comparison of xVal, Transfusion, Beyond Language Modeling, robotic action heads, and testable routing objectives."
 related:
   - ref: "research/do-tokenizers-preserve-numerical-continuity"

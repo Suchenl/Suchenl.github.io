@@ -3,13 +3,14 @@ contentType: exploration
 domains: ["大模型与强化学习/预训练与模型架构","机器人与具身智能/数据与动作表示"]
 featuredOrder: 20
 title: "目前的 Tokenizer，是否天然具备数值连续性？"
+catalogTitleZh: "Tokenizer 如何影响数值连续性？"
 questionTitleEn: "Do Today's Tokenizers Inherently Preserve Numerical Continuity?"
 publicQuestion: true
 questionKind: "question"
 questionDate: "2026-10-21"
 categories: ["多模态大模型", "机器人与具身智能", "数值表示与 Tokenization"]
 tags: ["Numerical Tokenization", "VLM", "VLA", "Action Tokenizer", "Continuity", "Robot Learning"]
-summaryZh: "普通语言 Tokenizer 不保证相近数值有相近表示；VLM 的连续视觉特征也不等于坐标输出具备连续性，而离散 Action Codebook 同样可能扭曲物理邻近关系。对照 xVal、BitTokens、Pix2Seq、FAST、X-Tokenizer、ActionPiece、ProAct 和连续动作头，提出几种可验证的改进路径。"
+summaryZh: "解释语言 Tokenizer 为什么不保证数值邻近性，比较连续数值编码、动作 Token 与连续预测头，提出可验证的表示及预测实验；不把 VLM 特征连续性等同于物理数值精度。"
 questionSummaryEn: "Text tokenization does not inherently preserve numerical distance. Continuous visual features do not guarantee metric output continuity, and discrete VLA action codes may distort physical neighborhoods. Review numerical encodings, action codecs, continuous heads, and testable research directions."
 ---
 

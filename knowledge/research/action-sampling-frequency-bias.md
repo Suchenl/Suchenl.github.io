@@ -3,6 +3,7 @@ contentType: exploration
 domains: ["机器人与具身智能/数据与动作表示"]
 featuredOrder: 10
 title: "不同机器人数据集的动作采样频率，是否会引入数据集偏置？"
+catalogTitleZh: "机器人动作采样频率：不同数据集会带来偏置吗？"
 questionTitleEn: "Do heterogeneous robot action rates induce dataset-specific shortcuts?"
 publicQuestion: true
 questionKind: "question"
@@ -33,7 +34,7 @@ questionEvidence:
     rate: "目标 50 Hz"
     source: "https://github.com/MarkFzp/mobile-aloha/blob/main/aloha_scripts/record_episodes.py"
 categories: ["机器人与具身智能", "数据混合与策略学习"]
-summaryZh: "综合核查 30 组公开机器人数据源与采集管线、RDT-1B 的 46 个预训练数据源，以及 GR00T N1 的预训练 FPS：各来源配置覆盖 2–50 Hz，但与原始轨迹实测 Hz 不等价。异构混训确实存在，模型是否因此学到数据集捷径仍待控制实验。"
+summaryZh: "核查 30 组机器人数据源及相关预训练管线，发现公布的采样配置跨越 2–50 Hz；区分标称频率、实际时间戳和训练重采样。是否诱导数据集捷径仍需受控实验。"
 questionSummaryEn: "Reviewing 30 public robot data sources and pipelines, RDT-1B's 46 active pretraining sources and GR00T N1's per-source FPS reveals 2–50 Hz configurations. These are not necessarily original measured action rates; learned dataset shortcuts remain unproven."
 ---
 

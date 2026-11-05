@@ -2,7 +2,8 @@
 contentType: qa
 domains: ["大模型与强化学习/后训练与策略优化"]
 title: "OPD 为什么使用反向 KL？正向和反向 KL 如何定义，为什么不一起使用？"
-summaryZh: "原样收录关于 OPD 的正向 / 反向 KL 定义、Mode-Covering 与 Mode-Seeking、Student 采样监督、混合 KL 与 EOPD 的完整问答，保留公式、表格和 SVG 示意图。"
+catalogTitleZh: "OPD：正向 KL 与反向 KL 有何区别？"
+summaryZh: "以 OPD 为例解释 KL 方向的定义、mode-covering 与 mode-seeking 的条件、Student 采样及混合 KL，保留原始问答、公式和 SVG 示意。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/后训练与策略蒸馏"]
 ---
 

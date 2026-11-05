@@ -3,12 +3,13 @@ contentType: exploration
 domains: ["大模型与强化学习/推理与 Agent 系统","大模型与强化学习/后训练与策略优化"]
 featuredOrder: 40
 title: "如何让模型学会自适应推理"
+catalogTitleZh: "自适应推理：模型何时思考、何时行动？"
 questionTitleEn: "How Can Models Learn Adaptive Reasoning?"
 publicQuestion: true
 questionKind: "interest"
 questionDate: "2026-10-21"
 categories: ["强化学习与 Agent", "推理模型与推理时计算"]
-summaryZh: "为什么自适应推理影响 Agent 的固定预算有效产出与机器人在线时延？梳理 SFT、成本敏感 RL、步骤级信用分配、反应—规划切换的最新研究；区分真正学会思考时机与仅减少 CoT，并讨论有限推理机会能否促进参数化直觉的待验证假设。"
+summaryZh: "比较 SFT、成本敏感 RL 与步骤级信用分配如何训练思考预算和重新规划时机；讨论反应—规划切换与 Agent 延迟，区分已有证据与尚待验证的推理策略假设。"
 questionSummaryEn: "A critical survey of SFT, cost-aware RL, reasoning credit assignment, adaptive planning and robot latency. Tests the distinction between shorter CoT and genuinely learned, transferable parametric intuition."
 ---
 
