@@ -70,6 +70,17 @@ try {
    assert((await depth.count())>=1,'Second-level topic filter displays existing notes');
    const depthDomains=await depth.evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-kl-domains')));
    assert(depthDomains.every(d=>d?.includes('机器人与具身智能/深度感知与几何估计')),'Second-level filter is precise');
+   assert.equal(await page.locator('#kl-topic-quickstart').isVisible(),true,
+     'A subarea with an actual topic shows an in-place reading entry');
+   assert.equal(await page.locator('.kl-topic-entry:visible').count(),1,
+     'Only the real depth-perception topic appears in its subarea');
+   await page.locator('.kl-topic-entry:visible [data-kl-open-topic]').click();
+   assert.equal(await page.locator('.kl-topic-guide:not([hidden])').count(),1,
+     'Choosing the topic replaces the preview with authored reading steps');
+   assert(page.url().includes('scope=topic%3Adepth-perception'),'Topic navigation is URL-restorable');
+   await page.goBack({waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('#kl-topic-quickstart').isVisible(),true,
+     'Browser Back restores the subarea quickstart without changing page family');
    await page.locator('#kl-search').fill('unlikely-to-match-knowledge-123456');
    assert.equal(await page.locator('#kl-empty').isVisible(),true,'Empty search has useful explanation');
    await page.locator('#kl-clear').click();
