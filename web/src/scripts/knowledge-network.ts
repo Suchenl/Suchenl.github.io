@@ -27,6 +27,45 @@ if(src){
   const edgeEls=[...svg.querySelectorAll<SVGPathElement>('.kn-edge')];
   const els=new Map(groups.map(el=>[el.dataset.nodeId||'',el]));
   const edgeElements=graph.edges.map((e,i)=>({...e,el:edgeEls[i]}));
+  const viewer=$<HTMLElement>('kn-viewer');
+  const displayed=new Map<string,{x:number;y:number}>(graph.nodes.map(n=>[n.id,
+    {x:n.overviewX??n.x,y:n.overviewY??n.y}]));
+  let geometryMode:'overview'|'full'='overview';
+  let geometryFrame=0;
+  let geometrySequence=0;
+  function redrawAllLinks(){
+    for(const e of edgeElements){
+      const a=displayed.get(e.from),b=displayed.get(e.to);
+      if(a&&b)e.el.setAttribute('d','M '+a.x.toFixed(2)+' '+a.y.toFixed(2)+' L '+b.x.toFixed(2)+' '+b.y.toFixed(2));
+    }
+  }
+  function morphGeometry(next:'overview'|'full'){
+    if(next===geometryMode)return;
+    geometryMode=next;
+    geometrySequence++;
+    const token=geometrySequence;
+    if(geometryFrame)cancelAnimationFrame(geometryFrame);
+    const begins=new Map([...displayed].map(([id,pos])=>[id,{...pos}]));
+    const dest=new Map(graph.nodes.map(n=>[n.id,next==='overview'?
+      {x:n.overviewX??n.x,y:n.overviewY??n.y}:{x:n.x,y:n.y}]));
+    const ms=matchMedia('(prefers-reduced-motion: reduce)').matches?0:470;
+    const started=performance.now();
+    const tick=(now:number)=>{
+      if(token!==geometrySequence)return;
+      const t=ms?Math.min(1,(now-started)/ms):1;
+      const ease=1-Math.pow(1-t,3);
+      for(const [id,to] of dest){
+        const from=begins.get(id)||to;
+        const x=from.x+(to.x-from.x)*ease,y=from.y+(to.y-from.y)*ease;
+        displayed.set(id,{x,y});
+        els.get(id)?.setAttribute('transform','translate('+x.toFixed(2)+' '+y.toFixed(2)+')');
+      }
+      redrawAllLinks();
+      if(t<1)geometryFrame=requestAnimationFrame(tick);
+      else geometryFrame=0;
+    };
+    geometryFrame=requestAnimationFrame(tick);
+  }
   const filters=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-filter]')];
   const viewButtons=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-view]')];
   const resultBox=$<HTMLDivElement>('kn-search-results');
@@ -103,6 +142,8 @@ if(src){
     return n?t((view==='area'?'领域：':'局部关联：')+n.titleZh,(view==='area'?'Area: ':'Local: ')+n.titleEn):'';
   };
   function refreshViewControls(){
+    viewer.dataset.knView=view;
+    morphGeometry(view==='overview'?'overview':'full');
     viewButtons.forEach(b=>{
       const active=b.dataset.knView===view;
       b.classList.toggle('active',active);
@@ -359,8 +400,8 @@ if(src){
   function redrawLinks(id:string){
     for(const e of edgeElements){
       if(e.from!==id&&e.to!==id)continue;
-      const a=byId.get(e.from)!,b=byId.get(e.to)!;
-      e.el.setAttribute('d','M '+a.x+' '+a.y+' L '+b.x+' '+b.y);
+      const a=displayed.get(e.from),b=displayed.get(e.to);
+      if(a&&b)e.el.setAttribute('d','M '+a.x+' '+a.y+' L '+b.x+' '+b.y);
     }
   }
   // Pointer gestures: drag the background, reposition a node, pinch to zoom.
@@ -414,11 +455,16 @@ if(src){
     if(Math.hypot(e.clientX-gesture.startX,e.clientY-gesture.startY)>5)gesture.moved=true;
     const last=svgPoint(gesture.lastX,gesture.lastY),now=svgPoint(e.clientX,e.clientY);
     const sx=now.x-last.x,sy=now.y-last.y;
-    if(gesture.kind==='pan'){
+    if(gesture.kind==='pan'||(view==='overview'&&gesture.moved)){
       target.x+=sx;target.y+=sy;animate();
     }else if(gesture.node&&gesture.moved){
+      if(geometryFrame){
+        geometrySequence++;
+        cancelAnimationFrame(geometryFrame);geometryFrame=0;
+      }
       const n=byId.get(gesture.node)!;
       n.x+=sx/target.s;n.y+=sy/target.s;
+      displayed.set(n.id,{x:n.x,y:n.y});
       els.get(n.id)?.setAttribute('transform','translate('+n.x+' '+n.y+')');
       redrawLinks(n.id);
     }
