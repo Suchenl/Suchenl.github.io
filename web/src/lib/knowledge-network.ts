@@ -8,6 +8,7 @@ export type KnowledgeNode = {
   descriptionZh: string; descriptionEn: string;
   contentType: string; count: number; href: string; resources: KnowledgeResource[];
   color: string; x: number; y: number; radius: number; group: string;
+  overviewX: number; overviewY: number; featured: boolean;
 };
 export type KnowledgeEdge = {
   from: string; to: string;
@@ -87,6 +88,7 @@ export async function createKnowledgeNetwork(){
       resources:members.slice(0,6).map(e=>({title:titleOf(e),href:entryHref(e.id),
         kind:e.data.contentType||'review'})),
       color:PALETTE[index],x:CENTERS[index].x,y:CENTERS[index].y,
+      overviewX:0,overviewY:0,featured:true,
       radius:17,group:area.id
     });
   }
@@ -105,7 +107,7 @@ export async function createKnowledgeNetwork(){
       descriptionEn:e.data.summaryZh||'A published knowledge note. Open the article to read.',
       contentType:e.data.contentType||'review',count:1,href:entryHref(e.id),
       resources:[{title,href:entryHref(e.id),kind:e.data.contentType||'review'}],
-      color:PALETTE[groupIdx],x:0,y:0,radius:isTopic?10:4.2,group:primary
+      color:PALETTE[groupIdx],x:0,y:0,overviewX:0,overviewY:0,featured:isTopic,radius:isTopic?10:4.2,group:primary
     });
     // An area connection is backed by the entry's explicit domains metadata.
     for(const domain of e.data.domains||[]){
@@ -153,6 +155,38 @@ export async function createKnowledgeNetwork(){
     if(node.kind==='topic')node.radius=9+Math.min(4,Math.sqrt(degree.get(node.id)||0));
   }
   layoutByRelations(nodes,edges);
+  // An overview is a semantic hierarchy, NOT a miniature force layout.
+  // Use four well-spaced, real-domain panels and only real topic + high-degree
+  // documents inside them. No new nodes or connections are invented.
+  const hubs=nodes.filter(n=>n.kind==='area');
+  const score=new Map<string,number>();
+  for(const e of edges.filter(e=>['references','semantic','reading_step'].includes(e.kind))){
+    score.set(e.from,(score.get(e.from)||0)+1);
+    score.set(e.to,(score.get(e.to)||0)+1);
+  }
+  const centers=[
+    {x:337,y:246},{x:974,y:246},{x:337,y:682},{x:974,y:682}
+  ];
+  nodes.forEach(n=>{n.overviewX=n.x;n.overviewY=n.y;});
+  hubs.forEach((hub,i)=>{
+    const p=centers[i]||{x:WORLD.width/2,y:WORLD.height/2};
+    hub.overviewX=p.x;hub.overviewY=p.y-102;
+    const members=nodes.filter(n=>n.parent===hub.id);
+    const topicsHere=members.filter(n=>n.kind==='topic').sort((a,b)=>a.titleZh.localeCompare(b.titleZh,'zh'));
+    topicsHere.forEach((n,j)=>{
+      const span=Math.min(176,460/Math.max(1,topicsHere.length));
+      n.overviewX=p.x+(j-(topicsHere.length-1)/2)*span;
+      n.overviewY=p.y+12;
+    });
+    const chosen=members.filter(n=>n.kind==='document')
+      .sort((a,b)=>(score.get(b.id)||0)-(score.get(a.id)||0)||a.titleZh.localeCompare(b.titleZh,'zh'))
+      .slice(0,2);
+    chosen.forEach((n,j)=>{
+      n.featured=true;
+      n.overviewX=p.x+(j-(chosen.length-1)/2)*204;
+      n.overviewY=p.y+140;
+    });
+  });
   const linkedDocs=new Set(edges.filter(e=>e.kind==='references'||e.kind==='semantic').flatMap(e=>[e.from,e.to]));
   return{
     nodes,edges,
@@ -162,7 +196,7 @@ export async function createKnowledgeNetwork(){
       isolated:eligible.filter(e=>!linkedDocs.has('doc:'+e.id)).length
     },
     world:WORLD,
-    layout:'relationship-force-v2'
+    layout:'overview-hierarchy+relationship-force-v2'
   };
 }
 
