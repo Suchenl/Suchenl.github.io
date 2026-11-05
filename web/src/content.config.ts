@@ -43,6 +43,12 @@ const knowledge = defineCollection({
     shortName: z.string().min(1).optional(),
     aliases: z.array(z.string()).optional(),
     summaryZh: z.string().optional(),
+    catalogTitleZh: z.string().min(4).optional(),
+    readingOrder: z.array(z.object({
+      ref: z.string().min(1),
+      stage: z.string().min(1),
+      why: z.string().min(10),
+    })).optional(),
     publicQuestion: z.boolean().optional(),
     questionKind: z.enum(['question', 'interest']).optional(),
     questionTitleEn: z.string().optional(),
