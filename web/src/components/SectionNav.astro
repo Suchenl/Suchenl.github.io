@@ -7,12 +7,12 @@ const items = section === 'research' ? [
   {id:'questions',href:'/questions/',zh:'问题与探索',en:'Questions'},
   {id:'all',href:'/research/#all-knowledge',zh:'全部知识',en:'Knowledge Index'},
 ] : [
-  {id:'overview',href:'/outputs/',zh:'成果总览',en:'Overview'},
+  {id:'overview',href:'/outputs/',zh:'产出总览',en:'Overview'},
   {id:'papers',href:'/publications/',zh:'学术论文',en:'Publications'},
   {id:'projects',href:'/projects/',zh:'项目与工具',en:'Projects'},
 ];
 ---
-<nav class="section-nav" aria-label={section === 'research' ? '研究内容导航' : '成果内容导航'}>
+<nav class="section-nav" aria-label={section === 'research' ? '研究内容导航' : '产出内容导航'}>
   {items.map(item => (
     <a class:list={['section-nav-link',active===item.id && 'current']} href={item.href} aria-current={active===item.id ? 'page' : undefined}>
       <span data-l="zh">{item.zh}</span><span data-l="en">{item.en}</span>

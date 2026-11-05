@@ -9,12 +9,12 @@ const publicPapers = PUB_GROUPS.flatMap(group => group.papers);
 const featured = publicPapers.filter(p => ['Suchenl/VMem-Bench','Suchenl/LAMIC','Suchenl/TAG-WM'].includes(p.code || ''));
 const tools = PROJECTS.slice(0, 4);
 ---
-<Base title="成果" description="已公开的学术论文、研究项目、开源工具与科研资产。">
+<Base title="产出" description="已公开的学术论文、研究项目、开源工具与科研资产。">
   <SectionNav section="outputs" active="overview" />
   <header class="out-head">
     <p class="out-eyebrow">PUBLICATIONS · RESEARCH OUTPUTS · OPEN SOURCE</p>
-    <h1><Bi zh="研究成果" en="Research Outputs" /></h1>
-    <p><Bi zh="汇集已经公开的论文、项目与开源工具。成果展示复用现有公开数据，不收录未公开的研究和内部材料。" en="Published research, released projects and open-source tools. Only public material is included." /></p>
+    <h1><Bi zh="研究产出" en="Research Outputs" /></h1>
+    <p><Bi zh="汇集已经公开的论文、项目与开源工具。产出展示复用现有公开数据，不收录未公开的研究和内部材料。" en="Published research, released projects and open-source tools. Only public material is included." /></p>
   </header>
   <div class="out-links">
     <a href="/publications/"><strong><Bi zh="学术论文" en="Publications" /></strong><span><Bi zh="按研究方向查看全部公开论文" en="All public papers by research area" /></span><span aria-hidden="true">↗</span></a>
@@ -23,7 +23,7 @@ const tools = PROJECTS.slice(0, 4);
   </div>
   {featured.length > 0 && (
     <section class="out-section" aria-labelledby="out-papers">
-      <div class="out-section-heading"><h2 id="out-papers"><Bi zh="精选论文成果" en="Selected Publications" /></h2><a href="/publications/"><Bi zh="全部论文 →" en="All publications →" /></a></div>
+      <div class="out-section-heading"><h2 id="out-papers"><Bi zh="精选论文" en="Selected Publications" /></h2><a href="/publications/"><Bi zh="全部论文 →" en="All publications →" /></a></div>
       <div class="out-grid">
         {featured.map(p=><article class="out-card">
           {p.image && <img src={p.thumbnail || p.image} alt={p.titleEn} loading="lazy" decoding="async" />}
