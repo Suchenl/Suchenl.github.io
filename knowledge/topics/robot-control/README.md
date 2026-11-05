@@ -5,7 +5,20 @@ title: "机器人控制入门：从位置与 PD 到阻抗、力控和前馈 Wren
 shortName: "Robot Control"
 aliases: ["机器人控制专题", "PD控制", "阻抗控制", "前馈wrench", "OSC", "Admittance Control", "力控制", "视觉伺服"]
 categories: ["机器人与具身智能/策略学习与控制"]
-summaryZh: "用真实操作例子理解位置、速度、力矩、PD、阻抗、导纳、操作空间、前馈 Wrench、视觉伺服，以及 RoboTwin 与 RoboDojo 公开接口究竟提供哪一级控制。"
+summaryZh: "先说明关节与末端控制的完整链路，再区分位置/速度、PD、阻抗、导纳、操作空间、前馈 Wrench 与视觉伺服；结合公开机器人论文解释各层职责和适用边界。"
+readingOrder:
+  - ref: research/actor-critic-mutual-dependence
+    stage: "策略学习概念"
+    why: "先了解策略和价值估计的相互依赖；它不是底层控制器本身。"
+  - ref: papers/2023/rlpd
+    stage: "在线学习基础"
+    why: "理解离线数据与在线经验如何混合训练机器人策略。"
+  - ref: papers/2024/hil-serl
+    stage: "真实操作案例"
+    why: "结合实际机器人任务，看在线强化学习、人类纠正和低层控制如何衔接。"
+  - ref: papers/2026/foveavla
+    stage: "视觉与动作延伸"
+    why: "探索视觉观察、双目深度与 VLA 末端策略的接口，不把视觉预测当作物理控制保证。"
 ---
 
 # 机器人控制专题：机器人为什么不能只给“目标位置”就完事？

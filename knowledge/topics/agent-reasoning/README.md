@@ -4,8 +4,21 @@ domains: ["大模型与强化学习/推理与 Agent 系统"]
 title: "Agent 长程推理与工具调用"
 shortName: "Agent Reasoning"
 aliases: ["CoT", "when to think", "tool calling", "Codex", "GLM-5.3-Flash", "Qwen3.8-27B", "推理调度"]
-summaryZh: "理解推理 token、工具调用、跨轮推理保持和长程 Agent 思考调度的专题学习入口。"
+summaryZh: "从模型推理、结构化工具调用到跨轮状态管理，解释 Agent 如何运行、何时需要再次思考，以及不同 API 与 Harness 能力的边界；包含协议术语与原始证据。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工具使用"]
+readingOrder:
+  - ref: research/how-agent-reasoning-tools-and-state-work
+    stage: "系统分工"
+    why: "先厘清模型、API、工具执行器与跨轮状态分别负责什么。"
+  - ref: glossary/thinking-tool-protocol
+    stage: "协议与术语"
+    why: "区分 Thinking、Tool Call、消息结构、状态回放与缓存。"
+  - ref: topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling
+    stage: "机制精读"
+    why: "对比 CoT 和工具调用，并检查不同模型与 Harness 的行为边界。"
+  - ref: research/how-models-learn-adaptive-reasoning
+    stage: "开放问题"
+    why: "进一步讨论何时思考、思考多久与成本敏感训练的可验证假设。"
 ---
 
 # Agent 长程推理与工具调用

@@ -4,8 +4,18 @@ domains: ["大模型与强化学习/预训练与模型架构"]
 title: "大模型预训练（Pretraining）：从数据工程到训练稳定性"
 shortName: "LLM Pretraining"
 aliases: ["预训练", "Pretraining", "Pretrain", "Tokenizer", "数据清洗", "数据配比", "Megatron", "Scaling Laws"]
-summaryZh: "从零预训练和继续预训练的系统学习入口，重点包括数据质量、去重配比、Tokenization、分布式训练、算力预算、故障恢复、评测与复现。"
+summaryZh: "按数据治理、Tokenizer、训练目标、Scaling Laws、分布式并行、训练稳定性与评测组织预训练知识；延伸讨论连续数值表示与预训练和后训练的边界。"
 categories: ["大模型基础", "大模型基础/预训练"]
+readingOrder:
+  - ref: topics/pretraining/reviews/pretraining-engineering-roadmap
+    stage: "预训练全貌"
+    why: "先建立数据清洗、Tokenization、训练并行、预算和评测的工程主线。"
+  - ref: research/do-tokenizers-preserve-numerical-continuity
+    stage: "专题延伸"
+    why: "沿 Tokenization 方向检查数值连续性的边界与相关研究，属于延伸问题而非预训练必修步骤。"
+  - ref: research/how-general-agents-unify-discrete-language-and-continuous-numerical-prediction
+    stage: "跨主题探索"
+    why: "进一步思考离散语言输出与连续预测头的统一，属于开放研究而非确定结论。"
 ---
 
 # 大模型预训练（Pretraining）

@@ -5,6 +5,34 @@ title: "深度感知与几何估计：从深度相机、神经估计到可靠的
 shortName: "Depth Perception"
 aliases: ["深度专题", "深度估计专题", "RGB-D", "Stereo", "ToF", "LiDAR", "深度相机"]
 summaryZh: "系统理解深度从何而来，比较双目、主动双目、结构光、ToF、LiDAR、单目和多视角估计，并讨论 RGB-D 融合、标定、误差与机器人可靠性。"
+readingOrder:
+  - ref: topics/depth-perception/reviews/depth-acquisition-taxonomy
+    stage: "先建立全貌"
+    why: "先区分三角测量、主动测距和学习式推断，不把算法名称当成传感器原理。"
+  - ref: topics/depth-perception/reviews/stereo-depth
+    stage: "双目测距"
+    why: "理解视差、基线、主动散斑和匹配算法的不同作用。"
+  - ref: topics/depth-perception/reviews/structured-light-tof-lidar
+    stage: "主动测距"
+    why: "比较结构光、ToF 与 LiDAR 的物理证据和失效机制。"
+  - ref: topics/depth-perception/reviews/monocular-depth
+    stage: "学习式预测"
+    why: "区分相对深度、米制预测与真实物理测量。"
+  - ref: topics/depth-perception/reviews/multiview-depth
+    stage: "多视角几何"
+    why: "把相机位姿、视频深度与单目尺度不定联系起来。"
+  - ref: topics/depth-perception/reviews/rgbd-fusion
+    stage: "融合与补全"
+    why: "分清去噪、补全、偏差校正，不丢失原始测量来源。"
+  - ref: topics/depth-perception/reviews/depth-reliability
+    stage: "可靠性判断"
+    why: "理解 Valid、Measured、Confidence 与真实误差的区别。"
+  - ref: topics/depth-perception/reviews/calibration-coordinate
+    stage: "坐标与标定"
+    why: "从像素、相机内外参和同步走到机器人三维坐标。"
+  - ref: topics/depth-perception/reviews/selection-evaluation
+    stage: "评测与选择"
+    why: "用任务误差、材质和边界条件决定方案，而不是只比深度图观感。"
 ---
 
 # 深度感知与几何估计：深度从哪里来，什么时候能信？

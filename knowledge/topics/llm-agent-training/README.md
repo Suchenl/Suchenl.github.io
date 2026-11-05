@@ -2,7 +2,26 @@
 contentType: review
 domains: ["大模型与强化学习/后训练与策略优化"]
 title: "LLM / 多模态 Agent 后训练"
-summaryZh: "SFT、强化学习与 Agent 训练信号之间的联系、限制与系统性证据。"
+summaryZh: "把 SFT、可验证奖励强化学习与工具 Agent 的训练放入同一框架：先厘清监督和奖励从哪里来，再阅读代表方法、核对证据与失效边界，最后设计可证伪实验。"
+readingOrder:
+  - ref: glossary/core
+    stage: "基本术语"
+    why: "先区分 SFT、RL、On-policy 与奖励信号。"
+  - ref: glossary/agent-training
+    stage: "Agent 训练术语"
+    why: "把 RLVR、Rollout、OPD 等常见概念放到同一训练流程中。"
+  - ref: topics/llm-agent-training/reviews/sft-rl-co-training
+    stage: "方法全貌"
+    why: "建立 SFT/RL 协同训练的分类框架及关键研究争议。"
+  - ref: topics/llm-agent-training/reviews/evidence-map
+    stage: "核对证据"
+    why: "按研究主张而非论文热度比较证据、前提和反例。"
+  - ref: paths/agent-post-training
+    stage: "完整七步路线"
+    why: "已有七步学习路径包含术语、代表论文和具身迁移问题，可按需深入。"
+  - ref: research/agent-post-training-experiment-agenda
+    stage: "研究设计"
+    why: "把问题拆成受控变量和可证伪对照；这不是已完成实验。"
 ---
 
 # LLM / 多模态 Agent 后训练
