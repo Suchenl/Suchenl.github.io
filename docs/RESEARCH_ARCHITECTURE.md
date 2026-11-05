@@ -60,3 +60,10 @@
 - `/research/[...slug].astro` 增加领域面包屑和相关专题入口；现有左侧阅读目录、论文三种阅读模式、知识图谱和学习路线不替换。
 - 首页精简为代表性公开成果、少量问题摘要和四个继续探索入口；科研资产库保留外部链接。
 - 回归依赖 `cd web && npm run build`、已有脚本以及 GitHub Actions 的实际结果；仅源码提交不代表完整的浏览器视觉验收。
+
+## Knowledge Atlas 真实内容网络（2026-11-05）
+
+- /knowledge/ 只显示真实公开知识：领域必须包含正文，专题必须拥有实际 README，文章节点来自现有 `getCollection('knowledge')`。
+- `web/src/lib/knowledge-network.ts` 汇集真实分类与显式 Markdown 链接；`web/src/scripts/knowledge-network.ts` 提供统一 RAF 视角、平移/缩放、拖动节点、局部高亮和本机学习标记。
+- 不再从 `knowledge/graph-roadmap.json` 生成规划节点，该规划文件已删除。AI 功能仅复制已有知识的深入学习提示词。
+- 参考研究设计：Obsidian Graph、InfraNodus、Heptabase；行为与准确性以实际自动化验收为准。
