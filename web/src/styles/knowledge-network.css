@@ -270,3 +270,13 @@
 @media(prefers-reduced-motion:reduce){
  .kn-overview-panel rect{filter:none}
 }
+
+
+/* On phones, favour a legible pannable window over shrinking the complete
+   atlas to unreadable miniature labels. The real article directory stays below. */
+@media(max-width:650px){
+ .kn-viewport{height:485px}
+ .kn-svg{width:900px;height:660px;max-width:none}
+ .kn-contextbar{max-width:calc(100% - 18px);background:rgba(10,23,43,.7);border-radius:7px;padding:.2rem .45rem}
+ .kn-viewer-foot p{font-size:.67rem}
+}
