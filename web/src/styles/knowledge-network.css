@@ -254,3 +254,19 @@
 .kn-link-step{border-color:#efbc86;border-top-width:1.7px}
 .kn-connection-reading_step{color:#f5d2a8;border-color:#8b7056}
 .kn-connection-direction{display:block;font-size:.61rem;color:#7694b4;margin:.14rem 0}
+
+
+/* A bounded, semantic overview replaces a miniature force cloud.
+   Every rectangular region corresponds to an existing category with content. */
+.kn-overview-panel{display:block;pointer-events:none}
+.kn-overview-panel rect{filter:drop-shadow(0 10px 25px rgba(0,0,0,.09))}
+.kn-viewer[data-kn-view="overview"] .kn-cluster-aura{display:none}
+.kn-viewer:not([data-kn-view="overview"]) .kn-overview-panel{display:none}
+.kn-viewer:not([data-kn-view="overview"]) .kn-cluster-aura{display:block}
+.kn-viewer[data-kn-view="overview"] .kn-node-area .kn-node-label{font-size:17px}
+.kn-viewer[data-kn-view="overview"] .kn-node-topic .kn-node-label{font-size:12.7px}
+.kn-viewer[data-kn-view="overview"] .kn-doc-label{font-size:12px;font-weight:640}
+.kn-viewer[data-kn-view="overview"] .kn-node.is-key .kn-node-core{filter:drop-shadow(0 0 5px var(--node-color))}
+@media(prefers-reduced-motion:reduce){
+ .kn-overview-panel rect{filter:none}
+}
