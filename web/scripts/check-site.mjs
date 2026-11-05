@@ -141,6 +141,40 @@ check(knowledge.includes('id="kn-svg"') && knowledge.includes('id="kn-search"') 
       !knowledge.includes('planned:') && !knowledge.includes('graph-roadmap') &&
       knowledge.includes('/research/topics/robot-control/') && !knowledge.includes('Open-Robot-Agent'),
       'Knowledge atlas contains only canonical articles and genuine links, with local study marks and AI tasks');
+
+const graphMatch=knowledge.match(/<script\b(?=[^>]*id="kn-data")[^>]*>([\s\S]*?)<\/script>/);
+let graphData=null;
+try{graphData=graphMatch?JSON.parse(graphMatch[1]):null;}catch{}
+check(Boolean(graphData)&&graphData.layout==='relationship-force-v1',
+  'Knowledge network uses a deterministic, relation-driven layout');
+if(graphData){
+  const byId=new Map(graphData.nodes.map(n=>[n.id,n]));
+  const all=graphData.nodes;
+  const links=new Set(graphData.edges.map(e=>[e.from,e.to].sort().join('|')));
+  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  check(all.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y)&&n.x>=0&&n.x<=graphData.world.width&&n.y>=0&&n.y<=graphData.world.height)&&
+    graphData.edges.every(e=>byId.has(e.from)&&byId.has(e.to)),
+    'Knowledge layout positions and edges stay within valid source-backed nodes');
+  const intraRefs=graphData.edges.filter(e=>e.kind==='references'&&
+    byId.get(e.from)?.kind!=='area'&&byId.get(e.to)?.kind!=='area'&&
+    byId.get(e.from)?.group===byId.get(e.to)?.group)
+    .map(e=>distance(byId.get(e.from),byId.get(e.to)));
+  const unrelated=[];
+  for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){
+    if(all[i].kind==='area'||all[j].kind==='area'||all[i].group!==all[j].group)continue;
+    if(!links.has([all[i].id,all[j].id].sort().join('|')))unrelated.push(distance(all[i],all[j]));
+  }
+  const median=xs=>xs.slice().sort((a,b)=>a-b)[Math.floor(xs.length/2)]??NaN;
+  const cited=median(intraRefs),uncited=median(unrelated);
+  console.log('Knowledge spatial relation diagnostics:',{
+    referencePairs:intraRefs.length,unrelatedPairs:unrelated.length,
+    medianDirectReferenceDistance:Math.round(cited),
+    medianUnlinkedSameAreaDistance:Math.round(uncited)
+  });
+  check(intraRefs.length>=5&&unrelated.length>=20&&cited<uncited,
+    'Directly linked notes are closer than unlinked notes in the same area (median)');
+}
+
 const outputs=page('outputs');
 const areas=['llm-and-rl','multimodal','robotics','world-models'].map(name=>page('research/domains/'+name));
 check(outputs.includes('href="/publications/"') && outputs.includes('href="/projects/"'),
