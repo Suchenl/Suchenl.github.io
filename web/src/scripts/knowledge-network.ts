@@ -28,6 +28,11 @@ if(src){
   const els=new Map(groups.map(el=>[el.dataset.nodeId||'',el]));
   const edgeElements=graph.edges.map((e,i)=>({...e,el:edgeEls[i]}));
   const filters=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-filter]')];
+  const viewButtons=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-view]')];
+  const resultBox=$<HTMLDivElement>('kn-search-results');
+  const back=$<HTMLButtonElement>('kn-back');
+  const contextLabel=$<HTMLElement>('kn-context-label');
+  const visibleCount=$<HTMLElement>('kn-visible-count');
   const STORE='suchenl-knowledge-studied-v2';
   const priorSTORE='suchenl-knowledge-studied-v1';
   let marks=new Set<string>();
@@ -46,6 +51,66 @@ if(src){
   let selected:string|null=null;
   let hovered:string|null=null;
   let filter='all';
+  let view:'overview'|'all'|'area'|'local'='overview';
+  let returnView:'overview'|'all'='overview';
+  let areaFocus:string|null=null;
+  let localFocus:string|null=null;
+
+  const typed=graph.edges.filter(e=>e.kind==='references'||e.kind==='semantic');
+  const citeDegree=new Map<string,number>();
+  for(const e of typed){
+    citeDegree.set(e.from,(citeDegree.get(e.from)||0)+1);
+    citeDegree.set(e.to,(citeDegree.get(e.to)||0)+1);
+  }
+  // Overview includes only existing domain hubs, real topic overviews, and
+  // three linked documents per domain. No synthetic nodes are created.
+  const overview=new Set(graph.nodes.filter(n=>n.kind==='area'||n.kind==='topic').map(n=>n.id));
+  for(const area of graph.nodes.filter(n=>n.kind==='area')){
+    const items=graph.nodes.filter(n=>n.kind==='document'&&n.group===area.group);
+    items.sort((a,b)=>(citeDegree.get(b.id)||0)-(citeDegree.get(a.id)||0)||
+      a.titleZh.localeCompare(b.titleZh,'zh'));
+    items.slice(0,3).forEach(n=>overview.add(n.id));
+  }
+  const direct=new Map<string,Set<string>>();
+  for(const e of graph.edges.filter(e=>e.kind!=='belongs_to')){
+    if(!direct.has(e.from))direct.set(e.from,new Set());
+    if(!direct.has(e.to))direct.set(e.to,new Set());
+    direct.get(e.from)!.add(e.to);direct.get(e.to)!.add(e.from);
+  }
+  const localSet=()=>{
+    const ids=new Set<string>();
+    if(!localFocus)return ids;
+    ids.add(localFocus);
+    const selectedNode=byId.get(localFocus);
+    if(selectedNode?.parent)ids.add(selectedNode.parent);
+    direct.get(localFocus)?.forEach(id=>ids.add(id));
+    return ids;
+  };
+  const showNode=(n:KnowledgeNode)=>{
+    if(view==='all')return true;
+    if(view==='overview')return overview.has(n.id);
+    if(view==='area'){
+      if(n.id===areaFocus)return true;
+      const a=areaFocus?byId.get(areaFocus):null;
+      return !!a&&n.group===a.group&&n.kind!=='area';
+    }
+    return localSet().has(n.id);
+  };
+  const viewLabel=()=>{
+    if(view==='overview')return t('先看已有领域、专题和重要知识入口','Explore areas, real topics and linked entry points');
+    if(view==='all')return t('全部真实条目 · 连线仅呈现可核实的关系','All published notes · Only evidence-backed lines');
+    const n=byId.get(view==='area'?areaFocus||'':localFocus||'');
+    return n?t((view==='area'?'领域：':'局部关联：')+n.titleZh,(view==='area'?'Area: ':'Local: ')+n.titleEn):'';
+  };
+  function refreshViewControls(){
+    viewButtons.forEach(b=>{
+      const active=b.dataset.knView===view;
+      b.classList.toggle('active',active);
+      b.setAttribute('aria-pressed',String(active));
+    });
+    back.hidden=view==='overview'||view==='all';
+    contextLabel.textContent=viewLabel();
+  }
   const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp=(x:number,min:number,max:number)=>Math.min(max,Math.max(min,x));
   // Camera interpolates with one requestAnimationFrame loop, not CSS transform chains.
@@ -89,7 +154,7 @@ if(src){
     const n=byId.get(id);if(!n)return;
     const s=clamp(scale,.65,4.4);
     target.s=s;
-    target.x=graph.world.width*.47-n.x*s;
+    target.x=graph.world.width*(window.innerWidth<=650?.5:.32)-n.x*s;
     target.y=graph.world.height*.50-n.y*s;
     animate();
   }
@@ -113,25 +178,42 @@ if(src){
     return out;
   }
   function restyle(){
-    const focus=hovered||selected;
-    const connected=focus?neighbours(focus):null;
+    const local=localSet();
+    const active=hovered||selected;
+    const connected=active?neighbours(active):null;
+    let visible=0;
     for(const g of groups){
       const n=byId.get(g.dataset.nodeId||'');
       if(!n)continue;
-      const highlighted=connected?.has(n.id)??true;
-      const dim=(!nodeMatches(n)&&n.id!==focus)||!highlighted;
-      g.classList.toggle('is-dim',dim);
-      g.classList.toggle('is-active',n.id===focus);
+      const shown=showNode(n);
+      g.classList.toggle('is-hidden',!shown);
+      g.setAttribute('tabindex',shown?'0':'-1');
+      if(!shown)continue;
+      visible++;
+      const matching=nodeMatches(n);
+      const dim=(!matching&&n.id!==active)||(connected&&!connected.has(n.id));
+      g.classList.toggle('is-dim',!!dim);
+      g.classList.toggle('is-active',n.id===active);
       g.classList.toggle('is-studied',marks.has(n.id));
+      g.classList.toggle('is-key',overview.has(n.id)&&n.kind==='document');
+      g.classList.toggle('is-local',view==='local'&&local.has(n.id));
       g.setAttribute('aria-pressed',String(n.id===selected));
       g.setAttribute('aria-label',title(n)+' · '+kindLabel(n));
     }
     for(const e of edgeElements){
-      const active=!!focus&&(e.from===focus||e.to===focus);
-      const visible=(nodeMatches(byId.get(e.from)!)&&nodeMatches(byId.get(e.to)!));
-      e.el.classList.toggle('kn-edge-focus',active);
-      e.el.classList.toggle('kn-edge-dim',!active&&(!!focus||!visible));
+      const a=byId.get(e.from),b=byId.get(e.to);
+      // Domain membership influences positions and color, not visible spokes.
+      // Other edge types only appear when both real endpoints are visible.
+      const drawn=e.kind!=='belongs_to'&&!!a&&!!b&&showNode(a)&&showNode(b);
+      e.el.classList.toggle('is-hidden',!drawn);
+      if(!drawn)continue;
+      const important=!!active&&(e.from===active||e.to===active);
+      const filtered=!!a&&!!b&&nodeMatches(a)&&nodeMatches(b);
+      e.el.classList.toggle('kn-edge-focus',important);
+      e.el.classList.toggle('kn-edge-dim',!important&&(!!active||!filtered));
     }
+    visibleCount.textContent=t(visible+' 个节点',''+visible+' nodes');
+    refreshViewControls();
   }
   function neighboursByRelevance(id:string){
     const related=graph.edges.filter(e=>e.from===id||e.to===id);
