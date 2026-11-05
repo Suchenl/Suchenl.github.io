@@ -96,6 +96,7 @@ const relatedPapers = category ? allPaperEntries.filter(e => {
 <Base title={title} description={data.summaryZh || '研究知识库 · ' + title}>
   <div class="rkd-page" id="research-reader" data-document-id={entry.id} data-document-title={title}>
     <div class="rkd-progress" id="reading-progress" aria-hidden="true"></div>
+    <a id="research-return-top" class="rkd-top-return" href="/knowledge/"><span data-l="zh">← 返回知识库</span><span data-l="en">← Back to library</span></a>
     <nav class="rkd-breadcrumb" aria-label="位置">
       <a href="/knowledge/"><span data-l="zh">知识库</span><span data-l="en">Knowledge</span></a><span aria-hidden="true">/</span>
       {matchingArea && <><a href={knowledgeAreaHref}><span data-l="zh">{matchingArea.id}</span><span data-l="en">{matchingArea.en}</span></a><span aria-hidden="true">/</span></>}

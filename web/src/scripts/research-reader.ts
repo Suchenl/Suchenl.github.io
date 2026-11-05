@@ -4,9 +4,9 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
     // A research page can be visited directly or through any of the paper's classifications.
     const params = new URLSearchParams(window.location.search);
     const from = params.get('from');
-    const back = document.getElementById('research-return') as HTMLAnchorElement | null;
+    const backs = [...document.querySelectorAll<HTMLAnchorElement>('#research-return, #research-return-top')];
     const validFrom = from && /^(all|papers|paths|reviews|glossary|ideas|cat:[^?#]+|domain:[^?#]+)$/.test(from);
-    if (back) {
+    for (const back of backs) {
       // Direct entry keeps the static, domain-specific return URL from the reader.
       // Only a visit from the filtered library should override it with the exact
       // filter/search state; Paper Notes has its own independent return portal.
