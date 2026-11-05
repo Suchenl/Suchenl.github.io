@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/预训练与模型架构"]
 title: "大模型预训练（Pretraining）：从数据工程到训练稳定性"
 shortName: "LLM Pretraining"
 aliases: ["预训练", "Pretraining", "Pretrain", "Tokenizer", "数据清洗", "数据配比", "Megatron", "Scaling Laws"]

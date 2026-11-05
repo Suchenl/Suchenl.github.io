@@ -1,4 +1,6 @@
 ---
+contentType: review
+domains: ["大模型与强化学习/推理与 Agent 系统"]
 title: "Agent 长程推理与工具调用"
 shortName: "Agent Reasoning"
 aliases: ["CoT", "when to think", "tool calling", "Codex", "GLM-5.3-Flash", "Qwen3.8-27B", "推理调度"]
