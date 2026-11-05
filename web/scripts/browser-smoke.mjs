@@ -45,6 +45,7 @@ try {
   await check('Real Knowledge constellation and smooth exploration '+width,async()=>{
    await navigate(page,'/knowledge/');await noOverflow(page);
    if(width===1440)await page.screenshot({path:'visual-qa/knowledge-atlas-overview-initial.png',fullPage:true});
+   if(width===390)await page.screenshot({path:'visual-qa/knowledge-atlas-mobile.png',fullPage:true});
    assert.equal(await page.locator('.kn-overview-panel').count(),4,'Each active area has an overview region');
    assert.equal(await page.locator('#kn-svg').count(),1,'Source-backed constellation is visible');
    const graph=JSON.parse(await page.locator('#kn-data').textContent());
