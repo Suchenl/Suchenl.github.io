@@ -30,56 +30,29 @@ const domainEntries=taxonomy.domains.map(d=>{
   })).filter(c=>c.count>0);
   return {...d,items:matches,children};
 }).filter(d=>d.items.length>0);
-const firstByDomain=domainEntries.map(d=>({
-  ...d,featured:d.items.filter(e=>e.topic).slice(0,3)
-})); 
 ---
 <Base title="知识库" description="浏览个人公开知识库：按领域与专题逐层查找，也可以直接搜索论文解读、概念、技术问答与研究探索。">
   <div class="kl-page" id="kl-page">
     <header class="kl-hero">
       <div class="kl-eyebrow"><span class="kl-eyebrow-dot"></span> KNOWLEDGE LIBRARY / SUCHENL</div>
-      <h1><span data-l="zh">把知识整理成容易阅读的样子。</span><span data-l="en">Knowledge, made easy to explore.</span></h1>
+      <h1><span data-l="zh">个人知识库</span><span data-l="en">Knowledge Library</span></h1>
       <p class="kl-lead">
-        <span data-l="zh">从熟悉的领域开始，沿着专题目录阅读；也可以直接搜索一个问题、一篇论文或一个概念。这里展示的都是已经公开的真实内容。</span>
-        <span data-l="en">Start with a field, browse its topics, or search for a question, paper, or concept. Every entry links to an existing public note.</span>
+        <span data-l="zh">按左侧领域目录查找知识，在右侧筛选专题、论文解读或问题，直接进入正文。所有文章都来自同一份公开知识库。</span>
+        <span data-l="en">Use the directory to browse fields, filter papers or questions, and open the original note directly. One library, one reading path.</span>
       </p>
       <div class="kl-hero-meta">
         <span><strong>{domainEntries.length}</strong> <span data-l="zh">个知识领域</span><span data-l="en">areas</span></span>
         <i aria-hidden="true"></i>
         <span><strong>{records.length}</strong> <span data-l="zh">篇已收录内容</span><span data-l="en">published notes</span></span>
         <i aria-hidden="true"></i>
-        <a href="/research/"><span data-l="zh">进入研究资料库</span><span data-l="en">Research library</span> <span aria-hidden="true">↗</span></a>
+        <span><span data-l="zh">领域与内容类型在同一页面筛选</span><span data-l="en">One place for fields and content types</span></span>
       </div>
     </header>
 
-    <section class="kl-start" aria-labelledby="kl-start-title">
-      <div class="kl-section-head">
-        <div><p class="kl-kicker">EXPLORE BY FIELD</p><h2 id="kl-start-title"><span data-l="zh">从领域开始</span><span data-l="en">Explore by field</span></h2></div>
-        <p><span data-l="zh">只展示确有公开文章的领域。</span><span data-l="en">Only fields with published articles appear here.</span></p>
-      </div>
-      <div class="kl-domains">
-        {firstByDomain.map((d,i)=><article class="kl-domain-card" style={'--kl-index:'+i} >
-          <div class="kl-domain-top"><span class="kl-domain-icon" aria-hidden="true">{String(i+1).padStart(2,'0')}</span><span class="kl-domain-count">{d.items.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span></div>
-          <h3><span data-l="zh">{d.id}</span><span data-l="en">{d.en}</span></h3>
-          <p><span data-l="zh">{d.description}</span><span data-l="en">{d.descriptionEn}</span></p>
-          <div class="kl-domain-topics">
-            {d.children.slice(0,3).map(c=><button type="button" class="kl-quick-topic" data-kl-scope={c.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name} data-kl-name-zh={c.name} data-kl-name-en={c.name}>
-              <span>{c.name}</span><span class="kl-domain-topic-count">{c.count}</span>
-            </button>)}
-          </div>
-          <div class="kl-domain-bottom">
-            <button type="button" class="kl-enter" data-kl-scope={d.slug} data-kl-domain-id={d.id} data-kl-name-zh={d.id} data-kl-name-en={d.en}>
-              <span data-l="zh">查看该领域全部内容</span><span data-l="en">Browse this field</span><span aria-hidden="true">→</span>
-            </button>
-          </div>
-        </article>)}
-      </div>
-    </section>
-
     <section class="kl-browser" id="knowledge-browser" aria-labelledby="kl-browser-title">
       <div class="kl-section-head">
-        <div><p class="kl-kicker">BROWSE & READ</p><h2 id="kl-browser-title"><span data-l="zh">知识目录</span><span data-l="en">Knowledge index</span></h2></div>
-        <p><span data-l="zh">目录决定范围，卡片直接进入正文。</span><span data-l="en">Use the tree to narrow your scope, then open a note.</span></p>
+        <div><p class="kl-kicker">BROWSE & READ</p><h2 id="kl-browser-title"><span data-l="zh">浏览与阅读</span><span data-l="en">Browse & Read</span></h2></div>
+        <p><span data-l="zh">左侧选领域，右侧筛选和阅读；不切换目录页面。</span><span data-l="en">Browse and filter in place. Articles open in the reader.</span></p>
       </div>
       <div class="kl-shell">
         <aside class="kl-sidebar" aria-label="知识目录树">
@@ -106,7 +79,7 @@ const firstByDomain=domainEntries.map(d=>({
           <div class="kl-sidebar-foot">
             <span data-l="zh">旧专题与论文链接保持不变。</span>
             <span data-l="en">Existing topic and paper URLs are preserved.</span>
-            <a href="/research/"><span data-l="zh">高级研究检索</span><span data-l="en">Advanced research search</span> ↗</a>
+            <a href="/research/"><span data-l="zh">需要论文对比等高级工具？</span><span data-l="en">Need advanced paper tools?</span> ↗</a>
           </div>
         </aside>
 
@@ -133,10 +106,10 @@ const firstByDomain=domainEntries.map(d=>({
             </label>
           </div>
           <div class="kl-results-head">
-            <div><p class="kl-results-overline">YOUR READING LIBRARY</p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
+            <div><p class="kl-results-overline" id="kl-location"><span data-l="zh">知识库 / 全部知识</span><span data-l="en">Library / All notes</span></p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
             <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
           </div>
-          <div class="kl-articles" id="kl-articles">
+          <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
             {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-order={i}>
               <div class="kl-note-meta">
                 <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
@@ -156,12 +129,6 @@ const firstByDomain=domainEntries.map(d=>({
         </div>
       </div>
     </section>
-    <div class="kl-shortcuts">
-      <span data-l="zh">其他阅读入口</span><span data-l="en">Other reading paths</span>
-      <a href="/research/"><span data-l="zh">研究资料库</span><span data-l="en">Research library</span> ↗</a>
-      <a href="/paper-notes/"><span data-l="zh">论文解读</span><span data-l="en">Paper notes</span> ↗</a>
-      <a href="/questions/"><span data-l="zh">问题与探索</span><span data-l="en">Questions</span> ↗</a>
-    </div>
   </div>
 </Base>
 <script src="../../scripts/knowledge-library.ts"></script>
