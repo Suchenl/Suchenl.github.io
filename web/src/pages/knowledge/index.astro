@@ -11,7 +11,7 @@ const root=byId.get('knowledge:root')!;
 const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNode:byId.get(edge.to)! }));
 ---
 <Base title="个人知识体系" description="通过可探索的知识网络，发现已收录的公开知识、待建设的主题与下一步学习路径。">
-  <main class="kn-page" id="kn-page">
+  <div class="kn-page" id="kn-page">
     <header class="kn-intro">
       <p class="kn-eyebrow">A LIVING MAP OF KNOWLEDGE</p>
       <h1><span data-l="zh">个人知识体系</span><span data-l="en">Personal Knowledge System</span></h1>
@@ -137,7 +137,7 @@ const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNo
       </div>
       <p class="kn-source-note"><span data-l="zh">已收录状态自动来自公开 Markdown 的领域分类；专题关系不代表因果。现有研究阅读器与论文解读入口继续保留：</span><span data-l="en">Coverage is derived from categorized public Markdown, not inferred mastery. Existing research routes remain available:</span> <a href="/research/">Research</a> · <a href="/paper-notes/">Paper Notes</a> · <a href="/questions/">Questions</a></p>
     </section>
-  </main>
+  </div>
   <script type="application/json" id="kn-data" set:html={serialized}></script>
 </Base>
 <script src="../../scripts/knowledge-network.ts"></script>

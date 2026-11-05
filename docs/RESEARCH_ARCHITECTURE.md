@@ -54,7 +54,7 @@
 ## 全站信息架构升级（2026-11-05）
 
 - 长期规范：`docs/design-principles/INFORMATION_ARCHITECTURE.md`、`RESEARCH_TOPICS_AND_READING.md`；论文解读规范仍由 `PAPER_NOTES.md` 负责。
-- 一级导航：首页、研究、产出、博客、经历。Research 统摄 `/paper-notes/` 和 `/questions/`；产出新增 `/outputs/` 统摄 `/publications/` 和 `/projects/`；所有原始 URL 保留。
+- 一级导航：首页、知识、产出、博客、经历。Knowledge 以 `/knowledge/` 为入口，Research `/research/` 及 `/paper-notes/`、`/questions/` 均为知识子路径；产出 `/outputs/` 统摄 `/publications/` 和 `/projects/`；所有原始 URL 保留。
 - `knowledge/taxonomy.json` 的四大领域增加稳定英文 slug 与双语描述；`/research/domains/[slug]/` 以同一 taxonomy 聚合真实专题、论文与公开研究问题，未创建第二份正文。
 - `/research/` 先按领域/技术专题浏览，再按论文、内容类型与全文索引检索；既有 Research 客户端筛选器、论文对比和阅读状态仍沿用。
 - `/research/[...slug].astro` 增加领域面包屑和相关专题入口；现有左侧阅读目录、论文三种阅读模式、知识图谱和学习路线不替换。

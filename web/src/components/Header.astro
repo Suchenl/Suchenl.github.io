@@ -2,7 +2,7 @@
 import { SITE, NAV } from '../config';
 const path = Astro.url.pathname;
 const navChildren: Record<string, string[]> = {
-  '/research/': ['/paper-notes/', '/questions/', '/reading/'],
+  '/knowledge/': ['/research/', '/paper-notes/', '/questions/', '/reading/'],
   '/outputs/': ['/publications/', '/projects/'],
 };
 const isActive = (href: string) =>
