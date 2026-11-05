@@ -2,6 +2,7 @@
 contentType: glossary
 domains: ["大模型与强化学习/推理与 Agent 系统"]
 title: "Thinking 与工具调用协议术语"
+catalogTitleZh: "Thinking 与工具调用：协议概念速查"
 shortName: "Thinking / Tool Protocol"
 aliases: ["Beta Header", "Interleaved Thinking", "Adaptive Thinking", "Thinking Block", "Content Block", "Tool Use", "Tool Result", "Assistant Turn", "Signature", "Preserved Thinking", "Extended Thinking", "Reasoning Effort"]
 categories: ["强化学习与 Agent", "强化学习与 Agent/长程推理与工具使用"]

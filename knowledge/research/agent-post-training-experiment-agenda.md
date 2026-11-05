@@ -2,7 +2,8 @@
 contentType: plan
 domains: ["大模型与强化学习/后训练与策略优化"]
 title: "Agent 后训练：从争议主张到可证伪实验"
-summaryZh: "把 SFT/RL 的信息来源、优化器、触发监督与失败恢复拆成受控变量，规划最小实验矩阵、真实验证器和停止规则。"
+catalogTitleZh: "Agent 后训练：从争议到可验证实验"
+summaryZh: "把 SFT/RL 的数据来源、训练目标、专家监督触发和失败恢复拆成可控因素，列出基线、验证器、预算与停止规则；属于实验方案，不代表已取得实验结果。"
 categories: ["强化学习与 Agent", "强化学习与 Agent/SFT 与 RL 协同", "机器人与具身智能"]
 ---
 
