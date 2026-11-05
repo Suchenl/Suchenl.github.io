@@ -67,7 +67,7 @@ if(src){
     geometryFrame=requestAnimationFrame(tick);
   }
   const filters=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-filter]')];
-  const viewButtons=[...document.querySelectorAll<HTMLButtonElement>('[data-kn-view]')];
+  const viewButtons=[...document.querySelectorAll<HTMLButtonElement>('button[data-kn-view]')];
   const resultBox=$<HTMLDivElement>('kn-search-results');
   const back=$<HTMLButtonElement>('kn-back');
   const contextLabel=$<HTMLElement>('kn-context-label');

@@ -55,7 +55,7 @@ try {
    const overviewCount=await page.locator('.kn-node:not(.is-hidden)').count();
    assert(overviewCount<graph.nodes.length && overviewCount>=graph.stats.areas,
     'Overview hides low-priority details without removing published notes');
-   assert.equal(await page.locator('[data-kn-view="overview"]').getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('button[data-kn-view="overview"]').getAttribute('aria-pressed'),'true');
    assert.equal(await page.locator('.kn-node.is-key').count(),graph.nodes.filter(n=>n.featured&&n.kind==='document').length,'SSR overview and client choose the same real notes');
    assert.equal(await page.locator('.kn-edge-belongs_to:not(.is-hidden)').count()>0,true,'Overview uses a few real domain-assignment edges');
    assert.equal(await page.locator('[data-kn-filter="empty"]').count(),0,'No empty-theme filter');
@@ -64,9 +64,9 @@ try {
    assert((await page.locator('.kn-search-option').count())>=1,'Search offers clickable source-backed results');
    assert((await page.locator('.kn-node:not(.is-hidden):not(.is-dim)').count())>=1,'Search keeps visible relevant areas/topics');
    await page.locator('#kn-search').fill('');
-   await page.locator('[data-kn-view="all"]').click();
+   await page.locator('button[data-kn-view="all"]').click();
    assert.equal(await page.locator('.kn-node:not(.is-hidden)').count(),graph.nodes.length,'Full-network lens reveals all real nodes');
-   await page.locator('[data-kn-view="overview"]').click();
+   await page.locator('button[data-kn-view="overview"]').click();
    assert.equal(await page.locator('.kn-node:not(.is-hidden)').count(),overviewCount,'Returning to overview restores progressive disclosure');
    await page.locator('#kn-reset').click();
    const world=page.locator('#kn-world');
