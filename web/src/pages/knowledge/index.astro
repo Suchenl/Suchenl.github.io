@@ -16,17 +16,36 @@ const records = source
     const labelZh:Record<string,string>={topic:'专题',review:'综述',paper:'论文解读',qa:'技术问答',exploration:'问题与探索',plan:'研究计划',glossary:'概念',path:'学习路线'};
     const labelEn:Record<string,string>={topic:'Topic',review:'Review',paper:'Paper notes',qa:'Q&A',exploration:'Exploration',plan:'Research plan',glossary:'Concept',path:'Learning path'};
     return {id:e.id,title,href,domains,type,topic,summary:e.data.summaryZh||'',
+      catalogTitleZh:e.data.catalogTitleZh||'',brief:type==='paper'&&(e.body||'').length<950,
       aliases:[e.data.shortName||'',...(e.data.aliases||[])].filter(Boolean).join('|').toLocaleLowerCase(),
-      search:[title,e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
+      search:[title,e.data.catalogTitleZh||'',e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
       labelZh:labelZh[type]||'文章',labelEn:labelEn[type]||'Note'};
   }).sort((a,b)=>{
     const priority=(e:{topic:boolean;type:string})=>e.topic?0:e.type==='review'?1:e.type==='path'?2:e.type==='qa'?3:e.type==='exploration'?4:e.type==='paper'?5:6;
     return priority(a)-priority(b)||a.title.localeCompare(b.title,'zh');
   });
+const recordById=new Map(records.map(e=>[e.id,e]));
+const topicEntries=source
+  .filter(e=>/^topics\/[^/]+\/README$/.test(e.id))
+  .map(e=>{
+    const overview=recordById.get(e.id)!;
+    const slug=e.id.split('/')[1];
+    const raw=e.data.readingOrder||[];
+    const seen=new Set<string>();
+    const order=raw.map((step,i)=>{
+      const note=recordById.get(step.ref);
+      if(!note)throw new Error('Missing actual note '+step.ref+' referenced by '+e.id);
+      if(seen.has(step.ref)||step.ref===e.id)throw new Error('Duplicate/cyclic topic reading step '+step.ref+' in '+e.id);
+      seen.add(step.ref);
+      return {...step,index:i+1,note};
+    });
+    return {...overview,slug,order};
+  });
 const domainEntries=taxonomy.domains.map(d=>{
   const matches=records.filter(e=>e.domains.some(k=>k===d.id||k.startsWith(d.id+'/')));
   const children=d.children.map(child=>({
     name:child, slug:d.slug+'/'+child,
+    topics:topicEntries.filter(t=>t.domains.includes(d.id+'/'+child)),
     count:records.filter(e=>e.domains.some(k=>k===d.id+'/'+child||k.startsWith(d.id+'/'+child+'/'))).length
   })).filter(c=>c.count>0);
   return {...d,items:matches,children};
@@ -71,9 +90,21 @@ const domainEntries=taxonomy.domains.map(d=>{
                 <button type="button" data-kl-scope={d.slug} data-kl-domain-id={d.id} data-kl-name-zh={d.id} data-kl-name-en={d.en} aria-pressed="false">
                   <span data-l="zh">全部条目</span><span data-l="en">All in this field</span><small>{d.items.length}</small>
                 </button>
-                {d.children.map(c=><button type="button" data-kl-scope={c.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name} data-kl-name-zh={c.name} data-kl-name-en={c.name} aria-pressed="false">
-                  <span>{c.name}</span><small>{c.count}</small>
-                </button>)}
+                {d.children.map(c=><div class="kl-tree-subarea">
+                  <button type="button" data-kl-scope={c.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name} data-kl-name-zh={c.name} data-kl-name-en={c.name} aria-pressed="false">
+                    <span>{c.name}</span><small>{c.count}</small>
+                  </button>
+                  {c.topics.length>0&&<div class="kl-tree-topics">
+                    {c.topics.map(topic=><button type="button" class="kl-tree-topic" data-kl-scope={'topic:'+topic.slug}
+                      data-kl-topic={topic.slug} data-kl-domain-id={d.id} data-kl-child-id={c.name}
+                      data-kl-name-zh={topic.catalogTitleZh||topic.title} data-kl-name-en={topic.title} aria-pressed="false"
+                      title={topic.title}>
+                      <span class="kl-topic-branch" aria-hidden="true">↳</span>
+                      <span class="kl-topic-label"><span data-l="zh">{topic.catalogTitleZh||topic.title}</span><span data-l="en">{topic.title}</span></span>
+                      <small>{topic.order.length} <span data-l="zh">步</span><span data-l="en">steps</span></small>
+                    </button>)}
+                  </div>}
+                </div>)}
               </div>
             </details>)}
           </nav>
@@ -110,14 +141,43 @@ const domainEntries=taxonomy.domains.map(d=>{
             <div><p class="kl-results-overline" id="kl-location"><span data-l="zh">知识库 / 全部知识</span><span data-l="en">Library / All notes</span></p><h3 id="kl-current-title"><span data-l="zh">全部知识</span><span data-l="en">All notes</span></h3></div>
             <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
           </div>
-          <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
-            {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-title={e.title.toLocaleLowerCase()} data-kl-aliases={e.aliases} data-kl-order={i}>
+          {topicEntries.map(topic=><section class="kl-topic-guide" data-kl-topic-guide={topic.slug} hidden aria-label={'专题学习路线：'+topic.title}>
+            <div class="kl-topic-guide-head">
+              <p class="kl-kicker"><span data-l="zh">专题导读 · 建议阅读顺序</span><span data-l="en">TOPIC GUIDE · SUGGESTED READING</span></p>
+              <h3><span data-l="zh">{topic.catalogTitleZh||topic.title}</span><span data-l="en">{topic.title}</span></h3>
+              <p>{topic.summary}</p>
+              <a href={topic.href} class="kl-topic-start"><span data-l="zh">先读专题总览</span><span data-l="en">Read topic overview first</span> <span aria-hidden="true">↗</span></a>
+            </div>
+            {topic.order.length>0&&<div class="kl-topic-route">
+              <div class="kl-topic-route-title"><strong><span data-l="zh">然后按问题逐步深入</span><span data-l="en">Continue through the topic</span></strong><span>{topic.order.length} <span data-l="zh">个真实阅读条目</span><span data-l="en">published notes</span></span></div>
+              <ol class="kl-topic-steps">
+                {topic.order.slice(0,4).map(step=><li class="kl-topic-step">
+                  <span class="kl-step-index">{String(step.index).padStart(2,'0')}</span>
+                  <div><small>{step.stage}</small><a href={step.note.href}><span data-l="zh">{step.note.catalogTitleZh||step.note.title}</span><span data-l="en">{step.note.title}</span></a><p>{step.why}</p></div>
+                </li>)}
+              </ol>
+              {topic.order.length>4&&<details class="kl-topic-more">
+                <summary><span data-l="zh">继续查看后续 {topic.order.length-4} 步</span><span data-l="en">Show remaining {topic.order.length-4} steps</span></summary>
+                <ol class="kl-topic-steps" start={5}>
+                  {topic.order.slice(4).map(step=><li class="kl-topic-step">
+                    <span class="kl-step-index">{String(step.index).padStart(2,'0')}</span>
+                    <div><small>{step.stage}</small><a href={step.note.href}><span data-l="zh">{step.note.catalogTitleZh||step.note.title}</span><span data-l="en">{step.note.title}</span></a><p>{step.why}</p></div>
+                  </li>)}
+                </ol>
+              </details>}
+              <p class="kl-route-caveat"><span data-l="zh">这是根据已公开内容整理的推荐顺序，并非强制前置条件；没有为尚不存在的知识添加条目。</span><span data-l="en">A suggested order based on existing public notes, not a mandatory prerequisite graph. No unwritten topics are included.</span></p>
+            </div>}
+          </section>)}
+                    <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
+            {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-title={(e.catalogTitleZh||e.title).toLocaleLowerCase()} data-kl-aliases={e.aliases} data-kl-order={i}>
               <div class="kl-note-meta">
                 <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
                 <span class="kl-note-group">{e.domains[0]?.split('/').slice(-1)[0]||''}</span>
+                {e.brief&&<span class="kl-brief"><span data-l="zh">简要笔记</span><span data-l="en">Brief note</span></span>}
               </div>
-              <h4><a href={e.href}>{e.title}</a></h4>
-              {e.summary&&<p>{e.summary}</p>}
+              <h4><a href={e.href}><span data-l="zh">{e.catalogTitleZh||e.title}</span><span data-l="en">{e.title}</span></a></h4>
+              {e.catalogTitleZh&&e.catalogTitleZh!==e.title&&<p class="kl-original-title">{e.title}</p>}
+              {e.summary&&<p class="kl-summary">{e.summary}</p>}
               <a class="kl-note-read" href={e.href} aria-label={'阅读：'+e.title}><span data-l="zh">阅读文章</span><span data-l="en">Read article</span> <span aria-hidden="true">↗</span></a>
             </article>)}
           </div>
