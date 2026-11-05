@@ -101,10 +101,18 @@ try {
    assert.equal(await route.locator('.kl-topic-step').count(),9,'Nine real depth-learning steps are present');
    assert((await route.locator('.kl-topic-step a').first().getAttribute('href'))?.includes('depth-acquisition-taxonomy'),
      'Topic starts with the authored acquisition overview');
-   assert.equal(await page.locator('.kl-note:not([hidden])').first().getAttribute('data-kl-id'),'topics/depth-perception/README',
-     'Topic overview is the first article in that scope');
-   assert.equal(await page.locator('.kl-note:not([hidden])').nth(1).getAttribute('data-kl-id'),'topics/depth-perception/reviews/depth-acquisition-taxonomy',
-     'Note list follows the same authored order as the guide rather than generic content-type sorting');
+   assert.equal(await page.locator('#kl-articles').isVisible(),false,
+     'Guided notes appear only once: do not repeat the same ten notes as full article cards');
+   assert.equal(await page.locator('.kl-topic-guide:not([hidden]) .kl-topic-start').count(),1,
+     'The topic overview remains directly readable');
+   assert.equal(await route.locator('.kl-topic-step a').nth(1).getAttribute('href'),
+     '/research/topics/depth-perception/reviews/stereo-depth/',
+     'Learning route uses the authored second step, not generic card sorting');
+   await page.locator('#kl-search').fill('双目');
+   assert(await page.locator('#kl-articles').isVisible(),'Topic text search reveals real matching article cards');
+   assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Search includes canonical notes in the topic');
+   await page.locator('#kl-search').fill('');
+   assert.equal(await page.locator('#kl-articles').isVisible(),false,'Clearing search returns to compact route');
    if(width===1440)await page.screenshot({path:'visual-qa/knowledge-topic-depth-desktop.png',fullPage:true});
    if(width===390)await page.screenshot({path:'visual-qa/knowledge-topic-depth-mobile.png',fullPage:true});
    await route.locator('.kl-topic-step a').first().click();
