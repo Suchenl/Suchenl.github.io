@@ -7,14 +7,20 @@ const readerMotion: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce
     const back = document.getElementById('research-return') as HTMLAnchorElement | null;
     const validFrom = from && /^(all|papers|paths|reviews|glossary|ideas|cat:[^?#]+|domain:[^?#]+)$/.test(from);
     if (back) {
-      const ret = new URL('/research/',window.location.origin);
-      if (validFrom && from !== 'all') ret.searchParams.set('folder',from);
-      const q=params.get('q'),status=params.get('status'),sort=params.get('sort');
-      if(q)ret.searchParams.set('q',q.slice(0,300));
-      if(status && ['read','reading','to-read','untracked'].includes(status))ret.searchParams.set('status',status);
-      if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
-      if (params.get('type')) ret.searchParams.set('type', params.get('type')!);
-      back.href=ret.pathname+ret.search;
+      // Direct entry keeps the static, domain-specific return URL from the reader.
+      // Only a visit from the filtered library should override it with the exact
+      // filter/search state; Paper Notes has its own independent return portal.
+      const hasLibraryContext = Boolean(validFrom || params.has('q') || params.has('status') || params.has('sort') || params.has('type'));
+      if (hasLibraryContext) {
+        const ret = new URL('/research/',window.location.origin);
+        if (validFrom && from !== 'all') ret.searchParams.set('folder',from);
+        const q=params.get('q'),status=params.get('status'),sort=params.get('sort');
+        if(q)ret.searchParams.set('q',q.slice(0,300));
+        if(status && ['read','reading','to-read','untracked'].includes(status))ret.searchParams.set('status',status);
+        if(sort && ['year','added','rating','title'].includes(sort))ret.searchParams.set('sort',sort);
+        if (params.get('type')) ret.searchParams.set('type', params.get('type')!);
+        back.href=ret.pathname+ret.search;
+      }
       if(params.get('source') === 'paper-notes') {
         back.href='/paper-notes/';
         back.textContent='← 返回论文解读';
