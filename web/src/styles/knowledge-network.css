@@ -5,3 +5,32 @@
 @media(max-width:1000px){.kn-layout{grid-template-columns:minmax(0,1fr)}.kn-map-wrap{border-right:0;border-bottom:1px solid var(--border)}.kn-inspector{display:grid;grid-template-columns:1fr 1fr;gap:.2rem 1.25rem}.kn-inspector-top,.kn-inspector h3,.kn-inspector>p#kn-detail-description,.kn-inspector-metrics,.kn-detail-actions,.kn-inspector h4,.kn-sources,.kn-connections,.kn-local-note,.kn-feedback,.kn-inspector textarea{grid-column:auto}.kn-inspector-top,.kn-inspector h3,.kn-inspector>p#kn-detail-description,.kn-local-note,.kn-feedback,.kn-inspector textarea{grid-column:1/-1}.kn-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kn-viewport{scrollbar-width:auto}}
 @media(max-width:650px){.kn-intro{padding:1.4rem 0 1.1rem}.kn-intro h1{font-size:2rem}.kn-explorer-head{padding:1.2rem 1rem .55rem;align-items:start}.kn-explorer-head h2{font-size:1.22rem}.kn-explorer-head p:last-child{font-size:.77rem}.kn-stat{min-width:72px}.kn-stat strong{font-size:1.5rem}.kn-stat strong span{font-size:.94rem}.kn-stat small{font-size:.6rem}.kn-toolbar{padding:.7rem 1rem;align-items:stretch;flex-direction:column;gap:.55rem}.kn-search-wrap{max-width:none;width:100%}.kn-filters{gap:.2rem}.kn-filters button{font-size:.73rem;padding:.36rem .6rem}.kn-legend{padding:.15rem 1rem .8rem;gap:.4rem .75rem;font-size:.66rem}.kn-svg{width:980px;height:569px}.kn-inspector{display:flex;padding:1.15rem}.kn-inspector-top,.kn-inspector h3,.kn-inspector>p#kn-detail-description,.kn-inspector-metrics,.kn-detail-actions,.kn-inspector h4,.kn-sources,.kn-connections,.kn-local-note,.kn-feedback,.kn-inspector textarea{grid-column:unset}.kn-directory{padding-top:2rem}.kn-directory-head{display:block}.kn-directory-head>p{margin:.5rem 0 0}.kn-directory-grid{grid-template-columns:1fr}.kn-area-card{min-height:0}.kn-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}}
 @media(prefers-reduced-motion:reduce){.kn-node,.kn-edge{transition:none}}
+
+
+/* Atlas-first layout: the complete network is visible on wide screens.
+   The inspector follows the canvas rather than obscuring one-third of it. */
+.kn-layout{display:block}
+.kn-map-wrap{width:100%;border-right:0;border-bottom:1px solid var(--border)}
+.kn-svg{width:100%;height:auto}
+.kn-inspector{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:2.6rem;row-gap:.2rem;padding:1.5rem 1.85rem}
+.kn-inspector>.kn-inspector-top,
+.kn-inspector>#kn-detail-title,
+.kn-inspector>p#kn-detail-description,
+.kn-inspector>.kn-inspector-metrics,
+.kn-inspector>.kn-detail-actions{grid-column:1}
+.kn-inspector>h4,
+.kn-inspector>.kn-sources,
+.kn-inspector>.kn-connections,
+.kn-inspector>.kn-local-note,
+.kn-inspector>#kn-prompt-fallback,
+.kn-inspector>#kn-feedback{grid-column:2}
+.kn-inspector>h4{margin:.2rem 0 .4rem}
+.kn-inspector>.kn-local-note{margin-top:.7rem}
+@media(max-width:800px){
+ .kn-svg{width:1040px;height:604px}
+ .kn-inspector{column-gap:1.3rem}
+}
+@media(max-width:650px){
+ .kn-inspector{display:flex;flex-direction:column;gap:0;padding:1.15rem}
+ .kn-inspector>h4{margin:.8rem 0 .4rem}
+}
