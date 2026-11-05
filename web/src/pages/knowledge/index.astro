@@ -16,6 +16,7 @@ const records = source
     const labelZh:Record<string,string>={topic:'专题',review:'综述',paper:'论文解读',qa:'技术问答',exploration:'问题与探索',plan:'研究计划',glossary:'概念',path:'学习路线'};
     const labelEn:Record<string,string>={topic:'Topic',review:'Review',paper:'Paper notes',qa:'Q&A',exploration:'Exploration',plan:'Research plan',glossary:'Concept',path:'Learning path'};
     return {id:e.id,title,href,domains,type,topic,summary:e.data.summaryZh||'',
+      aliases:[e.data.shortName||'',...(e.data.aliases||[])].filter(Boolean).join('|').toLocaleLowerCase(),
       search:[title,e.data.shortName||'',...(e.data.aliases||[]),e.data.summaryZh||'',...domains].join(' ').toLocaleLowerCase(),
       labelZh:labelZh[type]||'文章',labelEn:labelEn[type]||'Note'};
   }).sort((a,b)=>{
@@ -110,7 +111,7 @@ const domainEntries=taxonomy.domains.map(d=>{
             <span class="kl-results-count" id="kl-results-count" role="status" aria-live="polite">{records.length} <span data-l="zh">篇</span><span data-l="en">notes</span></span>
           </div>
           <div class="kl-articles" id="kl-articles" aria-label="知识文章列表">
-            {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-order={i}>
+            {records.map((e,i)=><article class="kl-note" data-kl-id={e.id} data-kl-domains={e.domains.join('|')} data-kl-type={e.type} data-kl-search={e.search} data-kl-title={e.title.toLocaleLowerCase()} data-kl-aliases={e.aliases} data-kl-order={i}>
               <div class="kl-note-meta">
                 <span class:list={['kl-note-kind','kl-kind-'+e.type]}><span data-l="zh">{e.labelZh}</span><span data-l="en">{e.labelEn}</span></span>
                 <span class="kl-note-group">{e.domains[0]?.split('/').slice(-1)[0]||''}</span>

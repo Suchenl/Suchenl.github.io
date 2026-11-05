@@ -38,6 +38,19 @@ if (root) {
   }
   function render() {
     const matching = cards.filter(isMatching);
+    const query = search.value.trim().toLocaleLowerCase();
+    if (query) {
+      // Direct title and acronym hits should beat a generic taxonomy/summary
+      // mention; the default no-query reading order stays unchanged.
+      const rank = (card:HTMLElement) => {
+        const title = card.dataset.klTitle || '';
+        const aliases = (card.dataset.klAliases || '').split('|');
+        return title === query ? 0 : title.startsWith(query) ? 1 :
+          aliases.includes(query) ? 2 : title.includes(query) ? 3 :
+          aliases.some(a=>a.startsWith(query)) ? 4 : 5;
+      };
+      matching.sort((a,b) => rank(a)-rank(b));
+    }
     const visible = new Set(matching.slice(0, limit));
     for (const card of cards) card.hidden = !visible.has(card);
     empty.hidden = matching.length !== 0;
@@ -52,7 +65,9 @@ if (root) {
     if (en) en.textContent = nameEn;
     const zpath = locationLine.querySelector<HTMLElement>('[data-l="zh"]');
     const epath = locationLine.querySelector<HTMLElement>('[data-l="en"]');
-    if (zpath) zpath.textContent = '知识库 / ' + nameZh;
+    const area = selected.dataset.klDomainId;
+    const child = selected.dataset.klChildId;
+    if (zpath) zpath.textContent = '知识库 / ' + (area ? area + (child ? ' / ' + child : '') : '全部知识');
     if (epath) epath.textContent = 'Library / ' + nameEn;
     buttons.forEach(b => {
       const active = b.dataset.klScope === scope;
