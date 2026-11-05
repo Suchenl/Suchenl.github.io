@@ -110,33 +110,34 @@ const serialized = JSON.stringify(items).replace(/</g, '\\u003c');
   <SectionNav section="research" active="overview" />
   <section class="lit-intro">
     <p class="lit-eyebrow">PERSONAL RESEARCH LIBRARY</p>
-    <h1 class="page-title">研究知识库</h1>
-    <p class="page-intro">以研究问题为线索，理解基础概念、技术路线与实验证据。可以从领域与专题逐层阅读，也可以检索全部论文、综述和研究问题。</p>
+    <h1 class="page-title"><span data-l="zh">研究知识库</span><span data-l="en">Research Library</span></h1>
+    <p class="page-intro"><span data-l="zh">以研究问题为线索，理解基础概念、技术路线与实验证据。可以从领域与专题逐层阅读，也可以检索全部论文、综述和研究问题。</span><span data-l="en">Explore research questions, concepts, technical approaches and evidence. Browse by area and topic, or search across all papers and notes.</span></p>
+    <a class="research-search-jump" href="#all-knowledge"><span data-l="zh">⌕ 搜索全部论文、技术概念与研究问题 →</span><span data-l="en">⌕ Search papers, concepts and research questions →</span></a>
   </section>
   <section class="research-areas" aria-labelledby="research-areas-heading">
     <div class="research-areas-heading">
-      <div><p class="lit-eyebrow">RESEARCH AREAS</p><h2 id="research-areas-heading">从研究领域开始</h2></div>
-      <p>知识领域与内容类型分开组织；同一篇文章可能属于多个领域，但正文只维护一份。</p>
+      <div><p class="lit-eyebrow">RESEARCH AREAS</p><h2 id="research-areas-heading"><span data-l="zh">从研究领域开始</span><span data-l="en">Explore Research Areas</span></h2></div>
+      <p><span data-l="zh">知识领域与内容类型分开组织；同一篇文章可能属于多个领域，但正文只维护一份。</span><span data-l="en">Areas and content types are independent. Each article has one canonical source, even across multiple areas.</span></p>
     </div>
     <div class="research-areas-grid">
       {areas.map((area,i) => (
         <article class="research-area-card">
-          <div class="research-area-top"><span class="research-area-number">{String(i+1).padStart(2,'0')}</span><span class="research-area-count">{area.count} 项内容</span></div>
+          <div class="research-area-top"><span class="research-area-number">{String(i+1).padStart(2,'0')}</span><span class="research-area-count">{area.count} <span data-l="zh">项内容</span><span data-l="en">entries</span></span></div>
           <h3><a href={'/research/domains/'+area.slug+'/'}><span data-l="zh">{area.id}</span><span data-l="en">{area.en}</span> <span aria-hidden="true">↗</span></a></h3>
           <p><span data-l="zh">{area.description}</span><span data-l="en">{area.descriptionEn}</span></p>
-          {area.topics.length > 0 && <div class="research-area-topics"><span class="research-area-topics-label">技术专题</span>{area.topics.map(t=><a href={t.href}>{t.name} →</a>)}</div>}
+          {area.topics.length > 0 && <div class="research-area-topics"><span class="research-area-topics-label"><span data-l="zh">技术专题</span><span data-l="en">Topics</span></span>{area.topics.map(t=><a href={t.href}>{t.name} →</a>)}</div>}
         </article>
       ))}
     </div>
   </section>
   <section class="research-entryways" aria-label="按内容类型探索研究">
-    <a href="/paper-notes/"><strong>论文解读</strong><span>从概念、机制到原始证据 →</span></a>
-    <a href="/questions/"><strong>问题与探索</strong><span>持续追问的开放研究问题 →</span></a>
-    <a href="#all-knowledge"><strong>完整知识索引</strong><span>跨领域检索、筛选和比较 →</span></a>
+    <a href="/paper-notes/"><strong><span data-l="zh">论文解读</span><span data-l="en">Paper Notes</span></strong><span data-l="zh">从概念、机制到原始证据 →</span><span data-l="en">Concepts, methods and evidence →</span></a>
+    <a href="/questions/"><strong><span data-l="zh">问题与探索</span><span data-l="en">Questions</span></strong><span data-l="zh">持续追问的开放研究问题 →</span><span data-l="en">Ongoing open research questions →</span></a>
+    <a href="#all-knowledge"><strong><span data-l="zh">完整知识索引</span><span data-l="en">Knowledge Index</span></strong><span data-l="zh">跨领域检索、筛选和比较 →</span><span data-l="en">Search, filter and compare →</span></a>
   </section>
   <section class="research-index-head" id="all-knowledge" aria-labelledby="research-index-title">
-    <p class="lit-eyebrow">ALL KNOWLEDGE</p><h2 id="research-index-title">全部知识与检索</h2>
-    <p>按领域、内容类型和关键词交叉筛选。论文阅读状态及对比功能保持独立可用。</p>
+    <p class="lit-eyebrow">ALL KNOWLEDGE</p><h2 id="research-index-title"><span data-l="zh">全部知识与检索</span><span data-l="en">Explore All Knowledge</span></h2>
+    <p><span data-l="zh">按领域、内容类型和关键词交叉筛选。论文阅读状态及对比功能保持独立可用。</span><span data-l="en">Filter by research area, content type or keywords. Reading status and paper comparisons remain available.</span></p>
     <div class="lit-shortcuts" aria-label="按知识类型筛选">
       <button type="button" data-type="all"><strong>{papers.length + other.length}</strong><span>全部内容</span></button>
       {contentTypes.map(type => (
