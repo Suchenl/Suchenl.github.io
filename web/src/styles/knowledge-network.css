@@ -247,3 +247,10 @@
  .kn-zoom{top:auto;bottom:10px}
  .kn-connection-head{flex-wrap:wrap}
 }
+
+.kn-edge-belongs_to{stroke-dasharray:2 9;stroke-opacity:.12}
+.kn-edge-reading_step{stroke:#efbc86;stroke-width:1.7px}
+.kn-link-category{border-color:#657d9d;opacity:.65;border-top-style:dotted}
+.kn-link-step{border-color:#efbc86;border-top-width:1.7px}
+.kn-connection-reading_step{color:#f5d2a8;border-color:#8b7056}
+.kn-connection-direction{display:block;font-size:.61rem;color:#7694b4;margin:.14rem 0}

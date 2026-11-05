@@ -204,7 +204,7 @@ if(src){
       const a=byId.get(e.from),b=byId.get(e.to);
       // Domain membership influences positions and color, not visible spokes.
       // Other edge types only appear when both real endpoints are visible.
-      const drawn=e.kind!=='belongs_to'&&!!a&&!!b&&showNode(a)&&showNode(b);
+      const drawn=(e.kind!=='belongs_to'||view==='overview')&&!!a&&!!b&&showNode(a)&&showNode(b);
       e.el.classList.toggle('is-hidden',!drawn);
       if(!drawn)continue;
       const important=!!active&&(e.from===active||e.to===active);
