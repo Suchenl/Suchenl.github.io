@@ -98,10 +98,14 @@ export async function createKnowledgeNetwork(){
     const areaId='area:'+(taxonomy.domains[groupIdx]?.slug||'');
     const isTopic=/^topics\/[^/]+\/README$/.test(e.id);
     const title=titleOf(e);
+    const titleHead=title.split(/[：:]/)[0].trim();
+    const domainTopic=(e.data.domains||[])[0]?.split('/').at(-1)||title;
+    const topicZh=Array.from(titleHead).length<=14&&/[\u3400-\u9fff]/.test(titleHead)
+      ?titleHead:domainTopic;
     nodes.push({
       id:'doc:'+e.id,kind:isTopic?'topic':'document',parent:areaId,
       titleZh:title,titleEn:title,
-      shortZh:isTopic?(e.data.shortName||shortTitle(title,16)):shortTitle(e.data.shortName||title,18),
+      shortZh:isTopic?shortTitle(topicZh,13):shortTitle(title,15),
       shortEn:isTopic?(e.data.shortName||shortTitle(title,16)):shortTitle(e.data.shortName||title,18),
       descriptionZh:e.data.summaryZh||'已公开的知识正文，点击进入阅读。',
       descriptionEn:e.data.summaryZh||'A published knowledge note. Open the article to read.',
