@@ -3,143 +3,163 @@ import Base from '../../layouts/Base.astro';
 import { createKnowledgeNetwork } from '../../lib/knowledge-network';
 import '../../styles/knowledge-network.css';
 
-const graph = await createKnowledgeNetwork();
+const graph=await createKnowledgeNetwork();
 const byId=new Map(graph.nodes.map(node=>[node.id,node]));
-const serialized=JSON.stringify(graph).replace(/</g,'\\u003c');
-const areaNodes=graph.nodes.filter(node=>node.kind==='area');
-const root=byId.get('knowledge:root')!;
-const links=graph.edges.map(edge=>({ ...edge, fromNode:byId.get(edge.from)!,toNode:byId.get(edge.to)! }));
+const serialized=JSON.stringify(graph).replace(/</g,'\u003c');
+const areas=graph.nodes.filter(n=>n.kind==='area');
+const links=graph.edges.map(e=>({...e,fromNode:byId.get(e.from)!,toNode:byId.get(e.to)!}));
+const colors=['#79b6ff','#a89cfa','#65d6bd','#f2b872'];
 ---
-<Base title="个人知识体系" description="通过可探索的知识网络，发现已收录的公开知识、待建设的主题与下一步学习路径。">
+<Base title="个人知识体系" description="真实知识构成的交互式星图：沿着已有文章与明确链接，探索概念、论文、专题和自己的学习进度。">
   <div class="kn-page" id="kn-page">
     <header class="kn-intro">
-      <p class="kn-eyebrow">A LIVING MAP OF KNOWLEDGE</p>
-      <h1><span data-l="zh">个人知识体系</span><span data-l="en">Personal Knowledge System</span></h1>
-      <p><span data-l="zh">知识不是一串孤立文章，而是一张可以持续点亮的网络。从一个问题开始，找到相关概念、真实资料与下一步学习方向。</span><span data-l="en">Knowledge is a connected, evolving map—not a list of isolated articles. Find what is published, what is missing, and what to learn next.</span></p>
+      <div class="kn-eyebrow"><span class="kn-signal" aria-hidden="true"></span> PERSONAL KNOWLEDGE ATLAS <span class="kn-eyebrow-sep">/</span> SUCHENL</div>
+      <h1><span data-l="zh">知识的形状，始于真实的连接。</span><span data-l="en">Knowledge takes shape through connections.</span></h1>
+      <p><span data-l="zh">这张网络只展示已经收录的公开知识。每个光点都能追溯到真实文章；选择一个节点，探索它所在的知识脉络。</span><span data-l="en">Every point in this atlas represents real, published knowledge. Select a node to explore its sources and connections.</span></p>
     </header>
     <section class="kn-explorer" aria-labelledby="kn-title">
       <div class="kn-explorer-head">
-        <div>
-          <p class="kn-small-label">KNOWLEDGE ATLAS / 01</p>
-          <h2 id="kn-title"><span data-l="zh">点亮知识网络</span><span data-l="en">Illuminate the knowledge map</span></h2>
-          <p><span data-l="zh">实心节点表示已有公开知识，空心节点表示待建设；这不是个人能力或掌握程度评级。</span><span data-l="en">Filled nodes have public references; hollow nodes are not yet covered. Coverage never implies personal mastery.</span></p>
+        <div class="kn-explorer-heading">
+          <div class="kn-small-label">LIVE KNOWLEDGE GRAPH <span class="kn-label-sep">—</span> 01</div>
+          <h2 id="kn-title"><span data-l="zh">知识星图</span><span data-l="en">Knowledge Constellation</span></h2>
         </div>
         <div class="kn-stat">
-          <strong>{graph.stats.ready}<span> / {graph.stats.topics}</span></strong>
-          <small><span data-l="zh">已收录专题 / 规划专题</span><span data-l="en">Topics with content / planned</span></small>
+          <span><strong>{graph.stats.documents}</strong><small><span data-l="zh">真实知识条目</span><span data-l="en">Published notes</span></small></span>
+          <span><strong>{graph.stats.links}</strong><small><span data-l="zh">正文引用关联</span><span data-l="en">Verified note links</span></small></span>
+          <span><strong>{graph.stats.areas}</strong><small><span data-l="zh">已有知识领域</span><span data-l="en">Active domains</span></small></span>
         </div>
       </div>
-      <div class="kn-toolbar" aria-label="Knowledge map tools">
-        <label class="kn-search-wrap" for="kn-search">
-          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.7"/></svg>
-          <input id="kn-search" type="search" autocomplete="off" placeholder="搜索知识领域与主题…" />
-        </label>
-        <div class="kn-filters" aria-label="筛选节点">
-          <button type="button" class="active" data-kn-filter="all" aria-pressed="true"><span data-l="zh">全部</span><span data-l="en">All</span></button>
-          <button type="button" data-kn-filter="ready" aria-pressed="false"><span data-l="zh">已有资料</span><span data-l="en">Covered</span></button>
-          <button type="button" data-kn-filter="empty" aria-pressed="false"><span data-l="zh">待建设</span><span data-l="en">Uncovered</span></button>
+      <div class="kn-viewer" id="kn-viewer">
+        <div class="kn-toolbar">
+          <label class="kn-search-wrap" for="kn-search">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+            <input id="kn-search" type="search" autocomplete="off" placeholder="搜索知识、论文或专题…" />
+            <kbd>/</kbd>
+          </label>
+          <div class="kn-filters" aria-label="筛选现有知识">
+            <button type="button" data-kn-filter="all" class="active" aria-pressed="true"><span data-l="zh">全部</span><span data-l="en">All</span></button>
+            <button type="button" data-kn-filter="topic" aria-pressed="false"><span data-l="zh">专题</span><span data-l="en">Topics</span></button>
+            <button type="button" data-kn-filter="paper" aria-pressed="false"><span data-l="zh">论文</span><span data-l="en">Papers</span></button>
+            <button type="button" data-kn-filter="question" aria-pressed="false"><span data-l="zh">问答与探索</span><span data-l="en">Questions</span></button>
+            <button type="button" data-kn-filter="unstudied" aria-pressed="false"><span data-l="zh">未学习</span><span data-l="en">Not studied</span></button>
+          </div>
         </div>
-      </div>
-      <div class="kn-legend">
-        <span><i class="kn-swatch kn-swatch-ready"></i><span data-l="zh">已有公开资料</span><span data-l="en">Has public content</span></span>
-        <span><i class="kn-swatch kn-swatch-partial"></i><span data-l="zh">部分覆盖</span><span data-l="en">Partly covered</span></span>
-        <span><i class="kn-swatch kn-swatch-empty"></i><span data-l="zh">待建设</span><span data-l="en">Not covered</span></span>
-        <span><i class="kn-swatch kn-swatch-learned"></i><span data-l="zh">个人标记已学习</span><span data-l="en">Marked studied locally</span></span>
-      </div>
-      <div class="kn-layout">
-        <div class="kn-map-wrap">
-          <div class="kn-viewport" tabindex="0" role="region" aria-label="知识网络，可左右滚动查看，使用 Tab 选择节点">
-            <svg class="kn-svg" id="kn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 650" role="group" aria-label="可交互的知识领域网络">
+        <div class="kn-canvas-wrap" id="kn-canvas-wrap">
+          <div class="kn-viewport" id="kn-viewport" tabindex="0" role="region" aria-label="交互知识星图。拖动画布平移，滚轮缩放，Tab 选择节点。">
+            <svg class="kn-svg" id="kn-svg" viewBox="0 0 1310 960" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="按已有领域与 Markdown 连接的真实知识网络">
               <defs>
-                <radialGradient id="kn-glow"><stop offset="0%" stop-color="#56bcae" stop-opacity=".16"/><stop offset="100%" stop-color="#56bcae" stop-opacity="0"/></radialGradient>
+                <pattern id="kn-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+                  <circle cx="1" cy="1" r=".65" fill="#9aabc6" fill-opacity=".16"/>
+                </pattern>
+                <radialGradient id="kn-nebula">
+                  <stop offset="0%" stop-color="#92b3ff" stop-opacity=".115"/>
+                  <stop offset="100%" stop-color="#92b3ff" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="kn-blur" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="8"/>
+                </filter>
               </defs>
-              <circle cx={root.x} cy={root.y} r="162" fill="url(#kn-glow)" aria-hidden="true"/>
-              {links.map(edge=><path
-                class:list={['kn-edge',edge.kind==='related'?'kn-edge-related':'kn-edge-hierarchy']}
-                data-from={edge.from} data-to={edge.to} data-edge-kind={edge.kind}
-                d={edge.kind==='related'
-                  ? 'M '+edge.fromNode.x+' '+edge.fromNode.y+' Q '+((edge.fromNode.x+edge.toNode.x)/2)+' '+((edge.fromNode.y+edge.toNode.y)/2-42)+' '+edge.toNode.x+' '+edge.toNode.y
-                  : 'M '+edge.fromNode.x+' '+edge.fromNode.y+' L '+edge.toNode.x+' '+edge.toNode.y
-                }
-                fill="none" stroke-width={edge.kind==='related'?1.4:1.3}
-              />)}
-              {graph.nodes.map(node=><g
-                class:list={['kn-node','kn-node-'+node.kind,'kn-phase-'+node.phase]}
-                transform={'translate('+node.x+' '+node.y+')'}
-                role="button" tabindex="0" aria-pressed="false"
-                data-node-id={node.id} data-phase={node.phase}
-                aria-label={node.titleZh+'；'+(node.phase==='empty'?'待建设':'有公开资料')}
-              >
-                <title>{node.titleZh} · {node.count} 项公开内容</title>
-                {node.kind==='root'&&<circle class="kn-root-halo" r="49"/>}
-                <circle class="kn-node-hit" r={node.kind==='root'?41:node.kind==='area'?29:22}/>
-                <circle class="kn-node-ring" r={node.kind==='root'?28:node.kind==='area'?19:12}/>
-                <circle class="kn-node-core" r={node.kind==='root'?19:node.kind==='area'?12:6.5}/>
-                {node.kind==='topic'&&<circle class="kn-learned-mark" cx="11" cy="-10" r="5.2" />}
-                <text class="kn-node-label" text-anchor="middle" y={node.kind==='root'?54:node.kind==='area'?41:32}>
-                  <tspan data-l="zh">{node.shortZh}</tspan><tspan data-l="en">{node.shortEn}</tspan>
-                </text>
-                {node.kind==='area'&&<text class="kn-node-count" text-anchor="middle" y="-31">{node.count} DOCS</text>}
-              </g>)}
+              <rect width="1310" height="960" fill="url(#kn-grid)" pointer-events="none" />
+              <g id="kn-world">
+                {areas.map(area=><g class="kn-cluster-aura" data-aura={area.id} aria-hidden="true">
+                  <circle cx={area.x} cy={area.y} r="226" fill={area.color} opacity=".045"/>
+                  <circle cx={area.x} cy={area.y} r="143" fill={area.color} opacity=".045" filter="url(#kn-blur)"/>
+                  <circle cx={area.x} cy={area.y} r="226" fill="none" stroke={area.color} stroke-opacity=".16" stroke-dasharray="2 10"/>
+                  <circle cx={area.x} cy={area.y} r="130" fill="none" stroke={area.color} stroke-opacity=".09" />
+                </g>)}
+                <g id="kn-edges">
+                  {links.map(e=><path class:list={['kn-edge','kn-edge-'+e.kind]}
+                    data-from={e.from} data-to={e.to}
+                    d={'M '+e.fromNode.x+' '+e.fromNode.y+' L '+e.toNode.x+' '+e.toNode.y}
+                    stroke={e.kind==='belongs_to'?e.toNode.color:'#b8d0ee'}
+                    stroke-opacity={e.kind==='belongs_to'?.26:.32}
+                    stroke-width={e.kind==='belongs_to'?1:1.25}
+                    fill="none" />)}
+                </g>
+                <g id="kn-nodes">
+                  {graph.nodes.map(n=><g
+                    class:list={['kn-node','kn-node-'+n.kind]}
+                    data-node-id={n.id} data-kind={n.kind} data-content-type={n.contentType}
+                    transform={'translate('+n.x+' '+n.y+')'}
+                    style={'--node-color:'+n.color}
+                    role="button" tabindex="0" aria-pressed="false"
+                    aria-label={n.titleZh + '：'+(n.kind==='area'?'知识领域':n.kind==='topic'?'专题':'公开文章')}>
+                    <title>{n.titleZh}</title>
+                    {n.kind==='area'&&<circle class="kn-area-halo" r="34"/>}
+                    <circle class="kn-node-hit" r={n.kind==='area'?32:n.kind==='topic'?24:14}/>
+                    <circle class="kn-node-outer" r={n.radius+5}/>
+                    <circle class="kn-node-core" r={n.radius}/>
+                    <circle class="kn-learned-mark" cx={n.radius+4} cy={-n.radius-4} r="4.4"/>
+                    {(n.kind==='area'||n.kind==='topic')&&<text class="kn-node-label" text-anchor="middle" y={n.kind==='area'?47:32}>
+                      <tspan data-l="zh">{n.shortZh}</tspan><tspan data-l="en">{n.shortEn}</tspan>
+                    </text>}
+                    {n.kind==='area'&&<text class="kn-area-count" text-anchor="middle" y="-37">{n.count} ENTRIES</text>}
+                  </g>)}
+                </g>
+              </g>
             </svg>
+            <div id="kn-tooltip" class="kn-tooltip" hidden aria-hidden="true">
+              <span id="kn-tooltip-kind"></span><strong id="kn-tooltip-title"></strong>
+              <small><span data-l="zh">点击查看关联</span><span data-l="en">Select to explore</span></small>
+            </div>
           </div>
-          <p class="kn-map-hint"><span data-l="zh">选择节点查看可读资料与关联方向。手机端可左右滑动地图，也可以使用下方的文字目录。</span><span data-l="en">Select a node to view sources and related topics. Swipe horizontally on mobile, or use the text index below.</span></p>
+          <div class="kn-zoom" aria-label="知识图谱视图控制">
+            <button type="button" id="kn-zoom-in" aria-label="放大知识网络" title="Zoom in">+</button>
+            <button type="button" id="kn-zoom-out" aria-label="缩小知识网络" title="Zoom out">−</button>
+            <button type="button" id="kn-reset" aria-label="重置知识网络视角" title="Reset view">
+              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M4 10V4h6M20 14v6h-6M5.3 6.6a9 9 0 0 1 13 1.1M18.7 17.4a9 9 0 0 1-13-1.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="kn-map-caption"><span class="kn-live-dot"></span><span data-l="zh">真实内容 · 可缩放 · 可拖动 · 可聚焦</span><span data-l="en">Real sources · Zoom · Pan · Focus</span></div>
+          <aside class="kn-inspector" id="kn-inspector" hidden aria-label="选中节点的知识详情">
+            <div class="kn-inspector-top"><span id="kn-kind">KNOWLEDGE NODE</span><button type="button" id="kn-close" aria-label="关闭知识详情">×</button></div>
+            <span id="kn-phase" class="kn-inspector-phase">已有公开内容</span>
+            <h3 id="kn-detail-title"></h3>
+            <p id="kn-detail-description"></p>
+            <div class="kn-inspector-metrics">
+              <div><strong id="kn-detail-count">1</strong><span data-l="zh">相关知识条目</span><span data-l="en">Related notes</span></div>
+              <div><strong id="kn-detail-progress">—</strong><span data-l="zh">本机学习状态</span><span data-l="en">Local study status</span></div>
+            </div>
+            <div class="kn-detail-actions">
+              <a id="kn-open" href="/research/"><span data-l="zh">进入知识</span><span data-l="en">Open note</span> ↗</a>
+              <button type="button" id="kn-studied"><span data-l="zh">标记为已学习</span><span data-l="en">Mark as studied</span></button>
+              <button type="button" id="kn-ai-prompt"><span data-l="zh">复制 AI 深入学习任务</span><span data-l="en">Copy AI deep-dive task</span></button>
+            </div>
+            <h4><span data-l="zh">真实来源</span><span data-l="en">Published sources</span></h4>
+            <ul class="kn-sources" id="kn-sources"></ul>
+            <h4><span data-l="zh">直接关联</span><span data-l="en">Direct connections</span></h4>
+            <div class="kn-connections" id="kn-connections"></div>
+            <p class="kn-local-note"><span data-l="zh">学习标记仅存于当前浏览器；AI 任务不会自动修改或发布文章。</span><span data-l="en">Study marks stay in this browser; AI drafts are never auto-published.</span></p>
+            <textarea id="kn-prompt-fallback" readonly rows="5" hidden aria-label="手动复制 AI 学习任务"></textarea>
+            <p id="kn-feedback" role="status" aria-live="polite"></p>
+          </aside>
         </div>
-        <aside class="kn-inspector" id="kn-inspector" aria-label="知识节点详情">
-          <div class="kn-inspector-main">
-          <div class="kn-inspector-top"><span id="kn-kind">KNOWLEDGE</span><span id="kn-phase">知识图谱</span></div>
-          <h3 id="kn-detail-title">个人知识体系</h3>
-          <p id="kn-detail-description">按公开知识条目构建的动态专题网络。</p>
-          <div class="kn-inspector-metrics">
-            <div><strong id="kn-detail-count">{graph.stats.publicDocs}</strong><span data-l="zh">相关条目</span><span data-l="en">Related entries</span></div>
-            <div><strong id="kn-detail-progress">—</strong><span data-l="zh">学习标记</span><span data-l="en">Study mark</span></div>
+        <div class="kn-viewer-foot">
+          <div class="kn-domain-key">
+            {areas.map((area,i)=><button type="button" data-kn-select={area.id} style={'--key-color:'+area.color}>
+              <i></i><span data-l="zh">{area.titleZh}</span><span data-l="en">{area.titleEn}</span>
+            </button>)}
           </div>
-          <div class="kn-detail-actions">
-            <a id="kn-open" href="/research/"><span data-l="zh">探索研究知识库</span><span data-l="en">Explore research library</span></a>
-            <button type="button" id="kn-studied" hidden><span data-l="zh">标记为已学习</span><span data-l="en">Mark as studied</span></button>
-            <button type="button" id="kn-ai-prompt" hidden><span data-l="zh">复制 AI 补全任务</span><span data-l="en">Copy AI drafting task</span></button>
-          </div>
-          </div>
-          <div class="kn-inspector-related">
-          <h4 id="kn-sources-label"><span data-l="zh">推荐阅读</span><span data-l="en">Suggested reading</span></h4>
-          <ul class="kn-sources" id="kn-sources"><li><a href="/research/">研究知识库</a></li></ul>
-          <h4 id="kn-related-label"><span data-l="zh">知识关联</span><span data-l="en">Connections</span></h4>
-          <div id="kn-connections" class="kn-connections"></div>
-          <p class="kn-local-note"><span data-l="zh">学习标记只保存于当前浏览器；AI 补全需人工核验后才能公开，不会自动发布。</span><span data-l="en">Study marks stay in this browser only. AI-generated drafts require review; nothing is auto-published.</span></p>
-          <textarea id="kn-prompt-fallback" readonly rows="6" hidden aria-label="复制失败时可手动选择的 AI 提示词"></textarea>
-          <p id="kn-feedback" class="kn-feedback" role="status" aria-live="polite"></p>
-          </div>
-        </aside>
+          <p><span data-l="zh">滚轮缩放 · 拖动平移 · 双击节点聚焦</span><span data-l="en">Scroll to zoom · Drag to pan · Double-click to focus</span></p>
+        </div>
       </div>
+      <div class="kn-disclaimer"><span data-l="zh">知识图只展示已有正文与可追溯的链接，不为缺失主题创建虚构节点。带有高亮环的节点代表当前浏览器内主动标记的学习状态，而非 AI 生成的内容。</span><span data-l="en">Every node is backed by existing Markdown. Links represent explicit classification or author-written references; study marks are local and never inferred from AI drafts.</span></div>
     </section>
-    <section class="kn-directory" id="knowledge-directory" aria-labelledby="kn-directory-title">
-      <div class="kn-directory-head">
-        <div><p class="kn-small-label">EXPLORE / 02</p><h2 id="kn-directory-title"><span data-l="zh">从领域进入知识</span><span data-l="en">Explore by area</span></h2></div>
-        <p><span data-l="zh">这里显示所有已定义的领域；灰色方向代表公开知识仍待建设，并非不存在相关学问。</span><span data-l="en">Uncovered means this library has no categorized public content yet—not that knowledge doesn't exist elsewhere.</span></p>
-      </div>
+    <section class="kn-directory" id="knowledge-directory">
+      <div class="kn-directory-heading"><div><p class="kn-small-label">KNOWLEDGE AREAS / 02</p><h2><span data-l="zh">从已经收录的领域开始</span><span data-l="en">Explore published knowledge</span></h2></div>
+        <a href="/research/"><span data-l="zh">进入完整研究检索 ↗</span><span data-l="en">Search all research ↗</span></a></div>
       <div class="kn-directory-grid">
-        {areaNodes.map(area=><article class="kn-area-card">
-          <div class="kn-area-meta"><span class:list={['kn-area-dot','kn-area-dot-'+area.phase]}></span><small>{area.planned?'PLANNED AREA':'RESEARCH AREA'}</small><span>{area.count} <span data-l="zh">篇</span><span data-l="en">docs</span></span></div>
+        {areas.map(area=><article class="kn-area-card" style={'--key-color:'+area.color}>
+          <div class="kn-area-top"><span class="kn-area-dot"></span><span>{area.count} <span data-l="zh">篇已公开内容</span><span data-l="en">published notes</span></span></div>
           <h3><span data-l="zh">{area.titleZh}</span><span data-l="en">{area.titleEn}</span></h3>
           <p><span data-l="zh">{area.descriptionZh}</span><span data-l="en">{area.descriptionEn}</span></p>
-          <div class="kn-area-bottom">
-            {area.href
-              ? <a href={area.href}><span data-l="zh">进入领域</span><span data-l="en">Open area</span> ↗</a>
-              : <button type="button" data-kn-select={area.id}><span data-l="zh">查看待建设方向</span><span data-l="en">View planned area</span> ↗</button>
-            }
-          </div>
+          <a href={area.href}><span data-l="zh">进入领域</span><span data-l="en">Explore area</span> ↗</a>
         </article>)}
       </div>
     </section>
-    <section class="kn-explain" aria-labelledby="kn-explain-title">
-      <div><p class="kn-small-label">HOW IT GROWS / 03</p><h2 id="kn-explain-title"><span data-l="zh">从没有点亮，到真正理解</span><span data-l="en">From an uncovered topic to understanding</span></h2></div>
-      <div class="kn-steps">
-        <div><strong>01</strong><span data-l="zh">发现空白</span><span data-l="en">Spot a gap</span><p><span data-l="zh">选择没有资料的节点。</span><span data-l="en">Select an uncovered node.</span></p></div>
-        <div><strong>02</strong><span data-l="zh">AI 辅助建设</span><span data-l="en">AI-assisted draft</span><p><span data-l="zh">明确问题、查证来源、生成待审草稿。</span><span data-l="en">Research sources and prepare a reviewable draft.</span></p></div>
-        <div><strong>03</strong><span data-l="zh">审核公开</span><span data-l="en">Review and publish</span><p><span data-l="zh">人工确认后，知识资源才真正点亮。</span><span data-l="en">A topic lights up only after reviewed content is published.</span></p></div>
-        <div><strong>04</strong><span data-l="zh">学习与修订</span><span data-l="en">Learn and revise</span><p><span data-l="zh">亲自理解、再检验与持续纠正。</span><span data-l="en">Study, verify and refine your understanding.</span></p></div>
-      </div>
-      <p class="kn-source-note"><span data-l="zh">已收录状态自动来自公开 Markdown 的领域分类；专题关系不代表因果。现有研究阅读器与论文解读入口继续保留：</span><span data-l="en">Coverage is derived from categorized public Markdown, not inferred mastery. Existing research routes remain available:</span> <a href="/research/">Research</a> · <a href="/paper-notes/">Paper Notes</a> · <a href="/questions/">Questions</a></p>
+    <section class="kn-footer-note">
+      <div><p class="kn-small-label">GROW THE NETWORK / 03</p><h2><span data-l="zh">知识从真实内容开始生长。</span><span data-l="en">Grow the network from real knowledge.</span></h2></div>
+      <p><span data-l="zh">后续新增数学、工程或其他领域的公开知识时，先建立经过核验的正文与明确分类，网站才会生成相应节点。AI 可以帮助整理与深入学习，但不会把草稿当作已掌握的知识。</span><span data-l="en">New subjects appear only after a verified public article and metadata exist. AI can assist your research and learning, but drafting is not mastery.</span></p>
     </section>
   </div>
   <script type="application/json" id="kn-data" set:html={serialized}></script>
