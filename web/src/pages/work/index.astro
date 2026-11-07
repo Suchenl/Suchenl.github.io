@@ -91,6 +91,27 @@ const sections = [
   { zh: '🏫 学校经历', en: '🏫 Academic Experience', items: school },
 ];
 
+const education = [
+  {
+    date: '2025.09 - Present',
+    schoolZh: '中国科学技术大学',
+    schoolEn: 'University of Science and Technology of China (USTC)',
+    degreeZh: '硕士 · 网络空间安全学院 · 网络空间安全专业',
+    degreeEn: 'M.S. in Cyberspace Security, School of Cyber Science and Technology',
+    url: 'https://www.ustc.edu.cn/',
+    logo: '/images/orgs/ustc.png',
+  },
+  {
+    date: '2021.09 - 2025.06',
+    schoolZh: '山东大学',
+    schoolEn: 'Shandong University',
+    degreeZh: '学士 · 控制科学与工程学院 · 生物医学工程专业（自动化类）',
+    degreeEn: 'B.S. in Biomedical Engineering (Automation), School of Control Science and Engineering',
+    url: 'https://www.sdu.edu.cn/',
+    logo: '/images/orgs/sdu.png',
+  },
+];
+
 const service = [
   { date: '2026.10', zh: 'ICLR 2027 审稿人', en: 'Reviewer, ICLR 2027' },
   { date: '2026.08', zh: 'AAAI 2027 审稿人', en: 'Reviewer, AAAI 2027' },
@@ -130,6 +151,22 @@ const service = [
     </ul>
   </section>
   ))}
+
+  <section class="section prose">
+    <Bi tag="h2" zh="🎓 教育" en="🎓 Education" />
+    <ul class="timeline">
+      {education.map((e) => (
+        <li>
+          <div class="t-date"><span data-l="zh">{e.date.replace('Present', '至今')}</span><span data-l="en">{e.date}</span></div>
+          <div class="t-org t-school">
+            <img class="t-logo" src={e.logo} alt="" width="22" height="22" loading="lazy" decoding="async" />
+            <a href={e.url} target="_blank" rel="noopener"><span data-l="zh">{e.schoolZh}</span><span data-l="en">{e.schoolEn}</span></a>
+          </div>
+          <div class="t-degree"><span data-l="zh">{e.degreeZh}</span><span data-l="en">{e.degreeEn}</span></div>
+        </li>
+      ))}
+    </ul>
+  </section>
 
   <section class="section prose">
     <Bi tag="h2" zh="🔍 学术服务" en="🔍 Academic Service" />
