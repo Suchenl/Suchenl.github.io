@@ -45,6 +45,9 @@ const internships = [
       '<strong>Model fine-tuning</strong>: fine-tuned and optimized text-to-image / image-to-image models with <a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener noreferrer">LoRA</a>, <a href="https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev" target="_blank" rel="noopener noreferrer">FLUX.1 Kontext</a> and <a href="https://github.com/Xiaojiu-z/EasyControl" target="_blank" rel="noopener noreferrer">EasyControl</a> for production content tools.',
     ],
   },
+];
+
+const school = [
   {
     date: '2024.10 - Present',
     roleZh: '课题组研究',
@@ -62,6 +65,30 @@ const internships = [
       '<strong><a href="https://arxiv.org/abs/2604.15003" target="_blank" rel="noopener noreferrer">Flow of Truth</a>: proactive temporal forensics for image-to-video generation (first author)</strong> (2025.08 – 2025.11): treats image-to-video synthesis as evolving pixel motion rather than independent frames, using a learnable forensic template and a template-guided motion module so the forensic signal follows the content; validated on open-source and commercial image-to-video models.',
     ],
   },
+  {
+    date: '2021.09 - 2025.06',
+    roleZh: '本科科研与荣誉',
+    roleEn: 'Undergraduate Research & Honors',
+    orgZh: '控制科学与工程学院，山东大学',
+    orgEn: 'School of Control Science and Engineering, Shandong University',
+    orgUrl: 'https://www.sdu.edu.cn/',
+    logo: '/images/orgs/sdu.png',
+    pointsZh: [
+      '<strong><a href="https://www.sciencedirect.com/science/article/pii/S1746809425002101" target="_blank" rel="noopener noreferrer">DAFFNet</a>：白细胞分类的双注意力特征融合网络（共同第一作者，BSPC）</strong>：将细胞核、胞质等显式形态线索与深层语义特征通过通道 / 空间双注意力融合，并以深度监督和半监督学习训练形态分支；在 PBC、LISC、Raabin-WBC、BCCD、LDWBC、Labelled 六个数据集上准确率达 98.77% / 91.30% / 98.36% / 99.71% / 98.45% / 98.85%。',
+      '<strong><a href="https://pubmed.ncbi.nlm.nih.gov/38964248/" target="_blank" rel="noopener noreferrer">肾小球疾病高光谱分类</a>（第二作者，CMPB）</strong>：结合高光谱病理图像的空间结构与光谱信息（波段筛选 + Gramian Angular Field），以 CNN 与 Vision Transformer 融合的 CVT 模型分类肾小球疾病，准确率由仅用光谱的 85.24% 提升至 94%。',
+      '<strong>学业与荣誉</strong>：GPA 90.4/100（专业前 10%），推免至中国科学技术大学；获学业奖学金一等奖、山东大学优秀毕业生、优秀学生干部、优秀班长。',
+    ],
+    pointsEn: [
+      '<strong><a href="https://www.sciencedirect.com/science/article/pii/S1746809425002101" target="_blank" rel="noopener noreferrer">DAFFNet</a>: dual-attention feature fusion for white-blood-cell classification (co-first author, BSPC)</strong>: fuses explicit nucleus / cytoplasm morphology cues with deep semantic features via channel and spatial attention, training the morphology branch with deep supervision and semi-supervised learning; reaches 98.77% / 91.30% / 98.36% / 99.71% / 98.45% / 98.85% accuracy on PBC, LISC, Raabin-WBC, BCCD, LDWBC and Labelled.',
+      '<strong><a href="https://pubmed.ncbi.nlm.nih.gov/38964248/" target="_blank" rel="noopener noreferrer">Hyperspectral glomerular-disease classification</a> (second author, CMPB)</strong>: combines spatial structure and spectral signals of hyperspectral pathology images (band selection + Gramian Angular Field) in a CNN–Vision Transformer (CVT) classifier, improving accuracy from 85.24% (spectral only) to 94%.',
+      '<strong>Academics & honors</strong>: GPA 90.4/100 (top 10%), recommended for admission to USTC without entrance exam; First-Class Academic Scholarship, Outstanding Graduate of Shandong University, Outstanding Student Cadre, Outstanding Class Monitor.',
+    ],
+  },
+];
+
+const sections = [
+  { zh: '💼 实习', en: '💼 Internships', items: internships },
+  { zh: '🏫 学校经历', en: '🏫 Academic Experience', items: school },
 ];
 
 const education = [
@@ -81,19 +108,21 @@ const service = [
   { date: '2026.10', zh: 'ICLR 2027 审稿人', en: 'Reviewer, ICLR 2027' },
   { date: '2026.08', zh: 'AAAI 2027 审稿人', en: 'Reviewer, AAAI 2027' },
   { date: '2025.08', zh: 'AAAI 2026 审稿人', en: 'Reviewer, AAAI 2026' },
+  { date: '2024', zh: 'Biomedical Signal Processing and Control（BSPC）期刊审稿人', en: 'Reviewer, Biomedical Signal Processing and Control (BSPC)' },
 ];
 ---
 
 <Base title="Experience">
   <h1 class="page-title"><Bi zh="经历" en="Experience" /></h1>
   <p class="page-intro">
-    <Bi zh="实习、研究与工作经历（未来的全职工作也会更新在此）。" en="Internships, research and work experience (future full-time roles will appear here too)." />
+    <Bi zh="实习、学校科研与工作经历（未来的全职工作也会更新在此）。" en="Internships, academic research and work experience (future full-time roles will appear here too)." />
   </p>
 
+  {sections.map((sec) => (
   <section class="section prose">
-    <Bi tag="h2" zh="💼 实习" en="💼 Internships" />
+    <Bi tag="h2" zh={sec.zh} en={sec.en} />
     <ul class="timeline">
-      {internships.map((it) => (
+      {sec.items.map((it) => (
         <li>
           <div class="t-date"><span data-l="zh">{it.date.replace('Present', '至今')}</span><span data-l="en">{it.date}</span></div>
           <div class="t-title"><span data-l="zh">{it.roleZh}</span><span data-l="en">{it.roleEn}</span></div>
@@ -113,6 +142,7 @@ const service = [
       ))}
     </ul>
   </section>
+  ))}
 
   <section class="section prose">
     <Bi tag="h2" zh="🎓 教育" en="🎓 Education" />
