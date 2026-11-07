@@ -205,6 +205,7 @@ html[data-lang='zh'] [data-l='en'] { display: none; }
 .timeline .t-logo { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
 .timeline .t-school { font-size: 1.05rem; font-weight: 800; margin: 0.15rem 0; }
 .timeline .t-degree { color: var(--fg-muted); font-weight: 600; margin-top: 0.1rem; }
+.timeline .t-summary { margin: 0.55rem 0 0; color: var(--fg); font-weight: 600; }
 .timeline ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
 .timeline ul li { margin-bottom: 0.3rem; }
 
