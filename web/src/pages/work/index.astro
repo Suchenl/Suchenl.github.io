@@ -11,19 +11,20 @@ const internships = [
     orgEn: 'Kling AI, Kuaishou',
     orgUrl: 'https://klingai.com/',
     logo: '/images/orgs/kling.png',
-    summaryZh: '围绕“让 AI 理解、生成，并与世界交互”，先后负责视频生成与视觉表征、长视频记忆、机器人数据引擎与机器人 Agent 四条研究线：以第一作者发布 VMem-Bench，主导研发 ManyWorlds 机器人数据引擎，并主导构建大规模机器人 Agent 训练栈。',
-    summaryEn: 'Working toward AI that understands, generates and interacts with the world, I have led four research lines—video generation & visual representation, long-video memory, a robot data engine and robot agents: first author of VMem-Bench, lead developer of the ManyWorlds robot data engine, and lead of a large-scale robot-agent training stack.',
+    summaryZh: '主导多模态大模型 Agent 及其推理、数据与训练栈，研发 ManyWorlds 机器人数据引擎，并以第一作者发布长视频视觉记忆评测 VMem-Bench；工作覆盖大模型 Agent、具身智能与视觉生成。',
+    summaryEn: 'Lead a multimodal LLM agent together with its serving, data and training stack, built the ManyWorlds robot data engine, and first-authored VMem-Bench on visual memory in long-video generation—spanning LLM agents, embodied AI and visual generation.',
     projects: [
       {
-        titleZh: "机器人 Agent 与训练基础设施",
-        titleEn: "Robot agents & training infrastructure",
+        titleZh: "多模态大模型 Agent 与训练基础设施",
+        titleEn: "Multimodal LLM agents & training infrastructure",
         dateZh: "2026.09 – 至今",
         dateEn: "2026.09 – present",
         items: [
-          { labelZh: "目标", labelEn: "Goal", zh: "让通用多模态大模型成为能对话、按目标行动、安全调用物理工具的机器人 Agent。", en: "Turn general multimodal models into robot agents that converse, act toward goals and call physical tools safely." },
-          { labelZh: "Agent 框架", labelEn: "Agent framework", zh: "主导执行框架设计，包括统一动作接口、动作前预测与真实执行反馈、长上下文管理；在 RoboTwin 仿真中以 DeepSeek-V4.1-Flash（1M 上下文）跑通多步闭环执行，并将 GR00T、RLDX-1 等 VLA 模型接入为可调用技能。", en: "Led the execution framework: a unified action interface, pre-action prediction with measured execution feedback, and long-context management; ran multi-step closed-loop episodes in RoboTwin with DeepSeek-V4.1-Flash (1M context) and integrated VLA models such as GR00T and RLDX-1 as callable skills." },
-          { labelZh: "数据", labelEn: "Data", zh: "构建 <strong>20,590</strong> 条 Agent 交互轨迹，其中 8,503 条通过一致性校验。", en: "Built <strong>20,590</strong> agent interaction trajectories, 8,503 of which pass consistency checks." },
-          { labelZh: "训练栈", labelEn: "Training stack", zh: "主导将 27.8B 参数多模态模型的训练迁移至面向 <strong>48×B200</strong> 的 TorchTitan 分布式训练栈，支持 LoRA / 全参、视觉编码器冻结 / 可训等多种模式。", en: "Led the migration of a 27.8B-parameter multimodal model to a TorchTitan distributed training stack targeting <strong>48×B200</strong>, supporting LoRA / full fine-tuning with a frozen or trainable vision encoder." },
+          { labelZh: "问题", labelEn: "Problem", zh: "让通用多模态大模型不经机器人专用训练，就能通过工具调用持续对话、按目标完成物理任务。", en: "Let general multimodal LLMs, without robot-specific training, hold an ongoing conversation and pursue physical goals through tool calls." },
+          { labelZh: "Agent 框架", labelEn: "Agent harness", zh: "主导 Harness 设计：单一物理动作工具 + 只读运动规划的工具协议、动作前预测与实测反馈、长上下文压缩与可续跑、全程可重放的 Trace；并将 GR00T、RLDX-1 等 VLA 模型接入为可调用技能。", en: "Led the harness design: a tool protocol with a single physical-action tool plus read-only motion planning, pre-action prediction with measured feedback, long-context compaction with resumable runs, and fully replayable traces; integrated VLA models such as GR00T and RLDX-1 as callable skills." },
+          { labelZh: "推理部署", labelEn: "Serving", zh: "用 vLLM 部署 DeepSeek-V4.1-Flash（B200 · TP=4 · <strong>1M 上下文</strong>）与 Qwen3.8-27B（A800 · TP=2），打通原生工具调用，在 RoboTwin 仿真中跑通多步闭环交互。", en: "Served DeepSeek-V4.1-Flash (B200 · TP=4 · <strong>1M context</strong>) and Qwen3.8-27B (A800 · TP=2) with vLLM using native tool calling, and ran multi-step closed-loop episodes in RoboTwin." },
+          { labelZh: "训练数据", labelEn: "Training data", zh: "搭建“交互轨迹 → SFT 样本”数据管线，生成 <strong>20,590</strong> 条交互轨迹，其中 8,503 条通过在线推理输入与训练样本的一致性校验。", en: "Built a trajectory-to-SFT data pipeline that produced <strong>20,590</strong> interaction trajectories, 8,503 of which pass consistency checks between online inference inputs and training samples." },
+          { labelZh: "训练栈", labelEn: "Training stack", zh: "主导搭建面向 <strong>48×B200</strong> 的 TorchTitan 分布式训练栈，支持 27.8B 参数多模态模型的 LoRA / 全参 × 视觉编码器冻结 / 可训四种模式，已通过环境自检与参数审核。", en: "Led a TorchTitan distributed training stack targeting <strong>48×B200</strong> for a 27.8B-parameter multimodal model, covering four modes (LoRA / full × frozen / trainable vision encoder); it passes environment self-checks and parameter audits." },
         ],
       },
       {
