@@ -201,7 +201,8 @@ html[data-lang='zh'] [data-l='en'] { display: none; }
 .timeline > li:last-child { border-left-color: transparent; }
 .timeline .t-date { font-size: 0.82rem; color: var(--accent-ink); font-weight: 700; letter-spacing: 0.02em; }
 .timeline .t-title { font-weight: 800; margin: 0.15rem 0; font-size: 1.05rem; }
-.timeline .t-org { color: var(--fg-muted); font-weight: 600; }
+.timeline .t-org { color: var(--fg-muted); font-weight: 600; display: flex; align-items: center; gap: 0.45rem; }
+.timeline .t-logo { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; }
 .timeline ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
 .timeline ul li { margin-bottom: 0.3rem; }
 

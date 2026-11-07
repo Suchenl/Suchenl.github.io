@@ -8,19 +8,20 @@ const internships = [
     roleZh: '算法实习生',
     roleEn: 'Algorithm Intern',
     orgZh: '可灵 · 快手 (Kling, Kuaishou)',
-    orgEn: 'Kling, Kuaishou',
-    orgUrl: '',
+    orgEn: 'Kling AI, Kuaishou',
+    orgUrl: 'https://klingai.com/',
+    logo: '/images/orgs/kling.png',
     pointsZh: [
-      '<strong>长视频生成的记忆管理系统</strong>：研究面向流式 / 长视频生成的分层、结构化记忆机制，以提升长程一致性与实体保持。',
-      '<strong>视频生成</strong>：微调 / 训练视频生成模型（如 Wan 系列 I2V/T2V），探索可控生成与流式长视频生成。',
-      '<strong>视觉表征与统一生成</strong>：训练视觉 tokenizer 与自回归视觉生成模型；研究视频 token 压缩与表征对齐（向视觉 / 生成特征对齐）。',
-      '近期<strong>转向具身智能（Embodied AI）</strong>：系统调研 VLA、世界模型、操作与规划、仿真环境等方向，并从阅读走向实践。',
+      '<strong>机器人 Agent 与训练基础设施</strong>（2026.09 – 至今）：研究如何把通用多模态大模型变成可持续对话、目标驱动、能安全调用物理工具的机器人 Agent，负责 Harness 设计（动作接口、执行反馈、上下文管理）与受控评测；搭建基于 TorchTitan 的多机多卡训练栈，并复现评测 GR00T 等 VLA 基线。',
+      '<strong>机器人数据引擎</strong>（2026.09 – 至今）：利用通用视频生成模型在不改变动作标签的前提下扩充机器人示范的视觉多样性，搭建“编辑 → 生成 → 质量筛选 → 重试 → 溯源”的数据生产流水线与配套评测；在仿真中用 Diffusion Policy 验证下游策略收益，并推进 Franka FR3 真机部署链路。',
+      '<strong>长视频生成与视觉记忆</strong>（2026.06 – 2026.10）：搭建以“规划驱动的资产组合”为核心的长视频生产系统，按镜头、实体和世界状态决定每段生成该参考什么、排除什么。以第一作者完成 <a href="https://arxiv.org/abs/2610.35001" target="_blank" rel="noopener noreferrer">VMem-Bench</a>，系统检验视觉记忆在长视频生成中何时帮忙、何时引入过时或已离场的实体，并开源代码、数据集与项目主页。',
+      '<strong>视频生成与视觉表征</strong>（2026.01 – 2026.08）：基于 Wan 系列等开源模型研究流式 / 实时视频生成与参数化记忆；从零搭建视觉 tokenizer 与自回归视觉生成的研究框架（流式数据管线、多任务训练与推理入口），探索统一视觉建模与下一帧预测；并研究前馈式动态 3D 高斯重建。',
     ],
     pointsEn: [
-      '<strong>Memory management for long-video generation</strong>: hierarchical, structured memory mechanisms for streaming & long-video generation to improve long-range consistency and entity persistence.',
-      '<strong>Video generation</strong>: fine-tuned / trained video generation models (e.g., Wan-series I2V/T2V); explored controllable generation and streaming long-video generation.',
-      '<strong>Visual representation & unified generation</strong>: trained visual tokenizers and autoregressive visual generation models; studied video-token compression and representation alignment (to visual / generative features).',
-      'Recently <strong>pivoting to embodied AI</strong>: systematically surveying VLA, world models, manipulation & planning, and simulation environments — moving from reading to practice.',
+      '<strong>Robot agents & training infrastructure</strong> (2026.09 – present): researching how to turn general multimodal models into conversational, goal-directed robot agents that call physical tools safely—owning harness design (action interfaces, execution feedback, context management) and controlled evaluation; built a multi-node TorchTitan training stack and reproduced VLA baselines such as GR00T.',
+      '<strong>Robot data engine</strong> (2026.09 – present): used general-purpose video generators to diversify the visuals of robot demonstrations while keeping recorded action labels valid, building an edit → generate → quality-screen → retry → provenance pipeline with matching evaluation; validated downstream gains with Diffusion Policy in simulation and brought up a Franka FR3 real-robot deployment path.',
+      '<strong>Long-video generation & visual memory</strong> (2026.06 – 2026.10): built a long-video production system around planning-driven asset composition, deciding per shot which identities, motion and world state to reference—and which to exclude. First author of <a href="https://arxiv.org/abs/2610.35001" target="_blank" rel="noopener noreferrer">VMem-Bench</a>, a controlled study of when visual memory helps long-video generation and when it revives outdated or departed entities; code, dataset and project page are public.',
+      '<strong>Video generation & visual representation</strong> (2026.01 – 2026.08): studied streaming / real-time video generation and parametric memory on open models such as Wan; built a research framework for visual tokenizers and autoregressive visual generation from scratch (streaming data pipeline, multi-task training and inference), exploring unified visual modeling and next-frame prediction; also worked on feed-forward dynamic 3D Gaussian reconstruction.',
     ],
   },
   {
@@ -88,6 +89,7 @@ const service = [
           <div class="t-date"><span data-l="zh">{it.date.replace('Present', '至今')}</span><span data-l="en">{it.date}</span></div>
           <div class="t-title"><span data-l="zh">{it.roleZh}</span><span data-l="en">{it.roleEn}</span></div>
           <div class="t-org">
+            {it.logo && <img class="t-logo" src={it.logo} alt="" width="22" height="22" loading="lazy" decoding="async" />}
             {it.orgUrl ? (
               <a href={it.orgUrl} target="_blank" rel="noopener"><span data-l="zh">{it.orgZh}</span><span data-l="en">{it.orgEn}</span></a>
             ) : (
