@@ -206,6 +206,12 @@ html[data-lang='zh'] [data-l='en'] { display: none; }
 .timeline .t-school { font-size: 1.05rem; font-weight: 800; margin: 0.15rem 0; }
 .timeline .t-degree { color: var(--fg-muted); font-weight: 600; margin-top: 0.1rem; }
 .timeline .t-summary { margin: 0.55rem 0 0; color: var(--fg); font-weight: 600; }
+.timeline .t-projects { display: grid; gap: 0.9rem; margin-top: 0.8rem; }
+.timeline .t-project { border-left: 3px solid var(--border, rgba(127,127,127,0.35)); padding-left: 0.85rem; }
+.timeline .t-project-title { font-size: 1rem; margin: 0 0 0.3rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; }
+.timeline .t-project-date { color: var(--fg-muted); font-weight: 500; font-size: 0.88rem; }
+.timeline .t-project ul { margin: 0; }
+.timeline .t-project li { margin: 0.2rem 0; }
 .timeline ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
 .timeline ul li { margin-bottom: 0.3rem; }
 
