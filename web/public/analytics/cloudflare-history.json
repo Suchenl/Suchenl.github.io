@@ -4,46 +4,46 @@
   "timezone": "Asia/Shanghai",
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
-  "updatedAt": "2026-11-01T19:57:10.646Z",
+  "updatedAt": "2026-11-08T20:01:47.329Z",
   "site": {
-    "pageviews": 1085,
-    "visits": 359
+    "pageviews": 1228,
+    "visits": 399
   },
   "paths": {
     "/": {
-      "pageviews": 363,
-      "visits": 277
+      "pageviews": 412,
+      "visits": 312
     },
     "/publications": {
-      "pageviews": 105,
-      "visits": 10
+      "pageviews": 110,
+      "visits": 12
     },
     "/publications/": {
-      "pageviews": 105,
-      "visits": 10
+      "pageviews": 110,
+      "visits": 12
     },
     "/analytics": {
-      "pageviews": 26,
+      "pageviews": 28,
       "visits": 3
     },
     "/analytics/": {
-      "pageviews": 26,
+      "pageviews": 28,
       "visits": 3
     },
     "/work": {
-      "pageviews": 48,
+      "pageviews": 54,
       "visits": 5
     },
     "/work/": {
-      "pageviews": 48,
+      "pageviews": 54,
       "visits": 5
     },
     "/projects": {
-      "pageviews": 52,
+      "pageviews": 53,
       "visits": 2
     },
     "/projects/": {
-      "pageviews": 52,
+      "pageviews": 53,
       "visits": 2
     },
     "/expertise": {
@@ -63,11 +63,11 @@
       "visits": 2
     },
     "/blog": {
-      "pageviews": 48,
+      "pageviews": 53,
       "visits": 2
     },
     "/blog/": {
-      "pageviews": 48,
+      "pageviews": 53,
       "visits": 2
     },
     "/blog/memory-centric-robot-system": {
@@ -95,19 +95,19 @@
       "visits": 1
     },
     "/research": {
-      "pageviews": 186,
+      "pageviews": 197,
       "visits": 4
     },
     "/research/": {
-      "pageviews": 186,
+      "pageviews": 197,
       "visits": 4
     },
     "/questions": {
-      "pageviews": 42,
+      "pageviews": 44,
       "visits": 2
     },
     "/questions/": {
-      "pageviews": 42,
+      "pageviews": 44,
       "visits": 2
     },
     "/research/papers/2026/supermimic": {
@@ -135,11 +135,11 @@
       "visits": 0
     },
     "/research/research/action-sampling-frequency-bias": {
-      "pageviews": 9,
+      "pageviews": 10,
       "visits": 4
     },
     "/research/research/action-sampling-frequency-bias/": {
-      "pageviews": 9,
+      "pageviews": 10,
       "visits": 4
     },
     "/research/topics/llm-agent-training/reviews/sft-rl-co-training": {
@@ -175,19 +175,19 @@
       "visits": 0
     },
     "/research/topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling": {
-      "pageviews": 4,
+      "pageviews": 5,
       "visits": 2
     },
     "/research/topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling/": {
-      "pageviews": 4,
+      "pageviews": 5,
       "visits": 2
     },
     "/blog/can-coding-agents-be-deployable-robot-agents": {
-      "pageviews": 5,
+      "pageviews": 6,
       "visits": 3
     },
     "/blog/can-coding-agents-be-deployable-robot-agents/": {
-      "pageviews": 5,
+      "pageviews": 6,
       "visits": 3
     },
     "/research/compare": {
@@ -239,11 +239,11 @@
       "visits": 0
     },
     "/research/research/how-agent-reasoning-tools-and-state-work": {
-      "pageviews": 3,
+      "pageviews": 5,
       "visits": 3
     },
     "/research/research/how-agent-reasoning-tools-and-state-work/": {
-      "pageviews": 3,
+      "pageviews": 5,
       "visits": 3
     },
     "/research/research/agent-post-training-experiment-agenda": {
@@ -295,11 +295,11 @@
       "visits": 0
     },
     "/research/papers/2026/echo-memory": {
-      "pageviews": 1,
+      "pageviews": 2,
       "visits": 0
     },
     "/research/papers/2026/echo-memory/": {
-      "pageviews": 1,
+      "pageviews": 2,
       "visits": 0
     },
     "/research/papers/2024/hil-serl": {
@@ -311,11 +311,11 @@
       "visits": 12
     },
     "/paper-notes": {
-      "pageviews": 4,
+      "pageviews": 8,
       "visits": 0
     },
     "/paper-notes/": {
-      "pageviews": 4,
+      "pageviews": 8,
       "visits": 0
     },
     "/research/papers/2023/rlpd": {
@@ -349,6 +349,54 @@
     "/research/research/actor-critic-mutual-dependence/": {
       "pageviews": 1,
       "visits": 1
+    },
+    "/knowledge": {
+      "pageviews": 38,
+      "visits": 1
+    },
+    "/knowledge/": {
+      "pageviews": 38,
+      "visits": 1
+    },
+    "/outputs": {
+      "pageviews": 9,
+      "visits": 0
+    },
+    "/outputs/": {
+      "pageviews": 9,
+      "visits": 0
+    },
+    "/research/topics/pretraining": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/research/topics/pretraining/": {
+      "pageviews": 2,
+      "visits": 0
+    },
+    "/research/papers/2026/foveavla": {
+      "pageviews": 1,
+      "visits": 1
+    },
+    "/research/papers/2026/foveavla/": {
+      "pageviews": 1,
+      "visits": 1
+    },
+    "/research/topics/depth-perception": {
+      "pageviews": 1,
+      "visits": 1
+    },
+    "/research/topics/depth-perception/": {
+      "pageviews": 1,
+      "visits": 1
+    },
+    "/research/domains/llm-and-rl": {
+      "pageviews": 1,
+      "visits": 0
+    },
+    "/research/domains/llm-and-rl/": {
+      "pageviews": 1,
+      "visits": 0
     }
   },
   "snapshots": [
@@ -1395,6 +1443,174 @@
           "visits": 0
         },
         "/research/glossary/core/": {
+          "pageviews": 1,
+          "visits": 0
+        }
+      }
+    },
+    {
+      "id": "20261108",
+      "fetchedAt": "2026-11-08T20:01:47.328Z",
+      "since": "2026-11-01T16:00:00Z",
+      "until": "2026-11-08T16:00:00Z",
+      "site": {
+        "pageviews": 143,
+        "visits": 40
+      },
+      "paths": {
+        "/": {
+          "pageviews": 49,
+          "visits": 35
+        },
+        "/knowledge": {
+          "pageviews": 38,
+          "visits": 1
+        },
+        "/knowledge/": {
+          "pageviews": 38,
+          "visits": 1
+        },
+        "/research": {
+          "pageviews": 11,
+          "visits": 0
+        },
+        "/research/": {
+          "pageviews": 11,
+          "visits": 0
+        },
+        "/outputs": {
+          "pageviews": 9,
+          "visits": 0
+        },
+        "/outputs/": {
+          "pageviews": 9,
+          "visits": 0
+        },
+        "/work": {
+          "pageviews": 6,
+          "visits": 0
+        },
+        "/work/": {
+          "pageviews": 6,
+          "visits": 0
+        },
+        "/blog": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/blog/": {
+          "pageviews": 5,
+          "visits": 0
+        },
+        "/publications": {
+          "pageviews": 5,
+          "visits": 2
+        },
+        "/publications/": {
+          "pageviews": 5,
+          "visits": 2
+        },
+        "/paper-notes": {
+          "pageviews": 4,
+          "visits": 0
+        },
+        "/paper-notes/": {
+          "pageviews": 4,
+          "visits": 0
+        },
+        "/questions": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/questions/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/research/research/how-agent-reasoning-tools-and-state-work": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/research/research/how-agent-reasoning-tools-and-state-work/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/research/topics/pretraining": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/research/topics/pretraining/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/analytics": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/analytics/": {
+          "pageviews": 2,
+          "visits": 0
+        },
+        "/projects": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/projects/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/papers/2026/echo-memory": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/papers/2026/echo-memory/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/blog/can-coding-agents-be-deployable-robot-agents": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/blog/can-coding-agents-be-deployable-robot-agents/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/papers/2026/foveavla": {
+          "pageviews": 1,
+          "visits": 1
+        },
+        "/research/papers/2026/foveavla/": {
+          "pageviews": 1,
+          "visits": 1
+        },
+        "/research/research/action-sampling-frequency-bias": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/research/action-sampling-frequency-bias/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/topics/depth-perception": {
+          "pageviews": 1,
+          "visits": 1
+        },
+        "/research/topics/depth-perception/": {
+          "pageviews": 1,
+          "visits": 1
+        },
+        "/research/topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/topics/agent-reasoning/reviews/cot-tool-use-and-thinking-scheduling/": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/domains/llm-and-rl": {
+          "pageviews": 1,
+          "visits": 0
+        },
+        "/research/domains/llm-and-rl/": {
           "pageviews": 1,
           "visits": 0
         }
