@@ -152,13 +152,16 @@ check((knowledge.match(/class="kl-note"/g)||[]).length >= 30 &&
       !knowledge.includes('href="/paper-notes/"') && !knowledge.includes('href="/questions/"'),
       'Knowledge has one real directory and article-card workspace without competing index links');
 
-check((knowledge.match(/class="kl-tree-topic"/g)||[]).length === 5 &&
-      (knowledge.match(/class="kl-topic-guide"/g)||[]).length === 5 &&
+check((knowledge.match(/class="kl-tree-topic"/g)||[]).length === 6 &&
+      (knowledge.match(/class="kl-topic-guide"/g)||[]).length === 6 &&
       knowledge.includes('data-kl-scope="topic:depth-perception"') &&
+      knowledge.includes('data-kl-scope="topic:text-retrieval"') &&
       knowledge.includes('data-kl-topic-guide="depth-perception"') &&
       knowledge.includes('data-kl-topic-guide="robot-control"') &&
-      knowledge.includes('topics/depth-perception/reviews/depth-acquisition-taxonomy'),
-      'Five actual topic overview files expose grounded staged reading routes without phantom topics');
+      knowledge.includes('data-kl-topic-guide="text-retrieval"') &&
+      knowledge.includes('topics/depth-perception/reviews/depth-acquisition-taxonomy') &&
+      knowledge.includes('topics/text-retrieval/reviews/lexical-bm25'),
+      'Six actual topic overview files expose grounded staged reading routes without phantom topics');
 check(knowledge.includes('DAPO：长思维链强化学习如何解决训练瓶颈') &&
       knowledge.includes('DAPO: An Open-Source LLM Reinforcement Learning System at Scale') &&
       knowledge.includes('class="kl-original-title"') &&
