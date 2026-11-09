@@ -20,6 +20,7 @@
 | 阅读某个方向的文献综述 | [研究主题](topics/README.md) |
 | 了解机器人末端控制、PD、阻抗与 Wrench | [机器人控制专题](topics/robot-control/README.md) |
 | 系统理解深度相机、立体匹配、单目/多视角与 RGB-D 可靠性 | [深度感知与几何估计专题](topics/depth-perception/README.md) |
+| 从 grep、倒排索引、BM25 学到向量检索与 Hybrid Search | [文本检索专题](topics/text-retrieval/README.md) |
 | 理解通用 Actor–Critic 的策略迭代与估值边界 | [Actor–Critic 技术问答](research/actor-critic-mutual-dependence.md) |
 | 系统学习预训练工程与继续预训练 | [Pretraining 专题](topics/pretraining/README.md) |
 | 按顺序学习 SFT、RL 与 Agent 后训练 | [7 步学习路线](paths/agent-post-training.md) |

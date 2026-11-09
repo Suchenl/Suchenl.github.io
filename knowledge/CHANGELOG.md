@@ -1,5 +1,10 @@
 # 更新记录
 
+## 2026-11-09 · 文本检索专题：从 grep 到 BM25 和 Hybrid Search
+- 新增 [文本检索专题](topics/text-retrieval/README.md) 与六篇顺序阅读的深度文章：grep/倒排索引、TF-IDF/BM25、Dense/SPLADE/ColBERT、Hybrid/RRF/Rerank、评测选型、Agent/RAG 检索。
+- 单独创建 [检索术语权威词典](glossary/information-retrieval.md)，明确“匹配/排序模型—索引结构—系统流水线”三层关系；新增领域“信息检索与知识系统”。
+- 用经典教材、算法原论文与官方项目文档作为可复查来源。本文中的案例为教学示意，不声称已执行性能对照或自动更新。
+
 ## 2026-11-04 · 深度感知与几何估计专题
 - 在 [深度专题](topics/depth-perception/README.md) 建立「深度从哪里来、什么时候能信」的统一入口，新增 9 篇主题文章：获取机制、被动/主动双目、结构光/ToF/LiDAR、单目、视频/多视角、RGB-D 融合、可信度、标定坐标和受控评测。
 - 五张可编辑教学性 SVG 归档于 `web/public/research/figures/depth-perception/`，交叉链接到适当的正文位置并更新 [图示索引](FIGURES.md)。
