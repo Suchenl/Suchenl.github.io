@@ -107,7 +107,7 @@ try {
    assert((await page.locator('.kl-note:not([hidden])').count())>=1,'Exploration filter is populated');
    await navigate(page,'/knowledge/?scope=topic%3Adepth-perception#knowledge-browser');
    assert.equal(await page.locator('.kl-topic-guide:not([hidden])').count(),1,'One authored topic guide is visible');
-   assert.equal(await page.locator('.kl-tree-topic').count(),5,'Third-level tree includes only five published topic overviews');
+   assert.equal(await page.locator('.kl-tree-topic').count(),6,'Third-level tree includes all six published topic overviews');
    const route=page.locator('.kl-topic-guide:not([hidden])');
    assert.equal(await route.locator('.kl-topic-step').count(),9,'Nine real depth-learning steps are present');
    assert((await route.locator('.kl-topic-step a').first().getAttribute('href'))?.includes('depth-acquisition-taxonomy'),
