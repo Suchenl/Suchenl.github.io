@@ -5,23 +5,23 @@
   "accumulateSince": "2026-08-13T00:00:00+08:00",
   "accumulateSinceLabel": "2026-08-13",
   "timezone": "Asia/Shanghai",
-  "updatedAt": "2026-11-15T20:39:07.876Z",
-  "snapshotCount": 14,
+  "updatedAt": "2026-11-22T21:23:32.114Z",
+  "snapshotCount": 15,
   "site": {
-    "pageviews": 1295,
-    "visits": 428
+    "pageviews": 1347,
+    "visits": 456
   },
   "paths": {
     "/": {
-      "pageviews": 445,
-      "visits": 338
+      "pageviews": 472,
+      "visits": 359
     },
     "/publications": {
-      "pageviews": 111,
+      "pageviews": 113,
       "visits": 13
     },
     "/publications/": {
-      "pageviews": 111,
+      "pageviews": 113,
       "visits": 13
     },
     "/analytics": {
@@ -33,20 +33,20 @@
       "visits": 3
     },
     "/work": {
-      "pageviews": 68,
-      "visits": 5
+      "pageviews": 76,
+      "visits": 9
     },
     "/work/": {
-      "pageviews": 68,
-      "visits": 5
+      "pageviews": 76,
+      "visits": 9
     },
     "/projects": {
-      "pageviews": 53,
-      "visits": 2
+      "pageviews": 54,
+      "visits": 3
     },
     "/projects/": {
-      "pageviews": 53,
-      "visits": 2
+      "pageviews": 54,
+      "visits": 3
     },
     "/expertise": {
       "pageviews": 32,
@@ -65,12 +65,12 @@
       "visits": 2
     },
     "/blog": {
-      "pageviews": 57,
-      "visits": 2
+      "pageviews": 58,
+      "visits": 3
     },
     "/blog/": {
-      "pageviews": 57,
-      "visits": 2
+      "pageviews": 58,
+      "visits": 3
     },
     "/blog/memory-centric-robot-system": {
       "pageviews": 2,
@@ -137,11 +137,11 @@
       "visits": 0
     },
     "/research/research/action-sampling-frequency-bias": {
-      "pageviews": 10,
+      "pageviews": 11,
       "visits": 4
     },
     "/research/research/action-sampling-frequency-bias/": {
-      "pageviews": 10,
+      "pageviews": 11,
       "visits": 4
     },
     "/research/topics/llm-agent-training/reviews/sft-rl-co-training": {
@@ -161,11 +161,11 @@
       "visits": 1
     },
     "/research/research/do-tokenizers-preserve-numerical-continuity": {
-      "pageviews": 7,
+      "pageviews": 9,
       "visits": 0
     },
     "/research/research/do-tokenizers-preserve-numerical-continuity/": {
-      "pageviews": 7,
+      "pageviews": 9,
       "visits": 0
     },
     "/research/glossary/core": {
@@ -321,12 +321,12 @@
       "visits": 0
     },
     "/research/papers/2023/rlpd": {
-      "pageviews": 4,
-      "visits": 3
+      "pageviews": 5,
+      "visits": 4
     },
     "/research/papers/2023/rlpd/": {
-      "pageviews": 4,
-      "visits": 3
+      "pageviews": 5,
+      "visits": 4
     },
     "/research/research/opd-forward-reverse-kl-qa": {
       "pageviews": 3,
@@ -353,19 +353,19 @@
       "visits": 1
     },
     "/knowledge": {
-      "pageviews": 44,
+      "pageviews": 50,
       "visits": 1
     },
     "/knowledge/": {
-      "pageviews": 44,
+      "pageviews": 50,
       "visits": 1
     },
     "/outputs": {
-      "pageviews": 13,
+      "pageviews": 16,
       "visits": 0
     },
     "/outputs/": {
-      "pageviews": 13,
+      "pageviews": 16,
       "visits": 0
     },
     "/research/topics/pretraining": {
