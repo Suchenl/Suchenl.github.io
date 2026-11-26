@@ -142,34 +142,6 @@ export const PUB_GROUPS: PubGroup[] = [
     ],
   },
   {
-    zh: '科研生态与同行评审',
-    en: 'Meta-Science & Peer Review',
-    papers: [
-      {
-        venue: 'Preprint',
-        image: '/images/frameworks/ICLR2027-Analysis.png',
-        titleZh: '我们将走向何方？对 43,013 篇 ICLR 2027 投稿的系统分析',
-        titleEn: 'Where Are We Going? A Systematic Analysis of 43,013 ICLR 2027 Submissions',
-        url: '/iclr2027/',
-        authorsHtml: `${ME}`,
-
-        releasedYear: 2026,
-        briefSource: { url: "/iclr2027/", labelZh: "公开分析页面及数据快照", labelEn: "Public analysis and data snapshot" },
-        brief: {
-          takeawayZh: 'ICLR 2027 投稿量剧增后，真正值得追问的不只是“有多少论文”，而是增长来源、重复研究与双盲审稿机制是否跟得上。',
-          takeawayEn: 'When ICLR submissions surge, the meaningful questions are where the growth comes from and whether duplication checks and double-blind review can keep pace.',
-          motivationZh: '面对 ICLR 2027 大幅增长的投稿量，只看论文数量容易把新研究、重复投稿和研究方向变化混为一谈；审稿机制在快速扩容后还能否保持有效，也需要可核查的数据。',
-          motivationEn: 'A much larger submission pool raises distinct questions about new research, recycled work, topical shifts, and review safeguards. Submission counts alone cannot distinguish these mechanisms.',
-          methodZh: '基于 2026 年 10 月 8 日公开可见的 43,013 篇投稿快照，比较主题和历史投稿分布，并通过标题与摘要检索、模型辅助判定以及全文核对，分层筛查可能的重复工作与匿名性暴露。',
-          methodEn: 'Using the public October 8, 2026 snapshot of 43,013 ICLR 2027 submissions, the analysis compares topic and submission trends, then uses title/abstract retrieval, assisted adjudication, and full-text checks to audit possible duplicates and anonymity exposure.',
-          resultZh: '分析认为投稿增长主要不能由上一届 ICLR 被拒论文回流解释；在可检索并复核的候选中，逐字复制并不常见。与此同时，同标题 arXiv 预印本使部分双盲匿名性仅停留在形式上，凸显了扩容后的审稿治理问题。',
-          resultEn: 'The analysis finds that prior ICLR rejections explain only a small part of the growth, while verbatim copying is uncommon among candidates surfaced and checked by the audit. Same-title arXiv preprints also expose limits of nominally double-blind review.',
-          boundaryZh: '这是审稿期公开快照的描述性与筛查性分析：无法覆盖未公开的其他会议投稿，检索不到的相似论文也不在复核范围内；不能据此认定个别作者违规，更不能预判最终录用质量。',
-          boundaryEn: 'This is an audit of a public snapshot during review. Unreleased submissions elsewhere and pairs missed by retrieval remain outside its coverage; the statistics neither establish misconduct by individuals nor predict eventual acceptance quality.',
-        },      },
-    ],
-  },
-  {
     zh: 'AI + 医疗',
     en: 'AI for Medicine',
     papers: [
